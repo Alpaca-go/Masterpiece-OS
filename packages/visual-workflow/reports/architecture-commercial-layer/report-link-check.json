@@ -1,0 +1,180 @@
+{
+  "status": "PASS",
+  "links": [
+    {
+      "file": "architecture-commercial-review.md",
+      "target": "./calibration-scope.json",
+      "status": "EXISTS"
+    },
+    {
+      "file": "architecture-commercial-review.md",
+      "target": "./audit-before-change.json",
+      "status": "EXISTS"
+    },
+    {
+      "file": "architecture-commercial-review.md",
+      "target": "./direction-diff.json",
+      "status": "EXISTS"
+    },
+    {
+      "file": "architecture-commercial-review.md",
+      "target": "./baseline-protection.json",
+      "status": "EXISTS"
+    },
+    {
+      "file": "architecture-commercial-review.md",
+      "target": "./branding-layer-plan.md",
+      "status": "EXISTS"
+    },
+    {
+      "file": "architecture-commercial-review.md",
+      "target": "./branding-capability-audit.json",
+      "status": "EXISTS"
+    },
+    {
+      "file": "architecture-commercial-review.md",
+      "target": "./confirmed-direction.json",
+      "status": "EXISTS"
+    },
+    {
+      "file": "architecture-commercial-review.md",
+      "target": "./formal-prompt.txt",
+      "status": "EXISTS"
+    },
+    {
+      "file": "architecture-commercial-review.md",
+      "target": "./provider-prompt.txt",
+      "status": "EXISTS"
+    },
+    {
+      "file": "architecture-commercial-review.md",
+      "target": "./provider-request.json",
+      "status": "EXISTS"
+    },
+    {
+      "file": "architecture-commercial-review.md",
+      "target": "./browser-result.json",
+      "status": "EXISTS"
+    },
+    {
+      "file": "architecture-commercial-review.md",
+      "target": "./web-input-requests.json",
+      "status": "EXISTS"
+    },
+    {
+      "file": "architecture-commercial-review.md",
+      "target": "./field-fidelity.json",
+      "status": "EXISTS"
+    },
+    {
+      "file": "architecture-commercial-review.md",
+      "target": "./natural-language-input.json",
+      "status": "EXISTS"
+    },
+    {
+      "file": "architecture-commercial-review.md",
+      "target": "./effective-packet.json",
+      "status": "EXISTS"
+    },
+    {
+      "file": "architecture-commercial-review.md",
+      "target": "./compiler-trace.json",
+      "status": "EXISTS"
+    },
+    {
+      "file": "architecture-commercial-review.md",
+      "target": "./prompt-source-map.json",
+      "status": "EXISTS"
+    },
+    {
+      "file": "architecture-commercial-review.md",
+      "target": "./request-evidence.json",
+      "status": "EXISTS"
+    },
+    {
+      "file": "architecture-commercial-review.md",
+      "target": "../../../../.codex-smoke/architecture-commercial-layer/confirmed-review/confirmed-standard-generation.png",
+      "status": "EXISTS"
+    },
+    {
+      "file": "architecture-commercial-review.md",
+      "target": "./gate-results.json",
+      "status": "EXISTS"
+    },
+    {
+      "file": "architecture-commercial-review.md",
+      "target": "./standard-industry-regression.json",
+      "status": "EXISTS"
+    },
+    {
+      "file": "architecture-commercial-review.md",
+      "target": "./readonly-proof.json",
+      "status": "EXISTS"
+    },
+    {
+      "file": "architecture-commercial-review.md",
+      "target": "./scope-proof.json",
+      "status": "EXISTS"
+    },
+    {
+      "file": "architecture-commercial-review.md",
+      "target": "./next-image-preflight.md",
+      "status": "EXISTS"
+    },
+    {
+      "file": "branding-layer-plan.md",
+      "target": "../../../../apps/web/src/features/visual-workflow/VisualWorkflowWorkspace.tsx",
+      "status": "EXISTS"
+    },
+    {
+      "file": "branding-layer-plan.md",
+      "target": "../../src/service.js",
+      "status": "EXISTS"
+    },
+    {
+      "file": "branding-layer-plan.md",
+      "target": "../../src/image-service.js",
+      "status": "EXISTS"
+    },
+    {
+      "file": "branding-layer-plan.md",
+      "target": "../../src/runtime/image-generation/short-chain-service.js",
+      "status": "EXISTS"
+    },
+    {
+      "file": "branding-layer-plan.md",
+      "target": "../../src/runtime/image-generation/logo-post-composite.js",
+      "status": "EXISTS"
+    },
+    {
+      "file": "next-image-preflight.md",
+      "target": "./confirmed-direction.json",
+      "status": "EXISTS"
+    },
+    {
+      "file": "next-image-preflight.md",
+      "target": "./formal-prompt.txt",
+      "status": "EXISTS"
+    },
+    {
+      "file": "next-image-preflight.md",
+      "target": "./provider-prompt.txt",
+      "status": "EXISTS"
+    },
+    {
+      "file": "next-image-preflight.md",
+      "target": "./provider-request.json",
+      "status": "EXISTS"
+    },
+    {
+      "file": "next-image-preflight.md",
+      "target": "./request-evidence.json",
+      "status": "EXISTS"
+    },
+    {
+      "file": "next-image-preflight.md",
+      "target": "./branding-layer-plan.md",
+      "status": "EXISTS"
+    }
+  ]
+}

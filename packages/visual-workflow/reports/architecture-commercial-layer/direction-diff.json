@@ -1,0 +1,43 @@
+{
+  "status": "CONFIRMED_IN_REAL_EDITOR_OFFLINE",
+  "changes": [
+    {
+      "field": "functionalNetwork",
+      "before": "Reception: arrival circulation naturally reaches the visitor service face of a counter integrated with the architectural interface; a usable staff work face and staff access sit behind it, supporting check-in and appointment service while the visitor approach stays clear.\nReception: reception service and a generous grouped waiting area spread laterally across the open main hall, joined by clear visitor circulation rather than a single longitudinal passage.\nReception: waiting seats and small tables face one another for real waiting and conversation, with room to pass around them; some seats stand free of the art edge while remaining visually connected to it, supporting a quiet stay and brief review of service information before the onward handoff.\nReception: the visible background semi-open transition progresses through recessed and staggered interfaces to a screened onward access boundary with staff circulation clear of the seated guest area; this is a staff-guided service threshold, easy to locate from reception rather than an empty background passage.",
+      "after": "Reception: arrival first reveals the complete visitor service face, then gives a clear approach to the counter before branching to waiting and a single onward service threshold; a usable staff work face and staff access remain behind the counter for check-in and appointment service.\nReception: reception service and a generous grouped waiting area spread laterally across the open main hall, joined by clear visitor circulation rather than a single longitudinal passage.\nReception: one sofa and armchair group faces small tables for waiting and brief conversation, with circulation around the group; the service relationship remains understandable even when no people are present.\nReception: one legible semi-open service threshold is reached from reception and waiting; a staggered solid return screens onward access, with staff circulation clear of the seated guest area.",
+      "reason": "把到达、完整看见前台、接近服务面、候客及后续交接连成可检查关系；单一服务门槛替代泛化后续开口",
+      "protection": "主厅横向展开句精确保留，服务关系无人亦成立",
+      "risk": "单一门槛可能被简化成一扇门，故同时保留半开放、错位实体屏蔽及开敞关系"
+    },
+    {
+      "field": "functionalRelationships",
+      "before": "Reception and waiting remain visually linked across an open lateral main hall; gaps in the integrated translucent architectural interface reveal the semi-open transition.\nReception: the semi-open transition connects to discreet screened consultation and operational entrances; consultation privacy remains protected while other room interiors stay off frame.",
+      "after": "Reception and waiting remain visually linked across an open lateral main hall; gaps in the integrated translucent architectural interface reveal the semi-open transition.\nReception: the single semi-open service threshold screens subsequent consultation and care access behind an offset solid interface; consultation privacy remains protected while other room interiors stay off frame.",
+      "reason": "把复数后续入口收敛为一个可见门槛，后续咨询护理仅保留隐私依赖",
+      "protection": "跨区房间仍不入镜，横向接待候客关系原句保留",
+      "risk": "无字入口并不直接证明医美身份；需要后期准确品牌内容与人工验证"
+    },
+    {
+      "field": "visibleRequirements",
+      "before": "Reception service counter integrated with the architectural interface, with distinct visitor and staff faces, one discreet tablet and one small unlettered desk card; the service surface remains mostly clear\nWaiting area with a generous sofa and armchair group facing small tables beside the integrated translucent partition, partly free-standing with clear circulation; one closed unlettered service booklet and a small water tray make the stay readable\nOpen lateral reception and waiting circulation with readable building surfaces and a visible background semi-open transition\nReception recessed and staggered screened access boundary with discreet onward service entrances, one small blank direction plaque and an ordered secondary interface, without showing room interiors\nReception integrated translucent sheet interface with large curved sections, spaced transition layers and fine thin edges revealing space behind it\nReception architectural wall panel reserved as a quiet unlettered identity surface near the counter; these sparse service details remain secondary to the building and the pearlescent art",
+      "after": "Reception counter integrated with a building interface, with its entire visitor service face visible from arrival, a clear approach, a separate usable staff work face and one discreet office device; a small unlettered desk card is optional and secondary\nWaiting area with one sofa and armchair group facing small tables beside the integrated translucent partition, partly free-standing with circulation around it; at most one small service accessory may be included\nOpen lateral reception and waiting circulation with a clear foreground arrival zone, readable building surfaces and one visible background semi-open service threshold\nReception single semi-open service threshold screened by a staggered solid return, readable from the counter with onward room interiors hidden; a small blank direction carrier may sit on the threshold interface\nReception integrated translucent sheet interface with large curved sections, spaced transition layers and fine thin edges revealing space behind it\nReception adjacent flat architectural wall with one small clean unlettered identity carrier, outside the art focus and unobstructed by sheets; service cues stay subordinate and may be reduced to protect the open hall",
+      "reason": "取消服务册、托盘和方向牌同时必现的清单要求；设备少量、台卡可省、候客用品至多一项，保留小型清洁无遮挡身份面",
+      "protection": "前台完整可见，服务用品可降级让位于空间；材料界面设施原句保留",
+      "risk": "过度削减会减弱细节身份，因此通过服务关系和单一门槛而非加回道具补足"
+    },
+    {
+      "field": "compositionRequirements",
+      "before": "单个开放主接待厅的入口斜向建筑摄影视角：接待服务面与到达自然相接，接待与候客在中景横向舒展联系；背景通过局部退让与界面错位显露半开放服务转场，不展示其他房间内部。\n连续层片沿建筑侧界面向上延展，局部大型曲面与通透间段有主次，近景层片退让；一组成组座椅与小桌形成舒展交流关系，部分离开艺术边缘，接待台与建筑界面相接，三者共同组织主厅而不把视线推向单一远端开口。\n保持可信人体尺度、正常建筑摄影透视和可读的竖向建筑比例；横向宽度从功能展开及开敞关系本身体现，中心与侧向均保留通行，不以超广角畸变放大空间。",
+      "after": "单个开放主接待厅的入口斜向建筑摄影视角：前景到达区、主厅中央和接待—候客之间形成完整横向开敞空间；入口视线先清晰读取完整接待服务面，再连接候客与一处背景半开放服务门槛。\n珠光层片沿侧向建筑界面与上部连续衔接，局部围合候客边缘；近景左右留出开放视域，接待台服务面不被大型层片遮挡，侧面与顶面艺术不构成夹击主厅的狭窄画框。\n建筑体量、采光与连续艺术是主视觉，服务线索从属且不争夺焦点；一组候客桌椅与单一错位服务门槛构成横向联系，背景由退让的实体界面屏蔽后续空间，不陈列并列门洞或展示其他房间内部。\n保持可信人体尺度、正常建筑摄影透视和可读的竖向建筑比例；横向宽度从功能展开及开敞关系本身体现，中心与侧向均保留通行，不以超广角畸变放大空间。",
+      "reason": "显式赋予开敞、前台完整可读和不被近景双侧画框挤压的优先级，防止门排重新组织主厅",
+      "protection": "侧向至上部连续、候客局部围合、正常人体尺度和建筑摄影保留",
+      "risk": "正向约束不能锁定A图像素几何；真实生图仍有随机性"
+    }
+  ],
+  "changedFields": 4,
+  "structureLanguageChanged": false,
+  "materialsLightingColorsChanged": false,
+  "priorConfirmationSha256": "7cbdfd2ffc792816040316fa405bd623ce55703a2e7b10f06b2d1157987fb70d",
+  "newConfirmationSha256": "a513f62300c798fb28f5d14bcdedfe37f1c1564468b215fc91f19eff6ecc03e8",
+  "newRecordSha256": "161b38d0406aec5bd6716eef0ddb1d1eb535cb506fc985c830d4af1e903481f8"
+}

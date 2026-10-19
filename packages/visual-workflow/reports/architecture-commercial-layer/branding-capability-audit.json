@@ -1,0 +1,69 @@
+{
+  "status": "READ_ONLY_REVIEW",
+  "sources": [
+    {
+      "file": "packages/visual-workflow/src/service.js",
+      "role": "public workflow operations",
+      "sha256": "4ff5a003869bdadfc97f3d0b743d4a04acba66ee76bc784edaf651b586013b39"
+    },
+    {
+      "file": "packages/visual-workflow/src/image-service.js",
+      "role": "selected role logo source",
+      "sha256": "df6218ab0730832e992d1c8a51b5f653a795d732cb6fe9b5b35dc13355778c46"
+    },
+    {
+      "file": "packages/visual-workflow/src/runtime/image-generation/short-chain-service.js",
+      "role": "compilation plan and composition guards",
+      "sha256": "9df3e2ee086e076d0e5aeb749f442836b3c57c3975377854defe8d05a9c5aec3"
+    },
+    {
+      "file": "packages/visual-workflow/src/runtime/image-generation/logo-post-composite.js",
+      "role": "actual Sharp composition",
+      "sha256": "e0070758a48cf7d8138561d37d59b169726a01015405450aec16d289e6ef8611"
+    },
+    {
+      "file": "apps/web/src/features/visual-workflow/VisualWorkflowWorkspace.tsx",
+      "role": "UI placement, whole-image crop and role gating",
+      "sha256": "18a7c7e2c13de9875bb74256ceb9feb1e6fee9ca6b186391e5519dc567ba7d29"
+    }
+  ],
+  "projectMetadata": {
+    "selectedProjectLogoAssetCount": 0,
+    "historicalCompilerPlan": {
+      "schemaVersion": "1.0",
+      "projectId": "ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "taskId": "vnext-task-acbaf443-8ebc-4fa8-939a-74ee9ac2902c",
+      "logoAssetId": "fe40b0b3-22ce-4616-ae5a-8c2370a0791c",
+      "status": "awaiting_generation_and_placement",
+      "source": "visual_decision_packet.lockedAssets",
+      "createdAt": "2026-10-19T04:00:45.773Z"
+    },
+    "planAssetPresent": true,
+    "planAssetMetadata": {
+      "id": "fe40b0b3-22ce-4616-ae5a-8c2370a0791c",
+      "originalName": "九州美学视觉方案-07.png",
+      "mimeType": "image/png",
+      "status": "ready",
+      "sha256": "fd202e5d923577b78f88b0a0ae887c5bdf8b226dab4579511954f815d3531ced"
+    },
+    "userApprovalOfExactLogoCropAndWordmark": "not verified",
+    "selectLogoWouldInvalidateAnalysis": true
+  },
+  "existingCapabilities": [
+    "post_composite compile plan",
+    "explicit confirmation + same-project successful image guards",
+    "image crop + proportional scaling + optional corner-color removal + 2D overlay",
+    "source and output hashes with pending human review"
+  ],
+  "notFoundInInspectedWorkflow": [
+    "arbitrary text and font layout",
+    "approved wayfinding content registry or editor",
+    "perspective or curved-surface mapping",
+    "lighting/shadow/reflection fitting",
+    "interactive source crop UI",
+    "verified current project approved logo crop"
+  ],
+  "currentProjectCompositionExecuted": false,
+  "newProductionModuleWritten": false,
+  "regressionScope": "Only existing synthetic fixture composition tests as part of full regression; no actual project assets composed"
+}
