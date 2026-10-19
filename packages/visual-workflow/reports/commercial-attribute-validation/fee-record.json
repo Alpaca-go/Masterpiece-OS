@@ -1,0 +1,23 @@
+{
+  "billableModelDispatches": 1,
+  "qwenCalls": 0,
+  "otherModelCalls": 0,
+  "retries": 0,
+  "currency": "CNY",
+  "publicEstimatedCost": 0.6,
+  "actualOutputPixels": 4460544,
+  "actualSettledCost": null,
+  "usage": {
+    "input_images": 0,
+    "generated_images": 1,
+    "output_tokens": 17424,
+    "total_tokens": 17424
+  },
+  "pricingSource": "https://docs.volcengine.com/docs/ark/model-pricing?lang=zh",
+  "modelConditionsSource": "https://docs.volcengine.com/docs/ark/seedream-5-0-pro?lang=zh",
+  "checkedOn": "2026-10-19",
+  "pricingEvidence": "Official domain indexed pricing and model documentation checked via web search; direct opened pages require JavaScript.",
+  "abnormalFeeIndicatorsFound": false,
+  "accountBalanceOrDiscountsRead": false,
+  "statement": "Public output-image tariff estimate only; API did not return the account currency charge. No validator, authenticated billing probe or extra model request."
+}

@@ -1,0 +1,93 @@
+{
+  "status": "PASS",
+  "protectedRoots": [
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architectural-refinement\\confirmed-browser\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "fileCount": 65,
+      "inventorySha256": "50ad2e0ec7f7a83c18309b35fe19e9aed1b35cc9034ce2856d100267c3c6f77d",
+      "status": "UNCHANGED"
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\reports\\architectural-integration",
+      "fileCount": 45,
+      "inventorySha256": "d6d19ac6a756269844bbb537135230a905b1fe5b7539883d9b7a3a8239aeb4e7",
+      "status": "UNCHANGED"
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architectural-integration\\confirmed-review\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "fileCount": 62,
+      "inventorySha256": "07ffc3a2c9c4bf3d6a4d392b317cf7c28533552bb6413264ba72842535cbbd88",
+      "status": "UNCHANGED"
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architectural-integration\\real-validation\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "fileCount": 82,
+      "inventorySha256": "9f5a447ba3494328663d6d644905950c647f8bc0a5aa592a81e7204c61c73286",
+      "status": "UNCHANGED"
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architectural-language\\confirmed-copy\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "fileCount": 78,
+      "inventorySha256": "7a28e540b1eebb719ecdeaebea439e0fb4ba79a5d603bac18307f366fad02814",
+      "status": "UNCHANGED"
+    },
+    {
+      "root": "C:\\Users\\kyrie\\AppData\\Roaming\\masterpiece-os-desktop\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "fileCount": 46,
+      "inventorySha256": "29a4f69e069e70c6da1706d1b14541d779b0e140e53fe5ba43d0a2455cf6e9b1",
+      "status": "UNCHANGED"
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\reports\\architectural-refinement",
+      "fileCount": 29,
+      "inventorySha256": "968f54142ada137668b6831a02df97b67f6c69f31e7e478587aa4c9b3268f57e",
+      "status": "UNCHANGED"
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architectural-refinement\\real-validation\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "fileCount": 62,
+      "inventorySha256": "5c1c95b855783ba4f09f9fb317284cf45a6b43d8760177990ae5ae36ba2c940b",
+      "status": "UNCHANGED"
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architectural-refinement\\real-validation\\authorized-execution",
+      "fileCount": 10,
+      "inventorySha256": "ab576c95e5cad89883cd73c658380c642811c27ee8b1ebb07b24df692d8a6059",
+      "status": "UNCHANGED"
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\reports\\architectural-refinement-validation",
+      "fileCount": 17,
+      "inventorySha256": "7de3fda41465bff4290b8d6731734708fe7102548fa7d58dc64e825ce782b5b8",
+      "status": "UNCHANGED"
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\commercial-attribute\\confirmed-review\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "fileCount": 68,
+      "inventorySha256": "8091700d3cda8a761ef058960f4df37a90f54d91273537e22bc756625e61f377",
+      "status": "UNCHANGED"
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\reports\\commercial-attribute",
+      "fileCount": 30,
+      "inventorySha256": "cff202a98f000ad0fdb61a84d2092d0289edb7c4dda812dc207fa1514858ca1f",
+      "status": "UNCHANGED"
+    }
+  ],
+  "oldProjectsReportsAndImagesUnchanged": true,
+  "productionCodeChanges": [],
+  "sharedInfrastructureChanges": [],
+  "planningAndMigrationChanges": [],
+  "goldenChanges": [],
+  "implementationIntegrityChanges": [],
+  "humanVisualAcceptanceChanges": [],
+  "newValidationArtifacts": false,
+  "realCredentialsReadByAgent": false,
+  "existingCredentialsCopied": false,
+  "independentEncryptedCredentialStoreUsedByRuntime": true,
+  "workflowImplementationDigest": "8e8469e022ed1e2e01bdad208e5e75b9126d35afb46e3ac96e212aaa8c6e6f81",
+  "merged": false,
+  "published": false,
+  "deployed": false,
+  "recheckedAfterEngineeringChecks": true
+}

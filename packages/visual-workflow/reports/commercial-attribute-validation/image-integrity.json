@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "original": {
+    "file": "jiuzhou-provider-original.jpg",
+    "bytes": 248662,
+    "width": 2816,
+    "height": 1584,
+    "format": "jpeg",
+    "sha256": "373ecd7e0b6c811e54bc7676c1c68bf0518f41595c20d0f5beaf24910657bbab"
+  },
+  "business": {
+    "file": "jiuzhou-standard-output.png",
+    "width": 2816,
+    "height": 1584,
+    "bytes": 2881776,
+    "sha256": "524f07920aa10389ebbf189eee051a34ca21166c42d1e58f425e23f03ae08cc2"
+  },
+  "decodedPixelsEqual": true,
+  "businessProcessing": "Existing image-service JPEG-to-PNG conversion only; no visual edit or logo/text composition",
+  "priorImage": {
+    "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architectural-refinement\\real-validation\\authorized-execution\\jiuzhou-standard-output.png",
+    "sha256": "48b98f7a49c4320deec4fbbd1314d2ccd5f47a3ba88ea3b0f19b0cef56f41d9f"
+  },
+  "sourceImagesUsedAsInput": false
+}

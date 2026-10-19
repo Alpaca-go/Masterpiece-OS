@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "checkedLocalLinks": [
+    "E:/Masterpiece-OS-Main-Publish-20261015-Verified/.codex-smoke/commercial-attribute/real-validation/authorized-execution/jiuzhou-standard-output.png",
+    "E:/Masterpiece-OS-Main-Publish-20261015-Verified/.codex-smoke/commercial-attribute/real-validation/authorized-execution/jiuzhou-standard-output.png",
+    "E:/Masterpiece-OS-Main-Publish-20261015-Verified/.codex-smoke/commercial-attribute/real-validation/authorized-execution/jiuzhou-provider-original.jpg",
+    "E:/Masterpiece-OS-Main-Publish-20261015-Verified/.codex-smoke/architectural-refinement/real-validation/authorized-execution/jiuzhou-standard-output.png",
+    "./generation-only-entry-proof.json",
+    "./preflight-summary.json",
+    "./request-comparison.json",
+    "./provider-request.json",
+    "../commercial-attribute/confirmed-direction.json",
+    "../commercial-attribute/formal-prompt.txt",
+    "../commercial-attribute/provider-prompt.txt",
+    "./execution-summary.json",
+    "./call-ledger.json",
+    "./image-response-summary.json",
+    "./image-integrity.json",
+    "./original-image-metadata.json",
+    "./fee-record.json",
+    "./pricing-check.json",
+    "./visual-comparison.json",
+    "./readonly-and-scope-proof.json",
+    "./gate-results.json",
+    "./local-artifact-index.json"
+  ]
+}

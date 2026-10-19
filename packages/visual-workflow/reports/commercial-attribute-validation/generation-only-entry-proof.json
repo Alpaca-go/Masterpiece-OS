@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "entry": "createShortChainGenerationService.start",
+  "test": "packages/visual-workflow/tests/commercial-attribute.test.ts",
+  "log": ".git/commercial-attribute-real-entry.log",
+  "testsPassed": 2,
+  "mockedImageRequests": 1,
+  "mockedValidationRequests": 0,
+  "realModelCalls": 0,
+  "architecturePaletteAndCompositionProtected": true,
+  "standardZeroReferenceRequestVerified": true
+}
