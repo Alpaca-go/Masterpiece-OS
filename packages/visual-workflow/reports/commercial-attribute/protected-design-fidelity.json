@@ -1,0 +1,95 @@
+{
+  "status": "PASS",
+  "scope": "Field, confirmation, Packet and provider prompt only; not visual acceptance",
+  "preserved": [
+    {
+      "field": "spatialConcept",
+      "status": "EXACTLY_PRESERVED",
+      "beforeSha256": "8e6fd37e544bbb92487441923ee4703e9a41a1de160ebab3378e888e8b247373",
+      "afterSha256": "8e6fd37e544bbb92487441923ee4703e9a41a1de160ebab3378e888e8b247373"
+    },
+    {
+      "field": "structureLanguage",
+      "status": "EXACTLY_PRESERVED",
+      "beforeSha256": "37f7946b2c075adcfbcdc486623ad6d2aec685958838b9055784704f44ccf1fc",
+      "afterSha256": "37f7946b2c075adcfbcdc486623ad6d2aec685958838b9055784704f44ccf1fc"
+    },
+    {
+      "field": "artisticFocus",
+      "status": "EXACTLY_PRESERVED",
+      "beforeSha256": "87c19a308b093561bd3d1692b854c8b68ce14843ae4c2550f002160efc9190e2",
+      "afterSha256": "87c19a308b093561bd3d1692b854c8b68ce14843ae4c2550f002160efc9190e2"
+    },
+    {
+      "field": "compositionRequirements",
+      "status": "EXACTLY_PRESERVED",
+      "beforeSha256": "5a612a949cecb643a8c4312edafab88d84a6e70b0624bd7b8371286f1b62bcd4",
+      "afterSha256": "5a612a949cecb643a8c4312edafab88d84a6e70b0624bd7b8371286f1b62bcd4"
+    },
+    {
+      "field": "colorEntries",
+      "status": "EXACTLY_PRESERVED",
+      "beforeSha256": "bab5fe5321e9e02e2d40f1219a39c84cdee8f4763d9ac8e10791e2d2bf4482dc",
+      "afterSha256": "bab5fe5321e9e02e2d40f1219a39c84cdee8f4763d9ac8e10791e2d2bf4482dc"
+    },
+    {
+      "field": "colorAvoid",
+      "status": "EXACTLY_PRESERVED",
+      "beforeSha256": "8c261d9e9e3c0c42cc51ce0e681c447c3e7f4b6138948a12a58e821952b15fa3",
+      "afterSha256": "8c261d9e9e3c0c42cc51ce0e681c447c3e7f4b6138948a12a58e821952b15fa3"
+    },
+    {
+      "field": "functionalProgram",
+      "status": "EXACTLY_PRESERVED",
+      "beforeSha256": "23d589cdd889835d09018e5124da38277ad6a034b19c292a3263e40d09e4984b",
+      "afterSha256": "23d589cdd889835d09018e5124da38277ad6a034b19c292a3263e40d09e4984b"
+    },
+    {
+      "field": "functionalRelationships",
+      "status": "EXACTLY_PRESERVED",
+      "beforeSha256": "e29cbe8ac904445f17362c83fd74f652e52aaa9fc1c304a72ab07f371d42686a",
+      "afterSha256": "e29cbe8ac904445f17362c83fd74f652e52aaa9fc1c304a72ab07f371d42686a"
+    },
+    {
+      "field": "mustAvoid",
+      "status": "EXACTLY_PRESERVED",
+      "beforeSha256": "f68cbe502334ce05b0024892ca157ef2d6cfe4b81e0bd9929f7c393f708acc3a",
+      "afterSha256": "f68cbe502334ce05b0024892ca157ef2d6cfe4b81e0bd9929f7c393f708acc3a"
+    },
+    {
+      "field": "lightingContrast",
+      "status": "EXACTLY_PRESERVED",
+      "beforeSha256": "303eb1c1d553ee997aeec64408625dd2d46d8aa1e7073568f25eaa0b284940e6",
+      "afterSha256": "303eb1c1d553ee997aeec64408625dd2d46d8aa1e7073568f25eaa0b284940e6"
+    },
+    {
+      "field": "lightingAvoid",
+      "status": "EXACTLY_PRESERVED",
+      "beforeSha256": "ffa031af2b78e1342713d361bafbabc80d9f6061648389cca8585387a899f932",
+      "afterSha256": "ffa031af2b78e1342713d361bafbabc80d9f6061648389cca8585387a899f932"
+    }
+  ],
+  "backgroundMaterialUnchanged": true,
+  "pearlMaterialIdentityAndRoleAndProhibitionsUnchanged": true,
+  "originalCoreOptics": [
+    {
+      "term": "自然光分层透射，可读取后方空间",
+      "preserved": true
+    },
+    {
+      "term": "边缘细腻反射与温和高光",
+      "preserved": true
+    },
+    {
+      "term": "轻薄层叠保留清楚深度",
+      "preserved": true
+    },
+    {
+      "term": "珠母贝般温和虹彩，紫只在局部内层微弱出现",
+      "preserved": true
+    }
+  ],
+  "artSystemCountUnchanged": true,
+  "negativeListUnchanged": true,
+  "newDimensionsOrAreaRatiosAdded": false
+}

@@ -1,0 +1,27 @@
+{
+  "workflowOwner": "visual-workflow",
+  "adapterId": "seedream-5.0-pro",
+  "profileId": "8239b6b7-4f11-4ab4-9bf7-d588b9842efe",
+  "provider": "volcengine",
+  "model": "doubao-seedream-5-0-pro-260628",
+  "baseUrl": "https://image.example.invalid/v3",
+  "aspectRatio": "16:9",
+  "imageSize": "2K",
+  "promptSha256": "39cd488da22189e31a0592474574bc4a4d69eff777cbdfa9ab3cfec31bc5eb4b",
+  "promptVersion": "4bb83d97165632f39690fe3bf80dfb975e6de43ddd85099e43c1d03aebc3c7c1",
+  "outputCount": 1,
+  "referenceCount": 0,
+  "designDirection": {
+    "projectId": "ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+    "recordSha256": "cae3532eb7d6b179cb746a31e00f8f3954a57c504a4a6aa8c10cc60f173f4071",
+    "confirmationSha256": "7cbdfd2ffc792816040316fa405bd623ce55703a2e7b10f06b2d1157987fb70d",
+    "analysisFingerprint": "5c8594ca69d077cb3cc05c4c8b1aebf6cb523022d6ea0f411d5eb56fe4f84a6c",
+    "source": {
+      "kind": "user_design_decision",
+      "statement": "2026-10-19 用户授权的九州美学终轮商业属性离线精修。以最新主厅真实图为诊断基线，保护既有建筑艺术融合、主厅横向格局、珠光半透明与低对比色彩，仅克制增强接待、候客及咨询服务转场可读性，并细化薄边与漫射自然光。六张图片仅供人工视觉校准，不注册素材、不传入Seedream。品牌与导视文字不在生成场景中绘制，只有少量无字载体。本轮为用户设计意图而非原品牌实测事实；仅新隔离测试副本网页保存确认、离线编译和标准请求预演，不授权真实生图、收费校验、重试纠正、生产编译器修改、Golden或人工验收状态更新、合并发布。",
+      "evidenceRole": "offline_visual_calibration",
+      "notOriginalBrandFact": true
+    },
+    "confirmedAt": "2026-10-19T03:13:04.978Z"
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "status": "OFFLINE_PASS_ONLY",
+  "checks": [
+    {
+      "goal": "Reception service point",
+      "terms": [
+        "check-in and appointment service",
+        "one discreet tablet",
+        "one small unlettered desk card",
+        "mostly clear"
+      ],
+      "status": "OFFLINE_EXPRESSION_PASS"
+    },
+    {
+      "goal": "Usable waiting stay",
+      "terms": [
+        "sofa and armchair group",
+        "one closed unlettered service booklet",
+        "small water tray",
+        "clear circulation"
+      ],
+      "status": "OFFLINE_EXPRESSION_PASS"
+    },
+    {
+      "goal": "Service threshold and privacy",
+      "terms": [
+        "staff-guided service threshold",
+        "small blank direction plaque",
+        "screened consultation and operational entrances",
+        "other room interiors stay off frame"
+      ],
+      "status": "OFFLINE_EXPRESSION_PASS"
+    },
+    {
+      "goal": "Restrained identity layer",
+      "terms": [
+        "quiet unlettered identity surface",
+        "secondary to the building",
+        "no rendered brand name, wordmark, logotype, signage text"
+      ],
+      "status": "OFFLINE_EXPRESSION_PASS"
+    },
+    {
+      "goal": "Fine local sheets",
+      "terms": [
+        "边缘纤细收束",
+        "交叠轮廓逐层可分"
+      ],
+      "status": "OFFLINE_EXPRESSION_PASS"
+    },
+    {
+      "goal": "Soft daylight",
+      "terms": [
+        "经上部采光界面充分漫射",
+        "柔和宽缓的阴影过渡",
+        "不以高亮曝光抹平薄边"
+      ],
+      "status": "OFFLINE_EXPRESSION_PASS"
+    }
+  ],
+  "priority": "Architecture and integrated art stay primary; sparse service cues are secondary",
+  "selectedObjects": [
+    "one tablet",
+    "one unlettered desk card",
+    "one closed unlettered service booklet",
+    "one small water tray",
+    "one small blank direction plaque",
+    "one quiet unlettered wall identity surface"
+  ],
+  "optionalObjectsNotAdded": [
+    "product shelves",
+    "poster displays",
+    "large logo wall",
+    "new art",
+    "exterior or storefront"
+  ],
+  "briefRatios": {
+    "mainHall": "15%-20% suggestion treated as qualitative subordinate emphasis, not measured image-area allocation",
+    "detailShot": "20%-30% not activated; current scene remains main reception hall"
+  },
+  "actualVisualCoverage": "not measured; no real output this round",
+  "brandingScope": "Carrier geometry only; generated logo/wordmark/signage text prohibited. Existing logo post-composition not executed; no new text delivery capability implied.",
+  "humanVisualAcceptance": "NOT_PERFORMED"
+}

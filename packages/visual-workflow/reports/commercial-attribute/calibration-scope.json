@@ -1,0 +1,92 @@
+{
+  "status": "HUMAN_REVIEW_ONLY",
+  "instructionSource": {
+    "file": "C:/Users/kyrie/Downloads/jiuzhou_commercial_attribute_refinement_instruction.md",
+    "sha256": "13b2f5864439dd647da4747df49f88e3e033f7ac57aa2dcf6f8c6516a50e842d"
+  },
+  "attachmentNumbering": "User message numbering: image 1 current baseline; images 2-3 detail cues; images 4-6 spatial cues. Attached document numbers the five reference images independently.",
+  "calibration": [
+    {
+      "attachment": 1,
+      "file": "C:/Users/kyrie/AppData/Local/Temp/codex-clipboard-dab1592f-9198-4a24-8a9c-204347edee91.png",
+      "sha256": "3011ba590b2877db2119879a2851679e5cc924fd7d4201eb02c739349bbc3cf7",
+      "role": "current_baseline",
+      "humanReviewOnly": true,
+      "registeredAsAsset": false
+    },
+    {
+      "attachment": 2,
+      "file": "F:/测试/16-37-48-212-asset_20260805-163748-212_886507f8b641_e1fb0c55-8478777d-1847-4cf3-9a99-183d4f2db779.png",
+      "sha256": "886507f8b6412c74da148d9f370d6274fd8084fcf18538db30e7251eee7d9784",
+      "role": "commercial_detail_review",
+      "humanReviewOnly": true,
+      "registeredAsAsset": false
+    },
+    {
+      "attachment": 3,
+      "file": "F:/测试/16-37-48-219-asset_20260805-163748-219_0edd8b79e8ce_52b629f8-image.png",
+      "sha256": "0edd8b79e8ce2883005791bb60197211963bc66699398325288e06e51296176c",
+      "role": "commercial_detail_review",
+      "humanReviewOnly": true,
+      "registeredAsAsset": false
+    },
+    {
+      "attachment": 4,
+      "file": "F:/测试/16-37-48-222-asset_20260805-163748-222_71b62cbabc1d_75bdceb9-image.png",
+      "sha256": "71b62cbabc1db14f2d0fd4b44f11e7c2aa1d8b5d6382993a5a1cfbddd185cdb5",
+      "role": "commercial_spatial_review",
+      "humanReviewOnly": true,
+      "registeredAsAsset": false
+    },
+    {
+      "attachment": 5,
+      "file": "F:/测试/16-37-48-245-asset_20260805-163748-245_336a46f25c82_00b44c41-image.png",
+      "sha256": "336a46f25c82067195210cfa33bfe5b8506477ce9aa0d6dc626a8b031821672b",
+      "role": "commercial_spatial_review",
+      "humanReviewOnly": true,
+      "registeredAsAsset": false
+    },
+    {
+      "attachment": 6,
+      "file": "F:/测试/16-37-48-216-asset_20260805-163748-216_9a73bab1c42a_fdadfe02-77f515f4-153d-4552-94b2-b0f0d5867375.png",
+      "sha256": "9a73bab1c42adfca43e684bc9b280ed4b5ae1cf2c0563069fe97ce193edfc2db",
+      "role": "commercial_spatial_review",
+      "humanReviewOnly": true,
+      "registeredAsAsset": false
+    }
+  ],
+  "registeredAssets": 0,
+  "providerImageInputs": 0,
+  "interpretation": [
+    {
+      "attachment": 1,
+      "extract": "Keep current integrated architecture, lateral hall and palette; add sparse service use.",
+      "exclude": "No image registration or exact layout lock."
+    },
+    {
+      "attachment": 2,
+      "extract": "Working front service point, restrained desk carrier and adjacent identity location.",
+      "exclude": "Large logos, dense products, purple light and arched design."
+    },
+    {
+      "attachment": 3,
+      "extract": "Clear counter and usable waiting relationship in calm context.",
+      "exclude": "Circular overhead forms, different finishes or new art."
+    },
+    {
+      "attachment": 4,
+      "extract": "Layered semi-open service boundary and waiting/service adjacency.",
+      "exclude": "Storefront framing, copied rooms or woody palette."
+    },
+    {
+      "attachment": 5,
+      "extract": "Reception-to-onward service rhythm and visitor pause.",
+      "exclude": "Long passage, repetitive arches, open consultation interiors or forced crowds."
+    },
+    {
+      "attachment": 6,
+      "extract": "Subordinate identity location adapted to current reception interior.",
+      "exclude": "Exterior facade, poster, logo wall, purple floodlighting or scene switch."
+    }
+  ]
+}

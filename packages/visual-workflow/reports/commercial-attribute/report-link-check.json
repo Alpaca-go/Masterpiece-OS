@@ -1,0 +1,29 @@
+{
+  "status": "PASS",
+  "checkedLocalLinks": [
+    "./calibration-scope.json",
+    "./direction-diff.json",
+    "./protected-design-fidelity.json",
+    "./formal-prompt.txt",
+    "./provider-prompt.txt",
+    "./provider-request.json",
+    "./confirmed-direction.json",
+    "./effective-packet.json",
+    "./compiler-trace.json",
+    "./prompt-source-map.json",
+    "./browser-result.json",
+    "./web-input-requests.json",
+    "./field-fidelity.json",
+    "./natural-language-input.json",
+    "../../../../.codex-smoke/commercial-attribute/confirmed-review/confirmed-standard-generation.png",
+    "./request-evidence.json",
+    "./commercial-cue-checks.json",
+    "./quality-goal-checklist.json",
+    "./gate-results.json",
+    "./standard-industry-regression.json",
+    "./readonly-proof.json",
+    "./scope-proof.json",
+    "./new-artifact-secret-scan.json",
+    "./generation-preflight.json"
+  ]
+}

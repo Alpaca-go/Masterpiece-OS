@@ -1,0 +1,62 @@
+{
+  "status": "PASS",
+  "priorRecordSha256": "ce0ef5d3796adac103cda9209b41cbe8299f6f37a900cbb8d8b016496e389eb6",
+  "newRecordSha256": "cae3532eb7d6b179cb746a31e00f8f3954a57c504a4a6aa8c10cc60f173f4071",
+  "priorConfirmationSha256": "e905e28071be6b0e637f5adb8196aa43e40eaa9f2592893b21445683197475c7",
+  "newConfirmationSha256": "7cbdfd2ffc792816040316fa405bd623ce55703a2e7b10f06b2d1157987fb70d",
+  "changes": [
+    {
+      "field": "lightingLanguage",
+      "before": "柔和漫射自然日光\n克制的间接光",
+      "after": "经上部采光界面充分漫射的柔和自然日光\n克制的间接光"
+    },
+    {
+      "field": "lightingInteraction",
+      "before": "自然光穿透层片产生分层透射与细腻散射\n边缘反射温和，不以连续发光描边代替结构\n漫射光经层片的连续间隙透入候客与过渡区，保持轻薄透景，不以强光掩盖结构和光学细节",
+      "after": "自然光穿透层片产生分层透射与细腻散射\n边缘反射温和，不以连续发光描边代替结构\n上部自然光在进入候客与服务界面前充分扩散，层间透射细腻，地面和家具仅保留柔和宽缓的阴影过渡，不以高亮曝光抹平薄边"
+    },
+    {
+      "field": "functionalNetwork",
+      "before": "Reception: arrival circulation naturally reaches the visitor service face of a counter integrated with the architectural interface; a usable staff work face and staff access sit behind it.\nReception: reception service and a generous grouped waiting area spread laterally across the open main hall, joined by clear visitor circulation rather than a single longitudinal passage.\nReception: waiting seats and small tables face one another for real waiting and conversation, with room to pass around them; some seats stand free of the art edge while remaining visually connected to it.\nReception: the visible background semi-open transition progresses through recessed and staggered interfaces to a screened onward access boundary with staff circulation clear of the seated guest area.",
+      "after": "Reception: arrival circulation naturally reaches the visitor service face of a counter integrated with the architectural interface; a usable staff work face and staff access sit behind it, supporting check-in and appointment service while the visitor approach stays clear.\nReception: reception service and a generous grouped waiting area spread laterally across the open main hall, joined by clear visitor circulation rather than a single longitudinal passage.\nReception: waiting seats and small tables face one another for real waiting and conversation, with room to pass around them; some seats stand free of the art edge while remaining visually connected to it, supporting a quiet stay and brief review of service information before the onward handoff.\nReception: the visible background semi-open transition progresses through recessed and staggered interfaces to a screened onward access boundary with staff circulation clear of the seated guest area; this is a staff-guided service threshold, easy to locate from reception rather than an empty background passage."
+    },
+    {
+      "field": "visibleRequirements",
+      "before": "Reception service counter integrated with the architectural interface, with a visitor service face connected to arrival circulation and a distinct usable staff work face behind it\nWaiting area with at least one generous group of seats and small tables facing one another beside the integrated translucent partition, partly free-standing with clear circulation around the group\nOpen lateral reception and waiting circulation with readable building surfaces and a visible background semi-open transition\nReception recessed and staggered screened access boundary with discreet onward service entrances without showing room interiors\nReception integrated translucent sheet interface with large curved sections, spaced transition layers and fine thin edges revealing space behind it",
+      "after": "Reception service counter integrated with the architectural interface, with distinct visitor and staff faces, one discreet tablet and one small unlettered desk card; the service surface remains mostly clear\nWaiting area with a generous sofa and armchair group facing small tables beside the integrated translucent partition, partly free-standing with clear circulation; one closed unlettered service booklet and a small water tray make the stay readable\nOpen lateral reception and waiting circulation with readable building surfaces and a visible background semi-open transition\nReception recessed and staggered screened access boundary with discreet onward service entrances, one small blank direction plaque and an ordered secondary interface, without showing room interiors\nReception integrated translucent sheet interface with large curved sections, spaced transition layers and fine thin edges revealing space behind it\nReception architectural wall panel reserved as a quiet unlettered identity surface near the counter; these sparse service details remain secondary to the building and the pearlescent art"
+    },
+    {
+      "field": "materialEntries",
+      "before": [
+        {
+          "material": "半透明珠光薄片",
+          "behavior": "自然光分层透射，可读取后方空间\n边缘细腻反射与温和高光\n轻薄层叠保留清楚深度\n珠母贝般温和虹彩，紫只在局部内层微弱出现\n大型主曲面保留张力，中尺度层片衔接，局部精密薄片以清晰薄边、交叠方向和前后间距呈现工艺层次\n各尺度构件以同一半透明珠光材质连续过渡，疏开处可辨后方界面与空间深度，近景保持轻薄与低遮挡\n局部内层弱紫虹彩随自然光变化，不成为整体染色或独立光源",
+          "brandRole": "与建筑界面连续相接并围合候客边缘的半透明空间系统；同时承担分隔、透景、方向引导和艺术体验",
+          "forbidden": "厚重染色玻璃\n不透明自发光浮雕\n圆厚花瓣、贝壳化或密实不透的团块\n对称图腾、婚庆摆件与独立中央雕塑\n平面墙饰化或简单发光灯槽化"
+        },
+        {
+          "material": "暖白矿物基底",
+          "behavior": "柔和漫反射\n连续、低对比的安静表面",
+          "brandRole": "衬托薄片与自然光的建筑背景",
+          "forbidden": "高对比镜面拼贴"
+        }
+      ],
+      "after": [
+        {
+          "material": "半透明珠光薄片",
+          "behavior": "自然光分层透射，可读取后方空间\n边缘细腻反射与温和高光\n轻薄层叠保留清楚深度\n珠母贝般温和虹彩，紫只在局部内层微弱出现\n大型主曲面保留张力，中尺度层片衔接；局部精密薄片边缘纤细收束，交叠轮廓逐层可分，前后间距与透景深度清楚可读\n各尺度构件以同一半透明珠光材质连续过渡，疏开处可辨后方界面与空间深度，近景保持轻薄与低遮挡\n局部内层弱紫虹彩随自然光变化，不成为整体染色或独立光源",
+          "brandRole": "与建筑界面连续相接并围合候客边缘的半透明空间系统；同时承担分隔、透景、方向引导和艺术体验",
+          "forbidden": "厚重染色玻璃\n不透明自发光浮雕\n圆厚花瓣、贝壳化或密实不透的团块\n对称图腾、婚庆摆件与独立中央雕塑\n平面墙饰化或简单发光灯槽化"
+        },
+        {
+          "material": "暖白矿物基底",
+          "behavior": "柔和漫反射\n连续、低对比的安静表面",
+          "brandRole": "衬托薄片与自然光的建筑背景",
+          "forbidden": "高对比镜面拼贴"
+        }
+      ]
+    }
+  ],
+  "changedFields": 5,
+  "productionCompilerChanged": false
+}
