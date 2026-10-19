@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "sourceProject": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-spatial-balance\\browser-review\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+  "newExecutionCopy": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-spatial-balance\\real-validation\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+  "confirmedDirectionEdited": false,
+  "promptEdited": false,
+  "productionCodeEdited": false,
+  "providerAdapterEdited": false,
+  "goldenEdited": false,
+  "humanAcceptanceEdited": false,
+  "integrityRecordEdited": false,
+  "globalConfigurationUsed": false,
+  "credentialsCopied": false,
+  "oldImageFilesOverwritten": false,
+  "imagesRemainGitIgnored": true,
+  "rawProviderResponseArchived": false,
+  "merged": false,
+  "deployed": false,
+  "published": false
+}

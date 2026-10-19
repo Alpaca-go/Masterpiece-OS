@@ -1,0 +1,57 @@
+{
+  "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-spatial-balance\\real-validation\\authorized-execution",
+  "files": [
+    {
+      "name": "authorization.json",
+      "bytes": 2678,
+      "sha256": "1b81af2744e0874cdb0d696ce452184e1bcfe6f5c798463be732b817dcf259cf"
+    },
+    {
+      "name": "call-ledger.json",
+      "bytes": 168,
+      "sha256": "146bd90064326d282087f110b64bee93fc60cf86ba512f30d94b6b2118b67211"
+    },
+    {
+      "name": "execution-summary.json",
+      "bytes": 2137,
+      "sha256": "51bd746d2b02cd7fa5c97160727a446dc7a78ede65ae065c29440a7e568e99a3"
+    },
+    {
+      "name": "fee-record.json",
+      "bytes": 891,
+      "sha256": "863b34f6ebec2e2147623584052a0036b1b3d1a9794df483b18e5170650c3074"
+    },
+    {
+      "name": "generation-result.json",
+      "bytes": 853,
+      "sha256": "4d9f6b2395f4565c200d9791ad0622b3980cef7af89d3e55d938b6dd3df1c8c9"
+    },
+    {
+      "name": "image-actual-request.json",
+      "bytes": 17401,
+      "sha256": "c69468095d934a28efea9c179934623daab4a1c54b08adb7e3574cc6c0407fb0"
+    },
+    {
+      "name": "image-response-summary.json",
+      "bytes": 449,
+      "sha256": "0aaa47634421025eed66dc0cbbf5ca7edf670e8aefc51a0b01f6d40597e8133d"
+    },
+    {
+      "name": "jiuzhou-provider-original.jpg",
+      "bytes": 328159,
+      "sha256": "549968e246b1be8d866e0a1267e3a4b81ea883b465a1cb39a6b71dc74bb89b73"
+    },
+    {
+      "name": "jiuzhou-standard-output.png",
+      "bytes": 3559363,
+      "sha256": "016c988155a674f22974281d724cfe199c66629a259730c09bec4b73dfe70cff"
+    },
+    {
+      "name": "original-image-metadata.json",
+      "bytes": 200,
+      "sha256": "7d1614816e6356056c5083f8e25b5d70e100a655e27a40ec088f6cfd2735bf79"
+    }
+  ],
+  "imagesRemainGitIgnored": true,
+  "rawProviderJSONSaved": false
+}
