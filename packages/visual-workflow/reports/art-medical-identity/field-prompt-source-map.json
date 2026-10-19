@@ -1,0 +1,1832 @@
+{
+  "status": "PASS",
+  "rows": [
+    {
+      "inputPath": "colorEntries[0].name",
+      "targetPath": "colorSystem.primary[0].name",
+      "input": "暖白与米白",
+      "confirmation": "暖白与米白",
+      "effectivePacket": "暖白与米白",
+      "promptTermsVerified": [
+        "暖白与米白"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "暖白与米白",
+          "formal": {
+            "offset": 6736,
+            "line": 111,
+            "characters": 5
+          },
+          "provider": {
+            "offset": 6839,
+            "line": 114,
+            "characters": 5
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "colorEntries[0].role",
+      "targetPath": "colorSystem.primary[0].role",
+      "input": "温暖柔和的建筑基底",
+      "confirmation": "温暖柔和的建筑基底",
+      "effectivePacket": "温暖柔和的建筑基底",
+      "promptTermsVerified": [
+        "温暖柔和的建筑基底"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "温暖柔和的建筑基底",
+          "formal": {
+            "offset": 6862,
+            "line": 112,
+            "characters": 9
+          },
+          "provider": {
+            "offset": 6965,
+            "line": 115,
+            "characters": 9
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "colorEntries[0].surfaceApplicability",
+      "targetPath": "colorSystem.primary[0].surfaceApplicability",
+      "input": "实体墙、地面与安静顶面；保留材料明暗差异，不以纯白过曝抹平表面",
+      "confirmation": "实体墙、地面与安静顶面；保留材料明暗差异，不以纯白过曝抹平表面",
+      "effectivePacket": "实体墙、地面与安静顶面；保留材料明暗差异，不以纯白过曝抹平表面",
+      "promptTermsVerified": [
+        "实体墙、地面与安静顶面；保留材料明暗差异，不以纯白过曝抹平表面"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "实体墙、地面与安静顶面；保留材料明暗差异，不以纯白过曝抹平表面",
+          "formal": {
+            "offset": 6896,
+            "line": 113,
+            "characters": 31
+          },
+          "provider": {
+            "offset": 6999,
+            "line": 116,
+            "characters": 31
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "colorEntries[0].spatialUsage",
+      "targetPath": "colorSystem.primary[0].spatialUsage",
+      "input": "dominant_field",
+      "confirmation": "dominant_field",
+      "effectivePacket": "dominant_field",
+      "promptTermsVerified": [
+        "dominant_field"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "dominant_field",
+          "formal": {
+            "offset": 6787,
+            "line": 111,
+            "characters": 14
+          },
+          "provider": {
+            "offset": 6890,
+            "line": 114,
+            "characters": 14
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "colorEntries[1].name",
+      "targetPath": "colorSystem.secondary[0].name",
+      "input": "浅木色与暖中性色",
+      "confirmation": "浅木色与暖中性色",
+      "effectivePacket": "浅木色与暖中性色",
+      "promptTermsVerified": [
+        "浅木色与暖中性色"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "浅木色与暖中性色",
+          "formal": {
+            "offset": 6952,
+            "line": 115,
+            "characters": 8
+          },
+          "provider": {
+            "offset": 7055,
+            "line": 118,
+            "characters": 8
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "colorEntries[1].role",
+      "targetPath": "colorSystem.secondary[0].role",
+      "input": "建立真实商业家具与局部墙面的温暖层次",
+      "confirmation": "建立真实商业家具与局部墙面的温暖层次",
+      "effectivePacket": "建立真实商业家具与局部墙面的温暖层次",
+      "promptTermsVerified": [
+        "建立真实商业家具与局部墙面的温暖层次"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "建立真实商业家具与局部墙面的温暖层次",
+          "formal": {
+            "offset": 7086,
+            "line": 116,
+            "characters": 18
+          },
+          "provider": {
+            "offset": 7189,
+            "line": 119,
+            "characters": 18
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "colorEntries[1].surfaceApplicability",
+      "targetPath": "colorSystem.secondary[0].surfaceApplicability",
+      "input": "前台局部饰面、候客家具木质细节与中性软包、局部服务区墙面；不覆盖全部建筑界面",
+      "confirmation": "前台局部饰面、候客家具木质细节与中性软包、局部服务区墙面；不覆盖全部建筑界面",
+      "effectivePacket": "前台局部饰面、候客家具木质细节与中性软包、局部服务区墙面；不覆盖全部建筑界面",
+      "promptTermsVerified": [
+        "前台局部饰面、候客家具木质细节与中性软包、局部服务区墙面；不覆盖全部建筑界面"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "前台局部饰面、候客家具木质细节与中性软包、局部服务区墙面；不覆盖全部建筑界面",
+          "formal": {
+            "offset": 7129,
+            "line": 117,
+            "characters": 38
+          },
+          "provider": {
+            "offset": 7232,
+            "line": 120,
+            "characters": 38
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "colorEntries[1].spatialUsage",
+      "targetPath": "colorSystem.secondary[0].spatialUsage",
+      "input": "secondary_surface",
+      "confirmation": "secondary_surface",
+      "effectivePacket": "secondary_surface",
+      "promptTermsVerified": [
+        "secondary_surface"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "secondary_surface",
+          "formal": {
+            "offset": 7008,
+            "line": 115,
+            "characters": 17
+          },
+          "provider": {
+            "offset": 7111,
+            "line": 118,
+            "characters": 17
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "colorEntries[2].name",
+      "targetPath": "colorSystem.accent[0].name",
+      "input": "品牌紫",
+      "confirmation": "品牌紫",
+      "effectivePacket": "品牌紫",
+      "promptTermsVerified": [
+        "品牌紫"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "品牌紫",
+          "formal": {
+            "offset": 7192,
+            "line": 119,
+            "characters": 3
+          },
+          "provider": {
+            "offset": 7295,
+            "line": 122,
+            "characters": 3
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "colorEntries[2].role",
+      "targetPath": "colorSystem.accent[0].role",
+      "input": "非常有限的珠光内反射，正式品牌内容以后期真实素材体现",
+      "confirmation": "非常有限的珠光内反射，正式品牌内容以后期真实素材体现",
+      "effectivePacket": "非常有限的珠光内反射，正式品牌内容以后期真实素材体现",
+      "promptTermsVerified": [
+        "非常有限的珠光内反射，正式品牌内容以后期真实素材体现"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "非常有限的珠光内反射，正式品牌内容以后期真实素材体现",
+          "formal": {
+            "offset": 7313,
+            "line": 120,
+            "characters": 26
+          },
+          "provider": {
+            "offset": 7416,
+            "line": 123,
+            "characters": 26
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "colorEntries[2].surfaceApplicability",
+      "targetPath": "colorSystem.accent[0].surfaceApplicability",
+      "input": "仅少量半透明界面的局部内层弱虹彩；不用于家具、花瓶、窗帘或发光灯带",
+      "confirmation": "仅少量半透明界面的局部内层弱虹彩；不用于家具、花瓶、窗帘或发光灯带",
+      "effectivePacket": "仅少量半透明界面的局部内层弱虹彩；不用于家具、花瓶、窗帘或发光灯带",
+      "promptTermsVerified": [
+        "仅少量半透明界面的局部内层弱虹彩；不用于家具、花瓶、窗帘或发光灯带"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "仅少量半透明界面的局部内层弱虹彩；不用于家具、花瓶、窗帘或发光灯带",
+          "formal": {
+            "offset": 7364,
+            "line": 121,
+            "characters": 33
+          },
+          "provider": {
+            "offset": 7467,
+            "line": 124,
+            "characters": 33
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "colorEntries[2].spatialUsage",
+      "targetPath": "colorSystem.accent[0].spatialUsage",
+      "input": "local_accent",
+      "confirmation": "local_accent",
+      "effectivePacket": "local_accent",
+      "promptTermsVerified": [
+        "local_accent"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "local_accent",
+          "formal": {
+            "offset": 7240,
+            "line": 119,
+            "characters": 12
+          },
+          "provider": {
+            "offset": 7343,
+            "line": 122,
+            "characters": 12
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "materialEntries[0].material",
+      "targetPath": "materialSystem[0].material",
+      "input": "建筑一体化珠光半透明曲面系统",
+      "confirmation": "建筑一体化珠光半透明曲面系统",
+      "effectivePacket": "建筑一体化珠光半透明曲面系统",
+      "promptTermsVerified": [
+        "建筑一体化珠光半透明曲面系统"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "建筑一体化珠光半透明曲面系统",
+          "formal": {
+            "offset": 7444,
+            "line": 126,
+            "characters": 14
+          },
+          "provider": {
+            "offset": 7547,
+            "line": 129,
+            "characters": 14
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "materialEntries[0].brandRole",
+      "targetPath": "materialSystem[0].brandRole",
+      "input": "从侧向建筑界面局部连接上部边界，沿候客及面询边缘有起止地展开，建立品牌艺术特征并参与分隔，让出完整前台、通行面和大部分顶面",
+      "confirmation": "从侧向建筑界面局部连接上部边界，沿候客及面询边缘有起止地展开，建立品牌艺术特征并参与分隔，让出完整前台、通行面和大部分顶面",
+      "effectivePacket": "从侧向建筑界面局部连接上部边界，沿候客及面询边缘有起止地展开，建立品牌艺术特征并参与分隔，让出完整前台、通行面和大部分顶面",
+      "promptTermsVerified": [
+        "从侧向建筑界面局部连接上部边界，沿候客及面询边缘有起止地展开，建立品牌艺术特征并参与分隔，让出完整前台、通行面和大部分顶面"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "从侧向建筑界面局部连接上部边界，沿候客及面询边缘有起止地展开，建立品牌艺术特征并参与分隔，让出完整前台、通行面和大部分顶面",
+          "formal": {
+            "offset": 7556,
+            "line": 127,
+            "characters": 61
+          },
+          "provider": {
+            "offset": 7659,
+            "line": 130,
+            "characters": 61
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "materialEntries[0].behavior",
+      "targetPath": "materialSystem[0].behavior",
+      "input": [
+        "连续主曲面与少量错层辅助薄层具有精致薄边、可辨层间深度和透景留白",
+        "自然光穿透时呈轻微珍珠母贝内反射，弱紫仅在局部材料内层出现；曲面后方面询设备与服务关系仍可辨"
+      ],
+      "confirmation": [
+        "连续主曲面与少量错层辅助薄层具有精致薄边、可辨层间深度和透景留白",
+        "自然光穿透时呈轻微珍珠母贝内反射，弱紫仅在局部材料内层出现；曲面后方面询设备与服务关系仍可辨"
+      ],
+      "effectivePacket": [
+        "连续主曲面与少量错层辅助薄层具有精致薄边、可辨层间深度和透景留白",
+        "自然光穿透时呈轻微珍珠母贝内反射，弱紫仅在局部材料内层出现；曲面后方面询设备与服务关系仍可辨"
+      ],
+      "promptTermsVerified": [
+        "连续主曲面与少量错层辅助薄层具有精致薄边、可辨层间深度和透景留白",
+        "自然光穿透时呈轻微珍珠母贝内反射，弱紫仅在局部材料内层出现；曲面后方面询设备与服务关系仍可辨"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "连续主曲面与少量错层辅助薄层具有精致薄边、可辨层间深度和透景留白",
+          "formal": {
+            "offset": 7462,
+            "line": 126,
+            "characters": 32
+          },
+          "provider": {
+            "offset": 7565,
+            "line": 129,
+            "characters": 32
+          }
+        },
+        {
+          "term": "自然光穿透时呈轻微珍珠母贝内反射，弱紫仅在局部材料内层出现；曲面后方面询设备与服务关系仍可辨",
+          "formal": {
+            "offset": 7495,
+            "line": 126,
+            "characters": 46
+          },
+          "provider": {
+            "offset": 7598,
+            "line": 129,
+            "characters": 46
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "materialEntries[0].forbidden",
+      "targetPath": "materialSystem[0].forbidden",
+      "input": [
+        "密集羽片、花瓣团块与不透明艺术墙",
+        "整体紫色染色、自发光浮雕和独立巨大雕塑"
+      ],
+      "confirmation": [
+        "密集羽片、花瓣团块与不透明艺术墙",
+        "整体紫色染色、自发光浮雕和独立巨大雕塑"
+      ],
+      "effectivePacket": [
+        "密集羽片、花瓣团块与不透明艺术墙",
+        "整体紫色染色、自发光浮雕和独立巨大雕塑"
+      ],
+      "promptTermsVerified": [
+        "密集羽片、花瓣团块与不透明艺术墙",
+        "整体紫色染色、自发光浮雕和独立巨大雕塑"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "密集羽片、花瓣团块与不透明艺术墙",
+          "formal": {
+            "offset": 7627,
+            "line": 128,
+            "characters": 16
+          },
+          "provider": {
+            "offset": 7730,
+            "line": 131,
+            "characters": 16
+          }
+        },
+        {
+          "term": "整体紫色染色、自发光浮雕和独立巨大雕塑",
+          "formal": {
+            "offset": 7644,
+            "line": 128,
+            "characters": 19
+          },
+          "provider": {
+            "offset": 7747,
+            "line": 131,
+            "characters": 19
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "materialEntries[1].material",
+      "targetPath": "materialSystem[1].material",
+      "input": "暖白米白矿物基底",
+      "confirmation": "暖白米白矿物基底",
+      "effectivePacket": "暖白米白矿物基底",
+      "promptTermsVerified": [
+        "暖白米白矿物基底"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "暖白米白矿物基底",
+          "formal": {
+            "offset": 7668,
+            "line": 129,
+            "characters": 8
+          },
+          "provider": {
+            "offset": 7771,
+            "line": 132,
+            "characters": 8
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "materialEntries[1].brandRole",
+      "targetPath": "materialSystem[1].brandRole",
+      "input": "建立完整实体建筑、安静顶面与可读入口框景",
+      "confirmation": "建立完整实体建筑、安静顶面与可读入口框景",
+      "effectivePacket": "建立完整实体建筑、安静顶面与可读入口框景",
+      "promptTermsVerified": [
+        "建立完整实体建筑、安静顶面与可读入口框景"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "建立完整实体建筑、安静顶面与可读入口框景",
+          "formal": {
+            "offset": 7739,
+            "line": 130,
+            "characters": 20
+          },
+          "provider": {
+            "offset": 7842,
+            "line": 133,
+            "characters": 20
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "materialEntries[1].behavior",
+      "targetPath": "materialSystem[1].behavior",
+      "input": [
+        "温暖柔和的漫反射，保留真实表面质感和体积",
+        "与木质、软包及半透明界面形成清楚但低对比的层次"
+      ],
+      "confirmation": [
+        "温暖柔和的漫反射，保留真实表面质感和体积",
+        "与木质、软包及半透明界面形成清楚但低对比的层次"
+      ],
+      "effectivePacket": [
+        "温暖柔和的漫反射，保留真实表面质感和体积",
+        "与木质、软包及半透明界面形成清楚但低对比的层次"
+      ],
+      "promptTermsVerified": [
+        "温暖柔和的漫反射，保留真实表面质感和体积",
+        "与木质、软包及半透明界面形成清楚但低对比的层次"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "温暖柔和的漫反射，保留真实表面质感和体积",
+          "formal": {
+            "offset": 7680,
+            "line": 129,
+            "characters": 20
+          },
+          "provider": {
+            "offset": 7783,
+            "line": 132,
+            "characters": 20
+          }
+        },
+        {
+          "term": "与木质、软包及半透明界面形成清楚但低对比的层次",
+          "formal": {
+            "offset": 7701,
+            "line": 129,
+            "characters": 23
+          },
+          "provider": {
+            "offset": 7804,
+            "line": 132,
+            "characters": 23
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "materialEntries[1].forbidden",
+      "targetPath": "materialSystem[1].forbidden",
+      "input": [
+        "冷白发蓝的无差别表面",
+        "高对比镜面拼贴和过曝洗白"
+      ],
+      "confirmation": [
+        "冷白发蓝的无差别表面",
+        "高对比镜面拼贴和过曝洗白"
+      ],
+      "effectivePacket": [
+        "冷白发蓝的无差别表面",
+        "高对比镜面拼贴和过曝洗白"
+      ],
+      "promptTermsVerified": [
+        "冷白发蓝的无差别表面",
+        "高对比镜面拼贴和过曝洗白"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "冷白发蓝的无差别表面",
+          "formal": {
+            "offset": 7769,
+            "line": 131,
+            "characters": 10
+          },
+          "provider": {
+            "offset": 7872,
+            "line": 134,
+            "characters": 10
+          }
+        },
+        {
+          "term": "高对比镜面拼贴和过曝洗白",
+          "formal": {
+            "offset": 7780,
+            "line": 131,
+            "characters": 12
+          },
+          "provider": {
+            "offset": 7883,
+            "line": 134,
+            "characters": 12
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "materialEntries[2].material",
+      "targetPath": "materialSystem[2].material",
+      "input": "浅木质与暖中性软包",
+      "confirmation": "浅木质与暖中性软包",
+      "effectivePacket": "浅木质与暖中性软包",
+      "promptTermsVerified": [
+        "浅木质与暖中性软包"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "浅木质与暖中性软包",
+          "formal": {
+            "offset": 7797,
+            "line": 132,
+            "characters": 9
+          },
+          "provider": {
+            "offset": 7900,
+            "line": 135,
+            "characters": 9
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "materialEntries[2].brandRole",
+      "targetPath": "materialSystem[2].brandRole",
+      "input": "为接待工作、就坐交流与局部服务界面提供自然温暖的商业功能材质",
+      "confirmation": "为接待工作、就坐交流与局部服务界面提供自然温暖的商业功能材质",
+      "effectivePacket": "为接待工作、就坐交流与局部服务界面提供自然温暖的商业功能材质",
+      "promptTermsVerified": [
+        "为接待工作、就坐交流与局部服务界面提供自然温暖的商业功能材质"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "为接待工作、就坐交流与局部服务界面提供自然温暖的商业功能材质",
+          "formal": {
+            "offset": 7874,
+            "line": 133,
+            "characters": 30
+          },
+          "provider": {
+            "offset": 7977,
+            "line": 136,
+            "characters": 30
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "materialEntries[2].behavior",
+      "targetPath": "materialSystem[2].behavior",
+      "input": [
+        "浅木质保留自然纹理与温暖反射，软包呈柔和细腻触感",
+        "材料变化服务于前台、候客和半开放服务区的使用层次"
+      ],
+      "confirmation": [
+        "浅木质保留自然纹理与温暖反射，软包呈柔和细腻触感",
+        "材料变化服务于前台、候客和半开放服务区的使用层次"
+      ],
+      "effectivePacket": [
+        "浅木质保留自然纹理与温暖反射，软包呈柔和细腻触感",
+        "材料变化服务于前台、候客和半开放服务区的使用层次"
+      ],
+      "promptTermsVerified": [
+        "浅木质保留自然纹理与温暖反射，软包呈柔和细腻触感",
+        "材料变化服务于前台、候客和半开放服务区的使用层次"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "浅木质保留自然纹理与温暖反射，软包呈柔和细腻触感",
+          "formal": {
+            "offset": 7810,
+            "line": 132,
+            "characters": 24
+          },
+          "provider": {
+            "offset": 7913,
+            "line": 135,
+            "characters": 24
+          }
+        },
+        {
+          "term": "材料变化服务于前台、候客和半开放服务区的使用层次",
+          "formal": {
+            "offset": 7835,
+            "line": 132,
+            "characters": 24
+          },
+          "provider": {
+            "offset": 7938,
+            "line": 135,
+            "characters": 24
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "materialEntries[2].forbidden",
+      "targetPath": "materialSystem[2].forbidden",
+      "input": [
+        "紫色软包与大面积高饱和饰面",
+        "以装饰家具堆积代替清楚的功能分区"
+      ],
+      "confirmation": [
+        "紫色软包与大面积高饱和饰面",
+        "以装饰家具堆积代替清楚的功能分区"
+      ],
+      "effectivePacket": [
+        "紫色软包与大面积高饱和饰面",
+        "以装饰家具堆积代替清楚的功能分区"
+      ],
+      "promptTermsVerified": [
+        "紫色软包与大面积高饱和饰面",
+        "以装饰家具堆积代替清楚的功能分区"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "紫色软包与大面积高饱和饰面",
+          "formal": {
+            "offset": 7914,
+            "line": 134,
+            "characters": 13
+          },
+          "provider": {
+            "offset": 8017,
+            "line": 137,
+            "characters": 13
+          }
+        },
+        {
+          "term": "以装饰家具堆积代替清楚的功能分区",
+          "formal": {
+            "offset": 7928,
+            "line": 134,
+            "characters": 16
+          },
+          "provider": {
+            "offset": 8031,
+            "line": 137,
+            "characters": 16
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "functionalProgram",
+      "targetPath": "mediaTranslations.spatial.sceneProgram",
+      "input": [
+        "入口到达与清楚的分流区",
+        "正式接待与员工工作区",
+        "成组候客与短时交流区",
+        "主厅边缘一处半开放皮肤/美学专业面询工作位",
+        "通向私密服务的受屏蔽过渡边界"
+      ],
+      "confirmation": [
+        "入口到达与清楚的分流区",
+        "正式接待与员工工作区",
+        "成组候客与短时交流区",
+        "主厅边缘一处半开放皮肤/美学专业面询工作位",
+        "通向私密服务的受屏蔽过渡边界"
+      ],
+      "effectivePacket": [
+        "入口到达与清楚的分流区",
+        "正式接待与员工工作区",
+        "成组候客与短时交流区",
+        "主厅边缘一处半开放皮肤/美学专业面询工作位",
+        "通向私密服务的受屏蔽过渡边界"
+      ],
+      "promptTermsVerified": [
+        "入口到达与清楚的分流区",
+        "正式接待与员工工作区",
+        "成组候客与短时交流区",
+        "主厅边缘一处半开放皮肤/美学专业面询工作位",
+        "通向私密服务的受屏蔽过渡边界"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "入口到达与清楚的分流区",
+          "formal": {
+            "offset": 4762,
+            "line": 89,
+            "characters": 11
+          },
+          "provider": {
+            "offset": 4865,
+            "line": 92,
+            "characters": 11
+          }
+        },
+        {
+          "term": "正式接待与员工工作区",
+          "formal": {
+            "offset": 4776,
+            "line": 90,
+            "characters": 10
+          },
+          "provider": {
+            "offset": 4879,
+            "line": 93,
+            "characters": 10
+          }
+        },
+        {
+          "term": "成组候客与短时交流区",
+          "formal": {
+            "offset": 4789,
+            "line": 91,
+            "characters": 10
+          },
+          "provider": {
+            "offset": 4892,
+            "line": 94,
+            "characters": 10
+          }
+        },
+        {
+          "term": "主厅边缘一处半开放皮肤/美学专业面询工作位",
+          "formal": {
+            "offset": 4802,
+            "line": 92,
+            "characters": 21
+          },
+          "provider": {
+            "offset": 4905,
+            "line": 95,
+            "characters": 21
+          }
+        },
+        {
+          "term": "通向私密服务的受屏蔽过渡边界",
+          "formal": {
+            "offset": 4826,
+            "line": 93,
+            "characters": 14
+          },
+          "provider": {
+            "offset": 4929,
+            "line": 96,
+            "characters": 14
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "functionalNetwork",
+      "targetPath": "mediaTranslations.spatial.functionalNetwork",
+      "input": [
+        "Reception: arrival reveals the complete visitor-facing reception counter and a clear approach, with a usable staff work surface and staff access behind it for check-in and appointment service.",
+        "Reception: the complete counter and grouped waiting area connect laterally across the open hall, with generous circulation rather than a narrow central corridor.",
+        "Reception: one complete sofa and armchair group faces small tables for sitting and conversation, with space to approach, sit and circulate around the group, understandable without people.",
+        "Reception: visitors move from reception or grouped waiting to one semi-open skin/aesthetic advisory workstation at the hall edge; a professional advisory worktop, one compact skin imaging analysis or advisory display device, consultant seating and an opposite guest seat establish a readable face-to-face service relationship; staff access remains clear."
+      ],
+      "confirmation": [
+        "Reception: arrival reveals the complete visitor-facing reception counter and a clear approach, with a usable staff work surface and staff access behind it for check-in and appointment service.",
+        "Reception: the complete counter and grouped waiting area connect laterally across the open hall, with generous circulation rather than a narrow central corridor.",
+        "Reception: one complete sofa and armchair group faces small tables for sitting and conversation, with space to approach, sit and circulate around the group, understandable without people.",
+        "Reception: visitors move from reception or grouped waiting to one semi-open skin/aesthetic advisory workstation at the hall edge; a professional advisory worktop, one compact skin imaging analysis or advisory display device, consultant seating and an opposite guest seat establish a readable face-to-face service relationship; staff access remains clear."
+      ],
+      "effectivePacket": [
+        "Reception: arrival reveals the complete visitor-facing reception counter and a clear approach, with a usable staff work surface and staff access behind it for check-in and appointment service.",
+        "Reception: the complete counter and grouped waiting area connect laterally across the open hall, with generous circulation rather than a narrow central corridor.",
+        "Reception: one complete sofa and armchair group faces small tables for sitting and conversation, with space to approach, sit and circulate around the group, understandable without people.",
+        "Reception: visitors move from reception or grouped waiting to one semi-open skin/aesthetic advisory workstation at the hall edge; a professional advisory worktop, one compact skin imaging analysis or advisory display device, consultant seating and an opposite guest seat establish a readable face-to-face service relationship; staff access remains clear."
+      ],
+      "promptTermsVerified": [
+        "Reception: arrival reveals the complete visitor-facing reception counter and a clear approach, with a usable staff work surface and staff access behind it for check-in and appointment service.",
+        "Reception: the complete counter and grouped waiting area connect laterally across the open hall, with generous circulation rather than a narrow central corridor.",
+        "Reception: one complete sofa and armchair group faces small tables for sitting and conversation, with space to approach, sit and circulate around the group, understandable without people.",
+        "Reception: visitors move from reception or grouped waiting to one semi-open skin/aesthetic advisory workstation at the hall edge; a professional advisory worktop, one compact skin imaging analysis or advisory display device, consultant seating and an opposite guest seat establish a readable face-to-face service relationship; staff access remains clear."
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "Reception: arrival reveals the complete visitor-facing reception counter and a clear approach, with a usable staff work surface and staff access behind it for check-in and appointment service.",
+          "formal": {
+            "offset": 4868,
+            "line": 96,
+            "characters": 192
+          },
+          "provider": {
+            "offset": 4971,
+            "line": 99,
+            "characters": 192
+          }
+        },
+        {
+          "term": "Reception: the complete counter and grouped waiting area connect laterally across the open hall, with generous circulation rather than a narrow central corridor.",
+          "formal": {
+            "offset": 5063,
+            "line": 97,
+            "characters": 161
+          },
+          "provider": {
+            "offset": 5166,
+            "line": 100,
+            "characters": 161
+          }
+        },
+        {
+          "term": "Reception: one complete sofa and armchair group faces small tables for sitting and conversation, with space to approach, sit and circulate around the group, understandable without people.",
+          "formal": {
+            "offset": 5227,
+            "line": 98,
+            "characters": 187
+          },
+          "provider": {
+            "offset": 5330,
+            "line": 101,
+            "characters": 187
+          }
+        },
+        {
+          "term": "Reception: visitors move from reception or grouped waiting to one semi-open skin/aesthetic advisory workstation at the hall edge; a professional advisory worktop, one compact skin imaging analysis or advisory display device, consultant seating and an opposite guest seat establish a readable face-to-face service relationship; staff access remains clear.",
+          "formal": {
+            "offset": 5417,
+            "line": 99,
+            "characters": 354
+          },
+          "provider": {
+            "offset": 5520,
+            "line": 102,
+            "characters": 354
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "functionalRelationships",
+      "targetPath": "mediaTranslations.spatial.functionalRelationships",
+      "input": [
+        "Reception and grouped waiting remain visually connected across the open lateral hall; gaps in the local integrated pearlescent curved boundary reveal the skin/aesthetic advisory worktop, display device and face-to-face seating relationship.",
+        "Reception: an offset solid return beyond the semi-open advisory workstation screens onward private care access; treatment activity and care beds and private room interiors remain off frame."
+      ],
+      "confirmation": [
+        "Reception and grouped waiting remain visually connected across the open lateral hall; gaps in the local integrated pearlescent curved boundary reveal the skin/aesthetic advisory worktop, display device and face-to-face seating relationship.",
+        "Reception: an offset solid return beyond the semi-open advisory workstation screens onward private care access; treatment activity and care beds and private room interiors remain off frame."
+      ],
+      "effectivePacket": [
+        "Reception and grouped waiting remain visually connected across the open lateral hall; gaps in the local integrated pearlescent curved boundary reveal the skin/aesthetic advisory worktop, display device and face-to-face seating relationship.",
+        "Reception: an offset solid return beyond the semi-open advisory workstation screens onward private care access; treatment activity and care beds and private room interiors remain off frame."
+      ],
+      "promptTermsVerified": [
+        "Reception and grouped waiting remain visually connected across the open lateral hall",
+        "gaps in the local integrated pearlescent curved boundary reveal the skin/aesthetic advisory worktop, display device and face-to-face seating relationship",
+        "Reception: an offset solid return beyond the semi-open advisory workstation screens onward private care access",
+        "treatment activity and care beds and private room interiors remain off frame"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "Reception and grouped waiting remain visually connected across the open lateral hall",
+          "formal": {
+            "offset": 2187,
+            "line": 43,
+            "characters": 84
+          },
+          "provider": {
+            "offset": 2290,
+            "line": 46,
+            "characters": 84
+          }
+        },
+        {
+          "term": "gaps in the local integrated pearlescent curved boundary reveal the skin/aesthetic advisory worktop, display device and face-to-face seating relationship",
+          "formal": {
+            "offset": 2273,
+            "line": 43,
+            "characters": 153
+          },
+          "provider": {
+            "offset": 2376,
+            "line": 46,
+            "characters": 153
+          }
+        },
+        {
+          "term": "Reception: an offset solid return beyond the semi-open advisory workstation screens onward private care access",
+          "formal": {
+            "offset": 2430,
+            "line": 44,
+            "characters": 110
+          },
+          "provider": {
+            "offset": 2533,
+            "line": 47,
+            "characters": 110
+          }
+        },
+        {
+          "term": "treatment activity and care beds and private room interiors remain off frame",
+          "formal": {
+            "offset": 3203,
+            "line": 64,
+            "characters": 76
+          },
+          "provider": {
+            "offset": 3306,
+            "line": 67,
+            "characters": 76
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "visibleRequirements",
+      "targetPath": "mediaTranslations.spatial.mustBeVisible",
+      "input": [
+        "A complete, reachable reception counter with an appropriately weighted visitor service face, a usable staff work surface and a small amount of real office equipment, integrated into the hall rather than hidden in a corner",
+        "One complete sofa and armchair waiting group with small tables, usable seating and conversation space, warm neutral upholstery and light timber details, with circulation clear around it",
+        "One semi-open skin/aesthetic advisory workstation at the hall edge: a professional advisory worktop with one compact skin imaging analysis or advisory display device and opposing consultant and guest seating; the display shows only abstract non-identifiable skin-analysis visualization or a simple image layout, without readable random text, diagnostic text, metrics, medical records, care outcome promises or personal information; private care stays screened",
+        "A clear entrance arrival zone, lateral counter-to-waiting circulation and a readable onward route, with real building surfaces and open foreground sightlines",
+        "One local architectural pearlescent translucent curved system connected to the side building interface and locally to the upper boundary, with a complete directional main curve, a few offset thin auxiliary layers, fine edges, depth and visible structural gaps; it defines waiting and advisory edges while leaving most ceiling and walls readable",
+        "One small flat clean unlettered identity surface on an architectural interface, outside the main circulation and unobstructed; small operational carriers remain subordinate to the complete functional areas"
+      ],
+      "confirmation": [
+        "A complete, reachable reception counter with an appropriately weighted visitor service face, a usable staff work surface and a small amount of real office equipment, integrated into the hall rather than hidden in a corner",
+        "One complete sofa and armchair waiting group with small tables, usable seating and conversation space, warm neutral upholstery and light timber details, with circulation clear around it",
+        "One semi-open skin/aesthetic advisory workstation at the hall edge: a professional advisory worktop with one compact skin imaging analysis or advisory display device and opposing consultant and guest seating; the display shows only abstract non-identifiable skin-analysis visualization or a simple image layout, without readable random text, diagnostic text, metrics, medical records, care outcome promises or personal information; private care stays screened",
+        "A clear entrance arrival zone, lateral counter-to-waiting circulation and a readable onward route, with real building surfaces and open foreground sightlines",
+        "One local architectural pearlescent translucent curved system connected to the side building interface and locally to the upper boundary, with a complete directional main curve, a few offset thin auxiliary layers, fine edges, depth and visible structural gaps; it defines waiting and advisory edges while leaving most ceiling and walls readable",
+        "One small flat clean unlettered identity surface on an architectural interface, outside the main circulation and unobstructed; small operational carriers remain subordinate to the complete functional areas"
+      ],
+      "effectivePacket": [
+        "A complete, reachable reception counter with an appropriately weighted visitor service face, a usable staff work surface and a small amount of real office equipment, integrated into the hall rather than hidden in a corner",
+        "One complete sofa and armchair waiting group with small tables, usable seating and conversation space, warm neutral upholstery and light timber details, with circulation clear around it",
+        "One semi-open skin/aesthetic advisory workstation at the hall edge: a professional advisory worktop with one compact skin imaging analysis or advisory display device and opposing consultant and guest seating; the display shows only abstract non-identifiable skin-analysis visualization or a simple image layout, without readable random text, diagnostic text, metrics, medical records, care outcome promises or personal information; private care stays screened",
+        "A clear entrance arrival zone, lateral counter-to-waiting circulation and a readable onward route, with real building surfaces and open foreground sightlines",
+        "One local architectural pearlescent translucent curved system connected to the side building interface and locally to the upper boundary, with a complete directional main curve, a few offset thin auxiliary layers, fine edges, depth and visible structural gaps; it defines waiting and advisory edges while leaving most ceiling and walls readable",
+        "One small flat clean unlettered identity surface on an architectural interface, outside the main circulation and unobstructed; small operational carriers remain subordinate to the complete functional areas"
+      ],
+      "promptTermsVerified": [
+        "A complete, reachable reception counter with an appropriately weighted visitor service face, a usable staff work surface and a small amount of real office equipment, integrated into the hall rather than hidden in a corner",
+        "One complete sofa and armchair waiting group with small tables, usable seating and conversation space, warm neutral upholstery and light timber details, with circulation clear around it",
+        "One semi-open skin/aesthetic advisory workstation at the hall edge: a professional advisory worktop with one compact skin imaging analysis or advisory display device and opposing consultant and guest seating; the display shows only abstract non-identifiable skin-analysis visualization or a simple image layout, without readable random text, diagnostic text, metrics, medical records, care outcome promises or personal information; private care stays screened",
+        "A clear entrance arrival zone, lateral counter-to-waiting circulation and a readable onward route, with real building surfaces and open foreground sightlines",
+        "One local architectural pearlescent translucent curved system connected to the side building interface and locally to the upper boundary, with a complete directional main curve, a few offset thin auxiliary layers, fine edges, depth and visible structural gaps; it defines waiting and advisory edges while leaving most ceiling and walls readable",
+        "One small flat clean unlettered identity surface on an architectural interface, outside the main circulation and unobstructed; small operational carriers remain subordinate to the complete functional areas"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "A complete, reachable reception counter with an appropriately weighted visitor service face, a usable staff work surface and a small amount of real office equipment, integrated into the hall rather than hidden in a corner",
+          "formal": {
+            "offset": 8742,
+            "line": 157,
+            "characters": 221
+          },
+          "provider": {
+            "offset": 8845,
+            "line": 160,
+            "characters": 221
+          }
+        },
+        {
+          "term": "One complete sofa and armchair waiting group with small tables, usable seating and conversation space, warm neutral upholstery and light timber details, with circulation clear around it",
+          "formal": {
+            "offset": 8966,
+            "line": 158,
+            "characters": 185
+          },
+          "provider": {
+            "offset": 9069,
+            "line": 161,
+            "characters": 185
+          }
+        },
+        {
+          "term": "One semi-open skin/aesthetic advisory workstation at the hall edge: a professional advisory worktop with one compact skin imaging analysis or advisory display device and opposing consultant and guest seating; the display shows only abstract non-identifiable skin-analysis visualization or a simple image layout, without readable random text, diagnostic text, metrics, medical records, care outcome promises or personal information; private care stays screened",
+          "formal": {
+            "offset": 9154,
+            "line": 159,
+            "characters": 459
+          },
+          "provider": {
+            "offset": 9257,
+            "line": 162,
+            "characters": 459
+          }
+        },
+        {
+          "term": "A clear entrance arrival zone, lateral counter-to-waiting circulation and a readable onward route, with real building surfaces and open foreground sightlines",
+          "formal": {
+            "offset": 9616,
+            "line": 160,
+            "characters": 157
+          },
+          "provider": {
+            "offset": 9719,
+            "line": 163,
+            "characters": 157
+          }
+        },
+        {
+          "term": "One local architectural pearlescent translucent curved system connected to the side building interface and locally to the upper boundary, with a complete directional main curve, a few offset thin auxiliary layers, fine edges, depth and visible structural gaps; it defines waiting and advisory edges while leaving most ceiling and walls readable",
+          "formal": {
+            "offset": 9776,
+            "line": 161,
+            "characters": 344
+          },
+          "provider": {
+            "offset": 9879,
+            "line": 164,
+            "characters": 344
+          }
+        },
+        {
+          "term": "One small flat clean unlettered identity surface on an architectural interface, outside the main circulation and unobstructed; small operational carriers remain subordinate to the complete functional areas",
+          "formal": {
+            "offset": 10123,
+            "line": 162,
+            "characters": 205
+          },
+          "provider": {
+            "offset": 10226,
+            "line": 165,
+            "characters": 205
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "compositionRequirements",
+      "targetPath": "mediaTranslations.spatial.compositionRequirements",
+      "input": [
+        "从入口斜向观察完整主接待厅：完整来访服务面及员工工作关系、成组候客、主厅边缘一处专业皮肤/美学面询工作位与横向通行均清楚可读；设备与面对面座位可感知，不沿狭长走廊收束。",
+        "珠光曲面从侧向建筑局部连接上部边界，主曲面和少量错层辅助薄层界定候客及面询边缘，薄边、层间深度和透景留白可辨；左右近景退让，大部分安静顶面和实体墙体仍可读。",
+        "冲突排序为可辨专业医美服务功能及开阔可信的商业建筑空间优先，其次建筑一体化精致珠光艺术语言，再次暖光与材料平衡，最后零散商业道具；通过退让与疏朗分层协调艺术与功能。",
+        "成组沙发、扶手椅及轻桌可坐、可等候、可绕行，不形成临窗茶席主景；正常建筑摄影透视、可信人体尺度，错位实体界面屏蔽私密服务转场。"
+      ],
+      "confirmation": [
+        "从入口斜向观察完整主接待厅：完整来访服务面及员工工作关系、成组候客、主厅边缘一处专业皮肤/美学面询工作位与横向通行均清楚可读；设备与面对面座位可感知，不沿狭长走廊收束。",
+        "珠光曲面从侧向建筑局部连接上部边界，主曲面和少量错层辅助薄层界定候客及面询边缘，薄边、层间深度和透景留白可辨；左右近景退让，大部分安静顶面和实体墙体仍可读。",
+        "冲突排序为可辨专业医美服务功能及开阔可信的商业建筑空间优先，其次建筑一体化精致珠光艺术语言，再次暖光与材料平衡，最后零散商业道具；通过退让与疏朗分层协调艺术与功能。",
+        "成组沙发、扶手椅及轻桌可坐、可等候、可绕行，不形成临窗茶席主景；正常建筑摄影透视、可信人体尺度，错位实体界面屏蔽私密服务转场。"
+      ],
+      "effectivePacket": [
+        "从入口斜向观察完整主接待厅：完整来访服务面及员工工作关系、成组候客、主厅边缘一处专业皮肤/美学面询工作位与横向通行均清楚可读；设备与面对面座位可感知，不沿狭长走廊收束。",
+        "珠光曲面从侧向建筑局部连接上部边界，主曲面和少量错层辅助薄层界定候客及面询边缘，薄边、层间深度和透景留白可辨；左右近景退让，大部分安静顶面和实体墙体仍可读。",
+        "冲突排序为可辨专业医美服务功能及开阔可信的商业建筑空间优先，其次建筑一体化精致珠光艺术语言，再次暖光与材料平衡，最后零散商业道具；通过退让与疏朗分层协调艺术与功能。",
+        "成组沙发、扶手椅及轻桌可坐、可等候、可绕行，不形成临窗茶席主景；正常建筑摄影透视、可信人体尺度，错位实体界面屏蔽私密服务转场。"
+      ],
+      "promptTermsVerified": [
+        "从入口斜向观察完整主接待厅：完整来访服务面及员工工作关系、成组候客、主厅边缘一处专业皮肤/美学面询工作位与横向通行均清楚可读；设备与面对面座位可感知，不沿狭长走廊收束。",
+        "珠光曲面从侧向建筑局部连接上部边界，主曲面和少量错层辅助薄层界定候客及面询边缘，薄边、层间深度和透景留白可辨；左右近景退让，大部分安静顶面和实体墙体仍可读。",
+        "冲突排序为可辨专业医美服务功能及开阔可信的商业建筑空间优先，其次建筑一体化精致珠光艺术语言，再次暖光与材料平衡，最后零散商业道具；通过退让与疏朗分层协调艺术与功能。",
+        "成组沙发、扶手椅及轻桌可坐、可等候、可绕行，不形成临窗茶席主景；正常建筑摄影透视、可信人体尺度，错位实体界面屏蔽私密服务转场。"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "从入口斜向观察完整主接待厅：完整来访服务面及员工工作关系、成组候客、主厅边缘一处专业皮肤/美学面询工作位与横向通行均清楚可读；设备与面对面座位可感知，不沿狭长走廊收束。",
+          "formal": {
+            "offset": 10377,
+            "line": 164,
+            "characters": 84
+          },
+          "provider": {
+            "offset": 10480,
+            "line": 167,
+            "characters": 84
+          }
+        },
+        {
+          "term": "珠光曲面从侧向建筑局部连接上部边界，主曲面和少量错层辅助薄层界定候客及面询边缘，薄边、层间深度和透景留白可辨；左右近景退让，大部分安静顶面和实体墙体仍可读。",
+          "formal": {
+            "offset": 10464,
+            "line": 165,
+            "characters": 78
+          },
+          "provider": {
+            "offset": 10567,
+            "line": 168,
+            "characters": 78
+          }
+        },
+        {
+          "term": "冲突排序为可辨专业医美服务功能及开阔可信的商业建筑空间优先，其次建筑一体化精致珠光艺术语言，再次暖光与材料平衡，最后零散商业道具；通过退让与疏朗分层协调艺术与功能。",
+          "formal": {
+            "offset": 10545,
+            "line": 166,
+            "characters": 82
+          },
+          "provider": {
+            "offset": 10648,
+            "line": 169,
+            "characters": 82
+          }
+        },
+        {
+          "term": "成组沙发、扶手椅及轻桌可坐、可等候、可绕行，不形成临窗茶席主景；正常建筑摄影透视、可信人体尺度，错位实体界面屏蔽私密服务转场。",
+          "formal": {
+            "offset": 10630,
+            "line": 167,
+            "characters": 63
+          },
+          "provider": {
+            "offset": 10733,
+            "line": 170,
+            "characters": 63
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "colorAvoid",
+      "targetPath": "colorSystem.forbidden",
+      "input": [
+        "紫色扩散到家具、软包、窗帘或大面积建筑表面",
+        "冷白偏蓝的单一色场与浅色材料层次消失"
+      ],
+      "confirmation": [
+        "紫色扩散到家具、软包、窗帘或大面积建筑表面",
+        "冷白偏蓝的单一色场与浅色材料层次消失"
+      ],
+      "effectivePacket": [
+        "紫色扩散到家具、软包、窗帘或大面积建筑表面",
+        "冷白偏蓝的单一色场与浅色材料层次消失"
+      ],
+      "promptTermsVerified": [
+        "紫色扩散到家具、软包、窗帘或大面积建筑表面",
+        "冷白偏蓝的单一色场与浅色材料层次消失"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "紫色扩散到家具、软包、窗帘或大面积建筑表面",
+          "formal": {
+            "offset": 11686,
+            "line": 194,
+            "characters": 21
+          },
+          "provider": {
+            "offset": 11789,
+            "line": 197,
+            "characters": 21
+          }
+        },
+        {
+          "term": "冷白偏蓝的单一色场与浅色材料层次消失",
+          "formal": {
+            "offset": 11710,
+            "line": 195,
+            "characters": 18
+          },
+          "provider": {
+            "offset": 11813,
+            "line": 198,
+            "characters": 18
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "mustAvoid",
+      "targetPath": "creativeDecision.strategicNegatives",
+      "input": [
+        "巨型羽毛、花瓣、涡旋或密集重复薄片从近景墙面横扫天花",
+        "包围全画面的旋转装置与双侧近景巨片夹击",
+        "以中央独立雕塑或抢眼悬吊艺术灯替代建筑组织",
+        "艺术馆中孤立摆放一张前台、空泛无功能展示大厅或角落零散小椅子",
+        "前台服务面被遮挡、候客面积被装饰挤压、完全隐藏后续服务分区",
+        "密集诊室门排、狭长中轴走廊与极端超广角畸变",
+        "冷白偏蓝、全场过曝、紫色家具与紫色舞台灯带",
+        "重复波浪灯槽、厚重不透明花瓣团块与无依据的施工尺寸"
+      ],
+      "confirmation": [
+        "巨型羽毛、花瓣、涡旋或密集重复薄片从近景墙面横扫天花",
+        "包围全画面的旋转装置与双侧近景巨片夹击",
+        "以中央独立雕塑或抢眼悬吊艺术灯替代建筑组织",
+        "艺术馆中孤立摆放一张前台、空泛无功能展示大厅或角落零散小椅子",
+        "前台服务面被遮挡、候客面积被装饰挤压、完全隐藏后续服务分区",
+        "密集诊室门排、狭长中轴走廊与极端超广角畸变",
+        "冷白偏蓝、全场过曝、紫色家具与紫色舞台灯带",
+        "重复波浪灯槽、厚重不透明花瓣团块与无依据的施工尺寸"
+      ],
+      "effectivePacket": [
+        "巨型羽毛、花瓣、涡旋或密集重复薄片从近景墙面横扫天花",
+        "包围全画面的旋转装置与双侧近景巨片夹击",
+        "以中央独立雕塑或抢眼悬吊艺术灯替代建筑组织",
+        "艺术馆中孤立摆放一张前台、空泛无功能展示大厅或角落零散小椅子",
+        "前台服务面被遮挡、候客面积被装饰挤压、完全隐藏后续服务分区",
+        "密集诊室门排、狭长中轴走廊与极端超广角畸变",
+        "冷白偏蓝、全场过曝、紫色家具与紫色舞台灯带",
+        "重复波浪灯槽、厚重不透明花瓣团块与无依据的施工尺寸"
+      ],
+      "promptTermsVerified": [
+        "巨型羽毛、花瓣、涡旋或密集重复薄片从近景墙面横扫天花",
+        "包围全画面的旋转装置与双侧近景巨片夹击",
+        "以中央独立雕塑或抢眼悬吊艺术灯替代建筑组织",
+        "艺术馆中孤立摆放一张前台、空泛无功能展示大厅或角落零散小椅子",
+        "前台服务面被遮挡、候客面积被装饰挤压、完全隐藏后续服务分区",
+        "密集诊室门排、狭长中轴走廊与极端超广角畸变",
+        "冷白偏蓝、全场过曝、紫色家具与紫色舞台灯带",
+        "重复波浪灯槽、厚重不透明花瓣团块与无依据的施工尺寸"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "巨型羽毛、花瓣、涡旋或密集重复薄片从近景墙面横扫天花",
+          "formal": {
+            "offset": 2883,
+            "line": 54,
+            "characters": 26
+          },
+          "provider": {
+            "offset": 2986,
+            "line": 57,
+            "characters": 26
+          }
+        },
+        {
+          "term": "包围全画面的旋转装置与双侧近景巨片夹击",
+          "formal": {
+            "offset": 2912,
+            "line": 55,
+            "characters": 19
+          },
+          "provider": {
+            "offset": 3015,
+            "line": 58,
+            "characters": 19
+          }
+        },
+        {
+          "term": "以中央独立雕塑或抢眼悬吊艺术灯替代建筑组织",
+          "formal": {
+            "offset": 2934,
+            "line": 56,
+            "characters": 21
+          },
+          "provider": {
+            "offset": 3037,
+            "line": 59,
+            "characters": 21
+          }
+        },
+        {
+          "term": "艺术馆中孤立摆放一张前台、空泛无功能展示大厅或角落零散小椅子",
+          "formal": {
+            "offset": 2958,
+            "line": 57,
+            "characters": 30
+          },
+          "provider": {
+            "offset": 3061,
+            "line": 60,
+            "characters": 30
+          }
+        },
+        {
+          "term": "前台服务面被遮挡、候客面积被装饰挤压、完全隐藏后续服务分区",
+          "formal": {
+            "offset": 2991,
+            "line": 58,
+            "characters": 29
+          },
+          "provider": {
+            "offset": 3094,
+            "line": 61,
+            "characters": 29
+          }
+        },
+        {
+          "term": "密集诊室门排、狭长中轴走廊与极端超广角畸变",
+          "formal": {
+            "offset": 3023,
+            "line": 59,
+            "characters": 21
+          },
+          "provider": {
+            "offset": 3126,
+            "line": 62,
+            "characters": 21
+          }
+        },
+        {
+          "term": "冷白偏蓝、全场过曝、紫色家具与紫色舞台灯带",
+          "formal": {
+            "offset": 3047,
+            "line": 60,
+            "characters": 21
+          },
+          "provider": {
+            "offset": 3150,
+            "line": 63,
+            "characters": 21
+          }
+        },
+        {
+          "term": "重复波浪灯槽、厚重不透明花瓣团块与无依据的施工尺寸",
+          "formal": {
+            "offset": 3071,
+            "line": 61,
+            "characters": 25
+          },
+          "provider": {
+            "offset": 3174,
+            "line": 64,
+            "characters": 25
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "spatialConcept",
+      "targetPath": "mediaTranslations.spatial.spatialConcept",
+      "input": "具有美术馆气质的专业医美商业接待主厅：完整前台、成组候客与主厅边缘一处半开放皮肤/美学面询工作位共同组织开阔空间；一组与侧向建筑连接、局部向上部延伸的珠光半透明弧形界面参与候客与面询边界，完整主曲面、少量辅助薄层和结构留白形成可辨艺术语言；暖白米白基底、局部浅木与柔和暖日光保持真实材料层次。",
+      "confirmation": "具有美术馆气质的专业医美商业接待主厅：完整前台、成组候客与主厅边缘一处半开放皮肤/美学面询工作位共同组织开阔空间；一组与侧向建筑连接、局部向上部延伸的珠光半透明弧形界面参与候客与面询边界，完整主曲面、少量辅助薄层和结构留白形成可辨艺术语言；暖白米白基底、局部浅木与柔和暖日光保持真实材料层次。",
+      "effectivePacket": "具有美术馆气质的专业医美商业接待主厅：完整前台、成组候客与主厅边缘一处半开放皮肤/美学面询工作位共同组织开阔空间；一组与侧向建筑连接、局部向上部延伸的珠光半透明弧形界面参与候客与面询边界，完整主曲面、少量辅助薄层和结构留白形成可辨艺术语言；暖白米白基底、局部浅木与柔和暖日光保持真实材料层次。",
+      "promptTermsVerified": [
+        "具有美术馆气质的专业医美商业接待主厅：完整前台、成组候客与主厅边缘一处半开放皮肤/美学面询工作位共同组织开阔空间；一组与侧向建筑连接、局部向上部延伸的珠光半透明弧形界面参与候客与面询边界，完整主曲面、少量辅助薄层和结构留白形成可辨艺术语言；暖白米白基底、局部浅木与柔和暖日光保持真实材料层次。"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "具有美术馆气质的专业医美商业接待主厅：完整前台、成组候客与主厅边缘一处半开放皮肤/美学面询工作位共同组织开阔空间；一组与侧向建筑连接、局部向上部延伸的珠光半透明弧形界面参与候客与面询边界，完整主曲面、少量辅助薄层和结构留白形成可辨艺术语言；暖白米白基底、局部浅木与柔和暖日光保持真实材料层次。",
+          "formal": {
+            "offset": 294,
+            "line": 12,
+            "characters": 146
+          },
+          "provider": {
+            "offset": 397,
+            "line": 15,
+            "characters": 146
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "structureLanguage",
+      "targetPath": "mediaTranslations.spatial.structureLanguage",
+      "input": [
+        "接待主厅：以完整实体墙、入口建筑框景、可读顶面和开敞横向通行组织前台、成组候客及边缘专业面询节点。",
+        "接待主厅：一组珠光半透明弧形建筑构件从侧向建筑界面局部衔接上部边界，沿候客边缘向半开放面询节点有方向地延伸并轻薄收束；起止明确的完整主曲面与少量错层辅助薄层形成层间深度和透景间隙，大部分顶面与墙体仍完整可读。",
+        "接待主厅：曲面薄边、错层透射与轻微珍珠母贝内反射共同建立珠光艺术特征；近景退让，中央和横向视线开敞，前台服务面、候客组团及面询设备可辨。",
+        "接待主厅：半开放皮肤/美学面询节点位于大厅边缘，以珠光曲面局部界定边界，开口透见专业面询台面、设备与顾客面对面就坐关系；后续私密服务入口由错位实体界面屏蔽。"
+      ],
+      "confirmation": [
+        "接待主厅：以完整实体墙、入口建筑框景、可读顶面和开敞横向通行组织前台、成组候客及边缘专业面询节点。",
+        "接待主厅：一组珠光半透明弧形建筑构件从侧向建筑界面局部衔接上部边界，沿候客边缘向半开放面询节点有方向地延伸并轻薄收束；起止明确的完整主曲面与少量错层辅助薄层形成层间深度和透景间隙，大部分顶面与墙体仍完整可读。",
+        "接待主厅：曲面薄边、错层透射与轻微珍珠母贝内反射共同建立珠光艺术特征；近景退让，中央和横向视线开敞，前台服务面、候客组团及面询设备可辨。",
+        "接待主厅：半开放皮肤/美学面询节点位于大厅边缘，以珠光曲面局部界定边界，开口透见专业面询台面、设备与顾客面对面就坐关系；后续私密服务入口由错位实体界面屏蔽。"
+      ],
+      "effectivePacket": [
+        "接待主厅：以完整实体墙、入口建筑框景、可读顶面和开敞横向通行组织前台、成组候客及边缘专业面询节点。",
+        "接待主厅：一组珠光半透明弧形建筑构件从侧向建筑界面局部衔接上部边界，沿候客边缘向半开放面询节点有方向地延伸并轻薄收束；起止明确的完整主曲面与少量错层辅助薄层形成层间深度和透景间隙，大部分顶面与墙体仍完整可读。",
+        "接待主厅：曲面薄边、错层透射与轻微珍珠母贝内反射共同建立珠光艺术特征；近景退让，中央和横向视线开敞，前台服务面、候客组团及面询设备可辨。",
+        "接待主厅：半开放皮肤/美学面询节点位于大厅边缘，以珠光曲面局部界定边界，开口透见专业面询台面、设备与顾客面对面就坐关系；后续私密服务入口由错位实体界面屏蔽。"
+      ],
+      "promptTermsVerified": [
+        "接待主厅：以完整实体墙、入口建筑框景、可读顶面和开敞横向通行组织前台、成组候客及边缘专业面询节点。",
+        "接待主厅：一组珠光半透明弧形建筑构件从侧向建筑界面局部衔接上部边界，沿候客边缘向半开放面询节点有方向地延伸并轻薄收束；起止明确的完整主曲面与少量错层辅助薄层形成层间深度和透景间隙，大部分顶面与墙体仍完整可读。",
+        "接待主厅：曲面薄边、错层透射与轻微珍珠母贝内反射共同建立珠光艺术特征；近景退让，中央和横向视线开敞，前台服务面、候客组团及面询设备可辨。",
+        "接待主厅：半开放皮肤/美学面询节点位于大厅边缘，以珠光曲面局部界定边界，开口透见专业面询台面、设备与顾客面对面就坐关系；后续私密服务入口由错位实体界面屏蔽。"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "接待主厅：以完整实体墙、入口建筑框景、可读顶面和开敞横向通行组织前台、成组候客及边缘专业面询节点。",
+          "formal": {
+            "offset": 879,
+            "line": 22,
+            "characters": 49
+          },
+          "provider": {
+            "offset": 982,
+            "line": 25,
+            "characters": 49
+          }
+        },
+        {
+          "term": "接待主厅：一组珠光半透明弧形建筑构件从侧向建筑界面局部衔接上部边界，沿候客边缘向半开放面询节点有方向地延伸并轻薄收束；起止明确的完整主曲面与少量错层辅助薄层形成层间深度和透景间隙，大部分顶面与墙体仍完整可读。",
+          "formal": {
+            "offset": 931,
+            "line": 23,
+            "characters": 104
+          },
+          "provider": {
+            "offset": 1034,
+            "line": 26,
+            "characters": 104
+          }
+        },
+        {
+          "term": "接待主厅：曲面薄边、错层透射与轻微珍珠母贝内反射共同建立珠光艺术特征；近景退让，中央和横向视线开敞，前台服务面、候客组团及面询设备可辨。",
+          "formal": {
+            "offset": 1038,
+            "line": 24,
+            "characters": 68
+          },
+          "provider": {
+            "offset": 1141,
+            "line": 27,
+            "characters": 68
+          }
+        },
+        {
+          "term": "接待主厅：半开放皮肤/美学面询节点位于大厅边缘，以珠光曲面局部界定边界，开口透见专业面询台面、设备与顾客面对面就坐关系；后续私密服务入口由错位实体界面屏蔽。",
+          "formal": {
+            "offset": 1109,
+            "line": 25,
+            "characters": 78
+          },
+          "provider": {
+            "offset": 1212,
+            "line": 28,
+            "characters": 78
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "artisticFocus",
+      "targetPath": "mediaTranslations.spatial.signatureSpatialMechanism",
+      "input": [
+        "接待区：核心艺术语言是一组与侧向建筑及局部上部边界连续衔接的珠光半透明弧形建筑构件，沿候客与面询边缘有起止地展开，以完整主曲面、少量辅助薄层、薄边和错层深度形成精致而疏朗的层间节奏。"
+      ],
+      "confirmation": [
+        "接待区：核心艺术语言是一组与侧向建筑及局部上部边界连续衔接的珠光半透明弧形建筑构件，沿候客与面询边缘有起止地展开，以完整主曲面、少量辅助薄层、薄边和错层深度形成精致而疏朗的层间节奏。"
+      ],
+      "effectivePacket": [
+        "接待区：核心艺术语言是一组与侧向建筑及局部上部边界连续衔接的珠光半透明弧形建筑构件，沿候客与面询边缘有起止地展开，以完整主曲面、少量辅助薄层、薄边和错层深度形成精致而疏朗的层间节奏。"
+      ],
+      "promptTermsVerified": [
+        "接待区：核心艺术语言是一组与侧向建筑及局部上部边界连续衔接的珠光半透明弧形建筑构件，沿候客与面询边缘有起止地展开，以完整主曲面、少量辅助薄层、薄边和错层深度形成精致而疏朗的层间节奏。"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "接待区：核心艺术语言是一组与侧向建筑及局部上部边界连续衔接的珠光半透明弧形建筑构件，沿候客与面询边缘有起止地展开，以完整主曲面、少量辅助薄层、薄边和错层深度形成精致而疏朗的层间节奏。",
+          "formal": {
+            "offset": 785,
+            "line": 21,
+            "characters": 91
+          },
+          "provider": {
+            "offset": 888,
+            "line": 24,
+            "characters": 91
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "lightingLanguage",
+      "targetPath": "lightingSystem.source",
+      "input": [
+        "温暖、柔和、均匀的漫射自然日光",
+        "少量克制的暖调建筑间接光"
+      ],
+      "confirmation": [
+        "温暖、柔和、均匀的漫射自然日光",
+        "少量克制的暖调建筑间接光"
+      ],
+      "effectivePacket": [
+        "温暖、柔和、均匀的漫射自然日光",
+        "少量克制的暖调建筑间接光"
+      ],
+      "promptTermsVerified": [
+        "温暖、柔和、均匀的漫射自然日光",
+        "少量克制的暖调建筑间接光"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "温暖、柔和、均匀的漫射自然日光",
+          "formal": {
+            "offset": 7987,
+            "line": 138,
+            "characters": 15
+          },
+          "provider": {
+            "offset": 8090,
+            "line": 141,
+            "characters": 15
+          }
+        },
+        {
+          "term": "少量克制的暖调建筑间接光",
+          "formal": {
+            "offset": 8003,
+            "line": 138,
+            "characters": 12
+          },
+          "provider": {
+            "offset": 8106,
+            "line": 141,
+            "characters": 12
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "lightingContrast",
+      "targetPath": "lightingSystem.contrast",
+      "input": "暖白建筑、浅木质和中性软包具有可辨的温和明暗层次，半透明界面保留柔和透射与边缘细节",
+      "confirmation": "暖白建筑、浅木质和中性软包具有可辨的温和明暗层次，半透明界面保留柔和透射与边缘细节",
+      "effectivePacket": "暖白建筑、浅木质和中性软包具有可辨的温和明暗层次，半透明界面保留柔和透射与边缘细节",
+      "promptTermsVerified": [
+        "暖白建筑、浅木质和中性软包具有可辨的温和明暗层次，半透明界面保留柔和透射与边缘细节"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "暖白建筑、浅木质和中性软包具有可辨的温和明暗层次，半透明界面保留柔和透射与边缘细节",
+          "formal": {
+            "offset": 8030,
+            "line": 139,
+            "characters": 41
+          },
+          "provider": {
+            "offset": 8133,
+            "line": 142,
+            "characters": 41
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "lightingInteraction",
+      "targetPath": "lightingSystem.interactionWithMaterials",
+      "input": [
+        "漫射自然光温暖地照亮前台、候客与半开放服务分区，家具和地面呈宽缓柔和阴影",
+        "浅木质保留自然纹理与暖色反射，暖白墙面、软包和透光界面彼此可区分",
+        "局部珠光随自然光产生很弱的内层虹彩，适度曝光保持表面体积、透景和薄边细节"
+      ],
+      "confirmation": [
+        "漫射自然光温暖地照亮前台、候客与半开放服务分区，家具和地面呈宽缓柔和阴影",
+        "浅木质保留自然纹理与暖色反射，暖白墙面、软包和透光界面彼此可区分",
+        "局部珠光随自然光产生很弱的内层虹彩，适度曝光保持表面体积、透景和薄边细节"
+      ],
+      "effectivePacket": [
+        "漫射自然光温暖地照亮前台、候客与半开放服务分区，家具和地面呈宽缓柔和阴影",
+        "浅木质保留自然纹理与暖色反射，暖白墙面、软包和透光界面彼此可区分",
+        "局部珠光随自然光产生很弱的内层虹彩，适度曝光保持表面体积、透景和薄边细节"
+      ],
+      "promptTermsVerified": [
+        "漫射自然光温暖地照亮前台、候客与半开放服务分区，家具和地面呈宽缓柔和阴影",
+        "浅木质保留自然纹理与暖色反射，暖白墙面、软包和透光界面彼此可区分",
+        "局部珠光随自然光产生很弱的内层虹彩，适度曝光保持表面体积、透景和薄边细节"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "漫射自然光温暖地照亮前台、候客与半开放服务分区，家具和地面呈宽缓柔和阴影",
+          "formal": {
+            "offset": 8105,
+            "line": 141,
+            "characters": 36
+          },
+          "provider": {
+            "offset": 8208,
+            "line": 144,
+            "characters": 36
+          }
+        },
+        {
+          "term": "浅木质保留自然纹理与暖色反射，暖白墙面、软包和透光界面彼此可区分",
+          "formal": {
+            "offset": 8144,
+            "line": 142,
+            "characters": 32
+          },
+          "provider": {
+            "offset": 8247,
+            "line": 145,
+            "characters": 32
+          }
+        },
+        {
+          "term": "局部珠光随自然光产生很弱的内层虹彩，适度曝光保持表面体积、透景和薄边细节",
+          "formal": {
+            "offset": 8179,
+            "line": 143,
+            "characters": 36
+          },
+          "provider": {
+            "offset": 8282,
+            "line": 146,
+            "characters": 36
+          }
+        }
+      ]
+    },
+    {
+      "inputPath": "lightingAvoid",
+      "targetPath": "lightingSystem.forbidden",
+      "input": [
+        "冷白偏蓝的整体照明与玻璃发灰",
+        "过曝抹平浅色材料层次",
+        "紫色灯带、舞台照明与高饱和发光装置",
+        "强直射光、硬阴影和抢夺空间焦点的独立雕塑灯具"
+      ],
+      "confirmation": [
+        "冷白偏蓝的整体照明与玻璃发灰",
+        "过曝抹平浅色材料层次",
+        "紫色灯带、舞台照明与高饱和发光装置",
+        "强直射光、硬阴影和抢夺空间焦点的独立雕塑灯具"
+      ],
+      "effectivePacket": [
+        "冷白偏蓝的整体照明与玻璃发灰",
+        "过曝抹平浅色材料层次",
+        "紫色灯带、舞台照明与高饱和发光装置",
+        "强直射光、硬阴影和抢夺空间焦点的独立雕塑灯具"
+      ],
+      "promptTermsVerified": [
+        "冷白偏蓝的整体照明与玻璃发灰",
+        "过曝抹平浅色材料层次",
+        "紫色灯带、舞台照明与高饱和发光装置",
+        "强直射光、硬阴影和抢夺空间焦点的独立雕塑灯具"
+      ],
+      "promptComparison": "case-insensitive English; exact Packet values",
+      "status": "PASS",
+      "occurrences": [
+        {
+          "term": "冷白偏蓝的整体照明与玻璃发灰",
+          "formal": {
+            "offset": 8245,
+            "line": 145,
+            "characters": 14
+          },
+          "provider": {
+            "offset": 8348,
+            "line": 148,
+            "characters": 14
+          }
+        },
+        {
+          "term": "过曝抹平浅色材料层次",
+          "formal": {
+            "offset": 8262,
+            "line": 146,
+            "characters": 10
+          },
+          "provider": {
+            "offset": 8365,
+            "line": 149,
+            "characters": 10
+          }
+        },
+        {
+          "term": "紫色灯带、舞台照明与高饱和发光装置",
+          "formal": {
+            "offset": 8275,
+            "line": 147,
+            "characters": 17
+          },
+          "provider": {
+            "offset": 8378,
+            "line": 150,
+            "characters": 17
+          }
+        },
+        {
+          "term": "强直射光、硬阴影和抢夺空间焦点的独立雕塑灯具",
+          "formal": {
+            "offset": 8295,
+            "line": 148,
+            "characters": 22
+          },
+          "provider": {
+            "offset": 8398,
+            "line": 151,
+            "characters": 22
+          }
+        }
+      ]
+    }
+  ],
+  "adapterPrefixCharacters": 103,
+  "entireFormalPromptIsProviderSuffix": true
+}

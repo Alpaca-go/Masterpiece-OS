@@ -1,0 +1,50 @@
+{
+  "status": "PASS",
+  "gates": [
+    {
+      "command": "node node_modules/tsx/dist/cli.mjs --test packages/visual-workflow/tests/*.test.ts",
+      "status": "PASS",
+      "exitCode": 0,
+      "testCount": 82,
+      "logSha256": "69f7c209e7bfcf17b90c0bf5533a07122623979e9ad4d626f1d053e49ef026a0",
+      "localLog": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-art-medical\\workflow-ts.log"
+    },
+    {
+      "command": "node --test packages/visual-workflow/tests/*.test.js",
+      "status": "PASS",
+      "exitCode": 0,
+      "testCount": 30,
+      "logSha256": "f4349e421071869b62832b8150aa402eae39d6d7a4f925ce2860e638c8e95860",
+      "localLog": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-art-medical\\workflow-js.log"
+    },
+    {
+      "command": "npm run golden:test",
+      "status": "PASS",
+      "exitCode": 0,
+      "testCount": null,
+      "logSha256": "78a4f5734232760dcf2bc1d582a66a5a73e1b296580fa769923fc6b2e2f537c5",
+      "localLog": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-art-medical\\golden.log"
+    },
+    {
+      "command": "npm run repo:verify",
+      "status": "PASS",
+      "exitCode": 0,
+      "testCount": null,
+      "logSha256": "67292316b86e1d7d528ec4ef3ac48bc3884beda68c9535c9d01502433985702d",
+      "localLog": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-art-medical\\repo-verify.log"
+    },
+    {
+      "command": "npm run repo:verify (after report archival)",
+      "status": "PASS",
+      "exitCode": 0,
+      "logSha256": "80a8bf0bbf4f6c0665b91d314292a9de9f435feda3d13749c77f106515f89438",
+      "localLog": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-art-medical\\final-repo-verify.log"
+    }
+  ],
+  "currentFlowsTests": 1294,
+  "guardTests": 56,
+  "workflowTests": 112,
+  "crossIndustryRequests": 3,
+  "goldenUpdated": false,
+  "realProviderCalls": 0
+}
