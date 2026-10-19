@@ -1,0 +1,18 @@
+{
+  "billableModelDispatches": 1,
+  "provider": "volcengine",
+  "model": "doubao-seedream-5-0-pro-260628",
+  "usage": {
+    "input_images": 0,
+    "generated_images": 1,
+    "output_tokens": 17424,
+    "total_tokens": 17424
+  },
+  "qwenCalls": 0,
+  "otherModelCalls": 0,
+  "automaticRetries": 0,
+  "actualSettledCost": null,
+  "currentTariffChecked": false,
+  "accountBalanceRead": false,
+  "statement": "Provider API returned usage but no currency charge. No billing estimate is presented as actual settled cost; no authenticated billing or extra model request was made."
+}

@@ -1,0 +1,61 @@
+{
+  "status": "PASS",
+  "protectedRoots": [
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architectural-refinement\\confirmed-browser\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "fileCount": 65,
+      "inventorySha256": "50ad2e0ec7f7a83c18309b35fe19e9aed1b35cc9034ce2856d100267c3c6f77d",
+      "status": "UNCHANGED"
+    },
+    {
+      "root": "packages/visual-workflow/reports/architectural-integration",
+      "fileCount": 45,
+      "inventorySha256": "d6d19ac6a756269844bbb537135230a905b1fe5b7539883d9b7a3a8239aeb4e7",
+      "status": "UNCHANGED"
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architectural-integration\\confirmed-review\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "fileCount": 62,
+      "inventorySha256": "07ffc3a2c9c4bf3d6a4d392b317cf7c28533552bb6413264ba72842535cbbd88",
+      "status": "UNCHANGED"
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architectural-integration\\real-validation\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "fileCount": 82,
+      "inventorySha256": "9f5a447ba3494328663d6d644905950c647f8bc0a5aa592a81e7204c61c73286",
+      "status": "UNCHANGED"
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architectural-language\\confirmed-copy\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "fileCount": 78,
+      "inventorySha256": "7a28e540b1eebb719ecdeaebea439e0fb4ba79a5d603bac18307f366fad02814",
+      "status": "UNCHANGED"
+    },
+    {
+      "root": "C:\\Users\\kyrie\\AppData\\Roaming\\masterpiece-os-desktop\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "fileCount": 46,
+      "inventorySha256": "29a4f69e069e70c6da1706d1b14541d779b0e140e53fe5ba43d0a2455cf6e9b1",
+      "status": "UNCHANGED"
+    },
+    {
+      "root": "packages/visual-workflow/reports/architectural-refinement",
+      "fileCount": 29,
+      "inventorySha256": "968f54142ada137668b6831a02df97b67f6c69f31e7e478587aa4c9b3268f57e",
+      "status": "UNCHANGED"
+    }
+  ],
+  "noValidationArtifacts": true,
+  "workflowImplementationDigest": "8e8469e022ed1e2e01bdad208e5e75b9126d35afb46e3ac96e212aaa8c6e6f81",
+  "productionCodeChanged": false,
+  "sharedHostRoutingTransportChanged": false,
+  "planningAndMigrationChanged": false,
+  "goldenChanged": false,
+  "implementationIntegrityRecordChanged": false,
+  "humanVisualQualityStateChanged": false,
+  "oldProjectCredentialsCopied": false,
+  "realCredentialsReadByAgent": false,
+  "encryptedIndependentStoreUsedByRuntime": true,
+  "actualReferenceImageInputs": 0,
+  "sourceImagesRegistered": 0,
+  "recheckedAfterEngineeringChecks": true
+}

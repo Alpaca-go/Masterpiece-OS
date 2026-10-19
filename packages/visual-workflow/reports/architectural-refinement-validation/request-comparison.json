@@ -1,0 +1,22 @@
+{
+  "status": "PASS",
+  "expectedConfirmationSha256": "e905e28071be6b0e637f5adb8196aa43e40eaa9f2592893b21445683197475c7",
+  "actualConfirmationSha256": "e905e28071be6b0e637f5adb8196aa43e40eaa9f2592893b21445683197475c7",
+  "expectedFormalPromptSha256": "0bee886af833d8ae7cbb6292fbf18fc294b06a62fa81536c1b5da37ed6ae2827",
+  "actualFormalPromptSha256": "0bee886af833d8ae7cbb6292fbf18fc294b06a62fa81536c1b5da37ed6ae2827",
+  "expectedProviderPromptSha256": "37258f0a5bda45a0e92917e7347277ae284434c95f66864a2cafdb53858a4a6c",
+  "actualProviderPromptSha256": "37258f0a5bda45a0e92917e7347277ae284434c95f66864a2cafdb53858a4a6c",
+  "expectedRequestBodySha256": "5fb7a41e028b2225cdddabe86aff02f63affedcde60461477a34a3c2af0a0d7c",
+  "actualRequestBodySha256": "5fb7a41e028b2225cdddabe86aff02f63affedcde60461477a34a3c2af0a0d7c",
+  "unmodifiedConfirmedPrompt": true,
+  "generationBasis": "standard",
+  "referenceAssetIds": [],
+  "imageFieldPresent": false,
+  "outputCount": 1,
+  "size": "2K",
+  "aspectRatio": "16:9",
+  "model": "doubao-seedream-5-0-pro-260628",
+  "endpoint": "https://ark.cn-beijing.volces.com/api/v3/images/generations",
+  "headersPersisted": false,
+  "referenceImageUploads": 0
+}

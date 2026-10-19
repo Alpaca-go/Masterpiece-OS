@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "entry": "createShortChainGenerationService.start",
+  "productionGatesApplied": true,
+  "mockedImageRequests": 1,
+  "mockedValidationRequests": 0,
+  "realModelCalls": 0,
+  "promptField": "Unmodified P1-P4 form",
+  "referenceImages": 0
+}

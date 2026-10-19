@@ -1,0 +1,56 @@
+{
+  "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architectural-refinement\\real-validation\\authorized-execution",
+  "policy": "Images and raw Provider response remain Git-ignored. Headers and API Key are never persisted in these artifacts.",
+  "files": [
+    {
+      "name": "authorization.json",
+      "bytes": 1945,
+      "sha256": "d5530fc639aff27f1dc15b41873c39a9c4d447ad456a7d8204612766d7d9fb98"
+    },
+    {
+      "name": "call-ledger.json",
+      "bytes": 168,
+      "sha256": "146bd90064326d282087f110b64bee93fc60cf86ba512f30d94b6b2118b67211"
+    },
+    {
+      "name": "execution-summary.json",
+      "bytes": 2164,
+      "sha256": "8a6ef83093dd127d6eaf676b7e928b4c31b3af162d2069377f76170915f15f2d"
+    },
+    {
+      "name": "generation-result.json",
+      "bytes": 853,
+      "sha256": "889a8dad34ba491e707a59445a06e66fa3ca35fbf769457a5f11fe9334774da7"
+    },
+    {
+      "name": "image-actual-request.json",
+      "bytes": 15990,
+      "sha256": "fbfec17366f2c141e376a1c077ce6e63074dfc92d1de712d896f827f8366c470"
+    },
+    {
+      "name": "image-provider-response.local.json",
+      "bytes": 328046,
+      "sha256": "9f72f6ac6b8147ecdacdc4d7ef571fc2fcfb7d1844fbfc6a46c04fe901f6be89"
+    },
+    {
+      "name": "image-response-summary.json",
+      "bytes": 407,
+      "sha256": "e4240fc9d154b564b16d347ccd9c50f3fbfa789a47bbf969facd6513448ac401"
+    },
+    {
+      "name": "jiuzhou-provider-original.jpg",
+      "bytes": 245868,
+      "sha256": "184d6d296967e0189ffdf50d3abe1babab7c0e06e197eb544955fa66726fc1b7"
+    },
+    {
+      "name": "jiuzhou-standard-output.png",
+      "bytes": 2609413,
+      "sha256": "48b98f7a49c4320deec4fbbd1314d2ccd5f47a3ba88ea3b0f19b0cef56f41d9f"
+    },
+    {
+      "name": "original-image-metadata.json",
+      "bytes": 200,
+      "sha256": "14d56e9086735214238aaaa826867cf09a4dc57c09d08127e3742eb4038b8f87"
+    }
+  ]
+}

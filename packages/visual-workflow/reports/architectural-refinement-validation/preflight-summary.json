@@ -1,0 +1,29 @@
+{
+  "status": "PREFLIGHT_PASS",
+  "projectId": "ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+  "testProject": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architectural-refinement\\real-validation\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+  "workflowRoot": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architectural-refinement\\real-validation\\user-data\\visual-workflow",
+  "taskId": "vnext-task-81d4e8e5-ddb4-43b1-8a73-5d95ac8df556",
+  "profileId": "3e8ac6c5-2165-457a-80a6-8a78f1f0b8eb",
+  "imageUrl": "https://ark.cn-beijing.volces.com/api/v3/images/generations",
+  "confirmationSha256": "e905e28071be6b0e637f5adb8196aa43e40eaa9f2592893b21445683197475c7",
+  "recordSha256": "ce0ef5d3796adac103cda9209b41cbe8299f6f37a900cbb8d8b016496e389eb6",
+  "formalPromptSha256": "0bee886af833d8ae7cbb6292fbf18fc294b06a62fa81536c1b5da37ed6ae2827",
+  "providerPromptSha256": "37258f0a5bda45a0e92917e7347277ae284434c95f66864a2cafdb53858a4a6c",
+  "requestBodySha256": "5fb7a41e028b2225cdddabe86aff02f63affedcde60461477a34a3c2af0a0d7c",
+  "implementation": {
+    "owner": "visual-workflow",
+    "extractionStatus": "independent-current-implementation",
+    "qualityAcceptance": "pending-separate-quality-repair",
+    "implementationDigest": "8e8469e022ed1e2e01bdad208e5e75b9126d35afb46e3ac96e212aaa8c6e6f81"
+  },
+  "generationBasis": "standard",
+  "referenceAssetIds": [],
+  "imageFieldPresent": false,
+  "entry": "createShortChainGenerationService.start",
+  "validatorCalledByEntry": false,
+  "authorizedImageCalls": 1,
+  "authorizedQwenCalls": 0,
+  "authorizedOtherModelCalls": 0,
+  "realModelCalls": 0
+}
