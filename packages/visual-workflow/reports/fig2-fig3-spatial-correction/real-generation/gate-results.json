@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "command": "npm run repo:verify",
+  "exitCode": 0,
+  "checkedOn": "2026-10-19",
+  "baseCommit": "31ffde13a4bcc8884a6581e0da9da6638aae820d",
+  "scope": "Sanitized report archive only; no production changes.",
+  "currentFlowsPassed": 1294,
+  "guardTestsPassed": 56,
+  "nodeHostTypecheck": "PASS",
+  "webRendererTypecheck": "PASS",
+  "realProviderCallsByGate": 0,
+  "log": ".git/fig2-fig3-real-generation-repo-verify.log",
+  "logSha256": "b0bb865d8a674ea850fc77b670f4b384949e9261ebc48d5a80f5bc54efe1e68d"
+}

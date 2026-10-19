@@ -1,0 +1,77 @@
+{
+  "status": "SINGLE_IMAGE_COMPLETE_STOPPED_PENDING_USER_REVIEW",
+  "files": [
+    {
+      "name": "call-ledger.json",
+      "bytes": 168,
+      "sha256": "146bd90064326d282087f110b64bee93fc60cf86ba512f30d94b6b2118b67211"
+    },
+    {
+      "name": "execution-review.md",
+      "bytes": 6554,
+      "sha256": "da600d838561dedaac5a68f53c8b43ab0a12c07974e1626c7c4f52eb17153ea3"
+    },
+    {
+      "name": "execution-summary.json",
+      "bytes": 2150,
+      "sha256": "01f78279d1ab1c874068749294db65a691bc75f91ec3ac286f8c8eae857eb221"
+    },
+    {
+      "name": "fee-record.json",
+      "bytes": 763,
+      "sha256": "62a6c8842d102622c91e3eab850d7ec348bd4cd35600d40ee6651fcfedb882ac"
+    },
+    {
+      "name": "gate-results.json",
+      "bytes": 528,
+      "sha256": "f4d22de552df56e2331c8a16ef991f4372d78512df0dc86a1154ec4ac0479611"
+    },
+    {
+      "name": "image-response-summary.json",
+      "bytes": 449,
+      "sha256": "a5566718786b861d92f58c5aade963792879b59dc9f8b9053194f0185c6b52e6"
+    },
+    {
+      "name": "local-artifact-index.json",
+      "bytes": 3302,
+      "sha256": "3fe8a803a979f03307624dca4a20c529bb763d00e9eee8d3514ad33b107064a0"
+    },
+    {
+      "name": "new-artifact-secret-scan.json",
+      "bytes": 305,
+      "sha256": "72f5d274a95e98a8ee18345e0e4adbcd96df97daa0720e6eea34094517d74e8f"
+    },
+    {
+      "name": "original-image-metadata.json",
+      "bytes": 200,
+      "sha256": "94206dd97e09779c2296847aae62620813d914bf868b2821c2c63caffb302f3b"
+    },
+    {
+      "name": "preflight-summary.json",
+      "bytes": 1009,
+      "sha256": "65653bb1a5d70b3ea082d89333d8f0845ae8a4bd14b614a959e250be1c65a934"
+    },
+    {
+      "name": "provider-request.json",
+      "bytes": 16283,
+      "sha256": "6553004d5a01c9a0f58876c2afb19d50cf000a2f185a07e09bc45b108dfb9612"
+    },
+    {
+      "name": "request-comparison.json",
+      "bytes": 911,
+      "sha256": "4d52f6aa14d1a88c60351c710ef32697d09be9a36ba433d880400d4f245351c4"
+    },
+    {
+      "name": "scope-proof.json",
+      "bytes": 995,
+      "sha256": "ba01964c4ad5d45981275932c33efc531ad1ae191e519431a39aa004d772573e"
+    },
+    {
+      "name": "visual-comparison.md",
+      "bytes": 7452,
+      "sha256": "fe480a1a396a3503a6bbeee6195aca0c477e641addceac990bb46f464cc31df5"
+    }
+  ],
+  "selfExcluded": true,
+  "localBinaryArtifactsRemainIgnored": true
+}
