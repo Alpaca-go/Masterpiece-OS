@@ -1,0 +1,29 @@
+{
+  "providerOriginal": {
+    "file": "jiuzhou-provider-original.jpg",
+    "bytes": 254930,
+    "width": 2816,
+    "height": 1584,
+    "format": "jpeg",
+    "sha256": "b8acd690ac71f16757bc6a88e4ebedd92187122c04b98d4bdc4ea948b761d44c",
+    "absolutePath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-p7b\\real-validation/authorized-execution/jiuzhou-provider-original.jpg"
+  },
+  "businessOutput": {
+    "absolutePath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-p7b\\real-validation/authorized-execution/jiuzhou-standard-output.png",
+    "imageId": "82b91474-587d-4c28-ad9d-853bcafff594",
+    "relativePath": "images/output.png",
+    "thumbnailRelativePath": "thumbnails/output.jpg",
+    "mimeType": "image/png",
+    "width": 2816,
+    "height": 1584,
+    "sha256": "765b1ee08542d625c08708f5d4d097ffdfebc806290659f1c3c3365609970b22",
+    "sizeBytes": 2875533,
+    "businessOutput": "jiuzhou-standard-output.png",
+    "businessOutputSha256": "765b1ee08542d625c08708f5d4d097ffdfebc806290659f1c3c3365609970b22"
+  },
+  "decodedPixelsEqual": true,
+  "decodedPixelsSha256": "30a00992d995baa137e062264d76cccc7b490ed3756a219b39b1d2c6f57e5ba8",
+  "actual16x9": true,
+  "rawProviderJSONArchived": false,
+  "brandingOrScreenComposite": false
+}

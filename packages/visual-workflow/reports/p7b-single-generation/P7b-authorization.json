@@ -1,0 +1,49 @@
+{
+  "source": "User authorized Seedream at most one; Qwen/other paid models zero; no retry, regeneration, correction or branding composite. Existing user-saved independent configuration is used in place; P7b authorizes this one request only.",
+  "reservedAt": "2026-10-20T04:43:24.878Z",
+  "lock": {
+    "status": "PREFLIGHT_PASS",
+    "projectId": "ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+    "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-p7b\\real-validation/user-data/visual-workflow",
+    "taskId": "vnext-task-f3c8fbe6-9a27-4c09-98f2-3b3187c17345",
+    "artifactDirectory": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-p7b\\real-validation\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb\\image-generation-vnext\\compilations\\vnext-task-f3c8fbe6-9a27-4c09-98f2-3b3187c17345",
+    "profileId": "47c7b040-0617-4287-8cc8-150bf2b7726b",
+    "imageUrl": "https://ark.cn-beijing.volces.com/api/v3/images/generations",
+    "confirmationSha256": "97fa8ffa27020f6538efdcf76ee5c8ad1fbfe59c4736d37453fc4ed1317a4b71",
+    "recordSha256": "2606ee27bc9b5d0fc65fcde0711b5a1842ddc9d401ca818e3fde43669c5cc3be",
+    "formalPromptSha256": "031d2d20b203d73b5a11b77c27792bde9b02a15cc912c8e0c5f2d9f8dd886ab9",
+    "providerPromptSha256": "a7b402054cc0153517dd3d2411668fe0d1583f89c9c9eb3b8f30b6d64edfdc97",
+    "requestBodySha256": "79d70c85ba1eced01a0256dcb60cb60dc8e6acf1d1021a903f78eddbcb090b99",
+    "implementation": {
+      "owner": "visual-workflow",
+      "extractionStatus": "independent-current-implementation",
+      "qualityAcceptance": "pending-separate-quality-repair",
+      "implementationDigest": "8e8469e022ed1e2e01bdad208e5e75b9126d35afb46e3ac96e212aaa8c6e6f81"
+    },
+    "generationBasis": "standard",
+    "referenceAssetIds": [],
+    "imageFieldPresent": false,
+    "entry": "createShortChainGenerationService.start",
+    "validatorCalledByEntry": false,
+    "authorizedImageCalls": 1,
+    "authorizedQwenCalls": 0,
+    "authorizedOtherModelCalls": 0,
+    "realModelCalls": 0,
+    "pricing": {
+      "checkedOn": "2026-10-20",
+      "source": "https://docs.volcengine.com/docs/ark/model-pricing?lang=zh",
+      "sources": [
+        "https://docs.volcengine.com/docs/ark/model-pricing?lang=en&redirect=1",
+        "https://docs.volcengine.com/docs/ark/seedream-5-0-pro?lang=zh"
+      ],
+      "currency": "CNY",
+      "outputPriceAbove2610000Pixels": 0.6,
+      "outputPriceAtOrBelow2610000Pixels": 0.3,
+      "expected2KSingleImageCost": 0.6,
+      "inputImages": 0,
+      "actualSettledCost": null,
+      "accountDiscountsOrBalanceRead": false,
+      "abnormalFeeIndicatorsFound": false
+    }
+  }
+}

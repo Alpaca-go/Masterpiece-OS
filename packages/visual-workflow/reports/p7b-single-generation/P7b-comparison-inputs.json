@@ -1,0 +1,17 @@
+{
+  "referenceImagesSent": 0,
+  "images": [
+    {
+      "stage": "P5",
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-spatial-balance\\real-validation\\authorized-execution\\jiuzhou-standard-output.png",
+      "sha256": "016c988155a674f22974281d724cfe199c66629a259730c09bec4b73dfe70cff",
+      "role": "Human visual comparison after generation only; never model reference"
+    },
+    {
+      "stage": "P6",
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-local-boundaries\\real-validation\\authorized-execution\\jiuzhou-standard-output.png",
+      "sha256": "1cedc6cb10e80746d286fd3ed8fcfc1840b9664a1cdb144d655f0bf789d3fded",
+      "role": "Human visual comparison after generation only; never model reference"
+    }
+  ]
+}

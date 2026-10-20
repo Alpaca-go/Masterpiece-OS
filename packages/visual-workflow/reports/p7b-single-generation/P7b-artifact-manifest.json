@@ -1,0 +1,111 @@
+{
+  "status": "ONE_REAL_GENERATION_COMPLETE_STOPPED_PENDING_HUMAN_REVIEW",
+  "selfExcluded": true,
+  "files": [
+    {
+      "name": "P7b-authorization.json",
+      "bytes": 2703,
+      "sha256": "a78557e3fbaf86a882a8260757f4b4e8bf56999801beada717d6f9daf3eb1193"
+    },
+    {
+      "name": "P7b-call-ledger.json",
+      "bytes": 168,
+      "sha256": "146bd90064326d282087f110b64bee93fc60cf86ba512f30d94b6b2118b67211"
+    },
+    {
+      "name": "P7b-comparison-inputs.json",
+      "bytes": 804,
+      "sha256": "376400f88a87429b6c3bf4e07da0e5224c5024aeb62d459c84616e80f2c0b82b"
+    },
+    {
+      "name": "P7b-comparison.md",
+      "bytes": 1771,
+      "sha256": "7d1b9f6288b87b25c98bbdfc241271cdf47286505aa12254eb90278c1988507b"
+    },
+    {
+      "name": "P7b-execution-summary.json",
+      "bytes": 2114,
+      "sha256": "7f321c5ab5fe2c790f99c3eb0cac24ed35707dc162df35b574ae950ae6b1c12b"
+    },
+    {
+      "name": "P7b-fee-record.json",
+      "bytes": 891,
+      "sha256": "bf45afb1fc92f9372d22afec4cfb99ad841099c2cc2d002448086a910bf2626b"
+    },
+    {
+      "name": "P7b-final-preflight-proof.json",
+      "bytes": 44339,
+      "sha256": "4690bee1f3ca6936faf6ba733753d11277ae851ccd69f3fc75fce6920cec3de4"
+    },
+    {
+      "name": "P7b-gate-results.json",
+      "bytes": 593,
+      "sha256": "924b96e9fa0c35015e408206ba90110dce3d33245cfde70fb8e42cf80ec5859e"
+    },
+    {
+      "name": "P7b-image-evidence.json",
+      "bytes": 1294,
+      "sha256": "02bf48c3402bd159ce9ae84bd7b3b49f4d93919402f16a819bdc1ae4fd72c731"
+    },
+    {
+      "name": "P7b-image-response-summary.json",
+      "bytes": 449,
+      "sha256": "20ec9faa502e1c150b030b30f87b9478612c4e99c404a1137162aef8430c88d3"
+    },
+    {
+      "name": "P7b-local-artifact-index.json",
+      "bytes": 1762,
+      "sha256": "44a690cabb34f9b88083f238119e34962f93ff66cdf2a3ff521735f65091ebbb"
+    },
+    {
+      "name": "P7b-original-image-metadata.json",
+      "bytes": 200,
+      "sha256": "623f550fc6fcbdd5c8f261afa29ead4875e467aad59fc7a46248a14154e9eec2"
+    },
+    {
+      "name": "P7b-preflight-and-hash-proof.json",
+      "bytes": 3041,
+      "sha256": "eba0a7df731c4c99d349efbe85fde0afa08f2b61eaa1a81517ba370cdf3de2cc"
+    },
+    {
+      "name": "P7b-protection-proof.json",
+      "bytes": 14794,
+      "sha256": "0f73c6b84abf80874a6d864b427d82d7574f14d62bde50982bb78b1540682b83"
+    },
+    {
+      "name": "P7b-provider-request.json",
+      "bytes": 15221,
+      "sha256": "06bb129abc5a931e691243d7d70f16fa156cab3d180dd1c519118819b7fa5853"
+    },
+    {
+      "name": "P7b-repo-verify-log.txt",
+      "bytes": 169921,
+      "sha256": "ab3809eb88757545fbd364cb51aabd7644ff2e0bd3e14d791958993ec36218ba"
+    },
+    {
+      "name": "P7b-report-link-check.json",
+      "bytes": 55,
+      "sha256": "868d570b0d3bbd7dbf8a3b9cc0141832358d05733aeb6a9207f89f191f00003d"
+    },
+    {
+      "name": "P7b-review.md",
+      "bytes": 5205,
+      "sha256": "b75b103608b06e1c7684e079ae97232ed8a859ce9da8aadff48ecdc75e294efb"
+    },
+    {
+      "name": "P7b-scope-proof.json",
+      "bytes": 906,
+      "sha256": "7c7e31e5e50227d0eadeb43e28519db1da594dd1c2dde73167d5b5dfa6fb1e31"
+    },
+    {
+      "name": "P7b-secret-scan.json",
+      "bytes": 184,
+      "sha256": "5175b05a7058b331f672da5e3e21b3588f9912a9417c31a0aa2c98427ccaca1e"
+    },
+    {
+      "name": "P7b-visual-review.md",
+      "bytes": 5876,
+      "sha256": "1928c54bbf095fdf00e48547717e93064e5bc2bafa132274173d05b0f04bc1ba"
+    }
+  ]
+}
