@@ -1,0 +1,39 @@
+{
+  "code": "SPACE_PROMPT_BUDGET_BLOCKED",
+  "message": "SPACE_PROMPT_BUDGET_BLOCKED: SPACE_PROMPT_EXCEEDS_ADAPTER_LIMIT, SPACE_PROMPT_ABOVE_QUALITY_BUDGET, SPACE_PROMPT_LONG",
+  "budget": {
+    "chars": 12124,
+    "qualityBudget": 7500,
+    "targetMax": 9500,
+    "warnAt": 10000,
+    "providerLimit": 12000,
+    "adapterLimit": 12000,
+    "qualityBudgetExceeded": true,
+    "positiveChars": 11560,
+    "negativeChars": 536,
+    "positiveRatio": 0.9556878306878307,
+    "negativeRatio": 0.04431216931216931,
+    "findings": [
+      {
+        "code": "SPACE_PROMPT_EXCEEDS_ADAPTER_LIMIT",
+        "severity": "block",
+        "detail": "12124 > provider 12000"
+      },
+      {
+        "code": "SPACE_PROMPT_ABOVE_QUALITY_BUDGET",
+        "severity": "warn",
+        "detail": "12124 > quality budget 7500"
+      },
+      {
+        "code": "SPACE_PROMPT_LONG",
+        "severity": "warn",
+        "detail": "12124 > 10000"
+      }
+    ],
+    "status": "blocked"
+  },
+  "source": "首次正式 visual-workflow:compile 抛出的错误与budget对象；原终端输出已见本聊天工具记录",
+  "compileAttempts": 1,
+  "compilerChanged": false,
+  "adapterReached": false
+}

@@ -1,0 +1,65 @@
+{
+  "status": "WEB_CONFIRMED_COMPILE_BLOCKED",
+  "differences": [
+    {
+      "field": "structureLanguage",
+      "before": "接待主厅：完整实体墙、入口建筑框景与可读顶面建立开阔横向大厅，清楚可见的完整前台组织到达服务，成组候客与前台横向联系，专业面询位于主厅边缘。\n接待主厅：左前景以完整入口框景、实体建筑与开放地面建立公共到达空间，入口到前台视线及接近路径连续可读，左侧层次仅由既有建筑和正常采光表达。\n接待主厅：仅一套主珠光曲面依附一处侧向建筑界面，完整主曲面与少量辅助薄层在同一局部起止收束，上部衔接止于该侧界面附近；中央及前台上方保留完整安静顶面，薄边、层间留缝和透景深度清楚。\n接待主厅：边缘半开放皮肤/美学面询位仅以一小段局部半透明边界保护私密，专业台面的设备操作侧设面询人员座位，对侧设访客座位，空椅隔台相向且可共同看屏；后续私密服务入口由错位实体界面屏蔽。",
+      "after": "接待主厅：入口及开放公共到达区直接展开为完整横向主厅；完整前台为主要服务锚点，成组候客与其横向相连，单个半开放面询在主厅边缘，后续私密服务入口受屏蔽。\n接待主厅：入口框景退让公共到达视廊，左前景开放地面连续通向前台与候客；建筑界面提供远近层次而不压缩厅宽，视线越过入口直接读出主厅，不以新实体巨墙替代围合。\n接待主厅：一套珠光半透明曲面与侧向建筑界面连续连接，局部延伸至上部边界，并以通透转折界定候客至面询的服务递进；完整主曲面、少量辅助薄层、薄边与层间深度共同组织空间节奏，中央及前台上方顶面完整。\n接待主厅：边缘面询以短段局部透光界面保护隐私；一张可从两侧就坐的独立工作台分开操作侧与顾客侧，两椅隔台面对面、各有进出，显示屏转向双方；私密入口的错位遮挡仅在面询之后，不延伸进到达视廊。",
+      "reason": "移除完整实体墙/入口框景的前景歧义；正向建立五节点及退让视廊，补充独立工作台两侧关系。",
+      "source": "用户本轮请求及附件第3–6节；P5/P6只读人工对照"
+    },
+    {
+      "field": "functionalNetwork",
+      "before": "Reception: arrival reveals the complete reception as the primary service anchor; service front, staff worktop, staff access and visitor approach are readable at credible scale.\nReception: the complete counter and grouped waiting area connect laterally across the open hall, with generous circulation rather than a narrow central corridor.\nReception: one complete sofa and armchair group faces small tables for sitting and conversation, with space to approach, sit and circulate around the group, understandable without people.\nReception: reception and waiting lead to one edge skin/aesthetic advisory node; the consultant chair sits on the display-operation side of the worktop, the guest chair on the opposite side, facing across it with a shared screen view and clear access.",
+      "after": "Reception: arrival reveals the complete reception as the primary service anchor; service front, staff worktop, staff access and visitor approach are readable at credible scale.\nReception: the complete counter and grouped waiting area connect laterally across the open hall, with generous circulation rather than a narrow central corridor.\nReception: one complete sofa and armchair group faces small tables for sitting and conversation, with space to approach, sit and circulate around the group, understandable without people.\nReception: reception and waiting lead to one edge skin/aesthetic advisory node: one freestanding worktop separates the consultant equipment-operation side from the guest side; one chair on each side faces the other across the table, with clear access and a display turned for shared viewing.",
+      "reason": "前三行原样，最后一行明确独立台面分开两侧、一侧一椅与共看转向屏。",
+      "source": "用户本轮请求及附件第3–6节；P5/P6只读人工对照"
+    },
+    {
+      "field": "functionalRelationships",
+      "before": "Reception anchors the open lateral hall and connects to grouped waiting then one edge advisory node; a short translucent boundary screens privacy, retaining views of its display and chairs on opposite worktop sides.\nReception: an offset solid return beyond the semi-open advisory workstation screens onward private care access; treatment activity and care beds and private room interiors remain off frame.",
+      "after": "Reception: open arrival leads directly to the complete counter; reception and grouped waiting connect laterally in the same hall, then lead to one edge advisory workstation; each node retains usable space and circulation stays clear of art and furniture.\nReception: a short translucent boundary protects advisory privacy while both opposing seats and the shared display remain readable; beyond this node an offset solid return screens onward private care access, leaving the arrival sightline open; treatment activity, care beds and private interiors stay off frame.",
+      "reason": "固定五节点递进与可用面积，私密遮挡限制在面询之后，不侵占公共到达视线。",
+      "source": "用户本轮请求及附件第3–6节；P5/P6只读人工对照"
+    },
+    {
+      "field": "visibleRequirements",
+      "before": "A complete reception counter recognizable from the oblique entrance as the primary service anchor; service front, staff worktop, small office equipment and visitor approach are readable at credible scale\nOne complete sofa and armchair waiting group with small tables, usable seating and conversation space, warm neutral upholstery and light timber details, with circulation clear around it\nOne edge semi-open skin/facial aesthetics advisory node: professional worktop, dedicated display, consultant chair on its equipment-operation side and guest chair opposite, facing across the worktop with shared screen visibility; a simple light screen shows abstract skin surface texture, facial contour zones or aesthetic proportion diagrams, without skull, brain folds, cross-sections, CT/MRI, organs, readable text, numbers, diagnoses, personal images or outcome promises; a short translucent boundary protects privacy\nAn open left foreground with entrance framing, solid architecture and clear approach to reception; in this shot it contains no separate circular glass room, cylindrical enclosure, ring pendant or purposeless display\nOnly one pearlescent architectural system at one side interface: a complete local main curve, few thin layers, fine edges and see-through depth; its upper junction ends near that side, leaving the central and reception ceiling open, with only a short advisory privacy boundary instead of a surrounding arch or cross-hall ribbon\nOne small flat clean unlettered identity surface on an architectural interface, outside the main circulation and unobstructed; small operational carriers remain subordinate to the complete functional areas",
+      "after": "A complete reception counter recognizable from the oblique entrance as the primary service anchor; service front, staff worktop, small office equipment and visitor approach are readable at credible scale\nOne complete sofa and armchair waiting group with small tables, usable seating and conversation space, warm neutral upholstery and light timber details, with circulation clear around it\nOne edge semi-open skin/facial aesthetics advisory node: one freestanding worktop between consultant and guest, one chair at its equipment-operation side and one at its opposite side, seat fronts facing each other across the worktop; both can view a turned display. The light screen shows non-identifying abstract skin surface texture, facial contour zones or aesthetic proportion diagrams, without skull, brain, organs, cross-sections, CT/MRI, readable text, numbers, diagnoses, personal images or outcome promises; a short local translucent boundary protects privacy\nOpen public arrival and a direct view into the broad complete hall, with continuous access to reception and waiting; the left foreground stays open, without a new blocking solid wall, circular glass room, cylindrical display or ring pendant; no extra facial-analysis advertising screen at reception\nOne continuous pearlescent architectural system joins a side interface to a local upper junction and articulates the waiting-to-advisory boundary with see-through depth, fine edges and few thin layers; its architectural role is readable in depth, not a flat wall applique, ordinary glass screen, shell wall, cross-hall ribbon or giant enclosing arch\nOne small flat clean unlettered identity surface on an architectural interface, outside the main circulation and unobstructed; small operational carriers remain subordinate to the complete functional areas",
+      "reason": "前台、候客及标识承载面原句不变；强化双侧空椅、无识别屏幕、开放到达和曲面的建筑连接职责。",
+      "source": "用户本轮请求及附件第3–6节；P5/P6只读人工对照"
+    },
+    {
+      "field": "artisticFocus",
+      "before": "接待区：单套珠光建筑艺术系统局限于一处侧向建筑附近，主曲面及少量辅助薄层在局部明确收束，薄边、层间留缝与自然透景保持辨识度；艺术点睛服务于建筑，前台上方和主厅中央保留完整顶面与开敞尺度。",
+      "after": "接待区：单套珠光曲面连续连接侧向建筑与局部上部边界，用透景转折组织候客至面询的空间节奏；主曲面和少量辅助薄层具有真实层间深度、薄边与留缝，局部收束而非扁平墙饰，主厅中央及前台上方保留完整顶面与开敞尺度。",
+      "reason": "P6过度强调局限、收束，可能退化墙饰；补入建筑连续连接、透景转折和服务递进职责，不增大体量。",
+      "source": "用户本轮请求及附件第3–6节；P5/P6只读人工对照"
+    },
+    {
+      "field": "compositionRequirements",
+      "before": "从入口斜向观察完整、横向舒展的商业接待主厅，视觉层级为完整主厅、明确接待服务锚点、成组候客、边缘专业面询节点、受屏蔽的私密服务转场；前台服务正面、员工工作侧和访客接近区域同时清楚可读。\n本镜头仅一套侧向珠光艺术系统，完整主曲面与少量辅助薄层止于同一侧界面附近，局部上部衔接明确收束；中央和前台上方顶面完整，面询仅有短段私密边界，不形成跨厅飘带或包围台面的巨型拱框。\n左前景保持开放公共地面与入口至前台的完整视线，既有实体建筑和正常采光表达左侧层次；完整前台与候客横向联系优先，边缘面询台两侧空椅相向、设备可辨且视觉从属，温暖材料与珠光品质保持。\n成组沙发、扶手椅及轻桌可坐、可等候、可绕行，不形成临窗茶席主景；保持正常建筑摄影透视、可信人体尺度和必要功能面积，以空间位置及视线建立前台权重，错位实体界面屏蔽私密转场。",
+      "after": "从入口斜向观察完整、横向舒展的商业接待主厅，视觉层级为完整主厅、明确接待服务锚点、成组候客、边缘专业面询节点、受屏蔽的私密服务转场；前台服务正面、员工工作侧和访客接近区域同时清楚可读。\n本镜头一套珠光曲面以连续建筑连接及透景转折参与局部功能边界，主曲面与少量薄层在侧界面附近收束；中央和前台顶面完整，面询仅短段隐私边界，不形成跨厅飘带或巨型拱框。\n入口框景退让，左前景开放到达视廊直接展开完整主厅，建筑层次不形成挡住厅宽的大墙；前台与候客横向相连且各有使用空间，边缘面询一台分隔两侧，操作椅与顾客椅隔台相向、共看转向显示器，私密遮挡留在其后。\n成组沙发、扶手椅及轻桌可坐、可等候、可绕行，不形成临窗茶席主景；保持正常建筑摄影透视、可信人体尺度和必要功能面积，以空间位置及视线建立前台权重，错位实体界面屏蔽私密转场。",
+      "reason": "首末行不变；中间两行正向确定厅宽、视廊、艺术职责、相向席位与遮挡所在的服务阶段。",
+      "source": "用户本轮请求及附件第3–6节；P5/P6只读人工对照"
+    }
+  ],
+  "unchangedFields": [
+    "spatialConcept",
+    "materialLanguage",
+    "lightingLanguage",
+    "colorPolicy",
+    "functionalProgram",
+    "mustAvoid",
+    "lightingContrast",
+    "lightingInteraction",
+    "lightingAvoid",
+    "colorAvoid",
+    "colorEntries",
+    "materialEntries"
+  ],
+  "sourceStatement": {
+    "before": "2026-10-19 用户授权P6项目级离线修正：以b79f741e及P5确认副本为基线，仅清退本镜头左前景无功能围合、限制顶部珠光跨度、明确皮肤面部美学屏幕及隔台相向座位。保留前台候客、开阔主厅、暖色材料、珠光薄边弱紫、光线和私密转场。仅新数据隔离副本，通过正式网页保存确认、业务编译、零参考标准预演与离线回归；真实模型、重试重生成及自动纠正均0。若编译丢失关键字段则停止报告，不改生产代码。完成提交审查证据后停止待用户审核。",
+    "after": "2026-10-20 用户授权九州美学P7空间布局契约离线修正；以P6确认副本及6aeaf3df为基线。固定入口、前台、候客、边缘面询、私密转场五节点与功能拓扑，修正巨墙内收、同侧座椅及艺术结构职责。只在新隔离副本经正式网页保存确认，编译和standard零参考图离线预演；不改生产实现、原项目、Golden、材料配色灯光。真实模型/Qwen/收费调用0，后期屏幕仅审计提案，不实施。完成报告提交后停止待审核。"
+  }
+}

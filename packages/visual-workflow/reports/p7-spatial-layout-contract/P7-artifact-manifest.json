@@ -1,0 +1,141 @@
+{
+  "status": "STOPPED_G4_BLOCKED_PENDING_USER_REVIEW",
+  "selfExcluded": true,
+  "files": [
+    {
+      "name": "P7-capability-audit.md",
+      "bytes": 2964,
+      "sha256": "ffba2f63cb47b483189d8246fa44099f13948f9f15c92ad31ada756651a52ed8"
+    },
+    {
+      "name": "P7-compile-error.json",
+      "bytes": 1175,
+      "sha256": "5c55b1d334eb110adcfe91ea1fdbae6d91951aa236e86f575b82ff13202357c4"
+    },
+    {
+      "name": "P7-confirmed-direction.json",
+      "bytes": 27677,
+      "sha256": "affe591f22d155a4548674a600e388c59a89149bdec53a6d20371c8b7cb4e182"
+    },
+    {
+      "name": "P7-field-diff.json",
+      "bytes": 14190,
+      "sha256": "55945d4bd3c0bb140f0a36a452d962aca860dfeb1f8c8cebbcd1018921bb17b2"
+    },
+    {
+      "name": "P7-field-diff.md",
+      "bytes": 12669,
+      "sha256": "0cdd8f6f067b546fd190073f38e34462b370d57b837a6b15927adfb93055a805"
+    },
+    {
+      "name": "P7-field-fidelity.json",
+      "bytes": 290,
+      "sha256": "45f35ee78f6d112aad48d5b8748b64ffe1610db570f56c9518aa4711ae6fd57b"
+    },
+    {
+      "name": "P7-gate-results.json",
+      "bytes": 3001,
+      "sha256": "c254d2cd82bc9a637592fd0432bae38f4098e3c9de66541c0b1690fc0ef6aaf4"
+    },
+    {
+      "name": "P7-golden-log.txt",
+      "bytes": 330,
+      "sha256": "eaed2d48f66cd195c0edfa0da879740f349f7ebee983bfc8b0f03ea8fe01347c"
+    },
+    {
+      "name": "P7-industry-parity-log.txt",
+      "bytes": 1021,
+      "sha256": "4bcc7084ead7d999b35705ebd398dff7efed3e93258efd64506c0eb79f68f49f"
+    },
+    {
+      "name": "P7-initial-direction.json",
+      "bytes": 26913,
+      "sha256": "3d6ca0ee8d166cad7d48e7b462702e37890a9e5322707238693cb802ab699f4e"
+    },
+    {
+      "name": "P7-layout-contract.md",
+      "bytes": 1884,
+      "sha256": "abddbc5989ebd8ca916e6f28645608d4e3bd8779afe50736395c54739f7c4334"
+    },
+    {
+      "name": "P7-natural-language-input.json",
+      "bytes": 11313,
+      "sha256": "10f00e40c6e02a80e866202a12f6dd3f603df24b05c3d17f9b4facd04a62e9e3"
+    },
+    {
+      "name": "P7-next-image-preflight.md",
+      "bytes": 1313,
+      "sha256": "25612758df276fc2fc0647c0ac1c2709129059411a9af31680b52582deecd8cd"
+    },
+    {
+      "name": "P7-prompt-output-status.json",
+      "bytes": 468,
+      "sha256": "8c87b65555805e317e01686610953ab95e13fd97b10c1ab8256ebdfaf9bf7a1d"
+    },
+    {
+      "name": "P7-protection-and-gates.md",
+      "bytes": 1471,
+      "sha256": "52d1382cf3fb15d84cf08f1702925fb073fa914794e40de18d9a836f3441096e"
+    },
+    {
+      "name": "P7-protection-proof.json",
+      "bytes": 10699,
+      "sha256": "6b66c27f467e15b9065d4a624a419ebc019f7a26703b26f93c72455be63ca6db"
+    },
+    {
+      "name": "P7-repo-verify-log.txt",
+      "bytes": 169932,
+      "sha256": "e9cb2e20e2aa372bd9e87eb24e40699c86205a72121a70e373869fc36a62080e"
+    },
+    {
+      "name": "P7-report-link-check.json",
+      "bytes": 38,
+      "sha256": "10a0e12bbe4836c5935233a1909f42f4df8064940dc0ef8fd45237ac6be75299"
+    },
+    {
+      "name": "P7-request-evidence.json",
+      "bytes": 1400,
+      "sha256": "9f0276a0642da56e4f018b44031a908d75952b69af7c6b52ada14b7dad9c1564"
+    },
+    {
+      "name": "P7-review.md",
+      "bytes": 1742,
+      "sha256": "efa702017f2da48de349648f62df44d84da05e9ea75cddb08426e8f93eee3400"
+    },
+    {
+      "name": "P7-screen-composite-feasibility.md",
+      "bytes": 1901,
+      "sha256": "5ffeb6ec1680daaf3ae83e460242ef759a54b0db1c7c6070c21b138315a5d407"
+    },
+    {
+      "name": "P7-secret-scan.json",
+      "bytes": 161,
+      "sha256": "9f747f96a1417a3487bb0d659c4c15f7d10b8a0d7e5b41fc1427824913485d51"
+    },
+    {
+      "name": "P7-standard-industry-regression.json",
+      "bytes": 1198,
+      "sha256": "ed0cc15c92012bc71a45eb3f3ae3bdc8e5d792fc810de3227b8cfcb14f4b53bb"
+    },
+    {
+      "name": "P7-web-confirmed.png",
+      "bytes": 72372,
+      "sha256": "b321d766caca74ac1b37bb9961249c43a6057532829f5a44af1fc461b442de1e"
+    },
+    {
+      "name": "P7-web-input-requests.json",
+      "bytes": 12669,
+      "sha256": "bb067bc43736c43622fc6800cf63c794c9274f9e7f727a958b5d8e17b1494867"
+    },
+    {
+      "name": "P7-workflow-js-log.txt",
+      "bytes": 2904,
+      "sha256": "7b2f28586a1a3d28c79dc146c7dd3c1bc47031693baf4f5ba50f7a711c6cac96"
+    },
+    {
+      "name": "P7-workflow-ts-log.txt",
+      "bytes": 23662,
+      "sha256": "981610b51f262d8e8b35f403698b99c4e22651941ee0daa290c77c2feaba5da0"
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "overall": "P7_OFFLINE_EXPRESSION_NOT_PASSED",
+  "blockingGate": "G4",
+  "blockReason": "SPACE_PROMPT_BUDGET_BLOCKED:12124>12000",
+  "productionRegressions": [
+    {
+      "command": "node node_modules/tsx/dist/cli.mjs --test packages/visual-workflow/tests/*.test.ts",
+      "status": "PASS",
+      "exitCode": 0,
+      "archivedLog": "P7-workflow-ts-log.txt",
+      "originalLocalLogSha256": "bea905b217d87e64745d71670f3a761e2df5c91a4cfdc10907d6258cea00c3bd",
+      "archivedLogSha256": "981610b51f262d8e8b35f403698b99c4e22651941ee0daa290c77c2feaba5da0",
+      "archiveNormalization": "LF; trailing whitespace removed; original local log preserved"
+    },
+    {
+      "command": "node --test packages/visual-workflow/tests/*.test.js",
+      "status": "PASS",
+      "exitCode": 0,
+      "archivedLog": "P7-workflow-js-log.txt",
+      "originalLocalLogSha256": "e28e14d8a418c332a8b943d2835c8a1e2cfd7bd1298b7b3792ee62742e59b754",
+      "archivedLogSha256": "7b2f28586a1a3d28c79dc146c7dd3c1bc47031693baf4f5ba50f7a711c6cac96",
+      "archiveNormalization": "LF; trailing whitespace removed; original local log preserved"
+    },
+    {
+      "command": "node node_modules/tsx/dist/cli.mjs .codex-smoke/jiuzhou-p7/industry-parity.mjs",
+      "status": "PASS",
+      "exitCode": 0,
+      "archivedLog": "P7-industry-parity-log.txt",
+      "originalLocalLogSha256": "11d4d202d49ba81ba1caca06b08137c509b9d5ebd80283620bf7110c14c0cbd8",
+      "archivedLogSha256": "4bcc7084ead7d999b35705ebd398dff7efed3e93258efd64506c0eb79f68f49f",
+      "archiveNormalization": "LF; trailing whitespace removed; original local log preserved"
+    },
+    {
+      "command": "npm run golden:test",
+      "status": "PASS",
+      "exitCode": 0,
+      "archivedLog": "P7-golden-log.txt",
+      "originalLocalLogSha256": "78a4f5734232760dcf2bc1d582a66a5a73e1b296580fa769923fc6b2e2f537c5",
+      "archivedLogSha256": "eaed2d48f66cd195c0edfa0da879740f349f7ebee983bfc8b0f03ea8fe01347c",
+      "archiveNormalization": "LF; trailing whitespace removed; original local log preserved"
+    },
+    {
+      "command": "npm run repo:verify",
+      "status": "PASS",
+      "exitCode": 0,
+      "archivedLog": "P7-repo-verify-log.txt",
+      "originalLocalLogSha256": "d3e745d43935bb0279c3ed1c7e040f0400b6a932c1ff61af2a806d7d2368cd19",
+      "archivedLogSha256": "e9cb2e20e2aa372bd9e87eb24e40699c86205a72121a70e373869fc36a62080e",
+      "archiveNormalization": "LF; trailing whitespace removed; original local log preserved"
+    }
+  ],
+  "workflowTsTests": 82,
+  "workflowJsTests": 30,
+  "currentFlowsTests": 1294,
+  "repositoryGuardTests": 56,
+  "industryActualRequestParity": 3,
+  "golden": "PASS_EXISTING_BASELINE_NOT_REFRESHED",
+  "goldenVisualLabels": "历史标签，不是P7视觉验收",
+  "webConfirmation": "PASS",
+  "fieldRecordFidelity": "PASS",
+  "finalPromptFidelity": "NOT_VERIFIED_BLOCKED",
+  "standardRequestPreview": "NOT_RUN_BLOCKED",
+  "realProviderCalls": 0,
+  "visualQuality": "NOT_TESTED_WAITING_SEPARATE_AUTHORIZATION"
+}

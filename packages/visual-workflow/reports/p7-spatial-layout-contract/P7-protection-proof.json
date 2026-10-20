@@ -1,0 +1,185 @@
+{
+  "status": "PASS",
+  "branch": "fix/jiuzhou-final-spatial-balance",
+  "baselineHead": "6aeaf3df46e0b206bd1688764df75940f45f1c78",
+  "initialWorktreeClean": true,
+  "baselineMatchesAttachment": true,
+  "frozenBranchHead": "5103076f5db51d9d3fe1705c8f2918443be24e49",
+  "source": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-local-boundaries\\browser-review\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+  "newCopy": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-p7\\browser-review\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+  "protectedRoots": [
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architectural-refinement\\confirmed-browser\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "files": 65,
+      "beforeInventorySha256": "50ad2e0ec7f7a83c18309b35fe19e9aed1b35cc9034ce2856d100267c3c6f77d",
+      "afterInventorySha256": "50ad2e0ec7f7a83c18309b35fe19e9aed1b35cc9034ce2856d100267c3c6f77d",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\reports\\architectural-integration",
+      "files": 45,
+      "beforeInventorySha256": "d6d19ac6a756269844bbb537135230a905b1fe5b7539883d9b7a3a8239aeb4e7",
+      "afterInventorySha256": "d6d19ac6a756269844bbb537135230a905b1fe5b7539883d9b7a3a8239aeb4e7",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architectural-integration\\confirmed-review\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "files": 62,
+      "beforeInventorySha256": "07ffc3a2c9c4bf3d6a4d392b317cf7c28533552bb6413264ba72842535cbbd88",
+      "afterInventorySha256": "07ffc3a2c9c4bf3d6a4d392b317cf7c28533552bb6413264ba72842535cbbd88",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architectural-integration\\real-validation\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "files": 82,
+      "beforeInventorySha256": "9f5a447ba3494328663d6d644905950c647f8bc0a5aa592a81e7204c61c73286",
+      "afterInventorySha256": "9f5a447ba3494328663d6d644905950c647f8bc0a5aa592a81e7204c61c73286",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architectural-language\\confirmed-copy\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "files": 78,
+      "beforeInventorySha256": "7a28e540b1eebb719ecdeaebea439e0fb4ba79a5d603bac18307f366fad02814",
+      "afterInventorySha256": "7a28e540b1eebb719ecdeaebea439e0fb4ba79a5d603bac18307f366fad02814",
+      "unchanged": true
+    },
+    {
+      "root": "C:\\Users\\kyrie\\AppData\\Roaming\\masterpiece-os-desktop\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "files": 46,
+      "beforeInventorySha256": "29a4f69e069e70c6da1706d1b14541d779b0e140e53fe5ba43d0a2455cf6e9b1",
+      "afterInventorySha256": "29a4f69e069e70c6da1706d1b14541d779b0e140e53fe5ba43d0a2455cf6e9b1",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\reports\\architectural-refinement",
+      "files": 29,
+      "beforeInventorySha256": "968f54142ada137668b6831a02df97b67f6c69f31e7e478587aa4c9b3268f57e",
+      "afterInventorySha256": "968f54142ada137668b6831a02df97b67f6c69f31e7e478587aa4c9b3268f57e",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architectural-refinement\\real-validation\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "files": 62,
+      "beforeInventorySha256": "5c1c95b855783ba4f09f9fb317284cf45a6b43d8760177990ae5ae36ba2c940b",
+      "afterInventorySha256": "5c1c95b855783ba4f09f9fb317284cf45a6b43d8760177990ae5ae36ba2c940b",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architectural-refinement\\real-validation\\authorized-execution",
+      "files": 10,
+      "beforeInventorySha256": "ab576c95e5cad89883cd73c658380c642811c27ee8b1ebb07b24df692d8a6059",
+      "afterInventorySha256": "ab576c95e5cad89883cd73c658380c642811c27ee8b1ebb07b24df692d8a6059",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\reports\\architectural-refinement-validation",
+      "files": 17,
+      "beforeInventorySha256": "7de3fda41465bff4290b8d6731734708fe7102548fa7d58dc64e825ce782b5b8",
+      "afterInventorySha256": "7de3fda41465bff4290b8d6731734708fe7102548fa7d58dc64e825ce782b5b8",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\commercial-attribute\\confirmed-review\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "files": 68,
+      "beforeInventorySha256": "8091700d3cda8a761ef058960f4df37a90f54d91273537e22bc756625e61f377",
+      "afterInventorySha256": "8091700d3cda8a761ef058960f4df37a90f54d91273537e22bc756625e61f377",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\reports\\commercial-attribute",
+      "files": 30,
+      "beforeInventorySha256": "cff202a98f000ad0fdb61a84d2092d0289edb7c4dda812dc207fa1514858ca1f",
+      "afterInventorySha256": "cff202a98f000ad0fdb61a84d2092d0289edb7c4dda812dc207fa1514858ca1f",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\commercial-attribute\\real-validation\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "files": 65,
+      "beforeInventorySha256": "5cf0d86f7cc7e71bb34b07b82f0574b8fc06f8f6ac9f2bfd4b7e3bfdb88fe779",
+      "afterInventorySha256": "5cf0d86f7cc7e71bb34b07b82f0574b8fc06f8f6ac9f2bfd4b7e3bfdb88fe779",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\commercial-attribute\\real-validation\\authorized-execution",
+      "files": 10,
+      "beforeInventorySha256": "36eba254fa72a32a9ce55da6ed567d5b5471fc62fe92e2407521c551f2dc1454",
+      "afterInventorySha256": "36eba254fa72a32a9ce55da6ed567d5b5471fc62fe92e2407521c551f2dc1454",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\reports\\commercial-attribute-validation",
+      "files": 19,
+      "beforeInventorySha256": "ccfd23fa6e33852c3da25304157b21be38cd0a600aad768662ab2c180603352f",
+      "afterInventorySha256": "ccfd23fa6e33852c3da25304157b21be38cd0a600aad768662ab2c180603352f",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-local-boundaries\\browser-review\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "files": 259,
+      "beforeInventorySha256": "f33d09d55dc521ef826fd18ffc92cdd97131e28dfb55cc4c0a4f2b25123211bf",
+      "afterInventorySha256": "f33d09d55dc521ef826fd18ffc92cdd97131e28dfb55cc4c0a4f2b25123211bf",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-spatial-balance\\real-validation",
+      "files": 282,
+      "beforeInventorySha256": "b0008b0aeccf75377109eb381b608193328b32d051110b1bbcef565fa2a75a2e",
+      "afterInventorySha256": "b0008b0aeccf75377109eb381b608193328b32d051110b1bbcef565fa2a75a2e",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-art-medical\\real-validation",
+      "files": 243,
+      "beforeInventorySha256": "3628daa3d9258c095023d3909cb124f4760c10d1d2a2770b916cf19bfc1af43d",
+      "afterInventorySha256": "3628daa3d9258c095023d3909cb124f4760c10d1d2a2770b916cf19bfc1af43d",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\reports",
+      "files": 533,
+      "beforeInventorySha256": "a372403f5acced9c36de56460a6b2eed9ec693492597425e7aa6e93da3191365",
+      "afterInventorySha256": "a372403f5acced9c36de56460a6b2eed9ec693492597425e7aa6e93da3191365",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-local-boundaries",
+      "files": 619,
+      "beforeInventorySha256": "d6b5bc7f32f5bbf22aedcd4ea4beb6ace8693b4ae7dbda78c3b6481aac09125d",
+      "afterInventorySha256": "d6b5bc7f32f5bbf22aedcd4ea4beb6ace8693b4ae7dbda78c3b6481aac09125d",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architecture-commercial-layer\\single-image-validation\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "files": 88,
+      "beforeInventorySha256": "eb8fc3cf637122349e88e64482c9074b6f2f9be7cb19c029b2085874d14ec681",
+      "afterInventorySha256": "eb8fc3cf637122349e88e64482c9074b6f2f9be7cb19c029b2085874d14ec681",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architecture-commercial-layer\\single-image-validation\\authorized-execution",
+      "files": 19,
+      "beforeInventorySha256": "a4f95ae2f2999a25e66fcfd055c65e4b9a2adc3c72e10b3739514d262f6a6bec",
+      "afterInventorySha256": "a4f95ae2f2999a25e66fcfd055c65e4b9a2adc3c72e10b3739514d262f6a6bec",
+      "unchanged": true
+    }
+  ],
+  "onlyExcludedNewReportDirectory": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\reports\\p7-spatial-layout-contract",
+  "productionTrackedDiff": [],
+  "sourceAndHistoricalAssetsUnchanged": true,
+  "copyChangedFiles": [
+    {
+      "path": "project-context\\design-direction-history\\80889726-5c65-45f4-a3d0-8f648da05ace.json",
+      "sha256": "f563cda5bd3a344e727df4ed1c2f2e66ae36be3d9a536f4b4815c01437e38757"
+    },
+    {
+      "path": "project-context\\design-direction-history\\fbf19055-ecaa-48cc-b170-c68bb9df50cb.json",
+      "sha256": "c0582e9686faf4a3f788a9c817e071669a030a131795db6944c7aac4454b3468"
+    },
+    {
+      "path": "project-context\\design-direction.json",
+      "sha256": "8ef52eda4aa1a6406db4c3a9181e72d93c956f952767231441de4cf54e8e270c"
+    }
+  ],
+  "copyHasNoOtherChanges": true,
+  "realCredentialsCopied": false
+}

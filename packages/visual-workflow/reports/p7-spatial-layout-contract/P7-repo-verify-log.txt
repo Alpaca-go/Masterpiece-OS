@@ -1,0 +1,1917 @@
+> masterpiece-os@5.0.0-rc.1 repo:verify
+> npm run verify:repository-contract && npm run verify:visual-workflow-isolation && npm run verify:version-consistency && npm run verify:version-naming && npm run verify:workspace-boundaries && npm run verify:no-obsolete-code && npm run verify:production-boundaries && npm run verify:tracked-runtime-assets && npm run verify:no-project-specific-production-rules && npm run verify:golden-boundary && npm run verify:current-flows && npm run verify:analysis-guards && npm run repo:guard:test
+
+
+> masterpiece-os@5.0.0-rc.1 verify:repository-contract
+> node ./scripts/verify-repository-contract.mjs
+
+Repository Contract Guard: PASS
+namespace exceptions: 0 | CURRENT authorities: 16 | frozen prompts: 4 | compatibility entries: 4
+Golden files changed: NO | compatibility delta: 0
+provider calls: 0 | business writes: 0 | digest auto-update: NO
+
+> masterpiece-os@5.0.0-rc.1 verify:visual-workflow-isolation
+> node ./scripts/verify-visual-workflow-isolation.mjs
+
+[visual-workflow-isolation] PASS — owned code, prompts, UI and ingress boundary verified; no provider calls.
+
+> masterpiece-os@5.0.0-rc.1 verify:version-consistency
+> node ./scripts/verify-version-consistency.mjs
+
+Product version: 5.0.0-rc.1
+
+  [ok]   VERSION file
+  [ok]   package.json version matches VERSION
+  [ok]   package-lock.json root version matches VERSION
+  [ok]   no sub-directory package-lock.json files
+  [ok]   apps/cli/src/runtime-trace.js DEFAULT_APP_VERSION matches VERSION
+  [ok]   removed Desktop workspace is absent from package-lock.json
+
+Internal packages (packages/*):
+  [ok]     packages/analysis-runtime: private + version 0.0.0
+  [ok]     packages/creative-intelligence: private + version 0.0.0
+  [ok]     packages/creative-production-runtime: private + version 0.0.0
+  [ok]     packages/document-ingestion: private + version 0.0.0
+  [ok]     packages/evaluation-loop-contracts: private + version 0.0.0
+  [ok]     packages/image-generation-adapter: private + version 0.0.0
+  [ok]     packages/image-generation-contracts: private + version 0.0.0
+  [ok]     packages/image-generation-runtime: private + version 0.0.0
+  [ok]     packages/image-provider-dashscope: private + version 0.0.0
+  [ok]     packages/model-benchmark: private + version 0.0.0
+  [ok]     packages/model-registry: private + version 0.0.0
+  [ok]     packages/model-runtime: private + version 0.0.0
+  [ok]     packages/project-contracts: private + version 0.0.0
+  [ok]     packages/reference-asset-inspector: private + version 0.0.0
+  [ok]     packages/runtime-core: private + version 0.0.0
+  [ok]     packages/visual-workflow: private + version 0.0.0
+
+Lab packages (labs/*):
+  [ok]     labs/reference-style-conversion: private
+
+PASS  version consistency gate completed without inconsistencies.
+
+> masterpiece-os@5.0.0-rc.1 verify:version-naming
+> node ./scripts/verify-version-naming.mjs
+
+[version-naming] PASS — current product semantics use capability names; compatibility identifiers remain allowed.
+
+> masterpiece-os@5.0.0-rc.1 verify:workspace-boundaries
+> node ./scripts/verify-workspace-boundaries.mjs
+
+
+[1] Checking for @masterpiece-os/ namespace residuals...
+  [ok]   no @masterpiece-os/ package name residuals
+
+[2] Checking that workspace consumers declare internal @masterpiece/* deps...
+  internal packages discovered: @masterpiece/analysis-runtime, @masterpiece/creative-intelligence, @masterpiece/creative-production-runtime, @masterpiece/document-ingestion, @masterpiece/evaluation-loop-contracts, @masterpiece/image-generation-adapter, @masterpiece/image-generation-contracts, @masterpiece/image-generation-runtime, @masterpiece/image-provider-dashscope, @masterpiece/model-benchmark, @masterpiece/model-registry, @masterpiece/model-runtime, @masterpiece/project-contracts, @masterpiece/reference-asset-inspector, @masterpiece/runtime-core, @masterpiece/visual-workflow
+  [ok]   apps/cli declares deps for 3 @masterpiece/* import(s)
+  [ok]   apps/web declares deps for 1 @masterpiece/* import(s)
+  [ok]   apps/web-runtime declares deps for 3 @masterpiece/* import(s)
+
+[3] Scanning for deep relative imports of packages/*/src/* from apps/** and tests/**...
+  [ok]   no deep imports of packages/*/src/* in apps/** or tests/**
+
+[4] Scanning for subpath imports that are not in package.json exports...
+  [ok]   all subpath imports in apps/** and tests/** are valid
+
+Summary: 0 failure(s), 0 warning(s)
+
+PASS — workspace boundary gate clean. No deep imports remain.
+
+> masterpiece-os@5.0.0-rc.1 verify:no-obsolete-code
+> node ./scripts/verify-no-obsolete-code.mjs
+
+[no-obsolete-code] PASS — scanned 1763 files, no forbidden legacy references.
+
+> masterpiece-os@5.0.0-rc.1 verify:production-boundaries
+> node ./scripts/verify-production-boundaries.mjs
+
+[production-boundaries] PASS — checked 799 current production files; Desktop/Electron/lab/archive imports are absent.
+
+> masterpiece-os@5.0.0-rc.1 verify:tracked-runtime-assets
+> node ./scripts/verify-tracked-runtime-assets.mjs
+
+[verify-tracked-runtime-assets] PASS — 8 declared assets, all checks green.
+
+> masterpiece-os@5.0.0-rc.1 verify:no-project-specific-production-rules
+> node ./scripts/verify-no-project-specific-production-rules.mjs
+
+{
+  "status": "pass",
+  "violations": []
+}
+
+> masterpiece-os@5.0.0-rc.1 verify:golden-boundary
+> node ./scripts/verify-golden-production-boundary.mjs
+
+{
+  "status": "pass",
+  "violations": []
+}
+
+> masterpiece-os@5.0.0-rc.1 verify:current-flows
+> node ./scripts/verify-current-flows.mjs
+
+
+[current-flows] Engine document preparation paths
+✔ document preparation prefers market research over generic brand strategy labels (16.8832ms)
+✔ document preparation splits long text at a natural sentence boundary (0.5938ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 147.1296
+
+[current-flows] Version naming policy
+[version-naming] PASS — current product semantics use capability names; compatibility identifiers remain allowed.
+
+[current-flows] No project-specific production prompt rules
+{
+  "status": "pass",
+  "violations": []
+}
+
+[current-flows] Golden and fixture production boundary
+{
+  "status": "pass",
+  "violations": []
+}
+
+[current-flows] Offline cross-project evaluation
+{
+  "schemaVersion": "1.0",
+  "status": "pass",
+  "note": "Offline evaluation only; no production prompt or source file is modified.",
+  "results": [
+    {
+      "caseId": "same-domain-different-character",
+      "status": "pass",
+      "contractCoverage": 1,
+      "sourceGrounding": 1,
+      "projectSpecificity": 1,
+      "crossCaseLeakage": 0,
+      "crossMediaLeakage": 0,
+      "firstPassDirectionScore": 1,
+      "missing": [],
+      "leakage": []
+    },
+    {
+      "caseId": "treatment-room",
+      "status": "pass",
+      "contractCoverage": 1,
+      "sourceGrounding": 1,
+      "projectSpecificity": 1,
+      "crossCaseLeakage": 0,
+      "crossMediaLeakage": 0,
+      "firstPassDirectionScore": 1,
+      "missing": [],
+      "leakage": []
+    },
+    {
+      "caseId": "technology-platform",
+      "status": "pass",
+      "contractCoverage": 1,
+      "sourceGrounding": 1,
+      "projectSpecificity": 1,
+      "crossCaseLeakage": 0,
+      "crossMediaLeakage": 0,
+      "firstPassDirectionScore": 1,
+      "missing": [],
+      "leakage": []
+    },
+    {
+      "caseId": "education-platform",
+      "status": "pass",
+      "contractCoverage": 1,
+      "sourceGrounding": 1,
+      "projectSpecificity": 1,
+      "crossCaseLeakage": 0,
+      "crossMediaLeakage": 0,
+      "firstPassDirectionScore": 1,
+      "missing": [],
+      "leakage": []
+    },
+    {
+      "caseId": "cross-media-packaging",
+      "status": "pass",
+      "contractCoverage": 1,
+      "sourceGrounding": 1,
+      "projectSpecificity": 1,
+      "crossCaseLeakage": 0,
+      "crossMediaLeakage": 0,
+      "firstPassDirectionScore": 1,
+      "missing": [],
+      "leakage": []
+    }
+  ]
+}
+
+[current-flows] Runtime document parsing and delivery paths
+
+> masterpiece-os@5.0.0-rc.1 runtime-application:test
+> tsx --test tests/runtime-application/*.test.ts
+
+✔ completion orchestrator records zero repair attempts when analysis is already ready (10.3066ms)
+✔ completion orchestrator repairs missing tone boundaries and reaches ready (59.7777ms)
+✔ completion orchestrator stops after two invalid repair attempts (30.7042ms)
+✔ completion orchestrator asks about real packaging facts without calling AI (4.1571ms)
+✔ completion retries invalid shapes with corrective feedback and preserves project facts (16.1727ms)
+✔ provider bridge recovers JSON formatting before validating missing spatial decisions (2.0543ms)
+✔ out-of-range citation indexes are rejected and retry uses current-project evidence (11.6936ms)
+✔ completion orchestrator validates and repairs polluted spatial semantics once (1.7797ms)
+✔ completion orchestrator fails closed when spatial repair remains invalid (1.4333ms)
+✔ Windows-safe report filename includes project and model (13.2929ms)
+✔ Fusion Enhanced is a single-call prompt profile and preserves confidence boundaries (3.5154ms)
+✔ report title is project-specific and final decision check fails closed (48.1006ms)
+✔ path boundary and secret redaction fail safely (11.4569ms)
+✔ Anchor Candidate service persists upload, review, retry and advances Session monotonically (264.2246ms)
+✔ selecting one Candidate Set member supersedes its comparable siblings (282.5417ms)
+✔ Anchor Provider bridge compiles one candidate, reuses image Run Store and attaches the downloaded output (13.6076ms)
+✔ Anchor Provider bridge reconciles a stale generating candidate from its failed image run (1.3134ms)
+✔ Anchor Provider bridge generates a traceable multi-candidate set for comparison (1.9502ms)
+✔ CI-W1C.1 A03 (static): runtime-services.ts submitAnchorGeneration does not pass modelId: input.modelId (28.053ms)
+✔ CI-W1C.1 C (dynamic): runtime-services submitAnchorGeneration fails closed when apiProfileId is missing (47.1851ms)
+✔ CI-W1C.1 A01+A02+A04+A05+A06+A08: V3 path resolves image model from image profile; analysis model never overrides (284.9443ms)
+✔ CI-W1C.1 M03: truly unsupported image size still BLOCK (defense-in-depth) (156.6357ms)
+✔ CI-W1C.1 M04: old wrong override (modelId: input.modelId) would have broken �?confirms pre-fix call shape is no longer present (215.4087ms)
+✔ CI-W1C.1 PART C (orchestrator): startAnchorProduction throws SELECTION_REQUIRED when options.apiProfileId is missing (13.3101ms)
+✔ CI-W1C.2 F01+F02+F03: anchor start → getAnchorProduction returns 3 candidates + completed status (same + fresh instance) (201.0473ms)
+✔ CI-W1C.2 F04+F05: explicit approval → approvedAnchor + history fresh (same + fresh instance) (248.9887ms)
+✔ CI-W1C.2 F06+F07: a second RuntimeServices instance reads persisted candidates + approval (166.8239ms)
+✔ CI-W1C.2 F08: read-after-write does not return stale state (no in-memory cache) (420.3231ms)
+✔ CI-W1C.2 S01: completed run cannot expose candidates=[] (148.1769ms)
+✔ CI-W1C.2 S02: approvalRevision=1 cannot expose approvedAnchor=null (267.4783ms)
+✔ CI-W1C.2 S03: candidateIds and candidate objects remain consistent (200.6312ms)
+✔ CI-W1C.2 S04: cancelled run not reported as generating (314.6751ms)
+✔ core v5 never depends on Desktop (62.9568ms)
+✔ shared pipeline calls runAnalysisPipeline directly without a host subprocess (1.7878ms)
+✔ primary development entry starts the Node Web Host (10.6554ms)
+✔ analysis UI contains intake actions and a free-form API Profile provider (4.2331ms)
+✔ analysis API selection is controlled by App and survives settings navigation (13.5261ms)
+✔ Web exposes only the current production workspaces (4.7938ms)
+✔ recent project rows retain the destructive local-folder delete action (12.6703ms)
+✔ reference reconstruction prompts stay isolated from upstream Markdown reports (1.1495ms)
+✔ Reference Anchor workspace supports uploading a current project inline (1.7601ms)
+✔ API Key is encrypted outside project records (8.6177ms)
+✔ fallback does not infer asset truth or roles from filenames (2.5657ms)
+✔ confirmed identity evidence enters the core pack while duplicates remain excluded (10.5039ms)
+✔ user-uploaded current visuals carry runtime authenticity into the identity pack and bind Logo evidence (0.8886ms)
+✔ reference master set excludes near duplicates and requires readable style rules (0.3873ms)
+✔ reference selection rejects model-invented output task names before subset paths are built (1.0598ms)
+✔ reference selection prompt enumerates every supported output task (0.4385ms)
+✔ perceptual hashes group visually near files even when SHA-256 values differ (0.4582ms)
+✔ task subsets are compiled only for output types declared by runtime evidence (0.5347ms)
+✔ clarification builder turns packaging field failures into natural language options (11.8798ms)
+✔ clarification builder limits normal user interruptions to at most three questions (4.8946ms)
+✔ 15.1 视觉品牌名优先：文档品牌名不同不覆盖，记录 unresolved 冲突 (16.1729ms)
+✔ 15.1 视觉 Logo 优先：logoLocked / logoAssetIds 来自视觉主源，不被文档覆盖 (14.3024ms)
+✔ 15.1 Locked Assets 不被文档覆盖：文档锁定事实差异生成 unresolved 冲突 (0.8553ms)
+✔ 15.1 文档补充目标用户：视觉无该字段时取文档，记录 document_wins (13.6333ms)
+✔ 15.1 文档补充价格定位：取文档值，记录 document_wins (0.4701ms)
+✔ 15.1 冲突进入 conflicts 数组且全部可追溯 (0.4ms)
+✔ 15.1 用户 Override 正确覆盖字段并记录 user_confirmed (0.7805ms)
+✔ 15.1 合并过程不修改输入对象 (0.5009ms)
+✔ 15.1 applyUserOverride 仅写入目标字段，不触碰其他字段 (0.4744ms)
+✔ 15.2 文档 Context 可关联视觉项目 (60.3114ms)
+✔ 15.2 一个文档 Context 可关联多个视觉项目 (53.1563ms)
+✔ 15.2 解除关联只删除 Link，不删除原文档任务 (37.309ms)
+✔ 15.2 删除被引用文档 Context 前可追溯引用关系（提示） (20.3189ms)
+✔ 15.3 视觉身份生成时间变化使 Resolved Context 失效（返回 null） (57.5817ms)
+✔ 15.3 文档目标用户等生成时间变化只使 Resolved 失效 (54.9286ms)
+✔ 15.3 getResolved 只读取不重跑上游：指纹一致时原样返回已合并结果 (34.8003ms)
+✔ 15.4 文档上下文状态不影响视觉分析完成状态（getVisualStatus 独立） (1.087ms)
+✔ 15.4 文档提取失败不破坏 Resolved Context 读取：优雅降级返回 null (43.7747ms)
+✔ 15.4 Context Resolver 失败不删除上游：视觉上下文缺失时 Resolved 文件仍在磁盘 (53.1456ms)
+✔ 15.5 旧视觉项目可升级 Context：rebuild 后状态转为 ready (15.5895ms)
+✔ 15.5 已关联文档的旧项目迁移时重新合并，生成 Resolved Context (98.9287ms)
+✔ 15.5 迁移失败（rebuild 异常）不破坏原文件，也不抛出 (2.9956ms)
+✔ 15.5 旧文档任务可经 Legacy Adapter 转换为 DocumentVisualContext（复用既有能力） (67.1862ms)
+✔ 15.6 端到端：关联 → 合并 → 解决身份冲突 → Resolved 可用 → Reference 读取合并视图 (193.5631ms)
+✔ 15.6 阻断性冲突未解决时阻断 Reference Workflow（hasBlockingConflict 门禁） (33.3283ms)
+✔ Creative Direction runtime builds a text-only decision prompt and validates normalized output (13.0614ms)
+✔ Creative Direction rejects conflicting keep/remove rules and missing anti-copy policy (19.7037ms)
+✔ Creative Director service calls a text-only model, retries invalid JSON and persists a versioned direction (145.0764ms)
+✔ Creative Director service reads persisted v18.1 directions through an in-memory v1 migration (112.9721ms)
+✔ Creative Direction synthesis adapter excludes provenance and falls back on invalid output or timeout (3.1618ms)
+✔ Creative Direction supports one or both lanes, explicit finalization, and context staleness (258.4513ms)
+✔ Creative Direction rejects sources belonging to another project (25.7652ms)
+✔ deleting a Creative Direction workspace retains linked child runs (97.2582ms)
+✔ Creative Direction projects semantic fields only and detects same-source revisions (214.3609ms)
+✔ Creative Direction production handoff reaches READY only through a real compiler result (182.5473ms)
+✔ Creative Direction keeps production pending when visual research is not ready (105.9534ms)
+✔ Creative Direction rejects invalid compiler output and can retry a failed handoff (251.7577ms)
+✔ Creative Direction store migrates v0.1 final directions as stale (76.212ms)
+✔ Conversational generation accepts only user request and records the resulting Run reference (4.5825ms)
+✔ same-instruction retry reuses the persisted snapshot without rerunning Reading or compiling (0.81ms)
+✔ evaluation is persisted against the generating Canon and drives a traceable regeneration (3.33ms)
+✔ benchmark compiles once and sends the same Prompt Snapshot to every selected model (0.5275ms)
+✔ production bootstrap compiles Style Profile from the active model-generated Creative Direction (14.3685ms)
+✔ production context regeneration compiles a new user-directed Style Profile version (1.0808ms)
+✔ production context regeneration rejects an empty or fixed default direction (0.8605ms)
+✔ Creative Reading performs multimodal understanding only and persists all four V18 artifacts (97.9049ms)
+✔ Creative Research session has exactly four valid states and preserves identity (2.06ms)
+✔ Design Brief revision, evidence and AI/DESIGNER keyword provenance are traceable (2.178ms)
+✔ Reference source types require distinct and non-forgeable provenance (1.1198ms)
+✔ Search contracts lock kind, batch, cursor, exclusions and real Web provenance (7.0676ms)
+✔ Selections, regions, negative signals and finalized insights require designer evidence (1.4959ms)
+✔ Creative Direction Context compiles deterministically without downstream private schema (6.9846ms)
+✔ curated references persist locally, deduplicate by hash, and remain selection-compatible (93.2086ms)
+✔ Reference Guide is bound to the active Brief revision and creates no Search History (27.2377ms)
+✔ INTAKE -> RESEARCH requires active brief and enabled keyword (4.8313ms)
+✔ RESEARCH -> DIRECTION requires real designer selection evidence (0.5772ms)
+✔ DIRECTION -> RESEARCH is allowed (0.2912ms)
+✔ RESEARCH -> INTAKE reanalysis increments brief and preserves history (9.9355ms)
+✔ DIRECTION -> COMPLETED requires matching board and deterministic context (4.4936ms)
+✔ Creative Research declares the bounded repository, search and authority adapter surfaces (1.6775ms)
+✔ existing production boundary guard isolates Creative Research from external runtimes (0.5074ms)
+✔ foundation contains no provider implementation, network call or filesystem persistence (2.2994ms)
+✔ R2 Design Brief normalization caps collections and rejects invented evidence (8.8533ms)
+✔ R2 repair prompt includes evidence excerpts and the exact factual fieldEvidence contract (0.624ms)
+✔ R2 analysis adapter uses one primary call and at most one structured repair through profile credentials (1.4621ms)
+✔ R2 document adapter reads PDF, DOCX, Markdown and text as traceable multi-document evidence (3993.0623ms)
+✔ R2 document adapter preserves same-section conflicts and fails closed for unsupported or empty input (32.0741ms)
+✔ R2 service persists session and monotonic Design Brief revisions while Session remains INTAKE (381.2164ms)
+✔ R2 store rejects duplicate revisions and reports write failure without false success (82.0131ms)
+✔ Creative Research session deletion removes only the bounded session root (33.3975ms)
+✔ R3.1 request builder emits the exact official resource_type_filter array and caps each modality (13.0925ms)
+✔ Visual Search v2 routes knowledge and visual intents to different modality budgets (0.8236ms)
+✔ R3.1 query units and deterministic trimming cover ASCII, Chinese, mixed text, whitespace and emoji (0.9822ms)
+✔ R3.1 startResearch delegates INTAKE -> RESEARCH authority to the R1 invariant (14.1943ms)
+✔ Research Plan compiler preserves track provenance and keeps deferred visual clues out of the initial round (4.2892ms)
+✔ R3 Baidu provider consumes references only, normalizes provenance and deduplicates image URLs (56.136ms)
+✔ R3 credential reader uses the dedicated encrypted-store identifier instead of a model profile (0.5081ms)
+✔ R3 Baidu provider fails closed for missing credentials and retries one server failure only (4.5641ms)
+✔ R3 Baidu provider classifies auth, rate-limit and invalid-response failures without aggressive retries (1.4373ms)
+✔ R8 Baidu timeout aborts safely and exposes no credential in the error (1.8189ms)
+✔ R3 lifecycle persists INTAKE to RESEARCH, query status, deduped references and cross-query associations (311.5549ms)
+✔ R8 partial search batch preserves completed references and records failed query state (148.1481ms)
+✔ R4 reference projection exposes browser-safe provenance only (4.0721ms)
+✔ R4.1 Brief evidence projection resolves active field traces and redacts source paths (0.9821ms)
+✔ R4.1 Brief evidence supports multiple evidence and drops stale or unknown ids after designer override (0.4577ms)
+✔ R4 operation layer keeps credential write-only and retries the same failed query (1.2622ms)
+✔ R4 view model derives honest states, cross-query filters, and rejects unsafe source URLs (0.3535ms)
+✔ R8 unavailable remote images fail closed to a visible placeholder (16.9483ms)
+✔ research rerun targets failed and pending queries while preserving completed history (0.8681ms)
+✔ R4.1 view model separates Concept and Category before applying current-kind query chips (0.5812ms)
+✔ Creative Research route uses the designer-curated Reference Guide workflow (2.5509ms)
+✔ R5 preference service requires three selections and sends only selected evidence plus active rejection reasons (252.087ms)
+✔ R8 finalizedAt is valid only on FINALIZED insights and is immutable after persistence (19.9104ms)
+✔ R5 preference service fails below minimum and rejects fabricated adapter evidence before persistence (163.5121ms)
+✔ R5 preference adapter enforces explicit multimodal profile, one repair, evidence allowlists and 12-image budget (2.9696ms)
+✔ R5 preference UI keeps AI interpretation as draft evidence under explicit designer authority (8.463ms)
+✔ R5 preference adapter rejects unknown evidence after its single repair and validates category/confidence (2.8196ms)
+✔ R5 selection persists NONE/SELECTED/REJECTED current state with session identity and immutable rejection history (111.9668ms)
+✔ R5 selection rejects fake/cross-session references and invalid attributes (33.9498ms)
+✔ R5 rapid selection writes serialize by reference and reload the last submitted state (52.551ms)
+✔ R5 operation DTO stays browser-safe and selection actions make zero model or import calls (5.5415ms)
+✔ R5 Selection Tray counts only current SELECTED evidence and existing attributes (0.5728ms)
+✔ designer-curated judgment surface keeps selection evidence and removes automated-search controls (2.5272ms)
+✔ R6 refresh appends novel provenance without mutating Brief, keywords, selections, and passes seen exclusions to search (147.0168ms)
+✔ R6 refinement validation rejects historical duplicates and invalid keyword evidence; similar requires a same-session source (103.74ms)
+✔ R6 refinement adapter requires the explicit profile and allows only one structured-output repair (1.4401ms)
+✔ R6 research search strategy creates revision, preserves facts/evidence, records REMOVE_KEYWORD, and plans novel adjustment queries (151.8493ms)
+✔ R6 explicit reanalysis re-reads documents, uses R1 transition, accepts only document factual evidence, and preserves research evidence (166.239ms)
+✔ R6 reanalysis rejects fabricated reference factual evidence before writing a revision or feedback signal (99.3097ms)
+✔ R6 soft correction signal is read-only and appears only after three poor batches (0.7649ms)
+✔ R7 direction entry requires RESEARCH with a designer-selected reference and rejects INTAKE/COMPLETED (123.8626ms)
+✔ R7 direction entry activates DIRECTION with the saved board id and resumes idempotently (91.9512ms)
+✔ R7 initial board keeps only current evidence: selected refs, active rejections, FINALIZED insights with designer override (332.3861ms)
+✔ R7 initial board summary falls back to brief visualKeywords plus selected attributes (243.4509ms)
+✔ R7 board save appends a revision, preserves history across reload, and writes nothing below the board (453.5255ms)
+✔ R7 board save rejects unselected, nonexistent and cross-session evidence (866.7806ms)
+✔ R7 return-to-research preserves all evidence and re-entry clones authored text without overwriting it (484.8997ms)
+✔ R8 direction re-entry compares first-finalized time while preserving legacy createdAt fallback (243.5201ms)
+✔ R8 failed Direction Board atomic write preserves the current revision and active board id (144.2593ms)
+✔ R8 Context failure keeps DIRECTION recoverable and completion retry reuses persisted Context (261.3629ms)
+✔ R7 completeDirection compiles an exact, persisted, immutable context and freezes the session (449.3446ms)
+✔ R7 COMPLETED session is read-only for selections, preference insights and new searches (403.0378ms)
+✔ R7 operations layer keeps browser DTOs safe and ignores hostile board-update identity fields (279.6909ms)
+✔ R7 full direction flow makes zero provider calls and zero downstream writes (490.594ms)
+✔ Reference Guide groups bypass legacy platform-query compilation and plan persistence (11.3105ms)
+✔ legacy platform-query compilation preserves unknown Pinterest terms and removes cross-group duplicates (1.2883ms)
+✔ Research Planner clusters clues, accepts a grounded model plan, and forcibly defers VISUAL tracks (14.5739ms)
+✔ Research Planner falls back deterministically when model output fails validation (3.5303ms)
+✔ Research Plan is bound to the active Brief revision and freezes after RESEARCH starts (2.2917ms)
+✔ Planner adapter performs one structured call for concise visual keyword groups (3.3909ms)
+✔ source-locked policy accepts only ZCOOL, Huaban, and Pinterest including subdomains (9.0235ms)
+✔ platform compiler emits nine group-bound domain constrained visual queries (1.3868ms)
+✔ Visual Search v2 caches a validated remote image as persistent WebP (140.182ms)
+✔ Visual Search v2 rejects private hosts, SVG, and undersized images without losing reference provenance (140.4814ms)
+✔ fatal credential errors stop a search batch before additional queued queries start (6.0341ms)
+✔ Creative Session service persists state, decisions and active references across restart (115.4245ms)
+✔ Creative Session service migrates a legacy session in place without persisted prompts (20.6189ms)
+✔ BD-02 analysis_source relative frame documented (relative to input/) (2.7835ms)
+✔ BD-03 generation_reference relative frame documented (relative to project root) (0.6778ms)
+✔ BD-04 analysis_source keeps input/ prefix (0.7599ms)
+✔ BD-05 generation_reference has NO input/ prefix (0.8007ms)
+✔ BD-06 resolver and Creative Task resolve the same local file (generation_reference) (302.8892ms)
+✔ BD-07 generation_reference exists -> no REFERENCE_ASSET_NOT_FOUND (363.634ms)
+✔ BD-08 analysis_source exists -> no regression (input/ prefix path) (97.084ms)
+✔ BD-09 missing generation_reference still fail-closed (187.9327ms)
+✔ BD-10 missing analysis_source still fail-closed (178.0712ms)
+✔ BD-11 asset id unchanged (identity bridge untouched) (4.1473ms)
+✔ BD-12 projectId unchanged (0.7059ms)
+✔ BD-13 no absolute path exposed (1.5686ms)
+✔ BD-14 no path traversal (1.2473ms)
+✔ BD-15 referenceAssetIds ownership unchanged (1.8069ms)
+✔ BD-16 referenceAssignments authority unchanged (0.8146ms)
+✔ BD-19 P3-A12 unchanged (0.4654ms)
+✔ BD-20 P2 Shot Contract unchanged (0.3044ms)
+✔ BD-21 Provider identity unchanged (0.2229ms)
+✔ BD-24 Provider calls 0 (corrective is offline) (0.4427ms)
+✔ space sufficiency ignores absent packaging translation (7.7185ms)
+✔ packaging sufficiency requires confirmation for missing real product and structure (2.0192ms)
+✔ space execution parameters are defaultable rather than fatal (0.604ms)
+✔ space retains the pre-existing structure, material, lighting, and color gate (0.9496ms)
+✔ unknown brand facts require confirmation instead of AI invention (1.2925ms)
+✔ empty functional network is flagged with FUNCTIONAL_NETWORK_INCOMPLETE (3+ items required) (0.9702ms)
+✔ short functional network (<3 items) is also flagged for repair (4.326ms)
+✔ missing brandRoleManifestation and mustBeVisible are flagged for the preflight gate sync (0.6902ms)
+✔ vNext validator records unverified instead of trusting prompt metadata without vision evidence (91.5031ms)
+✔ deterministic repair restores packet shape without inventing creative answers (22.7454ms)
+✔ system defaults apply execution parameters with explicit provenance (7.0014ms)
+✔ parseModelJson strips code fences and flags unparseable output with schema-invalid code (2.3751ms)
+✔ normalizeExtractedContext never fabricates: missing facts go to unknownFields with warnings (3.9886ms)
+✔ compileContextBrief outputs the 9 fixed sections and never emits directions/recommendations/audits (4.043ms)
+✔ adaptLegacyVisualTranslationResult converts old three-direction output without fabrication (4.0102ms)
+{"event":"DOC_CONTEXT_WRITE_SUCCEEDED","run_id":"3d751d33-6b89-4879-b702-32fa298a7b98","operation":"run-projection","write_duration_ms":9}
+{"event":"DOC_CONTEXT_WRITE_SUCCEEDED","run_id":"3d751d33-6b89-4879-b702-32fa298a7b98","operation":"run-projection","write_duration_ms":17}
+{"event":"DOC_CONTEXT_WRITE_SUCCEEDED","run_id":"3d751d33-6b89-4879-b702-32fa298a7b98","operation":"run-projection","write_duration_ms":3}
+{"event":"DOC_CONTEXT_WRITE_SUCCEEDED","run_id":"3d751d33-6b89-4879-b702-32fa298a7b98","operation":"run-projection","write_duration_ms":9}
+{"event":"DOC_CONTEXT_WRITE_SUCCEEDED","run_id":"3d751d33-6b89-4879-b702-32fa298a7b98","operation":"run-projection","write_duration_ms":10}
+{"event":"DOC_CONTEXT_WRITE_SUCCEEDED","run_id":"3d751d33-6b89-4879-b702-32fa298a7b98","operation":"run-projection","write_duration_ms":3}
+{"event":"DOC_CONTEXT_WRITE_SUCCEEDED","run_id":"3d751d33-6b89-4879-b702-32fa298a7b98","operation":"run-projection","write_duration_ms":3}
+✔ Document Context service runs extraction to human confirmation, honors user overrides and compiles brief locally (185.2128ms)
+{"event":"DOC_CONTEXT_WRITE_SUCCEEDED","run_id":"6eff24bc-2783-4ba8-b80e-2f54d9ef2170","operation":"run-projection","write_duration_ms":13}
+{"event":"DOC_CONTEXT_WRITE_SUCCEEDED","run_id":"6eff24bc-2783-4ba8-b80e-2f54d9ef2170","operation":"run-projection","write_duration_ms":14}
+{"event":"DOC_CONTEXT_WRITE_SUCCEEDED","run_id":"6eff24bc-2783-4ba8-b80e-2f54d9ef2170","operation":"run-projection","write_duration_ms":4}
+{"event":"DOC_CONTEXT_WRITE_SUCCEEDED","run_id":"6eff24bc-2783-4ba8-b80e-2f54d9ef2170","operation":"run-projection","write_duration_ms":9}
+{"event":"DOC_CONTEXT_WRITE_SUCCEEDED","run_id":"6eff24bc-2783-4ba8-b80e-2f54d9ef2170","operation":"run-projection","write_duration_ms":2}
+{"event":"DOC_CONTEXT_WRITE_SUCCEEDED","run_id":"bededa8e-265d-46b9-ac19-52cbbe388c0e","operation":"run-projection","write_duration_ms":2}
+{"event":"DOC_CONTEXT_WRITE_SUCCEEDED","run_id":"bededa8e-265d-46b9-ac19-52cbbe388c0e","operation":"run-projection","write_duration_ms":9}
+{"event":"DOC_CONTEXT_WRITE_SUCCEEDED","run_id":"bededa8e-265d-46b9-ac19-52cbbe388c0e","operation":"run-projection","write_duration_ms":4}
+{"event":"DOC_CONTEXT_WRITE_SUCCEEDED","run_id":"bededa8e-265d-46b9-ac19-52cbbe388c0e","operation":"run-projection","write_duration_ms":5}
+{"event":"DOC_CONTEXT_WRITE_SUCCEEDED","run_id":"bededa8e-265d-46b9-ac19-52cbbe388c0e","operation":"run-projection","write_duration_ms":22}
+✔ Document Context service repairs invalid model output exactly once, then fails explicitly (169.6942ms)
+{"event":"DOC_CONTEXT_WRITE_SUCCEEDED","run_id":"b02ff62c-15ba-4192-93cf-509068a75aba","operation":"run-projection","write_duration_ms":13}
+{"event":"DOC_CONTEXT_WRITE_SUCCEEDED","run_id":"b02ff62c-15ba-4192-93cf-509068a75aba","operation":"run-projection","write_duration_ms":12}
+{"event":"DOC_CONTEXT_WRITE_SUCCEEDED","run_id":"b02ff62c-15ba-4192-93cf-509068a75aba","operation":"run-projection","write_duration_ms":31}
+{"event":"DOC_CONTEXT_WRITE_SUCCEEDED","run_id":"b02ff62c-15ba-4192-93cf-509068a75aba","operation":"run-projection","write_duration_ms":7}
+{"event":"DOC_CONTEXT_WRITE_SUCCEEDED","run_id":"b02ff62c-15ba-4192-93cf-509068a75aba","operation":"run-projection","write_duration_ms":11}
+{"event":"DOC_CONTEXT_WRITE_SUCCEEDED","run_id":"b02ff62c-15ba-4192-93cf-509068a75aba","operation":"run-projection","write_duration_ms":5}
+✔ Document Context service recovers crashed runs to confirmation page when checkpoint exists, else fails them (134.5734ms)
+{"event":"DOC_CONTEXT_WRITE_SUCCEEDED","run_id":"a8fdf983-e2dc-4f4e-a6bb-115c7d151d42","operation":"run-projection","write_duration_ms":12}
+{"event":"DOC_CONTEXT_WRITE_SUCCEEDED","run_id":"a8fdf983-e2dc-4f4e-a6bb-115c7d151d42","operation":"run-projection","write_duration_ms":6}
+{"event":"DOC_CONTEXT_WRITE_SUCCEEDED","run_id":"a8fdf983-e2dc-4f4e-a6bb-115c7d151d42","operation":"run-projection","write_duration_ms":12}
+{"event":"DOC_CONTEXT_WRITE_SUCCEEDED","run_id":"a8fdf983-e2dc-4f4e-a6bb-115c7d151d42","operation":"run-projection","write_duration_ms":5}
+{"event":"DOC_CONTEXT_WRITE_SUCCEEDED","run_id":"a8fdf983-e2dc-4f4e-a6bb-115c7d151d42","operation":"run-projection","write_duration_ms":3}
+✔ Document Context service cancels an in-flight extraction as cancelled, not failed (128.9165ms)
+✔ evidence-safe merge fills only a missing field and records provenance (5.5291ms)
+✔ evidence-safe merge rejects locked assets and existing decisions (2.3456ms)
+✔ evidence-safe merge rejects changes to user-confirmed fields even when empty (3.7983ms)
+✔ evidence-safe merge may replace a validated-invalid target but not a confirmed one (0.7528ms)
+✔ evidence-safe merge rejects ungrounded or stale repair output (3.5018ms)
+✔ F-4: scanner reads 9 evidence files and extracts bindings (standard basis) (35.1533ms)
+✔ F-4: scanner extracts referenceIds from reference-trace.json for reference_first (27.8654ms)
+✔ F-4: scanner computes sha256 of output.png (NOT the one in run.json) (31.5353ms)
+✔ F-4: scanner records output.png as not exists when runDir has no images (4.0294ms)
+✔ F-4: scanner marks malformed JSON with file.error and payload=null (64.6154ms)
+✔ F-4: scanner returns null runId when runDir is null (17.96ms)
+✔ F-4: runShortChainEvidenceCheckpoint happy path produces a passing checkpoint (39.5209ms)
+✔ F-4: runShortChainEvidenceCheckpoint blocks on missing required file (run.json) (24.9148ms)
+✔ formal asset service persists candidate review without changing source image (45.8195ms)
+✔ Generation Blueprint service persists active execution plan and lifecycle (32.4425ms)
+✔ Generation Prompt service persists finalPrompt outside Session and records only request/run reference (65.5386ms)
+✔ Series execution compiles a task through Creative Generation and archives its output (5.1137ms)
+✔ Generation Series service persists queue state and active Session reference (116.8547ms)
+✔ renderer routes supported entry points into the current generation workspaces (1.4516ms)
+✔ generation workspace uses source bundles and registered image models (0.2534ms)
+✔ model connection failures expose structured upstream diagnostics (0.3249ms)
+✔ rejected reference anchors never expose the preview action (0.1833ms)
+✔ renderer validates compile responses and has a global error boundary (0.5873ms)
+✔ legacy start input maps to integrated_anchor without rewriting upstream files (2.1492ms)
+✔ visual loader reads only visual project context and deterministically selects images (155.5983ms)
+✔ project asset paths are relative to input and legacy input-prefixed records remain readable (1.2982ms)
+✔ document loader does not require or create a visual project (49.1884ms)
+✔ reference loader accepts awaiting_decision and does not read resolved context (30.6175ms)
+✔ image Run Store freezes Visual Memory and Reference Pack beside the generation artifacts (49.4787ms)
+✔ Locked Assets service writes item records, thumbnails, index and Session references (112.2924ms)
+✔ confirmed Logo post-composite preserves source pixels and records deterministic hashes (558.2263ms)
+✔ Logo post-composite rejects out-of-bounds crop and placement (18.6193ms)
+✔ classifier maps repairable fields to current-project evidence only (3.069ms)
+✔ classifier marks another deliverable field optional for the current task (0.3294ms)
+✔ classifier fails closed for an unknown field policy (0.2111ms)
+✔ targetAudience accepts open expressions and an evidence-safe empty array (3.6844ms)
+✔ targetAudience rejects invalid structure without applying a closed people dictionary (0.8205ms)
+✔ reference roles cannot borrow a valid generation output enum (0.7288ms)
+✔ repair prompts carry field, failed value, allowed values and a legal example (0.474ms)
+✔ prompt, schema and readiness share the same targetAudience metadata (0.2783ms)
+✔ visually inferred audiences retain source provenance and are never confirmed (0.2082ms)
+✔ AK-01 generationMode is the sole selector (2.1276ms)
+✔ AK-02 analysis_led selects analysisLed only (1.0637ms)
+✔ AK-03 reference_first selects referenceFirst only (5.1952ms)
+✔ AK-04 no silent mode fallback (4.6553ms)
+✔ AK-05 reference_first requires active source (2.2371ms)
+✔ AK-06 active run binding is validated (0.7875ms)
+✔ AK-07 source fingerprint is validated (0.3398ms)
+✔ AK-08 context and source project binding are validated (0.2486ms)
+✔ AK-09 cross-project active Reference is rejected before fingerprint trust (0.3331ms)
+✔ AK-10 selector has no run discovery or latest selection (0.6342ms)
+✔ AK-11 no ReferenceStyleCapsule interpretation (8.5202ms)
+✔ AK-12 no anchorGoal interpretation (0.5751ms)
+✔ AK-13 no runtime LLM or reasoning call (1.3017ms)
+✔ AK-15 no second stale tracker (1.1982ms)
+✔ AK-16 no second ratio authority (0.4547ms)
+✔ AK-17 no second Locked Asset authority (0.2592ms)
+✔ AK-18 selected translation projects into existing truth fields (1.1817ms)
+✔ AK-19 analysis-led Local RPC Prepare reaches READY through selector truth (26.7914ms)
+✔ AK-20 reference-first Local RPC Prepare reaches READY independently (2.9443ms)
+✔ AK-21 both producers coexist and mode selection remains deterministic (0.3031ms)
+✔ AK-22 active source change enters existing truth_surface_changed STALE path (3.7256ms)
+✔ AK-23 source fingerprint drift enters existing truth_surface_changed STALE path (11.3615ms)
+✔ AK-24 generationMode change uses existing intent_changed STALE path (3.3232ms)
+✔ AK-25 same semantic rerun does not create false stale from producerRunId (11.9756ms)
+✔ AK-26 Reference revocation fails closed and cannot use cached truth (2.2935ms)
+✔ AK-27 invalid source kind and PackagingTranslationV2 fail closed (0.5664ms)
+✔ AO-01 real originals are outside deterministic execution and never mutated by AO (1017.8018ms)
+✔ AO-02 real readiness rebuild is assigned only to the formal upstream service (178.3551ms)
+✔ AO-03 no Packaging fallback is added for legacy real projects (90.841ms)
+✔ AO-04 synthetic evidence remains explicitly isolated (0.9386ms)
+✔ AO-05 HERO lifecycle produces run, artifact, and safe preview (0.2261ms)
+✔ AO-06 SERIES lifecycle passes in both valid modes (0.4072ms)
+✔ AO-07 GIFT-OPEN reference-first lifecycle passes (0.2151ms)
+✔ AO-08 missing structure and product truth fails closed (1.9239ms)
+✔ AO-09 analysis-led with zero references is legal (3.4071ms)
+✔ AO-10 reference-first with zero references fails closed (0.6755ms)
+✔ AO-11 reference counts 1, 2, 6, and effective limit 10 are legal (8.0235ms)
+✔ AO-12 limit + 1 fails before executor invocation (0.2482ms)
+✔ AO-13 Registry and adapter caps are reconciled at 10 (0.1693ms)
+✔ AO-14 project truth and translation fingerprints fail cross-project selection (0.3936ms)
+✔ AO-15 active Reference authority is project-bound (1.4282ms)
+✔ AO-16 canonical run stores are project-isolated (8.0931ms)
+✔ AO-17 artifact and preview reads reject cross-session run identity (0.4195ms)
+✔ AO-18 project switching keeps sessions, truth, References, and results isolated (0.2466ms)
+✔ AO-19 three sequential executions retain unique discoverable runs and artifacts (18.0175ms)
+✔ AO-20 two repeated STALE cycles block execution and recover deterministically (0.3061ms)
+✔ AO-21 Unicode filenames never become reference identity (1.2286ms)
+✔ AO-22 no project-specific production rule is introduced (408.958ms)
+✔ AO-23 unsupported provider, shot, and new structure truth are explicit (1.456ms)
+✔ AO-24 all execution is sanctioned local and external Provider calls remain zero (0.2431ms)
+✔ AO-25 rich/minimal optional inputs do not leak raw upstream objects (2.9926ms)
+✔ AO-30 two sessions for one project keep preparation, stale state, and runs independent (18.1693ms)
+✔ AO-31 complete, partial-valid, missing, analysis-conflict, and reference-conflict Locked truth remain bounded (4.3655ms)
+✔ AZ-02 production Reference path marked healthy (6-key allowlist + fail-closed validator) (2.8715ms)
+✔ AZ-03 harness uses referenceAssignments (canonical input field) (5.6846ms)
+✔ AZ-04 harness does not use the legacy flat asset-id field (1.3772ms)
+✔ AZ-05 canonical assignment shape has assetId (0.3721ms)
+✔ AZ-06 canonical assignment shape has role (0.239ms)
+✔ AZ-07 canonical assignment role belongs to the frozen 6-role set (0.2288ms)
+✔ AZ-08 no role inference from filename/order/shot/mode in the harness (0.8865ms)
+✔ AZ-09 HERO reference_first Prepare PASS offline with canonical assignment (28.3678ms)
+✔ AZ-10 referencePolicy references count = 1 for reference_first (HERO) (2.7158ms)
+✔ AZ-11 GIFT-OPEN legal reference_first case Prepare PASS offline (4:3) (2.6381ms)
+✔ AZ-12 analysis_led Prepare PASS with no references (2.3185ms)
+✔ AZ-13 missing Reference in reference_first still REFERENCE_REQUIRED (fail-closed) (1.1118ms)
+✔ AZ-14 missing assetId fails (0.3897ms)
+✔ AZ-15 missing role fails (0.2364ms)
+✔ AZ-16 invalid role fails (0.2105ms)
+✔ AZ-17 duplicate assetId fails (0.203ms)
+✔ AZ-18 count 10 retained (D-PROVIDER-01 cap = 10) (3.7716ms)
+✔ AZ-19 count 11 rejected (D-PROVIDER-01 cap = 10) (2.1354ms)
+✔ AZ-20 D-PROVIDER-01 retained (Registry maxReferenceImages = 10, adapter maxReferences = 10) (1.0322ms)
+✔ AZ-21 P3-A12 STALE preserved (checkStale seam + reference change -> STALE) (5.8018ms)
+✔ AZ-22 Registry / API identity split preserved (0.7365ms)
+✔ AZ-23 P2 Shot Contract preserved (3 frozen ids, canonical ratios) (0.2354ms)
+✔ AL-01 analysis_led Prepare reaches READY (301.9338ms)
+✔ AL-02 analysis_led Execute reaches EXECUTED through observed EXECUTING (0.9771ms)
+✔ AL-03 analysis_led canonical run is registered and discoverable (0.5417ms)
+✔ AL-04 analysis_led preview is available without path disclosure (0.6122ms)
+✔ AL-05 reference_first independently reaches READY with analysis slot absent (0.197ms)
+✔ AL-06 reference_first independently reaches EXECUTED through observed EXECUTING (0.1415ms)
+✔ AL-07 reference_first canonical run is registered (0.1717ms)
+✔ AL-08 reference_first preview is available (0.1905ms)
+✔ AL-09 both producers coexist and generationMode selects each exact slot (0.2476ms)
+✔ AL-10 analysis to reference mode switch causes intent STALE and preserves prior result (1.1607ms)
+✔ AL-11 reference to analysis mode switch re-Prepare selects analysis source (0.2701ms)
+✔ AL-12 active Reference source A to B causes truth STALE (0.2621ms)
+✔ AL-13 source fingerprint drift causes truth STALE (0.1456ms)
+✔ AL-14 stale Execute fails closed in both mode and source switches (0.1266ms)
+✔ AL-15 explicit re-Prepare selects current canonical Reference B (0.3055ms)
+✔ AL-16 second Execute creates a new canonical pkg run (0.2595ms)
+✔ AL-17 revoked active Reference source fails closed (0.0988ms)
+✔ AL-18 cross-project active Reference source is rejected (0.0972ms)
+✔ AL-19 selector performs no analysis/reference fallback (0.0805ms)
+✔ AL-20 selector performs no latest-run discovery (0.4495ms)
+✔ AL-21 production context path performs no upstream runtime reasoning (0.6753ms)
+✔ AL-22 selector does not recompute source fingerprint (0.6034ms)
+✔ AL-23 Locked Assets are identical across modes (0.4404ms)
+✔ AL-24 Shot Contract geometry remains canonical across modes (0.2785ms)
+✔ AL-25 active Reference source is not auto-inserted into Packaging assignments (0.4147ms)
+✔ AL-26 canonical run-store authority and files are retained (21.0595ms)
+✔ AL-27 preview security and safe application errors are retained (0.8489ms)
+✔ AL-28 P2 current production diff is zero (241.2592ms)
+✔ AL-29 P3-A current production diff is zero (115.0569ms)
+✔ AL-30 P3-B accepted UI and Workspace semantics are unchanged (95.9401ms)
+✔ AL-31 same-semantic Reference rerun does not create false STALE from producerRunId (0.1341ms)
+✔ AL-32 generation modes retain the same explicit model and API profile (0.087ms)
+✔ AL-33 canonical run contract does not embed raw upstream Reference objects (0.1404ms)
+✔ AL-34 no new Packaging context store is introduced (1455.689ms)
+✔ AF-01 Workspace intent providerModelId reaches P2 translation input.modelId (12.3476ms)
+✔ AF-02 mapping preserves the selected registry identity verbatim (1.9251ms)
+✔ AF-03 Web does not send a duplicate modelId authority (1.6139ms)
+✔ AF-04 RPC prepare does not invent or rename model identity (1.0679ms)
+✔ AF-05 Workspace intent owns no modelId or registryModelId field (0.2942ms)
+✔ AF-06 providerModelId edit after READY still causes STALE (1.9184ms)
+✔ AF-07 missing model still fails closed at the real P2 capability seam (0.8784ms)
+✔ AF-08 unsupported model delegates to the real P2 capability authority (1.0524ms)
+✔ AF-09 Workspace creates no second generation fingerprint authority (5.8754ms)
+✔ AF-11 apiProfileId remains execution-only and is not duplicated into P2 translation input (1.6558ms)
+✔ AF-12 stale execute remains fail-closed after model identity correction (1.7096ms)
+✔ AF-13 whitespace-only model remains the canonical missing-model failure (0.5446ms)
+✔ AF-14 model translation is a single projection in the P3-A application boundary (2.5456ms)
+✔ AP-08 identity is not derived from Reference authority (1.1994ms)
+✔ AP-09 identity is not derived from PackagingTranslationV2 (0.3018ms)
+✔ AP-10 no filename or project-name-to-brand heuristic exists (0.303ms)
+✔ AP-20 D-PROVIDER-01 effective cap remains 10 in Registry and Seedream adapter (0.3493ms)
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"edeef775-6afe-4074-ac73-d068f405fd93","operation":"run-projection","write_duration_ms":7}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"edeef775-6afe-4074-ac73-d068f405fd93","operation":"run-projection","write_duration_ms":4}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"edeef775-6afe-4074-ac73-d068f405fd93","operation":"run-projection","write_duration_ms":3}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"edeef775-6afe-4074-ac73-d068f405fd93","operation":"run-projection","write_duration_ms":2}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"edeef775-6afe-4074-ac73-d068f405fd93","operation":"run-projection","write_duration_ms":3}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"edeef775-6afe-4074-ac73-d068f405fd93","operation":"run-projection","write_duration_ms":3}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"edeef775-6afe-4074-ac73-d068f405fd93","operation":"run-projection","write_duration_ms":3}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"edeef775-6afe-4074-ac73-d068f405fd93","operation":"run-projection","write_duration_ms":10}
+✔ AJ-01 explicit approval persists an active Reference source (155.4544ms)
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"bbd992d1-cc75-432c-bb79-db9a0c33553e","operation":"run-projection","write_duration_ms":11}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"bbd992d1-cc75-432c-bb79-db9a0c33553e","operation":"run-projection","write_duration_ms":11}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"bbd992d1-cc75-432c-bb79-db9a0c33553e","operation":"run-projection","write_duration_ms":3}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"bbd992d1-cc75-432c-bb79-db9a0c33553e","operation":"run-projection","write_duration_ms":10}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"bbd992d1-cc75-432c-bb79-db9a0c33553e","operation":"run-projection","write_duration_ms":2}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"bbd992d1-cc75-432c-bb79-db9a0c33553e","operation":"run-projection","write_duration_ms":2}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"bbd992d1-cc75-432c-bb79-db9a0c33553e","operation":"run-projection","write_duration_ms":3}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"bbd992d1-cc75-432c-bb79-db9a0c33553e","operation":"run-projection","write_duration_ms":5}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"61aaf911-ad13-4339-8ce2-cbf98edc19de","operation":"run-projection","write_duration_ms":12}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"61aaf911-ad13-4339-8ce2-cbf98edc19de","operation":"run-projection","write_duration_ms":7}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"61aaf911-ad13-4339-8ce2-cbf98edc19de","operation":"run-projection","write_duration_ms":13}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"61aaf911-ad13-4339-8ce2-cbf98edc19de","operation":"run-projection","write_duration_ms":3}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"61aaf911-ad13-4339-8ce2-cbf98edc19de","operation":"run-projection","write_duration_ms":4}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"61aaf911-ad13-4339-8ce2-cbf98edc19de","operation":"run-projection","write_duration_ms":5}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"61aaf911-ad13-4339-8ce2-cbf98edc19de","operation":"run-projection","write_duration_ms":3}
+✔ AJ-02 unapproved newer run never replaces the explicit active run (213.2085ms)
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"4b4a7e95-8c7a-4b54-9426-aaa104dbbca1","operation":"run-projection","write_duration_ms":4}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"4b4a7e95-8c7a-4b54-9426-aaa104dbbca1","operation":"run-projection","write_duration_ms":5}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"4b4a7e95-8c7a-4b54-9426-aaa104dbbca1","operation":"run-projection","write_duration_ms":10}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"4b4a7e95-8c7a-4b54-9426-aaa104dbbca1","operation":"run-projection","write_duration_ms":4}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"4b4a7e95-8c7a-4b54-9426-aaa104dbbca1","operation":"run-projection","write_duration_ms":13}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"4b4a7e95-8c7a-4b54-9426-aaa104dbbca1","operation":"run-projection","write_duration_ms":3}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"4b4a7e95-8c7a-4b54-9426-aaa104dbbca1","operation":"run-projection","write_duration_ms":25}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"4b4a7e95-8c7a-4b54-9426-aaa104dbbca1","operation":"run-projection","write_duration_ms":12}
+✔ AJ-03 active source is project-bound (169.6688ms)
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"023f7362-b483-4ff8-965e-e2ec68a6f6b1","operation":"run-projection","write_duration_ms":13}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"023f7362-b483-4ff8-965e-e2ec68a6f6b1","operation":"run-projection","write_duration_ms":12}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"023f7362-b483-4ff8-965e-e2ec68a6f6b1","operation":"run-projection","write_duration_ms":3}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"023f7362-b483-4ff8-965e-e2ec68a6f6b1","operation":"run-projection","write_duration_ms":7}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"023f7362-b483-4ff8-965e-e2ec68a6f6b1","operation":"run-projection","write_duration_ms":9}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"023f7362-b483-4ff8-965e-e2ec68a6f6b1","operation":"run-projection","write_duration_ms":5}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"023f7362-b483-4ff8-965e-e2ec68a6f6b1","operation":"run-projection","write_duration_ms":24}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"023f7362-b483-4ff8-965e-e2ec68a6f6b1","operation":"run-projection","write_duration_ms":5}
+✔ AJ-04 cross-project active selection is rejected (222.143ms)
+✔ AJ-05 producer parser accepts PackagingTranslationV2 in the same response (4.7052ms)
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"492de2b4-ffaf-4293-84e7-9c876bba0136","operation":"run-projection","write_duration_ms":7}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"492de2b4-ffaf-4293-84e7-9c876bba0136","operation":"run-projection","write_duration_ms":4}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"492de2b4-ffaf-4293-84e7-9c876bba0136","operation":"run-projection","write_duration_ms":2}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"492de2b4-ffaf-4293-84e7-9c876bba0136","operation":"run-projection","write_duration_ms":13}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"492de2b4-ffaf-4293-84e7-9c876bba0136","operation":"run-projection","write_duration_ms":4}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"492de2b4-ffaf-4293-84e7-9c876bba0136","operation":"run-projection","write_duration_ms":3}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"492de2b4-ffaf-4293-84e7-9c876bba0136","operation":"run-projection","write_duration_ms":69}
+✔ AJ-06 anchorGoal remains distinct from packagingConcept (172.7166ms)
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"37c15084-3d52-43de-ba0a-bf9bd6f5c0c4","operation":"run-projection","write_duration_ms":13}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"37c15084-3d52-43de-ba0a-bf9bd6f5c0c4","operation":"run-projection","write_duration_ms":3}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"37c15084-3d52-43de-ba0a-bf9bd6f5c0c4","operation":"run-projection","write_duration_ms":3}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"37c15084-3d52-43de-ba0a-bf9bd6f5c0c4","operation":"run-projection","write_duration_ms":5}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"37c15084-3d52-43de-ba0a-bf9bd6f5c0c4","operation":"run-projection","write_duration_ms":3}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"37c15084-3d52-43de-ba0a-bf9bd6f5c0c4","operation":"run-projection","write_duration_ms":2}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"37c15084-3d52-43de-ba0a-bf9bd6f5c0c4","operation":"run-projection","write_duration_ms":3}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"37c15084-3d52-43de-ba0a-bf9bd6f5c0c4","operation":"run-projection","write_duration_ms":8}
+✔ AJ-07 reference-first output exists without an analysis-led Packaging slot (81.2115ms)
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"962234eb-4180-4849-9b5d-98f266142a6a","operation":"run-projection","write_duration_ms":3}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"962234eb-4180-4849-9b5d-98f266142a6a","operation":"run-projection","write_duration_ms":2}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"962234eb-4180-4849-9b5d-98f266142a6a","operation":"run-projection","write_duration_ms":2}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"962234eb-4180-4849-9b5d-98f266142a6a","operation":"run-projection","write_duration_ms":3}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"962234eb-4180-4849-9b5d-98f266142a6a","operation":"run-projection","write_duration_ms":2}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"962234eb-4180-4849-9b5d-98f266142a6a","operation":"run-projection","write_duration_ms":9}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"962234eb-4180-4849-9b5d-98f266142a6a","operation":"run-projection","write_duration_ms":17}
+✔ AJ-08 source fingerprint is producer-owned and present on run + output (86.9401ms)
+✔ AJ-09 fingerprint is deterministic for the same semantic source (1.7971ms)
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"9a8cd549-e555-45ef-8442-27df96ab6f8f","operation":"run-projection","write_duration_ms":21}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"9a8cd549-e555-45ef-8442-27df96ab6f8f","operation":"run-projection","write_duration_ms":4}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"9a8cd549-e555-45ef-8442-27df96ab6f8f","operation":"run-projection","write_duration_ms":3}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"9a8cd549-e555-45ef-8442-27df96ab6f8f","operation":"run-projection","write_duration_ms":10}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"9a8cd549-e555-45ef-8442-27df96ab6f8f","operation":"run-projection","write_duration_ms":3}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"9a8cd549-e555-45ef-8442-27df96ab6f8f","operation":"run-projection","write_duration_ms":3}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"9a8cd549-e555-45ef-8442-27df96ab6f8f","operation":"run-projection","write_duration_ms":12}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"10f81d42-f96b-47fb-a3a7-ab678b14cb54","operation":"run-projection","write_duration_ms":24}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"10f81d42-f96b-47fb-a3a7-ab678b14cb54","operation":"run-projection","write_duration_ms":8}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"10f81d42-f96b-47fb-a3a7-ab678b14cb54","operation":"run-projection","write_duration_ms":3}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"10f81d42-f96b-47fb-a3a7-ab678b14cb54","operation":"run-projection","write_duration_ms":2}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"10f81d42-f96b-47fb-a3a7-ab678b14cb54","operation":"run-projection","write_duration_ms":7}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"10f81d42-f96b-47fb-a3a7-ab678b14cb54","operation":"run-projection","write_duration_ms":3}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"10f81d42-f96b-47fb-a3a7-ab678b14cb54","operation":"run-projection","write_duration_ms":28}
+✔ AJ-10 run identity is distinct from source fingerprint (238.1667ms)
+✔ AJ-11 analysis and Reference translations coexist (0.6306ms)
+✔ AJ-12 one producer cannot overwrite the other producer slot (0.5169ms)
+✔ AJ-13 no Packaging Context Store is introduced (106.2244ms)
+✔ AJ-14 downstream Packaging contains no Reference interpretation (167.2217ms)
+✔ AJ-15 Packaging entry contains no new model call (154.6416ms)
+✔ AJ-16 Reference source cannot become a second Locked Asset authority (1.0692ms)
+✔ AJ-17 Reference translation owns no Shot Contract or aspectRatio (0.136ms)
+✔ AJ-18 P2 current production diff is zero (122.1717ms)
+✔ AJ-19 P3-A current production diff is zero (128.7889ms)
+✔ AJ-20 P3-B accepted UI and Workspace semantics are unchanged (186.5559ms)
+✔ AJ-C01 no active source fails closed (3.7583ms)
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"5beb5840-18ab-4c54-bd6b-a99d200f206b","operation":"run-projection","write_duration_ms":13}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"5beb5840-18ab-4c54-bd6b-a99d200f206b","operation":"run-projection","write_duration_ms":7}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"5beb5840-18ab-4c54-bd6b-a99d200f206b","operation":"run-projection","write_duration_ms":11}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"5beb5840-18ab-4c54-bd6b-a99d200f206b","operation":"run-projection","write_duration_ms":4}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"5beb5840-18ab-4c54-bd6b-a99d200f206b","operation":"run-projection","write_duration_ms":8}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"5beb5840-18ab-4c54-bd6b-a99d200f206b","operation":"run-projection","write_duration_ms":2}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"5beb5840-18ab-4c54-bd6b-a99d200f206b","operation":"run-projection","write_duration_ms":6}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"55a97d5c-4196-4497-8ff8-d83810ede78c","operation":"run-projection","write_duration_ms":10}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"55a97d5c-4196-4497-8ff8-d83810ede78c","operation":"run-projection","write_duration_ms":16}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"55a97d5c-4196-4497-8ff8-d83810ede78c","operation":"run-projection","write_duration_ms":10}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"55a97d5c-4196-4497-8ff8-d83810ede78c","operation":"run-projection","write_duration_ms":3}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"55a97d5c-4196-4497-8ff8-d83810ede78c","operation":"run-projection","write_duration_ms":8}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"55a97d5c-4196-4497-8ff8-d83810ede78c","operation":"run-projection","write_duration_ms":3}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"55a97d5c-4196-4497-8ff8-d83810ede78c","operation":"run-projection","write_duration_ms":6}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"5beb5840-18ab-4c54-bd6b-a99d200f206b","operation":"run-projection","write_duration_ms":46}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"55a97d5c-4196-4497-8ff8-d83810ede78c","operation":"run-projection","write_duration_ms":18}
+✔ AJ-C02 explicit re-selection switches A to B without latest inference (364.2802ms)
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"63aa6150-5c29-4753-a5df-c3f0d7300cdb","operation":"run-projection","write_duration_ms":38}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"63aa6150-5c29-4753-a5df-c3f0d7300cdb","operation":"run-projection","write_duration_ms":14}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"63aa6150-5c29-4753-a5df-c3f0d7300cdb","operation":"run-projection","write_duration_ms":6}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"63aa6150-5c29-4753-a5df-c3f0d7300cdb","operation":"run-projection","write_duration_ms":22}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"63aa6150-5c29-4753-a5df-c3f0d7300cdb","operation":"run-projection","write_duration_ms":19}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"63aa6150-5c29-4753-a5df-c3f0d7300cdb","operation":"run-projection","write_duration_ms":4}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"63aa6150-5c29-4753-a5df-c3f0d7300cdb","operation":"run-projection","write_duration_ms":15}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"05b8aa19-4f36-4e86-ab6f-d8eda997ff4a","operation":"run-projection","write_duration_ms":5}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"05b8aa19-4f36-4e86-ab6f-d8eda997ff4a","operation":"run-projection","write_duration_ms":3}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"05b8aa19-4f36-4e86-ab6f-d8eda997ff4a","operation":"run-projection","write_duration_ms":11}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"05b8aa19-4f36-4e86-ab6f-d8eda997ff4a","operation":"run-projection","write_duration_ms":13}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"05b8aa19-4f36-4e86-ab6f-d8eda997ff4a","operation":"run-projection","write_duration_ms":3}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"05b8aa19-4f36-4e86-ab6f-d8eda997ff4a","operation":"run-projection","write_duration_ms":10}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"05b8aa19-4f36-4e86-ab6f-d8eda997ff4a","operation":"run-projection","write_duration_ms":28}
+✔ AJ-C03 changed Reference asset content changes source fingerprint (319.2654ms)
+✔ AJ-C04 legacy context remains readable and does not fabricate Reference source (0.7714ms)
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"baaa466a-7384-4943-8796-4706731fb98b","operation":"run-projection","write_duration_ms":14}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"baaa466a-7384-4943-8796-4706731fb98b","operation":"run-projection","write_duration_ms":3}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"baaa466a-7384-4943-8796-4706731fb98b","operation":"run-projection","write_duration_ms":12}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"baaa466a-7384-4943-8796-4706731fb98b","operation":"run-projection","write_duration_ms":2}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"baaa466a-7384-4943-8796-4706731fb98b","operation":"run-projection","write_duration_ms":12}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"baaa466a-7384-4943-8796-4706731fb98b","operation":"run-projection","write_duration_ms":4}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"baaa466a-7384-4943-8796-4706731fb98b","operation":"run-projection","write_duration_ms":14}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"baaa466a-7384-4943-8796-4706731fb98b","operation":"run-projection","write_duration_ms":3}
+✔ AJ-C05 removing the active run clears selection and Reference slot (184.8463ms)
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"a39568db-e26e-46cd-956f-a544452061f7","operation":"run-projection","write_duration_ms":7}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"a39568db-e26e-46cd-956f-a544452061f7","operation":"run-projection","write_duration_ms":32}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"a39568db-e26e-46cd-956f-a544452061f7","operation":"run-projection","write_duration_ms":16}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"a39568db-e26e-46cd-956f-a544452061f7","operation":"run-projection","write_duration_ms":3}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"a39568db-e26e-46cd-956f-a544452061f7","operation":"run-projection","write_duration_ms":10}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"a39568db-e26e-46cd-956f-a544452061f7","operation":"run-projection","write_duration_ms":3}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"a39568db-e26e-46cd-956f-a544452061f7","operation":"run-projection","write_duration_ms":7}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"a39568db-e26e-46cd-956f-a544452061f7","operation":"run-projection","write_duration_ms":16}
+✔ AJ-C06 mismatched active fingerprint fails closed (178.8632ms)
+✔ AJ-C07 analysis-led-only context stays valid and Reference remains absent (0.4648ms)
+✔ AJ-C08 a ReferenceStyleCapsule alone is not a Packaging translation source (0.2935ms)
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"5704ad48-77ee-4e0e-9396-84df0b07eba2","operation":"run-projection","write_duration_ms":11}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"5704ad48-77ee-4e0e-9396-84df0b07eba2","operation":"run-projection","write_duration_ms":12}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"5704ad48-77ee-4e0e-9396-84df0b07eba2","operation":"run-projection","write_duration_ms":23}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"5704ad48-77ee-4e0e-9396-84df0b07eba2","operation":"run-projection","write_duration_ms":17}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"5704ad48-77ee-4e0e-9396-84df0b07eba2","operation":"run-projection","write_duration_ms":5}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"5704ad48-77ee-4e0e-9396-84df0b07eba2","operation":"run-projection","write_duration_ms":31}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"5704ad48-77ee-4e0e-9396-84df0b07eba2","operation":"run-projection","write_duration_ms":18}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"5704ad48-77ee-4e0e-9396-84df0b07eba2","operation":"run-projection","write_duration_ms":11}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"5704ad48-77ee-4e0e-9396-84df0b07eba2","operation":"run-projection","write_duration_ms":11}
+✔ AJ-C09 editing an approved run revokes its active selection (333.7999ms)
+✔ AI-01 ReferenceStyleCapsule anchorGoal is not a packagingConcept alias (4.8327ms)
+✔ AI-02 Reference image or capsule ratio cannot override P2 output geometry (7.1561ms)
+✔ AI-03 Reference producer owns Packaging semantics independently of analysis-led output (2.8354ms)
+✔ AI-04 cross-project Reference output is rejected before creative consumption (1.1446ms)
+✔ AI-05 Reference capsule requires an explicit producer run identity (0.2624ms)
+✔ AI-06 reliable semantic source fingerprint is producer-owned (1.0217ms)
+✔ AI-07 no Packaging Context, Reference Packaging, or binding store is introduced (42.0535ms)
+✔ AI-08 Reference producer does not create a second Locked Asset authority (7.8488ms)
+✔ AI-09 Reference producer does not create a second Shot Contract authority (1.9496ms)
+✔ AI-10 downstream Packaging does not interpret ReferenceStyleCapsule into semantics (1.2926ms)
+✔ AI-11 Packaging entry contains no Reference translation model call (0.9101ms)
+✔ AI-12 Packaging resolver never selects a Reference run by latest timestamp (7.6766ms)
+✔ AI-13 selected reference_first mode does not silently fall back to analysis_led (7.3135ms)
+✔ AI-14 current P2 frozen Packaging production diff is zero (100.5529ms)
+✔ AI-15 current P3-A frozen Workspace production diff is zero (97.6144ms)
+✔ AI-16 P3-B accepted production semantics are unchanged by C1.1 (93.5061ms)
+✔ AE-01 apps/web has no direct Node crypto import (21.0279ms)
+✔ AE-02 browser-safe Packaging seam has no transitive Node-only runtime dependency (5.3346ms)
+✔ AE-03 renderer production graph has no node:fs dependency (71.3632ms)
+✔ AE-04 renderer production graph has no node:path dependency (41.526ms)
+✔ AE-05 production Web build succeeds (7566.8396ms)
+✔ AE-06 Packaging route remains mounted from the production App (0.3293ms)
+✔ AE-07 reference and preview dialogs retain accessible semantics (0.2477ms)
+✔ AE-08 mobile workspace has no fixed-width shell or tile grid (0.2709ms)
+✔ AE-09 responsive contract prevents horizontal content overflow (0.3892ms)
+✔ AE-10 P3-A frozen Packaging application diff is zero (117.6443ms)
+✔ AE-11 P2 frozen Packaging diff is zero (115.0625ms)
+✔ AG-01 A10 model projection is retained (15.3647ms)
+✔ AG-02 structure formFactor projects the canonical Locked Asset truth (2.2037ms)
+✔ AG-03 structuralFeatures project real Project Visual Context packageStructures (10.6966ms)
+✔ AG-04 aspectRatio projects the canonical P2 Shot Contract for every shot (4.7486ms)
+✔ AG-05 visualDirection.summary projects Project Visual Context packagingConcept (1.4215ms)
+✔ AG-06 complete production projection passes the real P2 validator/compiler (2.6359ms)
+✔ AG-07 analysis_led production Prepare reaches READY (2.043ms)
+✔ AG-08 reference_first production Prepare reaches READY with explicit Reference truth (3.8621ms)
+✔ AG-09 missing canonical structure formFactor fails closed (0.989ms)
+✔ AG-10 missing structuralFeatures fails closed without filler evidence (0.4732ms)
+✔ AG-11 missing packagingConcept fails closed without a visual summary default (0.4824ms)
+✔ AG-12 invalid Shot Contract is rejected by the existing intent/contract authority (0.2194ms)
+✔ AG-13 no hardcoded geometry, formFactor, feature, or visual-direction fallback exists (0.776ms)
+✔ AG-14 Project Visual Context drift uses the existing truth fingerprint stale mechanism (1.6251ms)
+✔ AG-15 Web only composes existing context truth (0.3463ms)
+✔ AG-16 Local RPC operation registry reaches real P2 Prepare and returns READY (2.6391ms)
+✔ AH-C1-01 Web does not deep-import Visual Analysis or Project Visual Context internals (25.4947ms)
+✔ AH-C1-02 Locked Assets remain resolved by the canonical runtime service (1.187ms)
+✔ AH-C1-03 Shot geometry remains owned by the P2 Shot Contract (0.7659ms)
+✔ AH-C1-04 Reference roles and missing-reference precedence remain canonical P2 behaviour (5.084ms)
+✔ AH-C1-05 the frozen P2 compiler contains no Provider, network, or LLM reasoning call (2.5289ms)
+✔ AH-C1-06 Project Visual Context rejects a cross-project VisualDecisionPacket (4.9111ms)
+✔ AH-C1-07 analysis_led source mode is explicit and does not synthesize a Reference (8.584ms)
+✔ AH-C1-08 reference_first source mode and explicit Reference are preserved (1.6252ms)
+✔ AH-C1-09 modes do not silently fall back into each other (9.2939ms)
+✔ AH-C1-10 repository project-specific production-rule guard passes (517.0685ms)
+✔ AH-C1-11 C1 foundation introduces no Packaging context database or store (1586.3025ms)
+✔ AH-C1-12 current P2 frozen Packaging production diff is zero (152.8246ms)
+✔ AH-C1-13 current P3-A frozen Workspace production diff is zero (167.698ms)
+✔ AH-C1-14 P3-B accepted production surfaces have no C1 semantic modification (99.1773ms)
+✔ T-01 createSession returns a session with status=new and a frozen initial intent (2.9125ms)
+✔ T-02 createSession rejects missing projectId (1.7297ms)
+✔ T-03 createSession rejects invalid initial intent (0.6215ms)
+✔ T-04 updateIntent before prepare keeps status UNPREPARED, no stale flag set (0.9405ms)
+✔ T-05 updateIntent during EXECUTING is rejected (18.0125ms)
+✔ T-06 updateIntent after READY → STALE (5.4949ms)
+✔ T-07 updateIntent on UI-only field does NOT mark stale (0.9934ms)
+✔ T-08 reference assignment change → STALE (0.8896ms)
+✔ T-09 generationMode / shotContractId / apiProfileId changes all mark STALE (0.8658ms)
+✔ T-10 prepare success: status=READY and prepared snapshot stored (0.6221ms)
+✔ T-11 updateIntent with invalid shot contract → SHOT_CONTRACT_INVALID (canonical code on err.code) (0.3003ms)
+✔ T-12 updateIntent reference_first with no references is allowed at intent level; prepare surfaces REFERENCE_REQUIRED (0.5199ms)
+✔ T-13 updateIntent reference_first with unknown role → REFERENCE_ROLE_INVALID (intent-level gate) (0.1919ms)
+✔ T-14 execute before prepare is rejected (0.3469ms)
+✔ T-15 execute after READY transitions to EXECUTED (0.3252ms)
+✔ T-16 execute from STALE is rejected (STOP-P3-A-07) (0.4199ms)
+✔ T-17 execute from EXECUTED re-runs with same prepared result (0.4579ms)
+✔ T-18 execute Provider failure → FAILED with canonical code on err.code (2.0413ms)
+✔ T-19 reset from READY → UNPREPARED, prepared cleared, run history preserved (0.4978ms)
+✔ T-20 reset from EXECUTED clears prepared but preserves lastExecution (0.3043ms)
+✔ T-21 reset from NEW (with default intent) transitions to UNPREPARED (0.1287ms)
+✔ T-22 re-prepare after reset works (0.243ms)
+✔ T-23 view model does not leak secrets / absolute paths / raw payload (0.8338ms)
+✔ T-24 view model exposes compiledPromptPreview read-only (P3-A spec §22) (0.4661ms)
+✔ T-25 view model readiness: READY canExecute=true, STALE canExecute=false (6.1394ms)
+✔ T-26 UI-only fields in reference assignments are stripped before policy projection (0.6745ms)
+✔ T-27 Locked Assets are read-only: updateIntent cannot modify truthSurface (0.58ms)
+✔ T-28 workspace-service does not define a second fingerprint algorithm (0.3001ms)
+✔ T-29 workspace-service calls P2 frozen preparePackagingGeneration only (0.1893ms)
+✔ T-30 workspace-service re-uses the P2 frozen canonical reference roles (0.096ms)
+✔ T-31 workspace service exposes a stable schemaVersion + capability-naming (0.1578ms)
+✔ validatePackagingIntent rejects unknown shot contract id (0.1509ms)
+✔ validatePackagingIntent rejects unknown reference role (0.0966ms)
+✔ createDefaultPackagingIntent is frozen and uses canonical defaults (0.075ms)
+✔ packagingIntentsEqual compares structurally (intent changed) (0.0932ms)
+✔ computeTruthFingerprint is stable for the same truth (0.1953ms)
+✔ PACKAGING_GENERATION_MODES contains exactly the two canonical modes (0.0776ms)
+✔ PACKAGING_SHOT_CONTRACT_IDS contains exactly the three V1 shot ids (0.111ms)
+✔ getPackagingGenerationServiceFingerprint pins the P2 frozen authority surface (0.4217ms)
+✔ view model on a NEW session does not expose prepared or execution (0.1923ms)
+✔ U-01 Prepare button is enabled only when view.readiness.canPrepare is true (5.1204ms)
+✔ U-02 Execute button is enabled only when view.readiness.canExecute is true (0.4855ms)
+✔ U-03 Reset button is enabled only when view.readiness.canReset is true (0.2286ms)
+✔ U-04 isBusy (PREPARING / EXECUTING) disables all conflicting actions (0.4472ms)
+✔ U-05 the Web handler does NOT implicitly call prepareGeneration before executeGeneration (0.9593ms)
+✔ U-06 READY execute reaches the frozen service through the executePackagingGeneration RPC (0.3427ms)
+✔ U-07 STALE execute is rejected by the frozen state machine (handler does not bypass the rejection) (0.5434ms)
+✔ U-08 EXECUTED retry uses the same executePackagingGeneration RPC (no new endpoint) (0.3014ms)
+✔ U-09 retry is disabled / hidden after STALE (canRetry = false on STALE) (0.3487ms)
+✔ U-10 Reset renders the RPC-returned View (no local setState of execution = null) (0.4877ms)
+✔ U-11 ResultTile renders an empty hint when view.execution is null (0.7896ms)
+✔ U-12 ResultTile renders artifact cards with safe metadata only (2.6104ms)
+✔ U-13 ResultTile displays runId from view.execution (no other source) (1.086ms)
+✔ U-14 ResultTile renders width × height in the artifact metadata (5.7905ms)
+✔ U-15 ResultTile renders size in human-readable form (KB / MB / GB) (4.564ms)
+✔ U-16 ResultTile displays provider / model identifiers safely (no credentials) (0.4082ms)
+✔ U-17 ResultTile surfaces diagnostics fields but never redactedRequest / redactedResponse (0.5922ms)
+✔ U-18 ResultTile does not read raw executionResult / preparedResult / Provider payload (0.7156ms)
+✔ U-19 ResultTile does not read raw Provider response (0.9109ms)
+✔ U-20 ResultTile does not embed a base64 / data URI preview (0.4469ms)
+✔ U-21 the Web feature does NOT call imageGeneration.getImageDataUrl for packaging artifacts (0.9399ms)
+✔ U-22 the Web feature does NOT render absolute paths anywhere in the Result Gallery (0.6714ms)
+✔ U-23 the Web feature does NOT use file:// preview URLs (0.4599ms)
+✔ U-24 the Web feature does NOT use raw filesystem paths for artifact rendering (0.5769ms)
+✔ U-25 the Web feature does NOT use unsafe base64 / data URI for image preview (7.0197ms)
+✔ U-26 the existing sanctioned preview surface is unused by the Packaging Web feature (separation of authority) (5.4024ms)
+✔ U-27 missing / unavailable preview falls back to a placeholder (no broken <img>) (0.9606ms)
+✔ U-28 PREPARING status shows "准备中…" busy label, not a fake progress percentage (0.2526ms)
+✔ U-29 READY status does not display a busy label (the toolbar is fully idle) (0.1972ms)
+✔ U-30 EXECUTING status shows "执行中…" busy label (0.1531ms)
+✔ U-31 EXECUTED status surfaces the "本次结果" badge on the Result Gallery (0.3761ms)
+✔ U-32 STALE + previous execution: gallery renders with a "上次结果" badge (0.486ms)
+✔ U-33 FAILED status still surfaces the gallery (view.execution is not cleared by FAILED) (0.4505ms)
+✔ U-34 the Error Surface consumes only view.error (code / userMessage / suggestedAction / recoverable) (0.7091ms)
+✔ U-35 the previous result is NOT mislabeled as "本次结果" after a STALE transition (0.5272ms)
+✔ U-36 the Web feature does NOT persist the execution result to localStorage / sessionStorage / IndexedDB (2.7881ms)
+✔ U-37 the Web feature does NOT invent an execution.history contract (0.7564ms)
+✔ U-38 the Web feature does NOT introduce a second run-store (no in-memory Map of runId → result) (0.8238ms)
+✔ U-39 the Web feature is RPC-only (no second createPackagingWorkspaceService / no in-Web service instance) (0.4858ms)
+✔ U-40 frozen boundaries hold: P3-A production surface and P2 frozen modules are unchanged (4.2862ms)
+✔ AD-01 Packaging UI has no backend implementation import (4.7309ms)
+✔ AD-02 Packaging UI performs no Provider network request (0.9912ms)
+✔ AD-03 Packaging UI has no credential or environment access (1.0597ms)
+✔ AD-04 Packaging UI does not implement a lifecycle transition table (0.997ms)
+✔ AD-05 Reference precedence is not presented by the UI (13.7841ms)
+✔ AD-06 Locked Assets presentation remains read-only (0.5144ms)
+✔ AD-07 UI has no fake numeric progress percentage (0.6238ms)
+✔ AD-08 Result Gallery uses the safe Packaging preview bridge (0.3514ms)
+✔ AD-09 UI contains no absolute or file URL presentation path (0.6676ms)
+✔ AD-10 UI introduces no run history contract (0.809ms)
+✔ AD-11 UI introduces no browser persistence (0.68ms)
+✔ AD-12 both modals expose accessible dialog semantics (0.5639ms)
+✔ AD-13 primary actions expose accessible labels (0.2441ms)
+✔ AD-14 lifecycle status is expressed with text, not color alone (0.1546ms)
+✔ AD-15 responsive breakpoint coverage exists (0.516ms)
+✔ AD-16 mobile layout has no forced fixed workspace width (0.7812ms)
+✔ AD-17 P3-A frozen application diff is zero (167.9506ms)
+✔ AD-18 P2 frozen Packaging diff is zero (215.1896ms)
+✔ S-01 valid image/png MIME produces a `data:image/png;base64,...` preview (positive control) (73.6236ms)
+✔ S-02 valid image/jpeg MIME produces a `data:image/jpeg;base64,...` preview (15.4132ms)
+✔ S-03 valid image/webp MIME produces a `data:image/webp;base64,...` preview (13.4618ms)
+✔ S-04 text/html MIME is rejected (read returns null, no data: URL produced) (58.6018ms)
+✔ S-05 image/svg+xml MIME is rejected (no SVG execution surface) (102.1666ms)
+✔ S-06 application/javascript MIME is rejected (no JS execution surface) (84.583ms)
+✔ S-07 unknown / unrecognised MIME is rejected (no fallback to image/png) (32.7379ms)
+✔ S-08 empty MIME is rejected (no fallback to image/png) (69.1565ms)
+✔ S-09 malformed MIME (with parameters) is rejected (63.4395ms)
+✔ S-10 application/octet-stream MIME is rejected (no executable content through data URL) (16.7934ms)
+✔ S-11 text/plain MIME is rejected (no text-content surface in the preview tile) (34.7336ms)
+✔ S-12 saveRun drops an artifact whose MIME is not on the allowlist (write-time fail-closed) (17.1468ms)
+✔ S-13 saveRun drops an artifact whose MIME is empty / null (write-time fail-closed) (84.287ms)
+✔ S-14 the successful preview payload does not leak runRoot, Buffer, or credential (19.1394ms)
+✔ AH-01 real RPC production flow reaches two canonical runs and preserves stale/reset semantics (240.0595ms)
+✔ R-01 canonical reference roles are imported verbatim from the P2 frozen authority (4.8874ms)
+✔ R-02 no duplicated role enum (second role authority forbidden) (0.425ms)
+✔ R-03 valid reference assignment is accepted (canonical role) (0.4531ms)
+✔ R-04 missing assetId → REFERENCE_ROLE_INVALID (canonical error code) (0.1505ms)
+✔ R-05 missing role → REFERENCE_ROLE_INVALID (0.1576ms)
+✔ R-06 unknown role → REFERENCE_ROLE_INVALID (0.1291ms)
+✔ R-07 malformed assignment (non-object) → invalid (0.1931ms)
+✔ R-08 duplicate (assetId, same role) → rejected (canonical P2 duplicate rule) (0.2996ms)
+✔ R-09 same assetId + different roles is also rejected (assetId is unique per session) (0.1537ms)
+✔ R-10 multiple assets with the same role is allowed (no role-duplicate restriction) (0.2419ms)
+✔ R-11 empty reference set in analysis_led → valid intent (no failure at intent level) (0.3454ms)
+✔ R-12 reference-first with no references → valid at intent level (P2 prepare surfaces REFERENCE_REQUIRED) (0.1237ms)
+✔ R-13 reference-first with no references → P2 prepare fails with REFERENCE_REQUIRED (10.7863ms)
+✔ R-14 assetId semantic change → STALE (3.5887ms)
+✔ R-15 role semantic change → STALE (0.8109ms)
+✔ R-16 reference added → STALE (0.5115ms)
+✔ R-17 reference removed → STALE (1.2818ms)
+✔ R-18 displayName change on a reference → NOT stale (UI-only) (0.7742ms)
+✔ R-19 previewUri change → NOT stale (5.4984ms)
+✔ R-20 selectionOrderUI change → NOT stale (1.4546ms)
+✔ R-21 thumbnail change → NOT stale (0.8691ms)
+✔ R-22 reference mapping strips UI-only fields before P2 (previewUri / displayName / thumbnail / selectionOrderUI) (0.3248ms)
+✔ R-23 reference mapping preserves canonical role verbatim (0.2169ms)
+✔ R-24 reference mapping does not apply precedence (no second precedence engine) (0.1449ms)
+✔ R-25 reference mapping does not build Provider payload (no compile/build) (0.3613ms)
+✔ R-26 reference mapping is deterministic (same input → same output) (0.1618ms)
+✔ R-27 view.references is frozen + nested objects are frozen (0.3035ms)
+✔ R-28 view.references[*] mutation does not modify the underlying session (0.8401ms)
+✔ R-29 view.references carries exactly the 5 REFERENCE_VIEW_KEYS (0.405ms)
+✔ R-30 view.references ordering is deterministic (no random / no timestamp sort) (0.3505ms)
+✔ L-01 Workspace has no second Locked Asset authority (read-only projection) (0.1189ms)
+✔ L-02 locked asset projection is read-only and immutable (0.2705ms)
+✔ L-03 locked asset projection has the 7 canonical fields (0.1817ms)
+✔ L-04 missing locked asset field → graceful empty projection (no throw) (0.1233ms)
+✔ L-05 locked asset projection has schemaVersion + allLocked: true invariant (0.1489ms)
+✔ L-06 logo.usageMode is constrained to reserved|rendered (default reserved) (0.2016ms)
+✔ L-07 locked asset projection strips sourcePath / rawPath / absolutePath (0.1322ms)
+✔ L-08 locked asset projection does not surface file:// or UNC paths (0.1765ms)
+✔ L-09 locked asset projection does not surface credentials / apiKey / Bearer / secrets (0.3705ms)
+✔ L-10 locked asset projection never surfaces raw binary or base64 data URIs (0.2002ms)
+✔ L-11 locked asset projection nested object sanitation (each canonical field is exactly the canonical shape) (0.8066ms)
+✔ L-12 locked asset projection is deterministic (same input → same output) (1.0109ms)
+✔ L-13 locked asset fingerprint uses structural equality (no second hash algorithm) (1.0576ms)
+✔ L-14 view.lockedAssets nested mutation isolation (3.7469ms)
+✔ L-15 view.lockedAssets does not surface any non-canonical top-level keys (0.4203ms)
+✔ L-16 locked asset redaction key list covers the canonical path / credential surface (0.6093ms)
+✔ L-17 reference-assignments module does not import the Locked-Asset authority (no leak) (0.5365ms)
+✔ L-18 lock-assets-projection module is a pure helper (no fs / no network / no credentials) (0.5275ms)
+✔ L-19 lock-assets-projection does not mutate the truth surface (pure function) (0.1891ms)
+✔ L-20 lock-assets-projection schemaVersion is capability-named + X.Y.Z (no P3A_* / vnext) (0.2025ms)
+✔ T-01 locked asset truth drift → STALE (truth_surface_changed) (0.7194ms)
+✔ T-02 analysis context truth drift → STALE (still works the same way) (0.4843ms)
+✔ T-03 truth drift stale reason = truth_surface_changed (single canonical reason) (0.3627ms)
+✔ T-04 execute after locked asset drift → rejected with STALE issues (16.9342ms)
+✔ T-05 re-prepare after truth refresh → READY (stale reasons cleared) (0.8209ms)
+✔ T-06 reference semantic edit + truth drift → both canonical reasons surface (2.3645ms)
+✔ T-07 once stale remains stale until prepare (truth restore does not clear STALE) (0.3501ms)
+✔ T-08 truth fingerprint is stable + distinct (no second hash algorithm) (1.3922ms)
+✔ T-09 Locked Assets do NOT get overridden by reference assignment (0.2432ms)
+✔ T-10 Workspace does not resolve Reference-vs-Locked-Asset precedence (1.017ms)
+✔ T-11 P2 preparation still receives canonical inputs (no semantic field mutation) (0.3972ms)
+✔ T-12 stale reason contract is canonical + closed (no raw diff / no path / no secret) (0.4528ms)
+✔ T-13 packagingIntentsEqual detects reference semantic change (workspace structural equality) (0.1232ms)
+✔ T-14 packagingIntentsEqual does NOT consider UI-only fields semantic (0.3255ms)
+✔ T-15 reference removed entirely (set to []) → STALE (5.189ms)
+✔ A-01 runtime-core public barrel exposes the canonical role list (no second authority) (0.1949ms)
+✔ A-02 runtime-core public barrel does NOT re-export P2 compiler or Provider payload builder (0.413ms)
+✔ A-03 reference-assignments module does NOT implement precedence (0.2952ms)
+✔ A-04 reference-assignments module does NOT build Provider payload (0.443ms)
+✔ A-05 reference-assignments module does NOT import Provider network / fs / credential store (0.5459ms)
+✔ A-06 lock-assets-projection module is pure / no Provider / no fs / no credential (0.3388ms)
+✔ A-07 Workspace session never carries an absolute asset path (0.2683ms)
+✔ A-08 public fingerprint snapshots pin the role count + projection shape (0.1601ms)
+✔ A-09 P2 frozen modules are not modified by P3-A6 (0.5447ms)
+✔ A-10 P3-A6 schema versions are capability-named + X.Y.Z format (no P3A_* / V* / vnext) (2.5463ms)
+✔ T-01 PACKAGING_REFERENCE_ROLES exports exactly 6 canonical roles (frozen P3-A authority) (19.2524ms)
+✔ T-02 the role vocabulary is NOT derived from view.references (it is the P3-A frozen barrel export) (1.3356ms)
+✔ T-03 add a valid reference assignment via updateIntent (1 reference) (15.8423ms)
+✔ T-04 remove a reference assignment (6.1381ms)
+✔ T-05 change a reference role (7.4737ms)
+✔ T-06 duplicate assetId is rejected by the frozen P3-A contract (canonical validation) (1.6328ms)
+✔ T-07 unknown role is rejected (canonical validation) (7.4827ms)
+✔ T-08 multiple assets with the same role is allowed (canonical contract) (1.1485ms)
+✔ T-09 reference semantic update transitions READY 鈫?STALE (P3-A5 contract) (7.5119ms)
+✔ T-10 UI-only metadata (displayName / previewUri) does not change the assignment (1.546ms)
+✔ T-11 reference-first mode with no references is rejected by P2 frozen REFERENCE_REQUIRED on prepare (8.0498ms)
+✔ T-12 the operations layer does NOT sort / rank references (no precedence engine) (2.0991ms)
+✔ T-13 PACKAGING_OPERATION_VERSION is pinned to 1.0.0 (0.1543ms)
+✔ T-14 updateIntent with referenceAssignments returns the new view (P3-A RPC contract) (0.7124ms)
+✔ T-15 UI-only metadata fields do not create stale semantics (2.7387ms)
+✔ T-16 createSession resolves real upstream truth (no fake seed) (0.4158ms)
+✔ T-17 the brand projection renders the upstream brand_name (0.344ms)
+✔ T-18 the logo projection renders present=true when a logo Locked Asset exists (0.3549ms)
+✔ T-19 the productIdentity projection falls back to artwork 鈫?color 鈫?arrangement (0.8625ms)
+✔ T-20 the category projection renders the upstream product_category (0.3522ms)
+✔ T-21 the structure projection renders the upstream packaging_structure (1.7846ms)
+✔ T-22 the mandatoryCopy projection collects core_symbol + required_visual_element (1.7049ms)
+✔ T-23 the confirmedComponents projection collects forbidden_reference_content (5.2591ms)
+✔ T-24 missing Locked Asset field renders as empty (NOT a fake seed) (0.5941ms)
+✔ T-25 the project truth refresh re-resolves the canonical authority (runtime-side) (1.9788ms)
+✔ T-26 the Web caller cannot inject an arbitrary truthSnapshot (P3-B3 搂11) (0.6464ms)
+✔ T-27 the Web caller cannot supply a cross-projectId in setTruthSnapshot (P3-B3 搂12) (0.2699ms)
+✔ T-28 truth drift after truth refresh transitions READY 鈫?STALE with truth_surface_changed (P3-A5) (0.6331ms)
+✔ T-29 STALE execute after truth drift preserves the STALE-specific issue envelope (0.9698ms)
+✔ T-30 the view never carries an absolute filesystem path (P3-B3 搂18) (0.3429ms)
+✔ T-31 the view never carries a credential (P3-B3 搂18) (0.7863ms)
+✔ T-32 the view never carries raw sourceFile / rawPath / rawProviderPayload (10.9162ms)
+✔ T-33 the view never carries binary / base64 / data URI for the Locked Asset fields (0.5167ms)
+✔ T-34 a session has a single projectId binding; truth refresh reads from the bound projectId only (0.534ms)
+✔ T-35 setTruthSnapshot on a session with no bound projectId is rejected (0.1782ms)
+✔ T-36 reference edit + truth drift produces the canonical stale envelope (0.8557ms)
+✔ T-37 explicit prepare is required after STALE (no implicit re-prepare) (1.2222ms)
+✔ T-38 the session persists across many RPC calls (no per-call service recreation) (0.3752ms)
+✔ T-39 the Web feature is RPC-only 鈥?there is no local createPackagingWorkspaceService in the Web source (0.2742ms)
+✔ T-40 the canonical 18 top-level view keys are present after a reference + truth cycle (0.2805ms)
+✔ R-01 the packaging operations factory exposes 8 RPC channels under the `packaging:` prefix (P3-B5 added `get-artifact-preview`) (15.7515ms)
+✔ R-01b PACKAGING_OPERATION_VERSION is exported and pinned to 1.0.0 (0.3777ms)
+✔ R-02 create-session returns { sessionId, view } and the view has the canonical 18 top-level keys (2.8876ms)
+✔ R-02b create-session rejects when projectId is missing (0.7656ms)
+✔ R-02c create-session uses the resolveTruthSnapshot authority when no truthSnapshot is supplied (1.0959ms)
+✔ R-03 get-view returns the same session view (no transformation) (1.1263ms)
+✔ R-04 session persists across multiple RPC calls (no per-call service recreation) (11.7253ms)
+✔ R-05 update-intent mutates the intent and returns the new view (0.8191ms)
+✔ R-06 get-view reflects the updated intent (0.4027ms)
+✔ R-07a get-view with unknown sessionId throws canonical PACKAGING_WORKSPACE_UNKNOWN_SESSION (0.3634ms)
+✔ R-07b update-intent with unknown sessionId fails closed (does NOT auto-create) (0.681ms)
+✔ R-07c prepare / execute / reset with unknown sessionId all fail closed (1.2001ms)
+✔ R-07d set-truth-snapshot with a caller-supplied truthSnapshot is rejected with PACKAGING_OPERATIONS_TRUTH_AUTHORITY_VIOLATION (P3-B3 §11) (0.4959ms)
+✔ R-07e set-truth-snapshot with a caller-supplied projectId is rejected with PACKAGING_OPERATIONS_TRUTH_AUTHORITY_VIOLATION (P3-B3 §12) (0.7547ms)
+✔ R-08 prepare RPC reaches the frozen application service (NEW → PREPARING → READY) (29.3393ms)
+✔ R-09 execute RPC reaches the frozen application service (READY → EXECUTING → EXECUTED) (4.1169ms)
+✔ R-10 reset RPC reaches the frozen application service (READY → UNPREPARED) (3.776ms)
+✔ R-11 execute RPC builds deps from the canonical credential + settings authorities (no Web-side credential) (5.158ms)
+✔ R-12 prepare failure preserves the canonical error code on the view (1.4615ms)
+✔ R-13 STALE execute preserves the STALE-specific issue envelope (not generic not_ready) (20.257ms)
+✔ R-14 RPC response carries only the UI-safe view (no raw session / no preparedResult / no Provider payload) (11.0027ms)
+✔ R-19 a single Workspace service instance is the sole session authority across many RPC calls (0.5015ms)
+✔ R-20 the operations layer does NOT import or call buildPackagingProviderPayload / compilePackagingPrompt (103.6993ms)
+✔ R-21 the operations layer does NOT call crypto.createHash or implement any parallel fingerprint (13.5047ms)
+✔ R-22 the operations layer only composes the canonical Workspace service API (2.5582ms)
+✔ R-23 the registered channel IDs follow the `packaging:<verb-noun>` pattern (0.5203ms)
+✔ R-24 _removeSession is NOT exposed as a public RPC channel (0.1461ms)
+✔ R-25 the public Runtime barrel re-exports createPackagingOperations (so the runtime / web can wire it) (0.0691ms)
+✔ R-26 the public Runtime barrel does NOT expose the packaging-operations.js file path (only the named exports) (1.5206ms)
+✔ R-27 the operations layer does NOT import process.env / readCredentials directly; it only accepts the readCredentials adapter (8.3749ms)
+✔ R-28 execute RPC fails closed when readCredentials rejects (1.5044ms)
+✔ S-01 prepare from UNPREPARED → PREPARING → READY (snapshot stored) (4.3983ms)
+✔ S-02 prepare from READY (re-prepare) replaces the old preparation snapshot (0.9341ms)
+✔ S-03 prepare from STALE → PREPARING → READY (stale reasons cleared on success) (7.7004ms)
+✔ S-04 prepare from FAILED → PREPARING → READY (recovery path) (1.2967ms)
+✔ S-05 prepare from EXECUTED allowed (re-prepare from a successful run) (1.1239ms)
+✔ S-06 prepare while PREPARING is rejected (no re-entrant prepare) (1.1958ms)
+✔ S-07 prepare while EXECUTING is rejected (no overlap with execute) (61.6286ms)
+✔ S-08 prepare without intent is rejected (PACKAGING_WORKSPACE_PREPARE_REJECTED / intent_missing) (0.3362ms)
+✔ S-09 preparation snapshot stores intentAtPrepare (semantic intent identity) (0.3979ms)
+✔ S-10 preparation snapshot stores truthFingerprintAtPrepare (truth identity) (0.3696ms)
+✔ S-11 preparation snapshot stores P2 frozen preparedResult (5 P2-F hashes + executionIdentityHash) (0.2653ms)
+✔ S-12 preparation snapshot At timestamp is a stable ISO string (0.1825ms)
+✔ S-13 READY → STALE on generationMode change (0.3285ms)
+✔ S-14 READY → STALE on shotContractId change (0.3028ms)
+✔ S-15 READY → STALE on explicitUserConstraints change (0.3315ms)
+✔ S-16 READY → STALE on referenceAssignments change (0.3792ms)
+✔ S-17 READY → STALE on providerModelId change (0.2693ms)
+✔ S-18 READY → STALE on apiProfileId change (0.2559ms)
+✔ S-19 READY → STALE on truth surface change (lockedAssets) (0.3161ms)
+✔ S-20 READY → STALE on truth surface change (analysisContext) (0.2453ms)
+✔ S-21 READY → READY on UI-only field change (previewUri / displayName / selectionOrderUI ignored) (0.3016ms)
+✔ S-22 READY → READY on same semantic input (idempotent updateIntent) (6.9389ms)
+✔ S-23 same semantic intent + same truth surface = not stale (computeStale returns false) (0.3627ms)
+✔ S-24 same intent + truth drift = stale with truth_surface_changed (computeStale pure) (0.8952ms)
+✔ S-25 same truth + intent drift = stale with intent_changed (computeStale pure) (0.391ms)
+✔ S-26 stale reasons are deterministic for the same input (computeStale pure) (0.7348ms)
+✔ S-27 stale reasons are bounded to canonical reason codes only (0.2476ms)
+✔ S-28 stale reasons are UI-safe (no raw diff / no path / no secret) (6.8696ms)
+✔ S-29 execute from NEW is rejected (PACKAGING_WORKSPACE_EXECUTE_REJECTED / not_ready) (2.1161ms)
+✔ S-30 execute from UNPREPARED is rejected (0.2619ms)
+✔ S-31 execute from STALE is rejected (STALE-specific issue surface) (1.807ms)
+✔ S-32 execute from FAILED is rejected (0.4465ms)
+✔ S-33 execute from PREPARING is rejected (synchronous path: NO re-entrant execute) (0.9497ms)
+✔ S-34 execute from EXECUTING is rejected (no double execute) (47.3662ms)
+✔ S-35 execute without prepared snapshot is rejected (prepared_missing) (0.6088ms)
+✔ S-36 execute runs workspace stale check FIRST (returns stale error before Provider call) (0.6278ms)
+✔ S-37 execute runs P2 frozen pre-execution verification (verifyPackagingGenerationMetadata) (0.7596ms)
+✔ S-38 stale execute does NOT call P2 frozen execute (defense in depth) (0.3855ms)
+✔ S-39 successful execute: workspace gate passes AND P2 frozen gate passes (0.3909ms)
+✔ S-40 EXECUTED → execute (retry) allowed when preparation still valid (0.318ms)
+✔ S-41 EXECUTED + intent drift → STALE → retry rejected (1.6061ms)
+✔ S-42 EXECUTED + truth drift → STALE → retry rejected (1.9883ms)
+✔ S-43 EXECUTED + same semantic input → retry preserves the semantic compile fingerprint (0.5043ms)
+✔ S-44 EXECUTED + retry failure → FAILED (lastExecution preserved from previous success) (1.2378ms)
+✔ S-45 READY → re-prepare replaces the preparation snapshot (0.372ms)
+✔ S-46 STALE → re-prepare succeeds → READY (stale reasons cleared) (0.593ms)
+✔ S-47 FAILED → re-prepare works (recovery path) (19.1476ms)
+✔ S-48 EXECUTED → re-prepare clears lastExecution? (run history preserved per P3-A spec §29) (3.9052ms)
+✔ S-49 re-prepare from EXECUTED → READY → new execute produces fresh runId (0.445ms)
+✔ S-50 prepare failure: status=FAILED, intent+truth preserved, lastError set (0.5518ms)
+✔ S-51 prepare failure: prepared is null (no partial state visible) (0.2761ms)
+✔ S-52 execute failure: status=FAILED, lastExecution cleared, lastError set (4.7589ms)
+✔ S-53 FAILED → execute rejected (must re-prepare first) (0.8209ms)
+✔ S-54 FAILED is not a dead-end (re-prepare or reset recovers) (2.1171ms)
+✔ S-55 reset from READY → UNPREPARED, prepared cleared, run history preserved (0.3588ms)
+✔ S-56 reset from STALE → UNPREPARED, stale reasons cleared (0.6234ms)
+✔ S-57 reset preserves intent / truth / projectId (no semantic identity loss) (0.4934ms)
+✔ S-58 reset → execute rejected (no prepared snapshot) (0.3657ms)
+✔ S-59 TOCTOU: prepare → setTruthSnapshot drift → execute fails closed (truth drift detected at execute gate) (0.4639ms)
+✔ S-60 TOCTOU: prepare → intent edit → intent restored to original → STALE preserved (once-stale fail-closed) (0.4421ms)
+✔ S-61 TOCTOU: prepare → setTruthSnapshot drift → restore truth (not via prepare) → STALE preserved (0.413ms)
+✔ S-62 TOCTOU: prepare → intent edit → re-prepare → READY (only prepare can recover) (0.6484ms)
+✔ S-63 setTruthSnapshot accepts a new truth surface and updates session.truthSnapshot (0.3056ms)
+✔ S-64 setTruthSnapshot triggers STALE if the new truth differs from saved fingerprint (0.2613ms)
+✔ S-65 setTruthSnapshot rejects non-object newTruth (0.136ms)
+✔ S-66 setTruthSnapshot rejects update during PREPARING / EXECUTING (fail-closed) (16.715ms)
+✔ S-67 UNPREPARED execute does NOT call P2 prepare (no implicit prepare) (0.2604ms)
+✔ S-68 STALE execute does NOT call P2 prepare (no implicit recompile) (0.3172ms)
+✔ S-69 FAILED execute does NOT call P2 prepare (no implicit recompile from failed) (0.3182ms)
+✔ S-70 setTruthSnapshot does NOT silently refresh prepared snapshot (re-prepare required) (0.2711ms)
+✔ S-71 no second generation fingerprint authority (truthFingerprint is application-level structural helper only) (0.1372ms)
+✔ S-72 workspace-service does NOT carry a parallel generation fingerprint (session.prepared has only 4 keys) (0.4436ms)
+✔ S-73 executeGeneration passes the P2 frozen preparedResult verbatim (no transformation) (0.3598ms)
+✔ S-74 P2 generation service fingerprint pins the authority (P3-A spec §21 / §23) (0.1477ms)
+✔ S-75 stale-tracker does NOT call prepare / execute / network (0.4454ms)
+✔ S-76 stale-tracker does NOT mutate session (pure helper) (0.3755ms)
+✔ S-77 workspace-service execute does NOT silently call prepare on stale (no implicit recompile) (10.4889ms)
+✔ S-78 workspace-service does NOT read credential secrets (apiKey is in Shared Runtime, not Workspace) (0.8565ms)
+✔ S-79 P2 frozen modules are not modified by P3-A5 (0.7885ms)
+✔ S-80 P3-A5 schema versions are capability-named + X.Y.Z format (no P3A_* / V* / vnext) (0.274ms)
+✔ S-81 STALE + both intent + truth drift → issues are canonical-ordered stale + both reasons (0.4642ms)
+✔ S-82 STALE execute issues are deterministic across repeated invocations (0.5005ms)
+✔ S-83 STALE execute issues are frozen (UI cannot mutate the rejection envelope) (0.6038ms)
+✔ S-84 STALE execute issues contain no raw path / secret / diff / provider payload (0.7103ms)
+✔ S-85 UNPREPARED execute issues remain [not_ready] (regression lock) (0.2586ms)
+✔ S-86 NEW / FAILED / EXECUTING execute issues remain [not_ready] (regression lock) (7.8557ms)
+✔ S-09a PACKAGING_WORKSPACE_STATUS exposes exactly 8 capability-named statuses (27.2ms)
+✔ S-09b PACKAGING_WORKSPACE_STATUS is frozen (0.2601ms)
+✔ S-09c PACKAGING_WORKSPACE_STATUS_LABELS has the same 8 keys (0.1923ms)
+✔ S-09d getPackagingWorkspaceStateMachineFingerprint pins the surface (0.2856ms)
+✔ S-10a getStateInvariant returns a documented invariant for every status (0.2868ms)
+✔ S-10b STATE_INVARIANTS uiProjection matches is*Allowed helpers (0.2536ms)
+✔ S-10c STATE_INVARIANTS.allowedOutgoingTransitions matches ALLOWED_TRANSITIONS (1.0929ms)
+✔ S-10d getStateInvariant returns null for unknown status (0.1545ms)
+✔ S-11a createInitialSessionState returns status=NEW with default intent (0.3698ms)
+✔ S-11b createInitialSessionState rejects missing sessionId / projectId (0.6116ms)
+✔ S-12 transition new -> unprepared is allowed (0.2878ms)
+✔ S-12 transition new -> preparing is allowed (0.1335ms)
+✔ S-12 transition new -> failed is allowed (0.0732ms)
+✔ S-12 transition unprepared -> preparing is allowed (0.1049ms)
+✔ S-12 transition unprepared -> failed is allowed (0.1681ms)
+✔ S-12 transition preparing -> ready is allowed (0.0769ms)
+✔ S-12 transition preparing -> stale is allowed (0.0651ms)
+✔ S-12 transition preparing -> failed is allowed (0.0993ms)
+✔ S-12 transition ready -> preparing is allowed (0.1092ms)
+✔ S-12 transition ready -> stale is allowed (0.0981ms)
+✔ S-12 transition ready -> executing is allowed (0.0664ms)
+✔ S-12 transition ready -> failed is allowed (0.0566ms)
+✔ S-12 transition stale -> preparing is allowed (0.0528ms)
+✔ S-12 transition stale -> failed is allowed (0.0483ms)
+✔ S-12 transition executing -> executed is allowed (0.0473ms)
+✔ S-12 transition executing -> failed is allowed (0.1031ms)
+✔ S-12 transition executed -> preparing is allowed (0.0448ms)
+✔ S-12 transition executed -> stale is allowed (0.0455ms)
+✔ S-12 transition executed -> executing is allowed (0.047ms)
+✔ S-12 transition executed -> failed is allowed (0.0881ms)
+✔ S-12 transition failed -> preparing is allowed (0.0447ms)
+✔ S-12 transition failed -> unprepared is allowed (0.0463ms)
+✔ S-20 transition new -> ready is rejected (NEW cannot jump directly to READY (must go via PREPARING)) (0.1801ms)
+✔ S-20 transition new -> stale is rejected (NEW has no prepared snapshot to be stale against) (0.0768ms)
+✔ S-20 transition new -> executing is rejected (NEW has no prepared snapshot to execute) (0.0962ms)
+✔ S-20 transition new -> executed is rejected (NEW has no executed run to consume) (0.0748ms)
+✔ S-20 transition unprepared -> ready is rejected (UNPREPARED cannot jump to READY (must go via PREPARING)) (0.0573ms)
+✔ S-20 transition unprepared -> stale is rejected (UNPREPARED has no prepared snapshot to be stale against) (0.0582ms)
+✔ S-20 transition unprepared -> executing is rejected (UNPREPARED has no prepared snapshot to execute) (0.0656ms)
+✔ S-20 transition unprepared -> executed is rejected (UNPREPARED has no execution to consume) (0.9109ms)
+✔ S-20 transition unprepared -> unprepared is rejected (self-transition is rejected) (0.6761ms)
+✔ S-20 transition preparing -> preparing is rejected (self-transition during async work is rejected) (0.2388ms)
+✔ S-20 transition preparing -> executing is rejected (PREPARING cannot jump to EXECUTING (must go via READY)) (0.2443ms)
+✔ S-20 transition preparing -> unprepared is rejected (PREPARING cannot go back to UNPREPARED) (0.2901ms)
+✔ S-20 transition preparing -> executed is rejected (PREPARING cannot produce EXECUTED without going through READY → EXECUTING → EXECUTED) (0.0944ms)
+✔ S-20 transition ready -> ready is rejected (self-transition is rejected) (0.0689ms)
+✔ S-20 transition ready -> unprepared is rejected (READY cannot lose its prepared snapshot without going through PREPARING or reset) (0.065ms)
+✔ S-20 transition ready -> executed is rejected (READY cannot produce EXECUTED without going through EXECUTING) (0.0609ms)
+✔ S-20 transition stale -> stale is rejected (self-transition is rejected) (0.0688ms)
+✔ S-20 transition stale -> executing is rejected (STALE cannot execute (STOP-P3-A-07)) (0.0639ms)
+✔ S-20 transition stale -> ready is rejected (STALE cannot recover into READY without re-preparing) (0.0585ms)
+✔ S-20 transition stale -> executed is rejected (STALE has no fresh execution) (0.0617ms)
+✔ S-20 transition stale -> unprepared is rejected (STALE cannot lose its prepared snapshot without going through PREPARING or reset) (0.0699ms)
+✔ S-20 transition executing -> preparing is rejected (EXECUTING cannot pivot to PREPARING (no in-flight re-prepare)) (0.0595ms)
+✔ S-20 transition executing -> stale is rejected (EXECUTING cannot be marked STALE in the middle of a run) (0.0551ms)
+✔ S-20 transition executing -> executing is rejected (self-transition / re-entrant execute is rejected) (0.056ms)
+✔ S-20 transition executing -> unprepared is rejected (EXECUTING cannot lose its prepared snapshot without going through EXECUTED → reset) (0.0598ms)
+✔ S-20 transition executing -> new is rejected (EXECUTING cannot regress to NEW) (0.0558ms)
+✔ S-20 transition executed -> executed is rejected (self-transition is rejected) (0.0575ms)
+✔ S-20 transition executed -> unprepared is rejected (EXECUTED cannot lose its prepared snapshot without going through PREPARING or reset) (0.0579ms)
+✔ S-20 transition executed -> new is rejected (EXECUTED cannot regress to NEW) (0.057ms)
+✔ S-20 transition failed -> failed is rejected (FAILED → FAILED is rejected (no legitimate use case; re-failure lands via prepare/execute first)) (0.0598ms)
+✔ S-20 transition failed -> ready is rejected (FAILED cannot jump to READY without re-preparing) (0.0533ms)
+✔ S-20 transition failed -> stale is rejected (FAILED has no prepared snapshot to be stale against) (0.0997ms)
+✔ S-20 transition failed -> executing is rejected (FAILED cannot execute (must re-prepare first)) (0.0596ms)
+✔ S-20 transition failed -> executed is rejected (FAILED cannot produce an execution without re-preparing) (0.0768ms)
+✔ S-20 transition failed -> new is rejected (FAILED cannot regress to NEW (reset goes to UNPREPARED if intent is set)) (0.2876ms)
+✔ S-21 transitionSession rejects unknown status values (0.2934ms)
+✔ S-22 transitionSession rejects non-object currentState (0.1971ms)
+✔ S-30 isIntentEditAllowed is false during PREPARING and EXECUTING (0.1021ms)
+✔ S-31 isExecuteAllowed is only true for READY and EXECUTED (0.2494ms)
+✔ S-32 isPrepareAllowed is true for every non-async status (0.118ms)
+✔ S-33 isResetAllowed is true for every non-async status (0.1222ms)
+✔ S-34 service-level: updateIntent during EXECUTING is rejected (68.425ms)
+✔ S-35 READY → STALE on semantic intent edit (no silent recompile) (1.2096ms)
+✔ S-36 READY → READY on UI-only field edit (no stale) (0.472ms)
+✔ S-37 EXECUTED → STALE on semantic intent edit (semantic-edit transition) (0.6427ms)
+✔ S-38 double prepare from a sync mock is harmless (synchronous path) (0.4854ms)
+✔ S-39 prepare during EXECUTING is rejected (9.3408ms)
+✔ S-40 execute during PREPARING is rejected (synchronous mock path) (0.7978ms)
+✔ S-41 double execute from EXECUTED is allowed (P3-A spec §28.1 retry semantics) (0.6842ms)
+✔ S-42 resetPreparation is rejected during EXECUTING (fail closed) (1.7512ms)
+✔ S-43 prepare failure: status=FAILED with canonical code, intent/truth preserved (2.1893ms)
+✔ S-44 execute failure: status=FAILED, prepared cleared, lastExecution preserved if any (0.8732ms)
+✔ S-45 FAILED → PREPARING via re-prepare (failure recovery) (0.5274ms)
+✔ S-46 FAILED → UNPREPARED via reset (preserves intent and truth) (0.2762ms)
+✔ S-47 FAILED is NOT a dead-end: prepare / reset are both allowed (0.102ms)
+✔ S-48 reset from READY → UNPREPARED, prepared cleared (0.2046ms)
+✔ S-49 reset preserves truthSnapshot, intent, projectId (0.1953ms)
+✔ S-50 reset preserves historical lastExecution (run history retained) (0.3761ms)
+✔ S-51 reset does NOT enter READY directly (must re-prepare) (0.2478ms)
+✔ S-52 reset from NEW with no intent → NEW (preserves "no intent" state) (0.1203ms)
+✔ S-53 view model exposes isBusy = true during PREPARING and EXECUTING (0.3452ms)
+✔ S-54 readiness.isBusy / readiness.canEditIntent match top-level isBusy / canEditIntent (0.3574ms)
+✔ S-55 view model readiness.canExecute matches isExecuteAllowed for every status (0.4661ms)
+✔ S-56 view model readiness.canEditIntent matches isIntentEditAllowed for every status (0.3728ms)
+✔ S-57 STATE_INVARIANTS.uiProjection matches view model readiness (per status) (0.1758ms)
+✔ S-58 transitionSession output is frozen (0.1244ms)
+✔ S-59 view model output is frozen (0.2452ms)
+✔ S-60 mutating a session then reading the view returns the new (frozen) state (0.3144ms)
+✔ S-61 getStateInvariant returns a frozen object (0.1457ms)
+✔ S-62 view model on every status does not leak apiKey / Authorization / Bearer / secrets (0.6809ms)
+✔ S-63 view model never exposes Windows drive letters or absolute POSIX paths (3.5836ms)
+✔ S-64 view model never exposes raw P2 frozen payload / raw provider request body (0.4514ms)
+✔ S-65 view model lastError carries the canonical P2 code, not the raw error message (0.4445ms)
+✔ S-66 stale-tracker computeStale does not mutate the session (0.2773ms)
+✔ S-67 view-model getView does not mutate the session (0.4433ms)
+✔ S-68 state authority is workspace-state: getPackagingWorkspaceStateMachineFingerprint is the only transition authority (0.2837ms)
+✔ S-69 fingerprint authority is the P2 frozen 5-hash compileFingerprint (no second algorithm) (0.2026ms)
+✔ S-70 packagingIntentsEqual is a Workspace structural helper, NOT a second generation fingerprint authority (0.2576ms)
+✔ S-71 prepared.metadata.compileFingerprint is preserved verbatim (5 P2-F hashes intact) (0.2551ms)
+✔ S-72 computeTruthFingerprint is application-level structural helper, not generation fingerprint (0.1854ms)
+✔ S-73 stableStringify is a Workspace structural helper (0.1345ms)
+✔ S-74 generation fingerprint authority is the P2 frozen compileFingerprint (5 P2-F hashes) (0.2543ms)
+✔ S-75 P2 frozen modules are not modified by P3-A3 (0.7925ms)
+✔ S-76 P3-A3 schema versions are capability-named, not phase-named (0.1365ms)
+✔ S-77 version strings match the canonical X.Y.Z form (no P3A_* / V* / vnext) (0.3134ms)
+✔ S-78 PACKAGING_GENERATION_MODES, PACKAGING_SHOT_CONTRACT_IDS, PACKAGING_REFERENCE_ROLES are P2 frozen authority (not redefined) (0.1495ms)
+✔ S-79 P2 frozen PACKAGING_REFERENCE_ROLES is the canonical 6-role set (0.1265ms)
+✔ S-80 service public surface is frozen and exposes exactly the 5 API + getView (0.1238ms)
+✔ V-09a getPackagingWorkspaceViewModelKeys returns the canonical allowlist (3.9227ms)
+✔ V-09b getPackagingWorkspaceIntentKeys returns the canonical 6 user-editable fields (1.4598ms)
+✔ V-09c getPackagingWorkspaceErrorKeys returns the canonical 6 error fields (0.6739ms)
+✔ V-09d view model has no keys outside the canonical allowlist (4.3866ms)
+✔ V-01 NEW projection: statusLabel, isBusy, canEditIntent, no prepared (0.3349ms)
+✔ V-02 UNPREPARED projection: default intent with mode/shot, no prepared (0.6847ms)
+✔ V-03 PREPARING projection: cannot observe in sync mock path; documented via state machine invariant (0.2202ms)
+✔ V-04 READY projection: prepared view exposed, canExecute=true, canEditIntent=true (0.5346ms)
+✔ V-05 STALE projection: isStale=true, canExecute=false, blockers carry stale reason (7.3464ms)
+✔ V-06 EXECUTING projection: isBusy=true, canEditIntent=false (0.4557ms)
+✔ V-07 EXECUTED projection: execution view, canExecute=true (re-execute allowed) (0.8519ms)
+✔ V-08 FAILED projection: error view with canonical code, isBusy=false (1.2163ms)
+✔ V-10 top-level isBusy matches readiness.isBusy for every status (0.3172ms)
+✔ V-11 top-level canEditIntent matches readiness.canEditIntent for every status (0.1882ms)
+✔ V-12 readiness.canExecute matches isExecuteAllowed(status) for every status (0.2796ms)
+✔ V-13 readiness.canPrepare matches isPrepareAllowed(status) for every status (0.2216ms)
+✔ V-14 readiness.canReset matches isResetAllowed(status) for every status (0.2866ms)
+✔ V-15 readiness.canEditIntent matches isIntentEditAllowed(status) for every status (0.3614ms)
+✔ V-16 intent projection exposes only 6 user-editable semantic fields (0.281ms)
+✔ V-17 intent projection does NOT include UI-only fields (previewUri / displayName / selectionOrderUI) (0.2938ms)
+✔ V-18 apiProfileId is an identifier, not a secret (0.5237ms)
+✔ V-19 intent projection is missing when session has no intent (0.1544ms)
+✔ V-20 reference projection exposes only UI-safe fields (assetId, role, source, displayName, previewUri) (0.345ms)
+✔ V-21 reference role is from the P2 frozen canonical 6-role set (0.198ms)
+✔ V-22 reference projection sorts deterministically (semantic equal input → byte-equal output) (0.3519ms)
+✔ V-23 locked assets projection exposes only the 7 canonical fields (0.1359ms)
+✔ V-24 locked assets projection strips source path / rawPath / file / path / apiKey / secret keys (0.1394ms)
+✔ V-25 locked assets projection locks every field (no field can be marked unlocked) (0.1373ms)
+✔ V-26 prepared projection passthroughs 5 P2-F hash short ids + executionIdentityHash (0.3458ms)
+✔ V-27 prepared view exposes compiledPromptPreview as a string (not the raw 14-block topology) (0.3389ms)
+✔ V-28 prepared view exposes metadataSummary with version surface only (no internal payload) (0.5516ms)
+✔ V-29 readiness block has 10 canonical fields (no extra leakage) (9.1841ms)
+✔ V-30 readiness.blockers is an array of canonical codes (no raw error message) (1.6897ms)
+✔ V-31 readiness.warnings is an empty array (P2 V1 generation does not surface warnings through the Workspace layer) (0.4888ms)
+✔ V-32 error projection uses canonical userMessage lookup, NOT raw error.message (0.546ms)
+✔ V-33 hostile error title is redacted (Windows /home path / bearer / apiKey) (0.185ms)
+✔ V-34 hostile oversized title is redacted (> 200 chars) (0.2266ms)
+✔ V-35 error projection never carries raw stack / cause / provider raw response (0.2122ms)
+✔ V-36 no Windows drive letters in any view-model state (0.4653ms)
+✔ V-37 no /home / /tmp / /var / /usr / /opt / /Users / /root absolute paths (0.3685ms)
+✔ V-38 no file:// scheme in view-model serialization (0.244ms)
+✔ V-39 no UNC paths (\\server\share) in view-model serialization (0.2165ms)
+✔ V-40 the only paths exposed by view-model are RELATIVE (artifact.relativePath) (0.3867ms)
+✔ V-41 view-model serialization contains no apiKey substring (case-insensitive) (0.3949ms)
+✔ V-42 view-model serialization contains no Authorization header (0.8864ms)
+✔ V-43 view-model serialization contains no Bearer token (7.5658ms)
+✔ V-44 view-model serialization contains no secret / password / credential / accessToken (0.7714ms)
+✔ V-45 view-model serialization contains no base64 data URI (0.5945ms)
+✔ V-46 view-model does not expose raw preparedResult dump (0.4106ms)
+✔ V-47 view-model does not expose raw payload object (0.3851ms)
+✔ V-48 view-model does not expose raw capability object (0.2648ms)
+✔ V-49 view-model does not expose raw execution result payload (0.489ms)
+✔ V-50 view-model does not expose raw intentAtPrepare / truthFingerprintAtPrepare (0.2876ms)
+✔ V-51 view-model has stable schemaVersion 1.0.0 (0.1488ms)
+✔ V-52 view-model exposes P2 generation service fingerprint (capability boundary) (0.1831ms)
+✔ V-53 capability versions are X.Y.Z and capability-named (no P3A_* / V* / vnext) (0.2061ms)
+✔ V-54 view-model fingerprint documentation lists includes and excludes (0.1724ms)
+✔ V-55 same input → same view (byte-stable JSON) (3.5554ms)
+✔ V-56 serializeWorkspaceView produces deterministic key order (alphabetical) (0.7608ms)
+✔ V-57 view-model does not generate random id / new timestamp / new fingerprint per call (9.0797ms)
+✔ V-58 view-model does not include volatile timestamps in the canonical surface (0.4298ms)
+✔ V-59 view-model top-level object is frozen (0.2752ms)
+✔ V-60 view-model nested objects are frozen (readiness / prepared / execution / error / intent / lockedAssets) (0.2892ms)
+✔ V-61 mutating a view-model field in strict mode throws (no silent override) (0.3947ms)
+✔ V-62 view-model nested arrays cannot be mutated (0.2197ms)
+✔ V-63 mutating view-model.intent does NOT change the underlying session (0.1952ms)
+✔ V-64 mutating view-model.references does NOT change the underlying intent (0.1749ms)
+✔ V-65 mutating view-model.error.title does NOT change the session.lastError.title (0.627ms)
+✔ V-66 view model + all helpers are exported from @masterpiece/runtime-core (0.4693ms)
+✔ V-67 P2 frozen canonical constants are exported from @masterpiece/runtime-core (re-exports) (0.312ms)
+✔ V-68 @masterpiece/runtime-core does NOT re-export internal P2 frozen paths (0.2369ms)
+✔ V-69 view model imports do NOT include fs / credential store / network (0.636ms)
+✔ V-70 view-model does not call prepare / execute / resolveExecutionConfig (0.6597ms)
+✔ V-71 view-model does not mutate session (0.3445ms)
+✔ V-72 view-model does not generate a parallel generation fingerprint (0.4388ms)
+✔ V-73 P2 frozen modules are not modified by P3-A4 (0.6714ms)
+✔ V-74 serializeWorkspaceView throws on non-object input (0.4444ms)
+✔ V-75 serializeWorkspaceView handles circular references safely (0.2177ms)
+✔ V-76 serializeWorkspaceView excludes `undefined` values from the output (0.2213ms)
+✔ V-77 serializeWorkspaceView emits deterministic bytes for the same input (7.8465ms)
+✔ V-78 getPackagingWorkspaceViewModelFingerprint.publishedIncludes matches the canonical shape (1.463ms)
+✔ rebuild 本地重编译：报告与 ProjectRecord 生成 Context JSON 并更新状态 (227.67ms)
+✔ rebuild 源缺失时：标记 Context 失败，但项目（与报告）仍可读 (38.4262ms)
+✔ getGenerationContextReadiness: project with valid vnext context + legacy visual context returns ready=true (100.393ms)
+✔ getGenerationContextReadiness: legacy visual context status != ready surfaces a precise reason (63.5831ms)
+✔ getGenerationContextReadiness: missing Project Visual Context surfaces a precise reason and returns ready=false (35.0325ms)
+✔ getGenerationContextReadiness: malformed vnext file surfaces the validation errors (75.172ms)
+✔ getGenerationContextReadiness: nonexistent project returns ready=false with project-not-found reason (21.9875ms)
+✔ project name follows ZIP, folder, common prefix, then timestamp priority (21.3656ms)
+✔ brand and industry clues are inferred conservatively from intake labels (6.948ms)
+✔ folder intake creates fixed metadata, imports assets, and detects Logo without credentials (249.991ms)
+✔ ZIP intake persists only extracted valid assets, deduplicates by SHA-256, and supports deletion (219.85ms)
+✔ re-importing an existing file is skipped and reported as a duplicate asset id (138.0011ms)
+✔ generation reference import preserves completed analysis and stays outside analysis input (213.6644ms)
+✔ vNext context is built from project facts and structured data without report markdown (17.9418ms)
+✔ vNext context version increments independently of a report filename (6.1163ms)
+✔ legacy vNext context migrates to a report-independent PromptSourceObject (0.5767ms)
+✔ structured Prompt Source enriches context while ProjectRecord keeps identity authority (1.0793ms)
+✔ validated Visual Decision Packet is persisted beside the compatibility Prompt Source (2.0672ms)
+✔ persisted vNext context migrates a legacy Packet even when Prompt Source already exists (1.7258ms)
+✔ 用户确认品牌优先于 detected 品牌与报告推断 (12.5257ms)
+✔ 用户确认行业优先于报告推断 (0.8687ms)
+✔ Logo 默认锁定；显式解锁被尊重 (0.5522ms)
+✔ 普通旧样机（包装/袋子）不会自动成为 confirmed 结构 (0.9138ms)
+✔ 缺失身份与未确认结构进入 uncertainties (0.5288ms)
+✔ 编译过程零模型调用 (0.3397ms)
+✔ 相同输入产生稳定（确定性）输出 (0.5196ms)
+✔ Schema 校验失败可定位 (0.6416ms)
+✔ 原子写入失败不破坏旧文件 (160.3472ms)
+✔ 冻结项目·冯烫烫：确认品牌优先、普通样机不确认为包装结构、零模型调用 (27.6897ms)
+✔ 冻结项目·九州美学：确认品牌优先、包装不确认为 confirmed、资产决策表被解析 (2.1803ms)
+✔ 冻结项目·简单项目：资料较少不崩溃，缺失进入 uncertainties (2.4539ms)
+✔ Seedream connection test posts minimal model/prompt payload to images generations (48.0248ms)
+✔ connection failure preserves upstream status, body, code, message and request id without leaking key (5.1745ms)
+✔ chat and video profiles use their own endpoint and payload families (0.9024ms)
+✔ Quick Extraction compiles an approved capsule into the standard Style Profile pipeline (7.2996ms)
+✔ Quick Extraction rejects unapproved sources and existing Style Profiles (1.1933ms)
+✔ Visual Migration handoff never silently continues semantic extraction when pack creation fails (0.4176ms)
+✔ Qwen reasoner forwards strict JSON Schema for targeted repair calls (7.2064ms)
+✔ Qwen reasoner accepts text-only prompts when attachments are omitted (1.7857ms)
+✔ targeted Qwen3.6 repair requests supported JSON Object mode with schema in prompt (0.8968ms)
+✔ detectReferenceIdentityLeaks blocks reference brand terms but tolerates current-project terms (2.8854ms)
+✔ detectReferenceIdentityLeaks catches logo copy / slogan / signature graphic directives (1.2062ms)
+✔ mergeCurrentProjectContext keeps current-project identity and records conflicts (3.7755ms)
+✔ mergeCurrentProjectContext lets document fill gaps only when visual context is empty (0.9778ms)
+✔ compileReferenceStyleCapsule caps rules per category and fills prohibited identity (11.5967ms)
+✔ validateReferenceStyleCapsule rejects category overflow and missing fields (1.4933ms)
+✔ compileAnchorBrief produces all 7 blocks and passes validation (3.7416ms)
+✔ validateAnchorBrief blocks internal UUID / PTM / ranking / quality-score leakage (1.1301ms)
+✔ adaptLegacyReferenceResultToStyleCapsule extracts old reconstruction without fabrication (1.0126ms)
+✔ adaptLegacyReferenceResultToStyleCapsule surfaces missing data as uncertainties (0.4382ms)
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"ca328af8-7014-4009-adfa-de8ca70efb50","operation":"run-projection","write_duration_ms":13}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"ca328af8-7014-4009-adfa-de8ca70efb50","operation":"run-projection","write_duration_ms":14}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"ca328af8-7014-4009-adfa-de8ca70efb50","operation":"run-projection","write_duration_ms":4}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"ca328af8-7014-4009-adfa-de8ca70efb50","operation":"run-projection","write_duration_ms":24}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"ca328af8-7014-4009-adfa-de8ca70efb50","operation":"run-projection","write_duration_ms":13}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"ca328af8-7014-4009-adfa-de8ca70efb50","operation":"run-projection","write_duration_ms":13}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"ca328af8-7014-4009-adfa-de8ca70efb50","operation":"run-projection","write_duration_ms":7}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"ca328af8-7014-4009-adfa-de8ca70efb50","operation":"run-projection","write_duration_ms":24}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"ca328af8-7014-4009-adfa-de8ca70efb50","operation":"run-projection","write_duration_ms":4}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"ca328af8-7014-4009-adfa-de8ca70efb50","operation":"run-projection","write_duration_ms":7}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"ca328af8-7014-4009-adfa-de8ca70efb50","operation":"run-projection","write_duration_ms":12}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"ca328af8-7014-4009-adfa-de8ca70efb50","operation":"run-projection","write_duration_ms":4}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"ca328af8-7014-4009-adfa-de8ca70efb50","operation":"run-projection","write_duration_ms":7}
+✔ service start runs full pipeline with exactly 1 model call and awaits decision (498.5481ms)
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"9a6e9b05-c6cb-4d12-8070-1c571a7fe257","operation":"run-projection","write_duration_ms":17}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"9a6e9b05-c6cb-4d12-8070-1c571a7fe257","operation":"run-projection","write_duration_ms":17}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"9a6e9b05-c6cb-4d12-8070-1c571a7fe257","operation":"run-projection","write_duration_ms":19}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"9a6e9b05-c6cb-4d12-8070-1c571a7fe257","operation":"run-projection","write_duration_ms":8}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"9a6e9b05-c6cb-4d12-8070-1c571a7fe257","operation":"run-projection","write_duration_ms":3}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"9a6e9b05-c6cb-4d12-8070-1c571a7fe257","operation":"run-projection","write_duration_ms":3}
+✔ service start hard-blocks reference identity leak with §12 code (152.3648ms)
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"81111595-5e2c-41ed-8bd6-1f783c44d756","operation":"run-projection","write_duration_ms":15}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"81111595-5e2c-41ed-8bd6-1f783c44d756","operation":"run-projection","write_duration_ms":38}
+✔ service start blocks when current project context is missing (zero model calls) (79.9701ms)
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"e56d8bf8-3f4b-4526-aeb9-692f62505bb9","operation":"run-projection","write_duration_ms":4}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"e56d8bf8-3f4b-4526-aeb9-692f62505bb9","operation":"run-projection","write_duration_ms":5}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"e56d8bf8-3f4b-4526-aeb9-692f62505bb9","operation":"run-projection","write_duration_ms":9}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"e56d8bf8-3f4b-4526-aeb9-692f62505bb9","operation":"run-projection","write_duration_ms":5}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"e56d8bf8-3f4b-4526-aeb9-692f62505bb9","operation":"run-projection","write_duration_ms":12}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"e56d8bf8-3f4b-4526-aeb9-692f62505bb9","operation":"run-projection","write_duration_ms":18}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"e56d8bf8-3f4b-4526-aeb9-692f62505bb9","operation":"run-projection","write_duration_ms":21}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"e56d8bf8-3f4b-4526-aeb9-692f62505bb9","operation":"run-projection","write_duration_ms":21}
+✔ orphaned executing run downgrades to awaiting_decision when outputs already exist (212.2577ms)
+✔ v5.3.1 Test1: classifyProjectFacts routes VI touchpoints out of coreProducts (0.8099ms)
+✔ v5.3.1 Test2: classifyProjectFacts extracts design advice from touchpoint clauses (0.41ms)
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"c07580c3-ed50-4ec9-a986-c2be4efd723a","operation":"run-projection","write_duration_ms":10}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"c07580c3-ed50-4ec9-a986-c2be4efd723a","operation":"run-projection","write_duration_ms":4}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"c07580c3-ed50-4ec9-a986-c2be4efd723a","operation":"run-projection","write_duration_ms":9}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"c07580c3-ed50-4ec9-a986-c2be4efd723a","operation":"run-projection","write_duration_ms":10}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"c07580c3-ed50-4ec9-a986-c2be4efd723a","operation":"run-projection","write_duration_ms":6}
+{"event":"REFERENCE_ANCHOR_WRITE_SUCCEEDED","run_id":"c07580c3-ed50-4ec9-a986-c2be4efd723a","operation":"run-projection","write_duration_ms":30}
+✔ v5.3.1 Test3: reference signature reentry is detected and blocks at service level (171.9123ms)
+✔ v5.3.1 Test4: graphic rule is abstracted to mechanism, surface elements go to prohibited (1.6023ms)
+✔ v5.3.1 Test5: filterStyleCapsuleForTask removes food/kitchen/space rules for anchor_vi_system (3.0005ms)
+✔ v5.3.1 Test6: warning compiler produces non-empty humanNotes when risks exist (0.6089ms)
+✔ v5.3.1 Test7: ambiguous aspect ratio is rejected, single value passes (0.6678ms)
+✔ v5.3.1 Test8: dedupeBriefRules merges duplicate/semantic-duplicate rules (0.5185ms)
+✔ domain profile is swappable: a non-catering profile classifies and filters its own vocabulary (0.4934ms)
+✔ Phase C-1: resolver exposes a version constant (1.9511ms)
+✔ Phase C-1: detectMimeByFileSignature recognizes PNG / JPEG / WebP from magic bytes (54.3044ms)
+✔ Phase C-1: detectMimeByFileSignature returns null for non-image formats (47.6195ms)
+✔ Phase C-1: signature beats extension — a PNG with .pdf extension is detected as image/png (33.3333ms)
+✔ Phase C-1: happy path resolves a PNG asset end-to-end with detected mime + sha256 (45.0005ms)
+✔ Phase C-1: REFERENCE_ASSET_NOT_FOUND is reported for IDs absent from the live project store (17.4704ms)
+✔ Phase C-1: REFERENCE_ASSET_NOT_READY rejects non-ready assets (ignored / deleted / failed) (117.5946ms)
+✔ Phase C-1: REFERENCE_ASSET_FORMAT_UNSUPPORTED rejects PDF (extension-mismatch is OK because signature wins) (15.9423ms)
+✔ Phase C-1: REFERENCE_ASSET_FORMAT_UNSUPPORTED rejects JPEG with .pdf extension (signature wins) (19.6714ms)
+✔ Phase C-1: REFERENCE_ASSET_FORMAT_UNSUPPORTED for non-image extension-mismatch (text file with .png name) (11.9289ms)
+✔ Phase C-1: REFERENCE_ASSET_PATH_INVALID rejects path traversal (5.8644ms)
+✔ Phase C-1: REFERENCE_ASSET_FILE_UNREADABLE when the file is missing from disk (13.2531ms)
+✔ Phase C-1: REFERENCE_ASSET_FILE_TOO_LARGE rejects oversized files (12.1856ms)
+✔ Phase C-1: REFERENCE_ASSET_SHA_MISMATCH is reported when the file changed since import (19.2541ms)
+✔ Phase C-1: verifySha256:false skips the SHA recompute (allows the declared sha to be trusted) (18.9682ms)
+✔ Phase C-1: batch resolve — partial failure does not abort other IDs (33.8168ms)
+✔ Phase C-1: batch resolve — duplicate ID in input is resolved twice (caller deduplicates downstream) (69.8426ms)
+✔ Phase C-1: detector does not load the full file into memory (reads <= 16 bytes) (25.7921ms)
+✔ §17.1 禁止复制的参考专属图形不得进入 Style Carrier (1.6896ms)
+✔ §17.3 请求任务缺少参考子集时阻断 (0.7532ms)
+✔ §17.4 任务级 Style Carrier 排除不兼容载体 (2.4043ms)
+✔ 参考主集选择按任务驱动，证据不足时闭合失败 (2.8926ms)
+✔ Reference-First suppresses legacy visuals and builds a VI system anchor (14.3813ms)
+✔ missing poster reference lowers confidence and generation prompt carries four input roles (1.5715ms)
+✔ Reference-First decision prompt exposes the exact parser contract (0.6088ms)
+✔ Reference Pack service creates locked/style/exclude/anchor folders and copies only selected files (181.6917ms)
+✔ current project profile fails closed when required facts are absent (13.9091ms)
+✔ current project profile recovers a concrete industry from the analyzed visual plan (7.8873ms)
+✔ reconstruction brief is project-specific, executable and free of reference identity or PTM output (93.2884ms)
+✔ project facts reject design advice, markdown and asset numbers (0.8618ms)
+✔ reference style profile rejects fixed wrappers and identity leakage (0.711ms)
+✔ duplicated touchpoint rules and generic directions fail quality gates (16.4829ms)
+✔ touchpoint validation accepts equivalent design language instead of exact keywords (18.7335ms)
+✔ missing touchpoint fields are deterministically completed from the current project (13.7045ms)
+✔ placeholder 未标题 yields to the brand name recognized from visual evidence (5.0803ms)
+✔ resume repairs a persisted 未标题 profile from confirmed brand evidence (1.1069ms)
+✔ beta correction rejects generic traditional symbol stacking (13.1565ms)
+✔ gpt visual mode rewrites production parameters to relationship-level language (1.9928ms)
+✔ touchpoint inventory separates packaging, service materials and VI applications (1.9848ms)
+✔ project touchpoint normalization repairs duplicated classifications from real model output (0.4635ms)
+✔ project profile validation reports concrete misplaced touchpoints (1.1198ms)
+✔ beta correction requires flexible color and composition systems (21.8408ms)
+✔ repair store separates formal packet history from temporary runtime artifacts (221.0671ms)
+✔ repair planner combines AI fields that share current-project evidence (12.3143ms)
+✔ repair planner isolates packaging facts from AI repair (1.0934ms)
+✔ repair planner enforces the two-attempt limit (0.6252ms)
+✔ repair planner attaches current-project evidence to the spatial functional-relationships batch (0.8145ms)
+✔ repair planner attaches current-project evidence to the spatial functional-network batch (0.6621ms)
+✔ repair prompt includes only requested fields and selected current-project evidence (28.2057ms)
+✔ legacy packet migration initializes new shape and requests targeted repair (3.215ms)
+✔ schema migration fails closed for an unknown future schema (2.945ms)
+✔ schema validator returns structured issues instead of a generic insufficiency error (1.8949ms)
+✔ schema validator rejects blank avoid rules and unsupported schema versions (0.3641ms)
+✔ schema validator reports corrupted packet data as fatal-classifiable structure (0.9452ms)
+✔ schema validator accepts a structurally complete packet (0.2707ms)
+✔ R11.1 confirm generated output persists, is idempotent, and revoke blocks reuse (117.4737ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"project-r11-cont-start","taskId":"vnext-task-c78463de-1c35-4be1-a031-d625f8ce24ba","deliverableFamily":"space","subtype":"consultation","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6651,"compileDurationMs":119.351}
+✔ R11.2.2 true continuation start() binds the confirmed generated output reference (285.9231ms)
+✔ R11.2 confirm persists across session reload, revoke blocks reuse (46.298ms)
+✔ R11.2 UI task assembly routes through the R11.1 continuation contract (124.5664ms)
+✔ Stage 4 makes short-chain the only production path; legacy removed from UI (22.7451ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"project-r2-d-dual-gate","taskId":"vnext-task-37536cee-a2f4-44cc-adc1-c6d418a50857","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6844,"compileDurationMs":124.91}
+✔ D-3: standard start writes run-trace.json with both gate results (359.3287ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"project-r2-d-dual-gate","taskId":"vnext-task-9ebb35ae-dd90-4ae3-a692-d693f4abb781","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6844,"compileDurationMs":103.378}
+✔ D-3: correction retry under split gates — Gate A still passes, Gate B re-validates, compile trace stays frozen (237.6642ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"project-r2-d-dual-gate","taskId":"vnext-task-686498fe-00fb-4f5a-8c16-9ef802ade10f","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6844,"compileDurationMs":20.376}
+✔ D-3: Gate A budget fallback (short-chain-service.ts:561-568 minimum fix) survives the correction retry (200.533ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"project-r2-e-flow-state","taskId":"vnext-task-42d80209-2ae1-4667-afb3-ea30a9305dc7","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6844,"compileDurationMs":122.394}
+✔ E-2: state 1 (initial_failed) throws before the new flowState / firstImage are populated (336.2924ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"project-r2-e-flow-state","taskId":"vnext-task-6bb51112-fdcc-4c12-9625-75a34cbaa20f","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6844,"compileDurationMs":55.534}
+✔ E-2: state passed (initial) — firstImage is the initial image, no correction fields present (182.6288ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"project-r2-e-flow-state","taskId":"vnext-task-5b70a168-a949-4338-b651-5cd9a64ecac6","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6844,"compileDurationMs":34.973}
+✔ E-2: state 4 (correction_start_failed) — correction Provider call failed; FIRST image preserved (149.7418ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"project-r2-e-flow-state","taskId":"vnext-task-ef571595-99a5-4b8a-90e4-cc483d02f217","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6844,"compileDurationMs":44.282}
+✔ E-2: state 5 (correction_still_failed) — correction succeeded but validation still failed; FIRST image preserved (432.6011ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"project-r2-e-flow-state","taskId":"vnext-task-63ce0e56-a212-486b-82b6-d6067b386966","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6844,"compileDurationMs":23.645}
+✔ E-2: passed (terminal, after correction) — flowState=passed, firstImage is the INITIAL image (UI must NOT show correction as the "first") (381.5651ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"project-r2-e-flow-state","taskId":"vnext-task-c941a999-cb61-4cab-bec9-b5235d8a1b31","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6844,"compileDurationMs":60.724}
+✔ E-2: passed (initial, no correction) — firstImage is the initial image, no correction fields present (136.9724ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"project-r2-e-flow-state","taskId":"vnext-task-9927cb24-a596-4bea-9f23-88af02927c8b","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6844,"compileDurationMs":35.056}
+✔ E-2: result.summary.json written to disk has the same flowState + firstImage (183.0031ms)
+✔ E-2: 6 flowState values are valid (no orphan states) (0.9009ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"project-vnext-session","taskId":"vnext-task-c7c87ae5-bdbd-4352-96c7-6f82a09ede28","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","contextVersion":1,"templateIds":["family.space","subtype.space.reception","shot.space.entrance_view"],"adapterId":"seedream-5.0-pro","promptCharacters":2956,"compileDurationMs":10.456}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"project-vnext-session","taskId":"vnext-task-3b03aab2-f1f5-4420-b30f-e22bb8eb1f19","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","contextVersion":1,"templateIds":["family.space","subtype.space.reception","shot.space.entrance_view"],"adapterId":"seedream-5.0-pro","promptCharacters":2981,"compileDurationMs":1.236}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"project-vnext-session","taskId":"vnext-task-7855d7a3-61df-4c31-9f65-807a720a343b","deliverableFamily":"space","subtype":"reception","shot":"front","contextVersion":1,"templateIds":["family.space","subtype.space.reception","shot.space.front"],"adapterId":"seedream-5.0-pro","promptCharacters":2940,"compileDurationMs":5.065}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"project-vnext-session","taskId":"vnext-task-e41e7175-fe63-4535-8bf5-0bbfe23c1350","deliverableFamily":"poster","subtype":"brand_key_visual","shot":"subject_centered","contextVersion":1,"templateIds":["family.poster","subtype.poster.brand_key_visual","shot.poster.subject_centered"],"adapterId":"seedream-5.0-pro","promptCharacters":2019,"compileDurationMs":1.14}
+✔ vNext session promotes a formal result to a family-scoped implicit anchor (505.2633ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"project-vnext-session","taskId":"vnext-task-68b230ce-3ce7-4b67-8148-5494b8e54e53","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","contextVersion":1,"templateIds":["family.space","subtype.space.reception","shot.space.entrance_view"],"adapterId":"seedream-5.0-pro","promptCharacters":2956,"compileDurationMs":1.229}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"project-vnext-session","taskId":"vnext-task-68b230ce-3ce7-4b67-8148-5494b8e54e53","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","contextVersion":1,"templateIds":["family.space","subtype.space.reception","shot.space.entrance_view"],"adapterId":"seedream-5.0-pro","promptCharacters":2956,"compileDurationMs":1.488}
+✔ vNext start recompiles when the cached preflight is stale and would otherwise block (130.8079ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"project-vnext-session","taskId":"vnext-task-9e84402e-ef0e-4e30-8474-7503b223cce4","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","contextVersion":1,"templateIds":["family.space","subtype.space.reception","shot.space.entrance_view"],"adapterId":"seedream-5.0-pro","promptCharacters":2956,"compileDurationMs":0.889}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"project-vnext-session","taskId":"vnext-task-9e84402e-ef0e-4e30-8474-7503b223cce4","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","contextVersion":1,"templateIds":["family.space","subtype.space.reception","shot.space.entrance_view"],"adapterId":"seedream-5.0-pro","promptCharacters":2956,"compileDurationMs":1.143}
+✔ vNext start recompiles when the project context fingerprint has drifted (80.6642ms)
+✔ C-3 preflightReferenceAssets: empty assetIds returns empty results, no project lookup (46.7344ms)
+✔ C-3 preflightReferenceAssets: happy path resolves a real PNG with role=high_fidelity_visual_reference (15.4703ms)
+✔ C-3 preflightReferenceAssets: mixed batch — resolved + NOT_FOUND + FORMAT_UNSUPPORTED + NOT_READY (11.7617ms)
+✔ C-3 preflightReferenceAssets: duplicate IDs are de-duplicated (7.964ms)
+✔ C-3 preflightReferenceAssets: never throws — fail-soft semantics (18.2053ms)
+✔ A0: empty explicit IDs is a no-op (1.1297ms)
+✔ A0: every ID present does not throw (0.3402ms)
+✔ A0: a single missing ID throws REFERENCE_ASSET_NOT_FOUND (1.3743ms)
+✔ A0: multiple missing IDs are all reported (0.297ms)
+✔ A0: empty sourceAssetRefs with any explicit IDs throws (0.2161ms)
+✔ A0: A0 does NOT throw for PDF assets — that is a Phase C format problem (0.1999ms)
+✔ F-2: happy path — mock reasoner returns valid 6-dim JSON, audit passes (65.5906ms)
+✔ F-2: auditId is preserved when supplied by the caller (10.1718ms)
+✔ F-2: persisted similarity-audit.json lives next to run images (13.9471ms)
+✔ F-2: no analysis profile configured → throws VNEXT_SIMILARITY_AUDIT_PROFILE_MISSING (3.8456ms)
+✔ F-2: non-multimodal protocol → throws VNEXT_SIMILARITY_AUDIT_PROFILE_INCOMPATIBLE (1.565ms)
+✔ F-2: empty references → throws VNEXT_SIMILARITY_AUDIT_REFERENCES_EMPTY (0.9016ms)
+✔ F-2: too many references → throws VNEXT_SIMILARITY_AUDIT_REFERENCES_TOO_MANY (2.2726ms)
+✔ F-2: run not succeeded → throws VNEXT_SIMILARITY_AUDIT_RUN_INVALID (5.7396ms)
+✔ F-2: run with no images → throws VNEXT_SIMILARITY_AUDIT_RUN_INVALID (3.8782ms)
+✔ F-2: non-first imageId → throws VNEXT_SIMILARITY_AUDIT_IMAGE_NOT_FIRST (Phase E invariant) (1.7347ms)
+✔ F-2: LLM returns non-integer scores → audit throws (assertShortChainSimilarityAudit rejects) (1.2491ms)
+✔ F-2: LLM returns nearCopyRisk=5 (essentially 1:1) → pass.overall=false, nearCopyRisk=false (16.4416ms)
+✔ F-2: reasoner network error → audit rejects (no silent pass) (50.991ms)
+✔ F-2: llmCallCount is 1 for the single round-trip (no retries) (18.0694ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"project-r2-f3-audit","taskId":"vnext-task-bdba2be0-77b8-42a5-8a4d-14c0969a9f5d","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7435,"compileDurationMs":129.903}
+✔ F-3: reference_first + cross_scene + audit success → similarityAudit carries the result (287.7506ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"project-r2-f3-audit","taskId":"vnext-task-b04f72fd-02f2-4042-86f3-e9e73109993c","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7435,"compileDurationMs":64.046}
+{"event":"VNEXT_SIMILARITY_AUDIT_UNAVAILABLE","projectId":"project-r2-f3-audit","runId":"run-1","taskId":"vnext-task-b04f72fd-02f2-4042-86f3-e9e73109993c","error":"mock audit reasoner: network down"}
+✔ F-3: reference_first + cross_scene + audit throws → similarityAudit = "unavailable" (fail-soft) (177.121ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"project-r2-f3-audit","taskId":"vnext-task-c49df3a6-a3c8-4c41-9601-30a398348ecf","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7435,"compileDurationMs":33.799}
+{"event":"VNEXT_SIMILARITY_AUDIT_UNAVAILABLE","projectId":"project-r2-f3-audit","runId":"run-1","taskId":"vnext-task-c49df3a6-a3c8-4c41-9601-30a398348ecf","error":"mock audit reasoner: network down"}
+✔ F-3: reference_first + cross_scene + audit throws on correction_start_failed → flowState still correction_start_failed (169.9009ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"project-r2-f3-audit","taskId":"vnext-task-1eecf12d-813f-43a3-9356-a04293dfd78a","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7487,"compileDurationMs":33.793}
+✔ F-3: reference_first + same_scene → similarityAudit = null (not triggered) (154.4629ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"project-r2-f3-audit","taskId":"vnext-task-2d7a05b9-ea1e-4b2c-b2ff-bf61bd904f6e","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7501,"compileDurationMs":33.023}
+✔ F-3: reference_first + unknown → similarityAudit = null (not triggered) (124.2871ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"project-r2-f3-audit","taskId":"vnext-task-d85b461c-5bca-4451-8197-e7cb042c0736","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6844,"compileDurationMs":35.032}
+✔ F-3: standard basis → similarityAudit = null (not triggered) (139.0972ms)
+✔ F-3: continuation basis → similarityAudit = null (not triggered) (0.4133ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"project-r2-f3-audit","taskId":"vnext-task-ae24a10c-5204-46dc-ab39-6e8ef7468466","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7435,"compileDurationMs":32.283}
+✔ F-3: no audit service configured → similarityAudit = null (service absent is silent) (168.77ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"project-r2-f3-audit","taskId":"vnext-task-13e05ec2-b37b-476e-b63a-e1ae1e920a63","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7435,"compileDurationMs":30.152}
+✔ F-3: summary.json on disk carries the same similarityAudit (164.821ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"project-r2-f3-audit","taskId":"vnext-task-709448ed-7b48-40b7-8c10-45fa5aac415d","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7435,"compileDurationMs":40.471}
+{"event":"VNEXT_SIMILARITY_AUDIT_UNAVAILABLE","projectId":"project-r2-f3-audit","runId":"run-1","taskId":"vnext-task-709448ed-7b48-40b7-8c10-45fa5aac415d","error":"mock audit reasoner: network down"}
+✔ F-3: audit-fail summary.json on disk carries similarityAudit = "unavailable" (152.4739ms)
+✔ source fingerprint is stable across key order and ignores volatile timestamps (22.1851ms)
+✔ source changes stale inferred fields but preserve confirmed fields (1.5749ms)
+✔ BE-02 Space analysis_source reference frame documented (1.6088ms)
+✔ BE-03 Space generation_reference frame documented (0.4387ms)
+✔ BE-04 generation_reference gets no input/ prefix (0.4288ms)
+✔ BE-05 analysis_source keeps input/ prefix (0.3674ms)
+✔ BE-06 Space Creative Task and resolver resolve the same local file (generation_reference) (227.2711ms)
+✔ BE-07 existing generation_reference passes existence (105.2218ms)
+✔ BE-08 existing analysis_source passes existence (input/ prefix) (79.909ms)
+✔ BE-09 missing generation_reference fail-closed (52.4823ms)
+✔ BE-10 missing analysis_source fail-closed (84.6786ms)
+✔ BE-11 asset id unchanged (0.6657ms)
+✔ BE-12 projectId unchanged (0.358ms)
+✔ BE-13 usage preserved (0.2048ms)
+✔ BE-14 no absolute path exposed (0.1989ms)
+✔ BE-15 no traversal escape (0.2489ms)
+✔ BE-16 Space reference role unchanged (0.2502ms)
+✔ BE-17 Space relationship unchanged (0.2072ms)
+✔ BE-24 P3-A stale unchanged (0.4489ms)
+✔ BE-25 Provider calls 0 (corrective is offline) (2.3295ms)
+✔ structured repair runner enforces target fields and emits evidence-backed patches (42.6051ms)
+✔ structured spatial repair requires arrays for all three missing function fields (1.1826ms)
+✔ structured repair runner rejects unrequested fields (2.6475ms)
+✔ structured repair runner does not call a model without evidence (1.376ms)
+✔ structured repair runner rejects a scalar for an array-valued field (1.1256ms)
+✔ functional network repair rejects fewer than the three required functional links (0.4621ms)
+✔ evidence schema and prompt example agree with the current-project allowlist (2.1992ms)
+✔ repair still rejects foreign evidence even when an endpoint ignores the enum (0.4748ms)
+✔ explicit evidence indexes resolve only to the numbered current-request IDs (3.8543ms)
+✔ Style Profile service versions profiles, updates active pointer and Session references (127.8679ms)
+✔ unified prompt requests evidence-rich A-F modules without embedding Jiuzhou answers (1.4385ms)
+✔ formal unified output fails closed when execution data is incomplete (36.3193ms)
+✔ formal unified output requests repair when tone boundaries are missing or non-actionable (5.472ms)
+✔ human report is deterministically rendered from the same packet with explicit tags (2.8464ms)
+✔ cleanError strips the IPC wrapper + the leading "Error:" so the banner shows only the meaningful code (4.7313ms)
+✔ errorIsAutoRecoverable returns true for the known auto-recoverable codes (1.1662ms)
+✔ errorIsAutoRecoverable returns false for unrelated / unknown errors (0.3945ms)
+✔ errorIsAutoRecoverable returns false for packaging product-role data-gap preflight findings (0.2357ms)
+✔ autoRecoverableHint returns null for packaging product-role data-gap preflight findings (0.2199ms)
+✔ autoRecoverableHint returns the Chinese copy for recoverable codes, null for the rest (0.1935ms)
+✔ Visual Canon service versions, confirms and updates active Session reference (78.2401ms)
+✔ feather abstraction covers semantics, form, rhythm, materials and light (21.1452ms)
+✔ spatial translation compiles project-specific color, material and light behavior (1.5741ms)
+✔ packaging is a formal insufficient contract while poster and VI remain interfaces (1.2069ms)
+✔ missing spatial behavior fails closed as PROMPT source insufficiency data (1.2859ms)
+✔ compatibility adapter preserves causal translation without widening scoped risks (1.479ms)
+✔ Visual Exploration service generates five isolated concept runs with no image references (141.1238ms)
+✔ Visual Memory service persists visual-memory.json from existing project sources (74.4987ms)
+✔ VM-1.5 browser intake cleanup preserves Run evidence for Production Pack handoff and restart (188.8543ms)
+✔ VM-1 approved handoff persists the exact production Reference Pack foreign key and reuses it (147.6325ms)
+✔ VM-0 validates a complete VisualMigrationReferencePackV1 manifest (2.3869ms)
+✔ VM-0 rejects unsupported schemaVersion (6.2075ms)
+✔ VM-0 rejects missing projectId and sourceReferenceAnchorRunId (1.3922ms)
+✔ VM-0 rejects empty references (0.3443ms)
+✔ VM-0 rejects duplicate referenceId (2.0152ms)
+✔ VM-0 rejects invalid per-file SHA-256 (0.6004ms)
+✔ VM-0 rejects traversal and Windows absolute storage paths (0.4186ms)
+✔ VM-0 manifest fingerprint is deterministic across object key order (0.4017ms)
+✔ VM-0 accepts reserved optional fields without changing the VM-1 role (0.534ms)
+✔ VM-0 detects manifest mutation after fingerprinting (0.8569ms)
+✔ VM-1 handoff creates exactly one immutable production pack with verified copies (89.4108ms)
+✔ VM-1 rejects non-approved, terminal-invalid, and project-mismatched runs (129.339ms)
+✔ VM-1 handoff is idempotent for an unchanged approved run (413.0971ms)
+✔ VM-1 resolves after runtime restart and no longer depends on the source run (535.7885ms)
+✔ VM-1 detects tampering in a production-owned reference copy (83.1639ms)
+✔ VM-1 refuses source mutation instead of overwriting an immutable pack (54.2243ms)
+✔ visual translation document preparation reads Markdown, text, DOCX tables and PDF text (2455.9963ms)
+✔ ProjectRecord facts override model inference and preserve sourced evidence (10.5264ms)
+✔ AI proposals never become Locked Assets (1.8692ms)
+✔ Mockup environment remains explicitly separated from brand assets (0.7724ms)
+✔ unknown brand role or missing locked Logo blocks formal upgrade (0.7394ms)
+✔ diagnosis and unique creative thesis retain project-specific judgments (0.7524ms)
+✔ workflow profile copy is a one-time credential snapshot, never a live shared setting (77.4481ms)
+✔ independent project store and the shared project store reject each other’s ownership (54.6128ms)
+✔ one-time project migration excludes planning/migration artifacts and does not follow later source changes (132.0358ms)
+✔ reference-first, continuation and foreign references are rejected before compilation or provider access (50.4562ms)
+✔ completed analysis supplies migrated Logo roles without overriding a new intake selection (469.2002ms)
+✔ owned standard compilation ignores global mode flags and preserves independent payload contracts (241.5391ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"615bd62e-75e5-4a9d-9027-356a02c6c68a","taskId":"vnext-task-c8a907e3-e819-47a7-9e6f-02fb19f1ede0","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6806,"compileDurationMs":18.554}
+✔ offline E2E: owned import, analysis, report and image request complete without shared settings or real providers (723.5548ms)
+✔ implementation integrity rejects an altered owned module instead of accepting drift (14.1885ms)
+✔ Web API maps the complete Short-Chain method family to semantic operation channels (2.1177ms)
+✔ Web API retains convention-based mapping for ordinary operation methods (0.5045ms)
+✔ UA-02 valid PNG upload 鈫?project-bound generation_reference asset (155.0897ms)
+✔ UA-03 valid JPEG upload 鈫?asset (84.5651ms)
+✔ UA-03b valid WEBP upload 鈫?asset (80.6786ms)
+✔ UA-04 empty file reject (UPLOAD_FILE_EMPTY) (72.6271ms)
+✔ UA-05 unsupported MIME reject (UPLOAD_FILE_TYPE_UNSUPPORTED) (371.2368ms)
+✔ UA-06 size over cap reject (UPLOAD_FILE_TOO_LARGE) (45.9728ms)
+✔ UA-07 project not found reject (UPLOAD_PROJECT_NOT_FOUND) (43.6566ms)
+✔ UA-09 filename traversal sanitized (no escape from project root) (67.8609ms)
+✔ UA-10 sha256 dedup returns existing asset (duplicate: true) (52.9328ms)
+✔ UA-11 persisted asset survives reload (scanAssets) (80.4094ms)
+✔ UA-12 no absolute path in response (82.052ms)
+✔ UA-13 failed persist leaves no corrupt asset (size mismatch rejected before persist) (87.8198ms)
+✔ UA-18 malformed base64 rejected (UPLOAD_TRANSPORT_FAILED) (49.7428ms)
+✔ UA-20 upload path performs zero Provider calls (66.2334ms)
+ℹ tests 1294
+ℹ suites 0
+ℹ pass 1294
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 26695.3562
+
+[current-flows] Node Web Host TypeScript contracts
+
+> masterpiece-os@5.0.0-rc.1 web-runtime:typecheck
+> tsc --noEmit -p apps/web-runtime/tsconfig.json
+
+
+[current-flows] Web Renderer TypeScript contracts
+
+> masterpiece-os@5.0.0-rc.1 web:typecheck
+> npm --prefix apps/web run typecheck
+
+
+> typecheck
+> tsc --noEmit
+
+
+[current-flows] PASS — current-flows gate completed without external API calls.
+
+> masterpiece-os@5.0.0-rc.1 verify:analysis-guards
+> npm run verify:analysis-provider-authority && npm run verify:analysis-prompt-integrity && npm run verify:analysis-namespace && npm run verify:runtime-isolation && npm run verify:analysis-golden-integrity && npm run verify:secret-safety
+
+
+> masterpiece-os@5.0.0-rc.1 verify:analysis-provider-authority
+> node ./scripts/verify-analysis-provider-authority.mjs
+
+{
+  "guard": "A4-default-authority+G-A4-09",
+  "scannedFiles": 316,
+  "allowlistedFiles": 18,
+  "violationCount": 0,
+  "violations": []
+}
+[verify-analysis-provider-authority] PASS — scanned 316 files, 0 violations.
+
+> masterpiece-os@5.0.0-rc.1 verify:analysis-prompt-integrity
+> node ./scripts/verify-analysis-prompt-integrity.mjs
+
+{
+  "guard": "A4-frozen-prompt",
+  "observedDigests": {
+    "docs/visual-analysis/current-verification/evaluation-rubric.md": "7220F30FF07226D1920AF085C562DD65BE2A799D816E6524960B9933E84F8C35",
+    "docs/visual-analysis/current-verification/evaluation-corpus.md": "12D1526F6CEB2BE3733532DD43CAAE266403E8E96A3013EEF33711D88D246637"
+  },
+  "expectedDigests": {
+    "docs/visual-analysis/current-verification/evaluation-rubric.md": "7220F30FF07226D1920AF085C562DD65BE2A799D816E6524960B9933E84F8C35",
+    "docs/visual-analysis/current-verification/evaluation-corpus.md": "12D1526F6CEB2BE3733532DD43CAAE266403E8E96A3013EEF33711D88D246637"
+  },
+  "violationCount": 0,
+  "violations": []
+}
+[verify-analysis-prompt-integrity] PASS — 2 frozen digests verified, 0 drift.
+
+> masterpiece-os@5.0.0-rc.1 verify:analysis-namespace
+> node ./scripts/verify-analysis-namespace.mjs
+
+{
+  "guard": "A4-version-namespace",
+  "scannedFiles": 332,
+  "allowlistedFiles": 0,
+  "violationCount": 0,
+  "violations": []
+}
+[verify-analysis-namespace] PASS — scanned 332 files, 0 violations.
+
+> masterpiece-os@5.0.0-rc.1 verify:runtime-isolation
+> node ./scripts/verify-runtime-isolation.mjs
+
+{
+  "guard": "A4-legacy-desktop",
+  "trackedDirScanned": 3,
+  "packageJsonScanned": 2,
+  "violationCount": 0,
+  "violations": []
+}
+[verify-runtime-isolation] PASS — scanned 3 tracked directories + package.jsons + runtime entrypoints, 0 Desktop / Electron returns.
+
+> masterpiece-os@5.0.0-rc.1 verify:analysis-golden-integrity
+> node ./scripts/verify-analysis-golden-integrity.mjs
+
+{
+  "guard": "A4-golden-mutation",
+  "observedDigests": {
+    "tests/provider-contract-fixtures/qwen-baseline.json": "244D83C70E1B06142E4C3138C13730690937EAF2B4F524DCBABD75BB0F3AD6D0",
+    "tests/provider-contract-fixtures/volcengine-baseline.json": "4DBB057930B7263BA8115AB1F8D09495C126CB9BBAE1FEB6C8183DFD62A2936B"
+  },
+  "expectedDigests": {
+    "tests/provider-contract-fixtures/qwen-baseline.json": "244D83C70E1B06142E4C3138C13730690937EAF2B4F524DCBABD75BB0F3AD6D0",
+    "tests/provider-contract-fixtures/volcengine-baseline.json": "4DBB057930B7263BA8115AB1F8D09495C126CB9BBAE1FEB6C8183DFD62A2936B"
+  },
+  "violationCount": 0,
+  "violations": []
+}
+[verify-analysis-golden-integrity] PASS — 2 Golden fixtures verified, 0 drift.
+
+> masterpiece-os@5.0.0-rc.1 verify:secret-safety
+> node ./scripts/verify-secret-safety.mjs
+
+{
+  "guard": "A4-secret-safety",
+  "trackedFilesScanned": 2466,
+  "allowlistedFiles": 2,
+  "violationCount": 0,
+  "violations": []
+}
+[verify-secret-safety] PASS — scanned 2466 tracked files, 0 secret-shape matches.
+
+> masterpiece-os@5.0.0-rc.1 repo:guard:test
+> node --test tests/visual-workflow-boundary-guard.test.js tests/repository-contract-guard.test.js tests/version-naming-guard.test.js tests/archive-boundary.test.js tests/runtime-boundary.test.js tests/web-runtime-host-boundary.test.js tests/packages/runtime-core/operation-registry.test.js tests/analysis-release-guards.test.js
+
+✔ analysis guard analysis-provider-authority PASSES against CURRENT repository (360.1299ms)
+✔ analysis guard analysis-prompt-integrity PASSES against CURRENT repository (107.1029ms)
+✔ analysis guard analysis-namespace PASSES against CURRENT repository (215.1964ms)
+✔ analysis guard runtime-isolation PASSES against CURRENT repository (167.5508ms)
+✔ analysis guard analysis-golden-integrity PASSES against CURRENT repository (96.479ms)
+✔ analysis guard secret-safety PASSES against CURRENT repository (881.4509ms)
+✔ A4 G-A4-01 default-authority guard catches an injected hardcoded default (0.4455ms)
+✔ A4 G-A4-03 frozen-prompt guard records the canonical digests (0.2363ms)
+✔ A4 G-A4-05 version-namespace guard lists all the A4-forbidden patterns (0.405ms)
+✔ A4 G-A4-06 legacy-desktop guard checks TRACKED dirs (not on-disk untracked) (0.3138ms)
+✔ A4 G-A4-07 golden-mutation guard records the canonical Golden digests (0.2218ms)
+✔ A4 G-A4-10 secret-safety guard masks the matched value in its output (0.2258ms)
+✔ active code and current tests do not load repository archive artifacts (303.96ms)
+✔ Shared Operation Registry dispatches existing channel semantics without a host (2.4955ms)
+✔ Shared Operation Registry rejects duplicate, invalid and unknown operations (0.7454ms)
+✔ Shared Runtime boots, dispatches and disposes with Electron absent (1.4377ms)
+✔ repository contract path: historical R11 evidence remains legal (3.8048ms)
+✔ repository contract path: schema v1 remains legal (0.5301ms)
+✔ repository contract path: API v2 remains legal (1.3637ms)
+✔ repository contract path: current v13 implementation fails (0.3033ms)
+✔ repository contract path: latest implementation fails (0.1471ms)
+✔ repository contract path: final implementation fails (0.1444ms)
+✔ repository contract boundary: production archive import fails (0.7512ms)
+✔ repository contract boundary: production Electron import fails (0.4556ms)
+✔ repository contract local artifact reference fails (0.5387ms)
+✔ unregistered compatibility alias fails (0.4005ms)
+✔ registered compatibility alias passes (0.9248ms)
+✔ frozen prompt mutation is represented by stable RC004 (0.6594ms)
+✔ Golden mutation is represented by stable RC005 (0.1854ms)
+✔ Shared Core packages never depend on Desktop (145.586ms)
+✔ Web renderer never imports host business services (18.8071ms)
+✔ Current Runtime consumers use Core facades instead of historical generation namespaces (33.7347ms)
+✔ Visual Analysis pipeline receives host paths through an adapter (0.6193ms)
+✔ Reference resolver is owned by Shared Runtime (0.3187ms)
+✔ version naming guard detects known current product-copy blind spots (5.0237ms)
+✔ version naming guard detects new historical-stage runtime IDs and targeted symbols (1.2711ms)
+✔ version naming guard allows explicit compatibility and version-domain examples (0.581ms)
+✔ version naming guard scans current generation, space, prompt-contract, and model-registry roots (12.0882ms)
+✔ isolated quality repair cannot depend on another business implementation: import x from '@masterpiece/model-runtime/qwen-reasoner.js' (2.2929ms)
+✔ isolated quality repair cannot depend on another business implementation: export {x} from '@masterpiece/model-runtime/qwen-reasoner.js' (0.2474ms)
+✔ isolated quality repair cannot depend on another business implementation: import('@masterpiece/model-runtime/qwen-reasoner.js') (0.1135ms)
+✔ isolated quality repair cannot depend on another business implementation: require('@masterpiece/model-runtime/qwen-reasoner.js') (0.114ms)
+✔ isolated quality repair cannot depend on another business implementation: import(`@masterpiece/model-runtime/qwen-reasoner.js`) (0.116ms)
+✔ isolated quality repair cannot depend on another business implementation: import x from '../../runtime-core/src/application/quality.ts' (0.1621ms)
+✔ isolated quality repair cannot depend on another business implementation: import(modulePath) (0.1135ms)
+✔ planning/migration cannot consume isolated quality implementation: import x from '@masterpiece/visual-workflow/service.js' (0.2297ms)
+✔ planning/migration cannot consume isolated quality implementation: export * from '../../../visual-workflow/src/service.js' (0.1714ms)
+✔ planning/migration cannot consume isolated quality implementation: import('../../../visual-workflow/src/service.js') (0.2011ms)
+✔ planning/migration cannot consume isolated quality implementation: require('../../../visual-workflow/src/service.js') (0.1405ms)
+✔ planning/migration cannot consume isolated quality implementation: rpc('visual-workflow:compile') (0.0865ms)
+✔ owned UI cannot escape via re-export, dynamic import or shared bridge (0.2795ms)
+✔ global configuration cannot enter through bracket environment access (0.1064ms)
+✔ owned relative modules and approved infrastructure remain usable (0.8213ms)
+✔ Node Runtime Host has zero Electron and Desktop dependencies (3.4036ms)
+✔ Web Renderer has zero Electron and Desktop dependencies (78.6391ms)
+✔ primary Web entry launches the Node host and independent Web renderer only (0.6039ms)
+ℹ tests 56
+ℹ suites 0
+ℹ pass 56
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1962.535
