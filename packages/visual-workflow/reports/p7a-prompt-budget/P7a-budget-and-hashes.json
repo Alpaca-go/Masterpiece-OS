@@ -1,0 +1,49 @@
+{
+  "budget": {
+    "chars": 10451,
+    "qualityBudget": 7500,
+    "targetMax": 9500,
+    "warnAt": 10000,
+    "providerLimit": 12000,
+    "adapterLimit": 12000,
+    "qualityBudgetExceeded": true,
+    "positiveChars": 9887,
+    "negativeChars": 536,
+    "positiveRatio": 0.9485752662381273,
+    "negativeRatio": 0.05142473376187278,
+    "findings": [
+      {
+        "code": "SPACE_PROMPT_ABOVE_QUALITY_BUDGET",
+        "severity": "warn",
+        "detail": "10451 > quality budget 7500"
+      },
+      {
+        "code": "SPACE_PROMPT_LONG",
+        "severity": "warn",
+        "detail": "10451 > 10000"
+      }
+    ],
+    "status": "pass"
+  },
+  "measurement": "Existing measurePromptBudget on returned formal blocks; no extra compile and no rules changed",
+  "formal": {
+    "characters": 10451,
+    "utf16Length": 10451,
+    "utf8Bytes": 14513,
+    "sha256": "031d2d20b203d73b5a11b77c27792bde9b02a15cc912c8e0c5f2d9f8dd886ab9"
+  },
+  "provider": {
+    "characters": 10554,
+    "utf16Length": 10554,
+    "utf8Bytes": 14708,
+    "sha256": "a7b402054cc0153517dd3d2411668fe0d1583f89c9c9eb3b8f30b6d64edfdc97"
+  },
+  "providerPrefixCharacters": 103,
+  "formalIsFullProviderSuffix": true,
+  "truncation": false,
+  "previousP7BlockedCharacters": 12124,
+  "reductionCharacters": 1673,
+  "below11500": true,
+  "target9500Reached": false,
+  "reasonNoFurtherChanges": "已比P7减少1673字符；保留冻结原字段及完整关键约束，达到优先11500目标，不为追求9500删除独立设计要求或扩大字段范围。"
+}

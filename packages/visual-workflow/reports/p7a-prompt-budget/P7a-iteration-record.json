@@ -1,0 +1,24 @@
+{
+  "formalCompileAttempts": 3,
+  "automaticRetryLoops": 0,
+  "providerDispatches": 0,
+  "offlineFixtureRequests": 1,
+  "first": {
+    "formalCharacters": 10449,
+    "budget": "PASS",
+    "fidelity": "FAIL - period-separated relation projected into separate blocks"
+  },
+  "second": {
+    "formalCharacters": 10449,
+    "budget": "PASS",
+    "fidelity": "FAIL - comma-separated treatment clause projected separately"
+  },
+  "final": {
+    "formalCharacters": 10451,
+    "providerCharacters": 10554,
+    "fidelity": "PASS 38 rows"
+  },
+  "changes": "两次人工定点修正functionalRelationships分句：句号改分号；治疗活动与床/私室枚举逗号改and。每次均正式网页保存确认，未放松任何语义断言。",
+  "webSaveConfirmPairs": 3,
+  "paidCalls": 0
+}

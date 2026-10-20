@@ -1,0 +1,495 @@
+{
+  "status": "PASS_EXPRESSION_ONLY",
+  "rows": [
+    {
+      "requirement": "五节点服务顺序",
+      "sourceField": "functionalNetwork",
+      "status": "PASS",
+      "terms": [
+        {
+          "text": "open arrival leads directly to the complete reception counter",
+          "formal": {
+            "offset": 4562,
+            "line": 95
+          },
+          "provider": {
+            "offset": 4665,
+            "line": 98
+          }
+        },
+        {
+          "text": "linked laterally to grouped waiting in the same hall",
+          "formal": {
+            "offset": 4625,
+            "line": 95
+          },
+          "provider": {
+            "offset": 4728,
+            "line": 98
+          }
+        },
+        {
+          "text": "both lead to one semi-open skin/facial aesthetics advisory node at the hall edge",
+          "formal": {
+            "offset": 4679,
+            "line": 95
+          },
+          "provider": {
+            "offset": 4782,
+            "line": 98
+          }
+        },
+        {
+          "text": "then screened private service access",
+          "formal": {
+            "offset": 4761,
+            "line": 95
+          },
+          "provider": {
+            "offset": 4864,
+            "line": 98
+          }
+        }
+      ]
+    },
+    {
+      "requirement": "开放视廊与厅宽",
+      "sourceField": "structureLanguage",
+      "status": "PASS",
+      "terms": [
+        {
+          "text": "入口框景退让",
+          "formal": {
+            "offset": 851,
+            "line": 22
+          },
+          "provider": {
+            "offset": 954,
+            "line": 25
+          }
+        },
+        {
+          "text": "左前景开放地面与视廊直接展开横向主厅",
+          "formal": {
+            "offset": 858,
+            "line": 22
+          },
+          "provider": {
+            "offset": 961,
+            "line": 25
+          }
+        },
+        {
+          "text": "不以巨墙压缩厅宽",
+          "formal": {
+            "offset": 886,
+            "line": 22
+          },
+          "provider": {
+            "offset": 989,
+            "line": 25
+          }
+        },
+        {
+          "text": "中央及前台顶面完整",
+          "formal": {
+            "offset": 895,
+            "line": 22
+          },
+          "provider": {
+            "offset": 998,
+            "line": 25
+          }
+        }
+      ]
+    },
+    {
+      "requirement": "完整前台商业锚点",
+      "sourceField": "visibleRequirements",
+      "status": "PASS",
+      "terms": [
+        {
+          "text": "A complete reception counter recognizable from the oblique entrance as the primary service anchor",
+          "formal": {
+            "offset": 7769,
+            "line": 153
+          },
+          "provider": {
+            "offset": 7872,
+            "line": 156
+          }
+        },
+        {
+          "text": "service front, staff worktop, small office equipment and visitor approach",
+          "formal": {
+            "offset": 7868,
+            "line": 153
+          },
+          "provider": {
+            "offset": 7971,
+            "line": 156
+          }
+        }
+      ]
+    },
+    {
+      "requirement": "成组候客与通行",
+      "sourceField": "visibleRequirements",
+      "status": "PASS",
+      "terms": [
+        {
+          "text": "One complete sofa and armchair waiting group with small tables",
+          "formal": {
+            "offset": 7975,
+            "line": 154
+          },
+          "provider": {
+            "offset": 8078,
+            "line": 157
+          }
+        },
+        {
+          "text": "usable seating and conversation space",
+          "formal": {
+            "offset": 8039,
+            "line": 154
+          },
+          "provider": {
+            "offset": 8142,
+            "line": 157
+          }
+        },
+        {
+          "text": "circulation clear around it",
+          "formal": {
+            "offset": 8133,
+            "line": 154
+          },
+          "provider": {
+            "offset": 8236,
+            "line": 157
+          }
+        }
+      ]
+    },
+    {
+      "requirement": "独立专业面询与双方座位",
+      "sourceField": "visibleRequirements",
+      "status": "PASS",
+      "terms": [
+        {
+          "text": "a freestanding professional worktop separates consultant equipment-operation side and guest side",
+          "formal": {
+            "offset": 8194,
+            "line": 155
+          },
+          "provider": {
+            "offset": 8297,
+            "line": 158
+          }
+        },
+        {
+          "text": "one accessible chair on each side",
+          "formal": {
+            "offset": 8292,
+            "line": 155
+          },
+          "provider": {
+            "offset": 8395,
+            "line": 158
+          }
+        },
+        {
+          "text": "seat fronts facing each other across the table",
+          "formal": {
+            "offset": 8327,
+            "line": 155
+          },
+          "provider": {
+            "offset": 8430,
+            "line": 158
+          }
+        },
+        {
+          "text": "a turned display permits shared viewing, even with empty seats",
+          "formal": {
+            "offset": 8375,
+            "line": 155
+          },
+          "provider": {
+            "offset": 8478,
+            "line": 158
+          }
+        }
+      ]
+    },
+    {
+      "requirement": "局部隐私和私密转场",
+      "sourceField": "functionalRelationships",
+      "status": "PASS",
+      "terms": [
+        {
+          "text": "a short translucent advisory boundary protects privacy",
+          "formal": {
+            "offset": 2688,
+            "line": 61
+          },
+          "provider": {
+            "offset": 2791,
+            "line": 64
+          }
+        },
+        {
+          "text": "opposing seats and shared screen remain readable",
+          "formal": {
+            "offset": 2753,
+            "line": 61
+          },
+          "provider": {
+            "offset": 2856,
+            "line": 64
+          }
+        },
+        {
+          "text": "an offset return only beyond this node screens private access without blocking arrival",
+          "formal": {
+            "offset": 2804,
+            "line": 62
+          },
+          "provider": {
+            "offset": 2907,
+            "line": 65
+          }
+        },
+        {
+          "text": "treatment activity and care beds and private interiors stay off frame",
+          "formal": {
+            "offset": 2893,
+            "line": 63
+          },
+          "provider": {
+            "offset": 2996,
+            "line": 66
+          }
+        }
+      ]
+    },
+    {
+      "requirement": "珠光建筑连接职责",
+      "sourceField": "structureLanguage",
+      "status": "PASS",
+      "terms": [
+        {
+          "text": "单套珠光曲面连续连接侧向建筑与局部上部边界",
+          "formal": {
+            "offset": 913,
+            "line": 23
+          },
+          "provider": {
+            "offset": 1016,
+            "line": 26
+          }
+        },
+        {
+          "text": "以通透转折界定候客至面询的递进",
+          "formal": {
+            "offset": 935,
+            "line": 23
+          },
+          "provider": {
+            "offset": 1038,
+            "line": 26
+          }
+        },
+        {
+          "text": "局部收束并让出主通行",
+          "formal": {
+            "offset": 951,
+            "line": 23
+          },
+          "provider": {
+            "offset": 1054,
+            "line": 26
+          }
+        }
+      ]
+    },
+    {
+      "requirement": "珠光层次和非墙饰",
+      "sourceField": "artisticFocus",
+      "status": "PASS",
+      "terms": [
+        {
+          "text": "完整主曲面与少量辅助薄层保留薄边、留缝、真实层间深度",
+          "formal": {
+            "offset": 810,
+            "line": 21
+          },
+          "provider": {
+            "offset": 913,
+            "line": 24
+          }
+        },
+        {
+          "text": "不退化墙饰",
+          "formal": {
+            "offset": 837,
+            "line": 21
+          },
+          "provider": {
+            "offset": 940,
+            "line": 24
+          }
+        }
+      ]
+    },
+    {
+      "requirement": "艺术范围防回归",
+      "sourceField": "visibleRequirements",
+      "status": "PASS",
+      "terms": [
+        {
+          "text": "no flat wall applique, ordinary glass screen, shell wall, cross-hall ribbon or giant enclosing arch",
+          "formal": {
+            "offset": 8931,
+            "line": 157
+          },
+          "provider": {
+            "offset": 9034,
+            "line": 160
+          }
+        }
+      ]
+    },
+    {
+      "requirement": "屏幕图示与准确性边界",
+      "sourceField": "visibleRequirements",
+      "status": "PASS",
+      "terms": [
+        {
+          "text": "non-identifying skin surface texture, facial contour zones or aesthetic proportion diagrams",
+          "formal": {
+            "offset": 8462,
+            "line": 155
+          },
+          "provider": {
+            "offset": 8565,
+            "line": 158
+          }
+        },
+        {
+          "text": "no skull, brain, organs, cross-sections, CT/MRI, text, numbers, diagnoses, personal images or outcome promises",
+          "formal": {
+            "offset": 8555,
+            "line": 155
+          },
+          "provider": {
+            "offset": 8658,
+            "line": 158
+          }
+        }
+      ]
+    },
+    {
+      "requirement": "前景及前台屏幕防回归",
+      "sourceField": "visibleRequirements",
+      "status": "PASS",
+      "terms": [
+        {
+          "text": "no blocking wall, circular glass room, cylindrical display or ring pendant",
+          "formal": {
+            "offset": 8690,
+            "line": 156
+          },
+          "provider": {
+            "offset": 8793,
+            "line": 159
+          }
+        },
+        {
+          "text": "no facial-analysis advertising screen at reception",
+          "formal": {
+            "offset": 8766,
+            "line": 156
+          },
+          "provider": {
+            "offset": 8869,
+            "line": 159
+          }
+        }
+      ]
+    },
+    {
+      "requirement": "构图主次和可用空间",
+      "sourceField": "compositionRequirements",
+      "status": "PASS",
+      "terms": [
+        {
+          "text": "完整开阔主厅为先，前台为主要服务锚点，候客次之，面询位于边缘，私密转场从属",
+          "formal": {
+            "offset": 9296,
+            "line": 160
+          },
+          "provider": {
+            "offset": 9399,
+            "line": 163
+          }
+        },
+        {
+          "text": "各节点可使用、可通行",
+          "formal": {
+            "offset": 9368,
+            "line": 161
+          },
+          "provider": {
+            "offset": 9471,
+            "line": 164
+          }
+        },
+        {
+          "text": "不靠重复家具或营销架补功能",
+          "formal": {
+            "offset": 9402,
+            "line": 161
+          },
+          "provider": {
+            "offset": 9505,
+            "line": 164
+          }
+        }
+      ]
+    },
+    {
+      "requirement": "冻结自然光与虹彩",
+      "sourceField": "lightingInteraction",
+      "status": "PASS",
+      "terms": [
+        {
+          "text": "漫射自然光温暖地照亮前台",
+          "formal": {
+            "offset": 7132,
+            "line": 137
+          },
+          "provider": {
+            "offset": 7235,
+            "line": 140
+          }
+        },
+        {
+          "text": "局部珠光随自然光产生很弱的内层虹彩",
+          "formal": {
+            "offset": 7206,
+            "line": 139
+          },
+          "provider": {
+            "offset": 7309,
+            "line": 142
+          }
+        }
+      ]
+    }
+  ],
+  "allFrozenFieldsExact": true,
+  "geometryLock": false,
+  "visualQuality": "NOT_TESTED"
+}

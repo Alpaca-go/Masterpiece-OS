@@ -1,0 +1,1496 @@
+{
+  "compilerId": "phase9b-quality-compiler",
+  "compilerVersion": "1.1.0",
+  "adapterId": "seedream-5.0-pro",
+  "adapterVersion": "seedream-short-chain-adapter@1.1.0",
+  "sourceFingerprint": "a53f933eaa5371a7483393e1d881fdbc7a78a1c92222e82daf294b4aab92572f",
+  "blockIds": [
+    "task",
+    "spatial_intent",
+    "architecture_language",
+    "architecture_context",
+    "architecture_function_bridge",
+    "architectural_concept",
+    "architecture_dna",
+    "brand_translation",
+    "functional_requirement",
+    "color",
+    "material",
+    "lighting",
+    "composition",
+    "rendering",
+    "negative_constraints"
+  ],
+  "promptCharacters": 10451,
+  "compileDurationMs": 53.225,
+  "phase9b": true,
+  "anchorIds": [],
+  "decisionTrace": {
+    "confirmedFields": [
+      "mediaTranslations.spatial",
+      "colorSystem",
+      "materialSystem",
+      "lightingSystem"
+    ],
+    "color": [
+      {
+        "sourcePath": "colorSystem.primary[0]",
+        "evidenceClass": "user_confirmed",
+        "source": {
+          "name": "暖白与米白",
+          "role": "温暖柔和的建筑基底",
+          "surfaceApplicability": "实体墙、地面与安静顶面；保留材料明暗差异，不以纯白过曝抹平表面",
+          "spatialUsage": "dominant_field"
+        },
+        "executionAuthority": "user_confirmed_design_intent",
+        "spatialUsage": "dominant_field",
+        "unresolved": false
+      },
+      {
+        "sourcePath": "colorSystem.secondary[0]",
+        "evidenceClass": "user_confirmed",
+        "source": {
+          "name": "浅木色与暖中性色",
+          "role": "建立真实商业家具与局部墙面的温暖层次",
+          "surfaceApplicability": "前台局部饰面、候客家具木质细节与中性软包、局部服务区墙面；不覆盖全部建筑界面",
+          "spatialUsage": "secondary_surface"
+        },
+        "executionAuthority": "user_confirmed_design_intent",
+        "spatialUsage": "secondary_surface",
+        "unresolved": false
+      },
+      {
+        "sourcePath": "colorSystem.accent[0]",
+        "evidenceClass": "user_confirmed",
+        "source": {
+          "name": "品牌紫",
+          "role": "非常有限的珠光内反射，正式品牌内容以后期真实素材体现",
+          "surfaceApplicability": "仅少量半透明界面的局部内层弱虹彩；不用于家具、花瓶、窗帘或发光灯带",
+          "spatialUsage": "local_accent"
+        },
+        "executionAuthority": "user_confirmed_design_intent",
+        "spatialUsage": "local_accent",
+        "unresolved": false
+      }
+    ],
+    "materials": [
+      {
+        "sourcePath": "materialSystem[0]",
+        "evidenceClass": "user_confirmed",
+        "source": {
+          "material": "建筑一体化珠光半透明曲面系统",
+          "behavior": [
+            "连续主曲面与少量错层辅助薄层具有精致薄边、可辨层间深度和透景留白",
+            "自然光穿透时呈轻微珍珠母贝内反射，弱紫仅在局部材料内层出现；曲面后方面询设备与服务关系仍可辨"
+          ],
+          "brandRole": "从侧向建筑界面局部连接上部边界，沿候客及面询边缘有起止地展开，建立品牌艺术特征并参与分隔，让出完整前台、通行面和大部分顶面",
+          "forbidden": [
+            "密集羽片、花瓣团块与不透明艺术墙",
+            "整体紫色染色、自发光浮雕和独立巨大雕塑"
+          ]
+        },
+        "compiled": {
+          "material": "建筑一体化珠光半透明曲面系统",
+          "behavior": [
+            "连续主曲面与少量错层辅助薄层具有精致薄边、可辨层间深度和透景留白",
+            "自然光穿透时呈轻微珍珠母贝内反射，弱紫仅在局部材料内层出现；曲面后方面询设备与服务关系仍可辨"
+          ],
+          "brandRole": "从侧向建筑界面局部连接上部边界，沿候客及面询边缘有起止地展开，建立品牌艺术特征并参与分隔，让出完整前台、通行面和大部分顶面",
+          "forbidden": [
+            "密集羽片、花瓣团块与不透明艺术墙",
+            "整体紫色染色、自发光浮雕和独立巨大雕塑"
+          ]
+        }
+      },
+      {
+        "sourcePath": "materialSystem[1]",
+        "evidenceClass": "user_confirmed",
+        "source": {
+          "material": "暖白米白矿物基底",
+          "behavior": [
+            "温暖柔和的漫反射，保留真实表面质感和体积",
+            "与木质、软包及半透明界面形成清楚但低对比的层次"
+          ],
+          "brandRole": "建立完整实体建筑、安静顶面与可读入口框景",
+          "forbidden": [
+            "冷白发蓝的无差别表面",
+            "高对比镜面拼贴和过曝洗白"
+          ]
+        },
+        "compiled": {
+          "material": "暖白米白矿物基底",
+          "behavior": [
+            "温暖柔和的漫反射，保留真实表面质感和体积",
+            "与木质、软包及半透明界面形成清楚但低对比的层次"
+          ],
+          "brandRole": "建立完整实体建筑、安静顶面与可读入口框景",
+          "forbidden": [
+            "冷白发蓝的无差别表面",
+            "高对比镜面拼贴和过曝洗白"
+          ]
+        }
+      },
+      {
+        "sourcePath": "materialSystem[2]",
+        "evidenceClass": "user_confirmed",
+        "source": {
+          "material": "浅木质与暖中性软包",
+          "behavior": [
+            "浅木质保留自然纹理与温暖反射，软包呈柔和细腻触感",
+            "材料变化服务于前台、候客和半开放服务区的使用层次"
+          ],
+          "brandRole": "为接待工作、就坐交流与局部服务界面提供自然温暖的商业功能材质",
+          "forbidden": [
+            "紫色软包与大面积高饱和饰面",
+            "以装饰家具堆积代替清楚的功能分区"
+          ]
+        },
+        "compiled": {
+          "material": "浅木质与暖中性软包",
+          "behavior": [
+            "浅木质保留自然纹理与温暖反射，软包呈柔和细腻触感",
+            "材料变化服务于前台、候客和半开放服务区的使用层次"
+          ],
+          "brandRole": "为接待工作、就坐交流与局部服务界面提供自然温暖的商业功能材质",
+          "forbidden": [
+            "紫色软包与大面积高饱和饰面",
+            "以装饰家具堆积代替清楚的功能分区"
+          ]
+        }
+      }
+    ],
+    "mechanisms": [
+      {
+        "sourcePath": "mediaTranslations.spatial.signatureSpatialMechanism[0]",
+        "mechanismId": "mech-01",
+        "evidenceClass": "system_inference",
+        "sourceText": "接待区：珠光建筑曲面以连接与透景转折组织空间节奏；完整主曲面与少量辅助薄层保留薄边、留缝、真实层间深度，不退化墙饰。",
+        "actions": {
+          "strategy": [
+            "接待区：珠光建筑曲面以连接与透景转折组织空间节奏；完整主曲面与少量辅助薄层保留薄边、留缝、真实层间深度，不退化墙饰。"
+          ],
+          "form": [
+            "接待区：珠光建筑曲面以连接与透景转折组织空间节奏；完整主曲面与少量辅助薄层保留薄边、留缝、真实层间深度，不退化墙饰。"
+          ],
+          "organization": [
+            "接待区：珠光建筑曲面以连接与透景转折组织空间节奏；完整主曲面与少量辅助薄层保留薄边、留缝、真实层间深度，不退化墙饰。"
+          ]
+        },
+        "dropped": false
+      },
+      {
+        "sourcePath": "mediaTranslations.spatial.structureLanguage[0]",
+        "mechanismId": "mech-03",
+        "evidenceClass": "system_inference",
+        "sourceText": "接待主厅：入口框景退让，左前景开放地面与视廊直接展开横向主厅；建筑界面提供纵深而不以巨墙压缩厅宽，中央及前台顶面完整。",
+        "actions": {
+          "strategy": [
+            "接待主厅：入口框景退让，左前景开放地面与视廊直接展开横向主厅；建筑界面提供纵深而不以巨墙压缩厅宽，中央及前台顶面完整。"
+          ],
+          "form": [
+            "接待主厅：入口框景退让，左前景开放地面与视廊直接展开横向主厅；建筑界面提供纵深而不以巨墙压缩厅宽，中央及前台顶面完整。"
+          ],
+          "organization": [
+            "接待主厅：入口框景退让，左前景开放地面与视廊直接展开横向主厅；建筑界面提供纵深而不以巨墙压缩厅宽，中央及前台顶面完整。"
+          ]
+        },
+        "dropped": false
+      },
+      {
+        "sourcePath": "mediaTranslations.spatial.structureLanguage[1]",
+        "mechanismId": "mech-04",
+        "evidenceClass": "system_inference",
+        "sourceText": "接待主厅：单套珠光曲面连续连接侧向建筑与局部上部边界，以通透转折界定候客至面询的递进，局部收束并让出主通行。",
+        "actions": {
+          "strategy": [
+            "接待主厅：单套珠光曲面连续连接侧向建筑与局部上部边界，以通透转折界定候客至面询的递进，局部收束并让出主通行。"
+          ],
+          "form": [
+            "接待主厅：单套珠光曲面连续连接侧向建筑与局部上部边界，以通透转折界定候客至面询的递进，局部收束并让出主通行。"
+          ],
+          "organization": [
+            "接待主厅：单套珠光曲面连续连接侧向建筑与局部上部边界，以通透转折界定候客至面询的递进，局部收束并让出主通行。"
+          ]
+        },
+        "dropped": false
+      },
+      {
+        "sourcePath": "mediaTranslations.spatial.mustBeVisible[0]",
+        "mechanismId": "mech-12",
+        "evidenceClass": "system_inference",
+        "sourceText": "A complete reception counter recognizable from the oblique entrance as the primary service anchor; service front, staff worktop, small office equipment and visitor approach are readable at credible scale",
+        "actions": {
+          "strategy": [
+            "A complete reception counter recognizable from the oblique entrance as the primary service anchor; service front, staff worktop, small office equipment and visitor approach are readable at credible scale"
+          ],
+          "form": [
+            "A complete reception counter recognizable from the oblique entrance as the primary service anchor; service front, staff worktop, small office equipment and visitor approach are readable at credible scale"
+          ],
+          "organization": [
+            "A complete reception counter recognizable from the oblique entrance as the primary service anchor; service front, staff worktop, small office equipment and visitor approach are readable at credible scale"
+          ]
+        },
+        "dropped": false
+      },
+      {
+        "sourcePath": "mediaTranslations.spatial.mustBeVisible[1]",
+        "mechanismId": "mech-13",
+        "evidenceClass": "system_inference",
+        "sourceText": "One complete sofa and armchair waiting group with small tables, usable seating and conversation space, warm neutral upholstery and light timber details, with circulation clear around it",
+        "actions": {
+          "strategy": [
+            "One complete sofa and armchair waiting group with small tables, usable seating and conversation space, warm neutral upholstery and light timber details, with circulation clear around it"
+          ],
+          "form": [
+            "One complete sofa and armchair waiting group with small tables, usable seating and conversation space, warm neutral upholstery and light timber details, with circulation clear around it"
+          ],
+          "organization": [
+            "One complete sofa and armchair waiting group with small tables, usable seating and conversation space, warm neutral upholstery and light timber details, with circulation clear around it"
+          ]
+        },
+        "dropped": false
+      },
+      {
+        "sourcePath": "mediaTranslations.spatial.mustBeVisible[2]",
+        "mechanismId": "mech-14",
+        "evidenceClass": "system_inference",
+        "sourceText": "One edge advisory workstation: a freestanding professional worktop separates consultant equipment-operation side and guest side, one accessible chair on each side, seat fronts facing each other across the table; a turned display permits shared viewing, even with empty seats. The light screen shows non-identifying skin surface texture, facial contour zones or aesthetic proportion diagrams; no skull, brain, organs, cross-sections, CT/MRI, text, numbers, diagnoses, personal images or outcome promises",
+        "actions": {
+          "strategy": [
+            "One edge advisory workstation: a freestanding professional worktop separates consultant equipment-operation side and guest side, one accessible chair on each side, seat fronts facing each other across the table; a turned display permits shared viewing, even with empty seats. The light screen shows non-identifying skin surface texture, facial contour zones or aesthetic proportion diagrams; no skull, brain, organs, cross-sections, CT/MRI, text, numbers, diagnoses, personal images or outcome promises"
+          ],
+          "form": [
+            "One edge advisory workstation: a freestanding professional worktop separates consultant equipment-operation side and guest side, one accessible chair on each side, seat fronts facing each other across the table; a turned display permits shared viewing, even with empty seats. The light screen shows non-identifying skin surface texture, facial contour zones or aesthetic proportion diagrams; no skull, brain, organs, cross-sections, CT/MRI, text, numbers, diagnoses, personal images or outcome promises"
+          ],
+          "organization": [
+            "One edge advisory workstation: a freestanding professional worktop separates consultant equipment-operation side and guest side, one accessible chair on each side, seat fronts facing each other across the table; a turned display permits shared viewing, even with empty seats. The light screen shows non-identifying skin surface texture, facial contour zones or aesthetic proportion diagrams; no skull, brain, organs, cross-sections, CT/MRI, text, numbers, diagnoses, personal images or outcome promises"
+          ]
+        },
+        "dropped": false
+      },
+      {
+        "sourcePath": "mediaTranslations.spatial.mustBeVisible[3]",
+        "mechanismId": "mech-15",
+        "evidenceClass": "system_inference",
+        "sourceText": "Open left foreground: no blocking wall, circular glass room, cylindrical display or ring pendant; no facial-analysis advertising screen at reception",
+        "actions": {
+          "strategy": [
+            "Open left foreground: no blocking wall, circular glass room, cylindrical display or ring pendant; no facial-analysis advertising screen at reception"
+          ],
+          "form": [
+            "Open left foreground: no blocking wall, circular glass room, cylindrical display or ring pendant; no facial-analysis advertising screen at reception"
+          ],
+          "organization": [
+            "Open left foreground: no blocking wall, circular glass room, cylindrical display or ring pendant; no facial-analysis advertising screen at reception"
+          ]
+        },
+        "dropped": false
+      },
+      {
+        "sourcePath": "mediaTranslations.spatial.mustBeVisible[4]",
+        "mechanismId": "mech-16",
+        "evidenceClass": "system_inference",
+        "sourceText": "One connected pearlescent system with a complete main curve, few thin layers, fine edges and see-through depth; no flat wall applique, ordinary glass screen, shell wall, cross-hall ribbon or giant enclosing arch",
+        "actions": {
+          "strategy": [
+            "One connected pearlescent system with a complete main curve, few thin layers, fine edges and see-through depth; no flat wall applique, ordinary glass screen, shell wall, cross-hall ribbon or giant enclosing arch"
+          ],
+          "form": [
+            "One connected pearlescent system with a complete main curve, few thin layers, fine edges and see-through depth; no flat wall applique, ordinary glass screen, shell wall, cross-hall ribbon or giant enclosing arch"
+          ],
+          "organization": [
+            "One connected pearlescent system with a complete main curve, few thin layers, fine edges and see-through depth; no flat wall applique, ordinary glass screen, shell wall, cross-hall ribbon or giant enclosing arch"
+          ]
+        },
+        "dropped": false
+      },
+      {
+        "sourcePath": "mediaTranslations.spatial.mustBeVisible[5]",
+        "mechanismId": "mech-17",
+        "evidenceClass": "system_inference",
+        "sourceText": "One small flat clean unlettered identity surface on an architectural interface, outside the main circulation and unobstructed; small operational carriers remain subordinate to the complete functional areas",
+        "actions": {
+          "strategy": [
+            "One small flat clean unlettered identity surface on an architectural interface, outside the main circulation and unobstructed; small operational carriers remain subordinate to the complete functional areas"
+          ],
+          "form": [
+            "One small flat clean unlettered identity surface on an architectural interface, outside the main circulation and unobstructed; small operational carriers remain subordinate to the complete functional areas"
+          ],
+          "organization": [
+            "One small flat clean unlettered identity surface on an architectural interface, outside the main circulation and unobstructed; small operational carriers remain subordinate to the complete functional areas"
+          ]
+        },
+        "dropped": false
+      }
+    ],
+    "unknown": [
+      "Unprovided color area ratios and material optical parameters remain unspecified; no historical image inference is authorized."
+    ],
+    "conflicts": [],
+    "artisticFocus": [],
+    "artisticCandidates": [],
+    "architectureDecisions": [
+      {
+        "text": "接待区：珠光建筑曲面以连接与透景转折组织空间节奏；完整主曲面与少量辅助薄层保留薄边、留缝、真实层间深度，不退化墙饰。",
+        "sourceField": "signatureSpatialMechanism",
+        "sourcePath": "mediaTranslations.spatial.signatureSpatialMechanism[0]",
+        "classification": "architectural",
+        "strip": [],
+        "compiledAction": "接待区：珠光建筑曲面以连接与透景转折组织空间节奏；完整主曲面与少量辅助薄层保留薄边、留缝、真实层间深度，不退化墙饰。",
+        "mechanismId": "mech-01",
+        "signals": [
+          "curve",
+          "light"
+        ],
+        "strategy": [
+          "接待区：珠光建筑曲面以连接与透景转折组织空间节奏；完整主曲面与少量辅助薄层保留薄边、留缝、真实层间深度，不退化墙饰。"
+        ],
+        "form": [
+          "接待区：珠光建筑曲面以连接与透景转折组织空间节奏；完整主曲面与少量辅助薄层保留薄边、留缝、真实层间深度，不退化墙饰。"
+        ],
+        "organization": [
+          "接待区：珠光建筑曲面以连接与透景转折组织空间节奏；完整主曲面与少量辅助薄层保留薄边、留缝、真实层间深度，不退化墙饰。"
+        ],
+        "rewritten": true,
+        "dropped": false,
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "接待区：珠光建筑曲面以连接与透景转折组织空间节奏",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "完整主曲面与少量辅助薄层保留薄边、留缝、真实层间深度",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "不退化墙饰",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "接待区：珠光建筑曲面以连接与透景转折组织空间节奏；完整主曲面与少量辅助薄层保留薄边、留缝、真实层间深度，不退化墙饰。",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "接待主厅：入口框景退让，左前景开放地面与视廊直接展开横向主厅；建筑界面提供纵深而不以巨墙压缩厅宽，中央及前台顶面完整。",
+        "sourceField": "structureLanguage",
+        "sourcePath": "mediaTranslations.spatial.structureLanguage[0]",
+        "classification": "architectural",
+        "strip": [],
+        "compiledAction": "接待主厅：入口框景退让，左前景开放地面与视廊直接展开横向主厅；建筑界面提供纵深而不以巨墙压缩厅宽，中央及前台顶面完整。",
+        "mechanismId": "mech-03",
+        "signals": [
+          "open",
+          "boundary",
+          "ceiling",
+          "scale"
+        ],
+        "strategy": [
+          "接待主厅：入口框景退让，左前景开放地面与视廊直接展开横向主厅；建筑界面提供纵深而不以巨墙压缩厅宽，中央及前台顶面完整。"
+        ],
+        "form": [
+          "接待主厅：入口框景退让，左前景开放地面与视廊直接展开横向主厅；建筑界面提供纵深而不以巨墙压缩厅宽，中央及前台顶面完整。"
+        ],
+        "organization": [
+          "接待主厅：入口框景退让，左前景开放地面与视廊直接展开横向主厅；建筑界面提供纵深而不以巨墙压缩厅宽，中央及前台顶面完整。"
+        ],
+        "rewritten": true,
+        "dropped": false,
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "接待主厅：入口框景退让",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "左前景开放地面与视廊直接展开横向主厅",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "建筑界面提供纵深而不以巨墙压缩厅宽",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "中央及前台顶面完整",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception",
+          "entrance"
+        ],
+        "currentShotText": "接待主厅：入口框景退让，左前景开放地面与视廊直接展开横向主厅；建筑界面提供纵深而不以巨墙压缩厅宽，中央及前台顶面完整。",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "接待主厅：单套珠光曲面连续连接侧向建筑与局部上部边界，以通透转折界定候客至面询的递进，局部收束并让出主通行。",
+        "sourceField": "structureLanguage",
+        "sourcePath": "mediaTranslations.spatial.structureLanguage[1]",
+        "classification": "architectural",
+        "strip": [],
+        "compiledAction": "接待主厅：单套珠光曲面连续连接侧向建筑与局部上部边界，以通透转折界定候客至面询的递进，局部收束并让出主通行。",
+        "mechanismId": "mech-04",
+        "signals": [
+          "curve",
+          "translucent",
+          "transition",
+          "open",
+          "boundary",
+          "light"
+        ],
+        "strategy": [
+          "接待主厅：单套珠光曲面连续连接侧向建筑与局部上部边界，以通透转折界定候客至面询的递进，局部收束并让出主通行。"
+        ],
+        "form": [
+          "接待主厅：单套珠光曲面连续连接侧向建筑与局部上部边界，以通透转折界定候客至面询的递进，局部收束并让出主通行。"
+        ],
+        "organization": [
+          "接待主厅：单套珠光曲面连续连接侧向建筑与局部上部边界，以通透转折界定候客至面询的递进，局部收束并让出主通行。"
+        ],
+        "rewritten": true,
+        "dropped": false,
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "接待主厅：单套珠光曲面连续连接侧向建筑与局部上部边界",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "以通透转折界定候客至面询的递进",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "局部收束并让出主通行",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "接待主厅：单套珠光曲面连续连接侧向建筑与局部上部边界，以通透转折界定候客至面询的递进，局部收束并让出主通行。",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      }
+    ],
+    "sceneScope": [
+      {
+        "text": "入口到达与清楚的分流区",
+        "sourcePath": "mediaTranslations.spatial.sceneProgram[0]",
+        "sourceContainer": "mediaTranslations.spatial.sceneProgram",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "入口到达与清楚的分流区",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "entrance"
+        ],
+        "currentShotText": "入口到达与清楚的分流区",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "正式接待与员工工作区",
+        "sourcePath": "mediaTranslations.spatial.sceneProgram[1]",
+        "sourceContainer": "mediaTranslations.spatial.sceneProgram",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "正式接待与员工工作区",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "正式接待与员工工作区",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "成组候客与短时交流区",
+        "sourcePath": "mediaTranslations.spatial.sceneProgram[2]",
+        "sourceContainer": "mediaTranslations.spatial.sceneProgram",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "成组候客与短时交流区",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "成组候客与短时交流区",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "主厅边缘一处半开放皮肤/美学专业面询工作位",
+        "sourcePath": "mediaTranslations.spatial.sceneProgram[3]",
+        "sourceContainer": "mediaTranslations.spatial.sceneProgram",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "主厅边缘一处半开放皮肤/美学专业面询工作位",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [],
+        "currentShotText": "主厅边缘一处半开放皮肤/美学专业面询工作位",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "通向私密服务的受屏蔽过渡边界",
+        "sourcePath": "mediaTranslations.spatial.sceneProgram[4]",
+        "sourceContainer": "mediaTranslations.spatial.sceneProgram",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "通向私密服务的受屏蔽过渡边界",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [],
+        "currentShotText": "通向私密服务的受屏蔽过渡边界",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "Reception: open arrival leads directly to the complete reception counter, linked laterally to grouped waiting in the same hall; both lead to one semi-open skin/facial aesthetics advisory node at the hall edge, then screened private service access.",
+        "sourcePath": "mediaTranslations.spatial.functionalNetwork[0]",
+        "sourceContainer": "mediaTranslations.spatial.functionalNetwork",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "Reception: open arrival leads directly to the complete reception counter",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "linked laterally to grouped waiting in the same hall",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "both lead to one semi-open skin/facial aesthetics advisory node at the hall edge",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "then screened private service access",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "Reception: open arrival leads directly to the complete reception counter, linked laterally to grouped waiting in the same hall; both lead to one semi-open skin/facial aesthetics advisory node at the hall edge, then screened private service access.",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "具有美术馆气质的专业医美商业接待主厅：完整前台、成组候客与主厅边缘一处半开放皮肤/美学面询工作位共同组织开阔空间；一组与侧向建筑连接、局部向上部延伸的珠光半透明弧形界面参与候客与面询边界，完整主曲面、少量辅助薄层和结构留白形成可辨艺术语言；暖白米白基底、局部浅木与柔和暖日光保持真实材料层次。",
+        "sourcePath": "mediaTranslations.spatial.positiveDifferentiators[0]",
+        "sourceContainer": "mediaTranslations.spatial.positiveDifferentiators",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "具有美术馆气质的专业医美商业接待主厅：完整前台、成组候客与主厅边缘一处半开放皮肤/美学面询工作位共同组织开阔空间",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "一组与侧向建筑连接、局部向上部延伸的珠光半透明弧形界面参与候客与面询边界",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "完整主曲面、少量辅助薄层和结构留白形成可辨艺术语言",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "暖白米白基底、局部浅木与柔和暖日光保持真实材料层次",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "具有美术馆气质的专业医美商业接待主厅：完整前台、成组候客与主厅边缘一处半开放皮肤/美学面询工作位共同组织开阔空间；一组与侧向建筑连接、局部向上部延伸的珠光半透明弧形界面参与候客与面询边界，完整主曲面、少量辅助薄层和结构留白形成可辨艺术语言；暖白米白基底、局部浅木与柔和暖日光保持真实材料层次。",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "A complete reception counter recognizable from the oblique entrance as the primary service anchor; service front, staff worktop, small office equipment and visitor approach are readable at credible scale",
+        "sourcePath": "mediaTranslations.spatial.mustBeVisible[0]",
+        "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "A complete reception counter recognizable from the oblique entrance as the primary service anchor",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "service front",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "staff worktop",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "small office equipment and visitor approach are readable at credible scale",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception",
+          "entrance"
+        ],
+        "currentShotText": "A complete reception counter recognizable from the oblique entrance as the primary service anchor; service front, staff worktop, small office equipment and visitor approach are readable at credible scale",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "One complete sofa and armchair waiting group with small tables, usable seating and conversation space, warm neutral upholstery and light timber details, with circulation clear around it",
+        "sourcePath": "mediaTranslations.spatial.mustBeVisible[1]",
+        "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "One complete sofa and armchair waiting group with small tables",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "usable seating and conversation space",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "warm neutral upholstery and light timber details",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "with circulation clear around it",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "One complete sofa and armchair waiting group with small tables, usable seating and conversation space, warm neutral upholstery and light timber details, with circulation clear around it",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "One edge advisory workstation: a freestanding professional worktop separates consultant equipment-operation side and guest side, one accessible chair on each side, seat fronts facing each other across the table; a turned display permits shared viewing, even with empty seats. The light screen shows non-identifying skin surface texture, facial contour zones or aesthetic proportion diagrams; no skull, brain, organs, cross-sections, CT/MRI, text, numbers, diagnoses, personal images or outcome promises",
+        "sourcePath": "mediaTranslations.spatial.mustBeVisible[2]",
+        "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "One edge advisory workstation: a freestanding professional worktop separates consultant equipment-operation side and guest side",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "one accessible chair on each side",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "seat fronts facing each other across the table",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "a turned display permits shared viewing",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "even with empty seats",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "The light screen shows non-identifying skin surface texture",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "facial contour zones or aesthetic proportion diagrams",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "no skull",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "brain",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "organs",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "cross-sections",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "CT/MRI",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "text",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "numbers",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "diagnoses",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "personal images or outcome promises",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [],
+        "currentShotText": "One edge advisory workstation: a freestanding professional worktop separates consultant equipment-operation side and guest side, one accessible chair on each side, seat fronts facing each other across the table; a turned display permits shared viewing, even with empty seats. The light screen shows non-identifying skin surface texture, facial contour zones or aesthetic proportion diagrams; no skull, brain, organs, cross-sections, CT/MRI, text, numbers, diagnoses, personal images or outcome promises",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "Open left foreground: no blocking wall, circular glass room, cylindrical display or ring pendant; no facial-analysis advertising screen at reception",
+        "sourcePath": "mediaTranslations.spatial.mustBeVisible[3]",
+        "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "Open left foreground: no blocking wall",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "circular glass room",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "cylindrical display or ring pendant",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "no facial-analysis advertising screen at reception",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "Open left foreground: no blocking wall, circular glass room, cylindrical display or ring pendant; no facial-analysis advertising screen at reception",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "One connected pearlescent system with a complete main curve, few thin layers, fine edges and see-through depth; no flat wall applique, ordinary glass screen, shell wall, cross-hall ribbon or giant enclosing arch",
+        "sourcePath": "mediaTranslations.spatial.mustBeVisible[4]",
+        "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "One connected pearlescent system with a complete main curve",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "few thin layers",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "fine edges and see-through depth",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "no flat wall applique",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "ordinary glass screen",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "shell wall",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "cross-hall ribbon or giant enclosing arch",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [],
+        "currentShotText": "One connected pearlescent system with a complete main curve, few thin layers, fine edges and see-through depth; no flat wall applique, ordinary glass screen, shell wall, cross-hall ribbon or giant enclosing arch",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "One small flat clean unlettered identity surface on an architectural interface, outside the main circulation and unobstructed; small operational carriers remain subordinate to the complete functional areas",
+        "sourcePath": "mediaTranslations.spatial.mustBeVisible[5]",
+        "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "One small flat clean unlettered identity surface on an architectural interface",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "outside the main circulation and unobstructed",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "small operational carriers remain subordinate to the complete functional areas",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [],
+        "currentShotText": "One small flat clean unlettered identity surface on an architectural interface, outside the main circulation and unobstructed; small operational carriers remain subordinate to the complete functional areas",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "接待区：珠光建筑曲面以连接与透景转折组织空间节奏；完整主曲面与少量辅助薄层保留薄边、留缝、真实层间深度，不退化墙饰。",
+        "sourcePath": "derived.architectureFunctionBridge.spatialTranslation[0]",
+        "sourceContainer": "architectureFunctionBridge.spatialTranslation",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "接待区：珠光建筑曲面以连接与透景转折组织空间节奏",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "完整主曲面与少量辅助薄层保留薄边、留缝、真实层间深度",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "不退化墙饰",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "接待区：珠光建筑曲面以连接与透景转折组织空间节奏；完整主曲面与少量辅助薄层保留薄边、留缝、真实层间深度，不退化墙饰。",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "Reception: open arrival leads directly to the complete reception counter, linked laterally to grouped waiting in the same hall; both lead to one semi-open skin/facial aesthetics advisory node at the hall edge, then screened private service access.",
+        "sourcePath": "derived.architectureFunctionBridge.spatialTranslation[1]",
+        "sourceContainer": "architectureFunctionBridge.spatialTranslation",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "Reception: open arrival leads directly to the complete reception counter",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "linked laterally to grouped waiting in the same hall",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "both lead to one semi-open skin/facial aesthetics advisory node at the hall edge",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "then screened private service access",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "Reception: open arrival leads directly to the complete reception counter, linked laterally to grouped waiting in the same hall; both lead to one semi-open skin/facial aesthetics advisory node at the hall edge, then screened private service access.",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "Reception: each node retains usable space and clear circulation; a short translucent advisory boundary protects privacy while the opposing seats and shared screen remain readable; an offset return only beyond this node screens private access without blocking arrival; treatment activity and care beds and private interiors stay off frame.",
+        "sourcePath": "derived.architectureFunctionBridge.operationConstraints[0]",
+        "sourceContainer": "architectureFunctionBridge.operationConstraints",
+        "sceneScope": "cross_scene_constraint",
+        "clauses": [
+          {
+            "text": "Reception: each node retains usable space and clear circulation",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "a short translucent advisory boundary protects privacy while the opposing seats and shared screen remain readable",
+            "sceneScope": "cross_scene_constraint",
+            "visibilityAuthority": "current_boundary_only"
+          },
+          {
+            "text": "an offset return only beyond this node screens private access without blocking arrival",
+            "sceneScope": "cross_scene_constraint",
+            "visibilityAuthority": "current_boundary_only"
+          },
+          {
+            "text": "treatment activity and care beds and private interiors stay off frame",
+            "sceneScope": "cross_scene_constraint",
+            "visibilityAuthority": "current_boundary_only"
+          }
+        ],
+        "detectedScenes": [
+          "reception",
+          "treatment"
+        ],
+        "currentShotText": "Reception: each node retains usable space and clear circulation",
+        "boundaryConstraints": [
+          {
+            "text": "a short translucent advisory boundary protects privacy while the opposing seats and shared screen remain readable",
+            "sceneScope": "cross_scene_constraint",
+            "visibilityAuthority": "current_boundary_only"
+          },
+          {
+            "text": "an offset return only beyond this node screens private access without blocking arrival",
+            "sceneScope": "cross_scene_constraint",
+            "visibilityAuthority": "current_boundary_only"
+          },
+          {
+            "text": "treatment activity and care beds and private interiors stay off frame",
+            "sceneScope": "cross_scene_constraint",
+            "visibilityAuthority": "current_boundary_only"
+          }
+        ],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "operational_relation_without_foreign_interior_visibility"
+      },
+      {
+        "text": "具有美术馆气质的专业医美商业接待主厅：完整前台、成组候客与主厅边缘一处半开放皮肤/美学面询工作位共同组织开阔空间；一组与侧向建筑连接、局部向上部延伸的珠光半透明弧形界面参与候客与面询边界，完整主曲面、少量辅助薄层和结构留白形成可辨艺术语言；暖白米白基底、局部浅木与柔和暖日光保持真实材料层次。",
+        "sourcePath": "derived.architectureFunctionBridge.commercialReality[0]",
+        "sourceContainer": "architectureFunctionBridge.commercialReality",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "具有美术馆气质的专业医美商业接待主厅：完整前台、成组候客与主厅边缘一处半开放皮肤/美学面询工作位共同组织开阔空间",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "一组与侧向建筑连接、局部向上部延伸的珠光半透明弧形界面参与候客与面询边界",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "完整主曲面、少量辅助薄层和结构留白形成可辨艺术语言",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "暖白米白基底、局部浅木与柔和暖日光保持真实材料层次",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "具有美术馆气质的专业医美商业接待主厅：完整前台、成组候客与主厅边缘一处半开放皮肤/美学面询工作位共同组织开阔空间；一组与侧向建筑连接、局部向上部延伸的珠光半透明弧形界面参与候客与面询边界，完整主曲面、少量辅助薄层和结构留白形成可辨艺术语言；暖白米白基底、局部浅木与柔和暖日光保持真实材料层次。",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "由于大量使用丝绸、手提包、胸针、雨伞等时尚单品作为样机展示，品牌容易被误读为高端时尚品牌或珠宝品牌，而非医疗美容服务机构。",
+        "sourcePath": "derived.architectureFunctionBridge.conceptDriftGuards[0]",
+        "sourceContainer": "architectureFunctionBridge.conceptDriftGuards",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "由于大量使用丝绸、手提包、胸针、雨伞等时尚单品作为样机展示",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "品牌容易被误读为高端时尚品牌或珠宝品牌",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "而非医疗美容服务机构",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [],
+        "currentShotText": "由于大量使用丝绸、手提包、胸针、雨伞等时尚单品作为样机展示，品牌容易被误读为高端时尚品牌或珠宝品牌，而非医疗美容服务机构。",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "巨型羽毛、花瓣、涡旋或密集重复薄片从近景墙面横扫天花",
+        "sourcePath": "derived.architectureFunctionBridge.conceptDriftGuards[1]",
+        "sourceContainer": "architectureFunctionBridge.conceptDriftGuards",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "巨型羽毛、花瓣、涡旋或密集重复薄片从近景墙面横扫天花",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [],
+        "currentShotText": "巨型羽毛、花瓣、涡旋或密集重复薄片从近景墙面横扫天花",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "包围全画面的旋转装置与双侧近景巨片夹击",
+        "sourcePath": "derived.architectureFunctionBridge.conceptDriftGuards[2]",
+        "sourceContainer": "architectureFunctionBridge.conceptDriftGuards",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "包围全画面的旋转装置与双侧近景巨片夹击",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [],
+        "currentShotText": "包围全画面的旋转装置与双侧近景巨片夹击",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "以中央独立雕塑或抢眼悬吊艺术灯替代建筑组织",
+        "sourcePath": "derived.architectureFunctionBridge.conceptDriftGuards[3]",
+        "sourceContainer": "architectureFunctionBridge.conceptDriftGuards",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "以中央独立雕塑或抢眼悬吊艺术灯替代建筑组织",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [],
+        "currentShotText": "以中央独立雕塑或抢眼悬吊艺术灯替代建筑组织",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "艺术馆中孤立摆放一张前台、空泛无功能展示大厅或角落零散小椅子",
+        "sourcePath": "derived.architectureFunctionBridge.conceptDriftGuards[4]",
+        "sourceContainer": "architectureFunctionBridge.conceptDriftGuards",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "艺术馆中孤立摆放一张前台、空泛无功能展示大厅或角落零散小椅子",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "艺术馆中孤立摆放一张前台、空泛无功能展示大厅或角落零散小椅子",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "前台服务面被遮挡、候客面积被装饰挤压、完全隐藏后续服务分区",
+        "sourcePath": "derived.architectureFunctionBridge.conceptDriftGuards[5]",
+        "sourceContainer": "architectureFunctionBridge.conceptDriftGuards",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "前台服务面被遮挡、候客面积被装饰挤压、完全隐藏后续服务分区",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "前台服务面被遮挡、候客面积被装饰挤压、完全隐藏后续服务分区",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "密集诊室门排、狭长中轴走廊与极端超广角畸变",
+        "sourcePath": "derived.architectureFunctionBridge.conceptDriftGuards[6]",
+        "sourceContainer": "architectureFunctionBridge.conceptDriftGuards",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "密集诊室门排、狭长中轴走廊与极端超广角畸变",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [],
+        "currentShotText": "密集诊室门排、狭长中轴走廊与极端超广角畸变",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "冷白偏蓝、全场过曝、紫色家具与紫色舞台灯带",
+        "sourcePath": "derived.architectureFunctionBridge.conceptDriftGuards[7]",
+        "sourceContainer": "architectureFunctionBridge.conceptDriftGuards",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "冷白偏蓝、全场过曝、紫色家具与紫色舞台灯带",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [],
+        "currentShotText": "冷白偏蓝、全场过曝、紫色家具与紫色舞台灯带",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "重复波浪灯槽、厚重不透明花瓣团块与无依据的施工尺寸",
+        "sourcePath": "derived.architectureFunctionBridge.conceptDriftGuards[8]",
+        "sourceContainer": "architectureFunctionBridge.conceptDriftGuards",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "重复波浪灯槽、厚重不透明花瓣团块与无依据的施工尺寸",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [],
+        "currentShotText": "重复波浪灯槽、厚重不透明花瓣团块与无依据的施工尺寸",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "接待区：珠光建筑曲面以连接与透景转折组织空间节奏；完整主曲面与少量辅助薄层保留薄边、留缝、真实层间深度，不退化墙饰。",
+        "sourcePath": "derived.brandSanitization.lines[0]",
+        "sourceContainer": "brandSanitization.lines",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "接待区：珠光建筑曲面以连接与透景转折组织空间节奏",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "完整主曲面与少量辅助薄层保留薄边、留缝、真实层间深度",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "不退化墙饰",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "接待区：珠光建筑曲面以连接与透景转折组织空间节奏；完整主曲面与少量辅助薄层保留薄边、留缝、真实层间深度，不退化墙饰。",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      }
+    ],
+    "crossSceneConstraints": [
+      {
+        "text": "a short translucent advisory boundary protects privacy while the opposing seats and shared screen remain readable",
+        "sceneScope": "cross_scene_constraint",
+        "visibilityAuthority": "current_boundary_only",
+        "sourcePath": "derived.architectureFunctionBridge.operationConstraints[0]",
+        "sourceText": "Reception: each node retains usable space and clear circulation; a short translucent advisory boundary protects privacy while the opposing seats and shared screen remain readable; an offset return only beyond this node screens private access without blocking arrival; treatment activity and care beds and private interiors stay off frame.",
+        "evidenceClass": "system_inference"
+      },
+      {
+        "text": "an offset return only beyond this node screens private access without blocking arrival",
+        "sceneScope": "cross_scene_constraint",
+        "visibilityAuthority": "current_boundary_only",
+        "sourcePath": "derived.architectureFunctionBridge.operationConstraints[0]",
+        "sourceText": "Reception: each node retains usable space and clear circulation; a short translucent advisory boundary protects privacy while the opposing seats and shared screen remain readable; an offset return only beyond this node screens private access without blocking arrival; treatment activity and care beds and private interiors stay off frame.",
+        "evidenceClass": "system_inference"
+      },
+      {
+        "text": "treatment activity and care beds and private interiors stay off frame",
+        "sceneScope": "cross_scene_constraint",
+        "visibilityAuthority": "current_boundary_only",
+        "sourcePath": "derived.architectureFunctionBridge.operationConstraints[0]",
+        "sourceText": "Reception: each node retains usable space and clear circulation; a short translucent advisory boundary protects privacy while the opposing seats and shared screen remain readable; an offset return only beyond this node screens private access without blocking arrival; treatment activity and care beds and private interiors stay off frame.",
+        "evidenceClass": "system_inference"
+      }
+    ],
+    "canonicalOwners": [
+      {
+        "text": "接待区：珠光建筑曲面以连接与透景转折组织空间节奏；完整主曲面与少量辅助薄层保留薄边、留缝、真实层间深度，不退化墙饰。",
+        "sourcePath": "mediaTranslations.spatial.signatureSpatialMechanism[0]",
+        "blockId": "architecture_language"
+      },
+      {
+        "text": "接待主厅：入口框景退让，左前景开放地面与视廊直接展开横向主厅；建筑界面提供纵深而不以巨墙压缩厅宽，中央及前台顶面完整。",
+        "sourcePath": "mediaTranslations.spatial.structureLanguage[0]",
+        "blockId": "architecture_language"
+      },
+      {
+        "text": "接待主厅：单套珠光曲面连续连接侧向建筑与局部上部边界，以通透转折界定候客至面询的递进，局部收束并让出主通行。",
+        "sourcePath": "mediaTranslations.spatial.structureLanguage[1]",
+        "blockId": "architecture_language"
+      },
+      {
+        "text": "A complete reception counter recognizable from the oblique entrance as the primary service anchor; service front, staff worktop, small office equipment and visitor approach are readable at credible scale",
+        "sourcePath": "mediaTranslations.spatial.mustBeVisible[0]",
+        "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+        "blockId": "composition"
+      },
+      {
+        "text": "One complete sofa and armchair waiting group with small tables, usable seating and conversation space, warm neutral upholstery and light timber details, with circulation clear around it",
+        "sourcePath": "mediaTranslations.spatial.mustBeVisible[1]",
+        "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+        "blockId": "composition"
+      },
+      {
+        "text": "One edge advisory workstation: a freestanding professional worktop separates consultant equipment-operation side and guest side, one accessible chair on each side, seat fronts facing each other across the table; a turned display permits shared viewing, even with empty seats. The light screen shows non-identifying skin surface texture, facial contour zones or aesthetic proportion diagrams; no skull, brain, organs, cross-sections, CT/MRI, text, numbers, diagnoses, personal images or outcome promises",
+        "sourcePath": "mediaTranslations.spatial.mustBeVisible[2]",
+        "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+        "blockId": "composition"
+      },
+      {
+        "text": "Open left foreground: no blocking wall, circular glass room, cylindrical display or ring pendant; no facial-analysis advertising screen at reception",
+        "sourcePath": "mediaTranslations.spatial.mustBeVisible[3]",
+        "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+        "blockId": "composition"
+      },
+      {
+        "text": "One connected pearlescent system with a complete main curve, few thin layers, fine edges and see-through depth; no flat wall applique, ordinary glass screen, shell wall, cross-hall ribbon or giant enclosing arch",
+        "sourcePath": "mediaTranslations.spatial.mustBeVisible[4]",
+        "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+        "blockId": "composition"
+      },
+      {
+        "text": "One small flat clean unlettered identity surface on an architectural interface, outside the main circulation and unobstructed; small operational carriers remain subordinate to the complete functional areas",
+        "sourcePath": "mediaTranslations.spatial.mustBeVisible[5]",
+        "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+        "blockId": "composition"
+      }
+    ]
+  },
+  "userConfirmedVisualDecision": {
+    "id": "4f77ba8c-4305-483c-8f07-8285fea614bc",
+    "sourceDocument": "2026-10-20 用户授权P7a：以021a6b6和P7确认方向为基线，仅压缩六字段重复表达，保留五节点服务顺序、入口开放视廊、完整前台候客、边缘独立面询隔台相向、私密入口及珠光建筑职责。色彩材料光学自然光与商业功能冻结；新隔离副本正式网页保存确认、编译及standard零参考离线预演。真实模型/Qwen/收费调用0，无生产修改、Golden更新、重试、合并发布；完成后停止待审核。",
+    "sourceFingerprint": "d0b709ca3db95b1d5787be1fa5e9bcd4a94f0300a3e6017119215acd27b54485"
+  },
+  "spaceGeneration": {
+    "compilerId": "phase9b-quality-compiler",
+    "compilerVersion": "1.1.0",
+    "sourceAdapterVersion": "1.4.0",
+    "semanticSeparationVersion": "1.0.0",
+    "architectureAnchorIds": [],
+    "generationBasis": "standard",
+    "referenceMode": "text_only",
+    "referenceIds": [],
+    "referenceSources": [],
+    "referenceBoundary": {
+      "applied": false,
+      "version": null,
+      "providerStrengthControl": "unsupported",
+      "promptCharacters": 0
+    },
+    "targetSceneAuthority": {
+      "targetScene": "reception",
+      "targetProgramId": "reception",
+      "functionalBlockSource": "source_shot_scope",
+      "architectureBridgeSource": "source_shot_scope",
+      "operationConstraintsSource": "source_shot_scope",
+      "viewStrategySource": "target_scene_default",
+      "viewStrategy": "reception_arrival_view",
+      "shotSource": "target_scene_default",
+      "gate": "pass",
+      "gateVersion": "space-target-scene-authority@1.1.0",
+      "authorityGate": {
+        "status": "pass",
+        "checkedBlocks": [
+          "functional_requirement",
+          "architecture_function_bridge",
+          "operation_constraints",
+          "must_be_visible",
+          "lighting",
+          "composition",
+          "brand_role_manifestation"
+        ]
+      }
+    },
+    "promptCharacters": 10451,
+    "providerLimit": 12000,
+    "qualityBudgetExceeded": true,
+    "architectureCharacters": 3592,
+    "brandCharacters": 402,
+    "negativeCharacters": 510,
+    "promptHash": "031d2d20b203d73b5a11b77c27792bde9b02a15cc912c8e0c5f2d9f8dd886ab9",
+    "provider": "seedream",
+    "model": "doubao-seedream-5-0-pro-260628",
+    "canonicalCompilerMode": "r8_6_golden",
+    "blockIds": [
+      "task",
+      "spatial_intent",
+      "architecture_language",
+      "architecture_context",
+      "architecture_function_bridge",
+      "architectural_concept",
+      "architecture_dna",
+      "brand_translation",
+      "functional_requirement",
+      "color",
+      "material",
+      "lighting",
+      "composition",
+      "rendering",
+      "negative_constraints"
+    ],
+    "spatialSemanticReport": {
+      "schemaVersion": "1.0",
+      "version": "space-spatial-semantic-gate@1.1.0",
+      "status": "pass",
+      "findings": []
+    },
+    "routeIntegrity": {
+      "schemaVersion": "1.0",
+      "version": "space-route-integrity-gate@1.0.0",
+      "status": "pass",
+      "canonicalCompilerMode": "r8_6_golden",
+      "compilerMatched": true,
+      "requiredBlocksPresent": true,
+      "blockOrderMatched": true,
+      "promptBudgetMatched": true,
+      "referencePolicyMatched": true,
+      "spatialSemanticGatePassed": true,
+      "aspectRatioMatched": true
+    }
+  }
+}

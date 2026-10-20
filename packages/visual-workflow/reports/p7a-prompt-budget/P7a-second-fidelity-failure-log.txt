@@ -1,0 +1,18 @@
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"ecfcdf23-a81d-4cd2-8250-74ecd221b7fb","taskId":"vnext-task-a987452a-ea58-474a-8558-3c9f2e0258ba","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":10449,"compileDurationMs":55.674}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Formal Prompt lost functionalRelationships: treatment activity, care beds and private interiors stay off frame
+    at check (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/design-direction-editor-evidence.mjs:9:30)
+    at assertEditorSemanticFidelity (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/design-direction-editor-evidence.mjs:28:5)
+    at file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/.codex-smoke/jiuzhou-p7a/preview.mjs:40:1 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.20.0

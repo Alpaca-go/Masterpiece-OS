@@ -1,0 +1,969 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+  "projectFacts": {
+    "brandName": {
+      "value": "九州美学",
+      "source": "project_record",
+      "evidenceRefs": [
+        "project_record:brandName"
+      ],
+      "confidence": 0.8,
+      "status": "confirmed"
+    },
+    "industry": {
+      "value": "医疗美容/高端美学服务",
+      "source": "visual_asset",
+      "evidenceRefs": [
+        "cff2880c-0596-4b6e-b2b8-1e0397b53d1b",
+        "54f7d566-21a8-45c5-9329-a450ef89f17b"
+      ],
+      "confidence": 0.9,
+      "status": "confirmed"
+    },
+    "brandRole": {
+      "value": "提供科学与美学结合的高端服务，强调精致工艺与信任",
+      "source": "visual_asset",
+      "evidenceRefs": [
+        "cff2880c-0596-4b6e-b2b8-1e0397b53d1b",
+        "54f7d566-21a8-45c5-9329-a450ef89f17b",
+        "3c4dbaba-506c-4bed-9871-417a4807a241"
+      ],
+      "confidence": 0.9,
+      "status": "confirmed"
+    }
+  },
+  "lockedAssets": [
+    {
+      "assetId": "brand-name-32fa23e11f42",
+      "type": "brand_name",
+      "value": "九州美学",
+      "lockSource": "source_fact",
+      "evidenceRefs": [
+        "project_record:brandName"
+      ]
+    },
+    {
+      "assetId": "fe40b0b3-22ce-4616-ae5a-8c2370a0791c",
+      "type": "logo",
+      "value": "九州美学主Logo",
+      "lockSource": "source_fact",
+      "evidenceRefs": [
+        "fe40b0b3-22ce-4616-ae5a-8c2370a0791c",
+        "28e21bbc-d672-4ff6-8b87-34c162b5afed",
+        "e3172c14-c857-4017-91c9-f502edd62310",
+        "5f45f71a-818a-4643-b9cd-e18c3db032a2"
+      ]
+    },
+    {
+      "assetId": "user-lock-1",
+      "type": "other",
+      "value": "原始 Logo Locked：不得修改、重绘、拆解、替换、仿造或改变内部字形。",
+      "lockSource": "user_confirmed",
+      "evidenceRefs": [
+        "project_record:lockedFacts[0]"
+      ]
+    },
+    {
+      "assetId": "user-lock-2",
+      "type": "other",
+      "value": "输出语言固定为简体中文。",
+      "lockSource": "user_confirmed",
+      "evidenceRefs": [
+        "project_record:lockedFacts[1]"
+      ]
+    }
+  ],
+  "assetInventory": {
+    "logoAssets": [
+      {
+        "assetId": "fe40b0b3-22ce-4616-ae5a-8c2370a0791c",
+        "name": "九州美学主Logo",
+        "kind": "logo",
+        "occurrenceRefs": [
+          "fe40b0b3-22ce-4616-ae5a-8c2370a0791c",
+          "28e21bbc-d672-4ff6-8b87-34c162b5afed",
+          "e3172c14-c857-4017-91c9-f502edd62310",
+          "5f45f71a-818a-4643-b9cd-e18c3db032a2"
+        ],
+        "frequency": 10,
+        "visualFeatures": [
+          "紫色渐变",
+          "凤凰/孔雀羽毛形态",
+          "流线型",
+          "S形构图"
+        ],
+        "possibleBrandMeaning": [
+          "美丽",
+          "蜕变",
+          "高贵"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 1
+      }
+    ],
+    "colorAssets": [
+      {
+        "assetId": "501f7c5c-55ce-4580-95e3-b7e0840bacd9",
+        "name": "品牌标准色",
+        "kind": "color",
+        "occurrenceRefs": [
+          "501f7c5c-55ce-4580-95e3-b7e0840bacd9",
+          "fe40b0b3-22ce-4616-ae5a-8c2370a0791c",
+          "cd7a0004-bbc6-4347-9d3a-ecd8a1b5d06f"
+        ],
+        "frequency": 8,
+        "visualFeatures": [
+          "Peacock Violet #5837BD",
+          "Sub Color #A971E7",
+          "Black #000000",
+          "White #FFFFFF"
+        ],
+        "possibleBrandMeaning": [
+          "神秘",
+          "高贵",
+          "专业"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 1
+      }
+    ],
+    "typographyAssets": [
+      {
+        "assetId": "2e36e497-8f1f-40fa-8cfc-12416209f75a",
+        "name": "九州美学定制字体",
+        "kind": "typography",
+        "occurrenceRefs": [
+          "2e36e497-8f1f-40fa-8cfc-12416209f75a",
+          "cff2880c-0596-4b6e-b2b8-1e0397b53d1b"
+        ],
+        "frequency": 5,
+        "visualFeatures": [
+          "笔锋软化",
+          "宋体变体",
+          "优雅"
+        ],
+        "possibleBrandMeaning": [
+          "精致",
+          "柔和"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 1
+      }
+    ],
+    "graphicMotifs": [
+      {
+        "assetId": "cd7a0004-bbc6-4347-9d3a-ecd8a1b5d06f",
+        "name": "羽毛/花瓣叠加纹理",
+        "kind": "graphic_motif",
+        "occurrenceRefs": [
+          "cd7a0004-bbc6-4347-9d3a-ecd8a1b5d06f",
+          "3a211b67-8d69-43c9-93df-93342d3d5590",
+          "3c4dbaba-506c-4bed-9871-417a4807a241"
+        ],
+        "frequency": 4,
+        "visualFeatures": [
+          "放射状",
+          "层叠",
+          "半透明",
+          "紫色渐变"
+        ],
+        "possibleBrandMeaning": [
+          "繁复中的秩序",
+          "生命力"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 0.9
+      }
+    ],
+    "imageryAssets": [
+      {
+        "assetId": "fec0db86-029d-4be9-9641-c2041f754033",
+        "name": "孔雀/羽毛摄影",
+        "kind": "imagery",
+        "occurrenceRefs": [
+          "fec0db86-029d-4be9-9641-c2041f754033",
+          "501f7c5c-55ce-4580-95e3-b7e0840bacd9",
+          "54f7d566-21a8-45c5-9329-a450ef89f17b"
+        ],
+        "frequency": 3,
+        "visualFeatures": [
+          "写实",
+          "紫色调",
+          "细节纹理"
+        ],
+        "possibleBrandMeaning": [
+          "自然之美",
+          "素材来源"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "reference_case",
+        "confidence": 0.8
+      }
+    ],
+    "layoutPatterns": [
+      {
+        "assetId": "28e21bbc-d672-4ff6-8b87-34c162b5afed",
+        "name": "Logo网格规范",
+        "kind": "layout_pattern",
+        "occurrenceRefs": [
+          "28e21bbc-d672-4ff6-8b87-34c162b5afed",
+          "cff2880c-0596-4b6e-b2b8-1e0397b53d1b"
+        ],
+        "frequency": 2,
+        "visualFeatures": [
+          "几何辅助线",
+          "比例规范"
+        ],
+        "possibleBrandMeaning": [
+          "严谨",
+          "标准化"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 1
+      }
+    ],
+    "materialCues": [
+      {
+        "assetId": "501f7c5c-55ce-4580-95e3-b7e0840bacd9",
+        "name": "大理石纹理",
+        "kind": "material_cue",
+        "occurrenceRefs": [
+          "501f7c5c-55ce-4580-95e3-b7e0840bacd9"
+        ],
+        "frequency": 1,
+        "visualFeatures": [
+          "白色",
+          "灰色纹路",
+          "光滑"
+        ],
+        "possibleBrandMeaning": [
+          "高端",
+          "纯净"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "reference_case",
+        "confidence": 0.7
+      },
+      {
+        "assetId": "0fc66a1b-21d4-4051-b07d-daf78753545c",
+        "name": "丝绸/缎带材质",
+        "kind": "material_cue",
+        "occurrenceRefs": [
+          "0fc66a1b-21d4-4051-b07d-daf78753545c",
+          "5aa70ece-6b70-4024-a067-f1b4a5594ad5"
+        ],
+        "frequency": 2,
+        "visualFeatures": [
+          "紫色",
+          "光泽感",
+          "柔软"
+        ],
+        "possibleBrandMeaning": [
+          "温柔",
+          "奢华"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "mockup_environment",
+        "confidence": 0.8
+      }
+    ],
+    "packagingStructures": [
+      {
+        "assetId": "0fc66a1b-21d4-4051-b07d-daf78753545c",
+        "name": "礼盒与手提袋",
+        "kind": "packaging_structure",
+        "occurrenceRefs": [
+          "0fc66a1b-21d4-4051-b07d-daf78753545c",
+          "5d2c1eef-872b-49c7-b98a-a7fc747b4e96"
+        ],
+        "frequency": 2,
+        "visualFeatures": [
+          "白色/紫色",
+          "丝带提手",
+          "简约"
+        ],
+        "possibleBrandMeaning": [
+          "礼品感",
+          "尊贵体验"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 0.9
+      }
+    ],
+    "spatialCues": [
+      {
+        "assetId": "1b2ed1f8-4113-460e-9494-e164164a94f1",
+        "name": "空间导视/墙面",
+        "kind": "spatial_cue",
+        "occurrenceRefs": [
+          "1b2ed1f8-4113-460e-9494-e164164a94f1",
+          "70d6818c-8686-4d0a-9a52-5a75f6b038f0",
+          "a0b76585-9a41-4c38-8cd9-95df7a6f5840"
+        ],
+        "frequency": 3,
+        "visualFeatures": [
+          "灰色石材",
+          "发光字",
+          "金属字"
+        ],
+        "possibleBrandMeaning": [
+          "现代",
+          "专业"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "mockup_environment",
+        "confidence": 0.8
+      }
+    ],
+    "copyAssets": [
+      {
+        "assetId": "fec0db86-029d-4be9-9641-c2041f754033",
+        "name": "品牌Slogan",
+        "kind": "copy",
+        "occurrenceRefs": [
+          "fec0db86-029d-4be9-9641-c2041f754033",
+          "fe40b0b3-22ce-4616-ae5a-8c2370a0791c",
+          "cff2880c-0596-4b6e-b2b8-1e0397b53d1b"
+        ],
+        "frequency": 5,
+        "visualFeatures": [
+          "精琢每一片翎羽",
+          "Exquisite craftsmanship for every feather"
+        ],
+        "possibleBrandMeaning": [
+          "细节",
+          "匠心"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 1
+      }
+    ]
+  },
+  "diagnosis": {
+    "valuableAssets": [
+      {
+        "target": "Logo图形",
+        "observation": "紫色渐变凤凰/孔雀羽毛图形具有极高的识别度，形态优雅。",
+        "whyItMatters": "这是品牌的核心视觉资产，承载了“美”和“蜕变”的寓意。",
+        "evidenceRefs": [
+          "fe40b0b3-22ce-4616-ae5a-8c2370a0791c",
+          "28e21bbc-d672-4ff6-8b87-34c162b5afed"
+        ],
+        "confidence": 1
+      },
+      {
+        "target": "品牌色彩",
+        "observation": "Peacock Violet (#5837BD) 及其辅助色建立了强烈的品牌色调。",
+        "whyItMatters": "紫色在医美/美学行业代表高贵、神秘和专业，区别于常见的粉色或蓝色。",
+        "evidenceRefs": [
+          "501f7c5c-55ce-4580-95e3-b7e0840bacd9"
+        ],
+        "confidence": 1
+      }
+    ],
+    "overusedExpressions": [
+      {
+        "target": "写实孔雀图像",
+        "observation": "直接使用写实孔雀照片（如fec0db86）可能显得陈旧或过于具象。",
+        "whyItMatters": "可能降低品牌的现代感和抽象美学层次，显得像传统禽类养殖或低端装饰。",
+        "evidenceRefs": [
+          "fec0db86-029d-4be9-9641-c2041f754033",
+          "cbd0c360-3f94-46bd-9cc8-325b98bbd0e2"
+        ],
+        "confidence": 0.8
+      }
+    ],
+    "outdatedExpressions": [],
+    "weakSystemAreas": [
+      {
+        "target": "辅助图形应用",
+        "observation": "辅助图形（如cd7a0004）虽然美观，但在小尺寸或单一材质上的应用规范不够明确。",
+        "whyItMatters": "可能导致在不同媒介上应用时效果不一致，削弱品牌统一性。",
+        "evidenceRefs": [
+          "cd7a0004-bbc6-4347-9d3a-ecd8a1b5d06f",
+          "3a211b67-8d69-43c9-93df-93342d3d5590"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "categoryCliches": [
+      {
+        "target": "医美行业常见视觉",
+        "observation": "行业常见使用粉色、女性剪影、针头、细胞等元素。",
+        "whyItMatters": "九州美学使用紫色和孔雀/凤凰意象，试图跳出 cliches，建立独特的高端美学形象。",
+        "evidenceRefs": [
+          "54f7d566-21a8-45c5-9329-a450ef89f17b",
+          "3c4dbaba-506c-4bed-9871-417a4807a241"
+        ],
+        "confidence": 0.8
+      }
+    ],
+    "brandMisreadRisks": [
+      {
+        "target": "品牌行业属性",
+        "observation": "附件中出现了手提包(38182230)、胸针(ffdd4032)、雨伞(99240a14)、晚宴包(f34365dc)等，这些通常与时尚奢侈品关联。",
+        "whyItMatters": "如果受众误以为是卖包或衣服的，将导致目标客户（寻求医美服务者）流失，或吸引错误的客户群体。",
+        "evidenceRefs": [
+          "38182230-dce3-418c-a37a-005071460d28",
+          "ffdd4032-7c0d-417c-aa6e-c92057446012",
+          "99240a14-0a1d-4beb-9076-fedff2cb4e5b",
+          "f34365dc-79f7-446d-8919-e33398234a72"
+        ],
+        "confidence": 0.9,
+        "code": "MISREAD_LUXURY_FASHION",
+        "description": "由于大量使用丝绸、手提包、胸针、雨伞等时尚单品作为样机展示，品牌容易被误读为高端时尚品牌或珠宝品牌，而非医疗美容服务机构。",
+        "appliesTo": {
+          "taskFamilies": [
+            "spatial_design",
+            "packaging_design",
+            "merchandise_design"
+          ],
+          "subtypes": [
+            "retail_space",
+            "product_packaging",
+            "promotional_items"
+          ],
+          "scenes": [
+            "brand_presentation",
+            "customer_touchpoints"
+          ]
+        },
+        "status": "confirmed"
+      }
+    ],
+    "crossMediaGaps": [
+      {
+        "target": "平面到空间的转换",
+        "observation": "平面上的羽毛纹理和渐变效果（cd7a0004）在空间材质（如石材、金属）上的还原度需要明确规范。",
+        "whyItMatters": "确保品牌体验在物理空间中的一致性，避免廉价感。",
+        "evidenceRefs": [
+          "cd7a0004-bbc6-4347-9d3a-ecd8a1b5d06f",
+          "1b2ed1f8-4113-460e-9494-e164164a94f1"
+        ],
+        "confidence": 0.8
+      }
+    ]
+  },
+  "creativeDecision": {
+    "brandRoleStatement": "具有美术馆气质的专业医美商业接待主厅：完整前台、成组候客与主厅边缘一处半开放皮肤/美学面询工作位共同组织开阔空间；一组与侧向建筑连接、局部向上部延伸的珠光半透明弧形界面参与候客与面询边界，完整主曲面、少量辅助薄层和结构留白形成可辨艺术语言；暖白米白基底、局部浅木与柔和暖日光保持真实材料层次。",
+    "upgradeFrom": [
+      "写实孔雀图像",
+      "传统医美粉色/蓝色调",
+      "具象的医疗元素"
+    ],
+    "preserveCore": [
+      "紫色主色调 (Peacock Violet)",
+      "凤凰/孔雀羽毛的流线型Logo",
+      "“精琢每一片翎羽”的匠心精神",
+      "定制字体笔锋软化特征"
+    ],
+    "upgradeTo": [
+      "抽象化的羽毛/花瓣纹理",
+      "光影互动的空间氛围",
+      "具有触感的材质表达（丝绸、金属、石材）",
+      "强调“科学与美学”融合的现代感"
+    ],
+    "uniqueUpgradeThesis": "具有美术馆气质的专业医美商业接待主厅：完整前台、成组候客与主厅边缘一处半开放皮肤/美学面询工作位共同组织开阔空间；一组与侧向建筑连接、局部向上部延伸的珠光半透明弧形界面参与候客与面询边界，完整主曲面、少量辅助薄层和结构留白形成可辨艺术语言；暖白米白基底、局部浅木与柔和暖日光保持真实材料层次。",
+    "targetWorldview": [
+      "美是科学精确与艺术感性的结合",
+      "细节决定品质",
+      "蜕变是优雅的过程"
+    ],
+    "toneBoundaries": [
+      {
+        "target": "具有美术馆气质的专业医美商业接待主厅：完整前台、成组候客与主厅边缘一处半开放皮肤/美学面询工作位共同组织开阔空间；一组与侧向建筑连接、局部向上部延伸的珠光半透明弧形界面参与候客与面询边界，完整主曲面、少量辅助薄层和结构留白形成可辨艺术语言；暖白米白基底、局部浅木与柔和暖日光保持真实材料层次。",
+        "avoid": [
+          "巨型羽毛、花瓣、涡旋或密集重复薄片从近景墙面横扫天花",
+          "包围全画面的旋转装置与双侧近景巨片夹击",
+          "以中央独立雕塑或抢眼悬吊艺术灯替代建筑组织",
+          "艺术馆中孤立摆放一张前台、空泛无功能展示大厅或角落零散小椅子",
+          "前台服务面被遮挡、候客面积被装饰挤压、完全隐藏后续服务分区",
+          "密集诊室门排、狭长中轴走廊与极端超广角畸变",
+          "冷白偏蓝、全场过曝、紫色家具与紫色舞台灯带",
+          "重复波浪灯槽、厚重不透明花瓣团块与无依据的施工尺寸"
+        ]
+      }
+    ],
+    "strategicNegatives": [
+      "巨型羽毛、花瓣、涡旋或密集重复薄片从近景墙面横扫天花",
+      "包围全画面的旋转装置与双侧近景巨片夹击",
+      "以中央独立雕塑或抢眼悬吊艺术灯替代建筑组织",
+      "艺术馆中孤立摆放一张前台、空泛无功能展示大厅或角落零散小椅子",
+      "前台服务面被遮挡、候客面积被装饰挤压、完全隐藏后续服务分区",
+      "密集诊室门排、狭长中轴走廊与极端超广角畸变",
+      "冷白偏蓝、全场过曝、紫色家具与紫色舞台灯带",
+      "重复波浪灯槽、厚重不透明花瓣团块与无依据的施工尺寸"
+    ]
+  },
+  "abstractions": [],
+  "mediaTranslations": {
+    "sharedBrandCore": [
+      "Peacock Violet (#5837BD) 为主色",
+      "流线型羽毛/凤凰意象",
+      "“精琢每一片翎羽”的匠心",
+      "科学与美学的融合"
+    ],
+    "spatial": {
+      "spatialConcept": "具有美术馆气质的专业医美商业接待主厅：完整前台、成组候客与主厅边缘一处半开放皮肤/美学面询工作位共同组织开阔空间；一组与侧向建筑连接、局部向上部延伸的珠光半透明弧形界面参与候客与面询边界，完整主曲面、少量辅助薄层和结构留白形成可辨艺术语言；暖白米白基底、局部浅木与柔和暖日光保持真实材料层次。",
+      "structureLanguage": [
+        "接待主厅：入口框景退让，左前景开放地面与视廊直接展开横向主厅；建筑界面提供纵深而不以巨墙压缩厅宽，中央及前台顶面完整。",
+        "接待主厅：单套珠光曲面连续连接侧向建筑与局部上部边界，以通透转折界定候客至面询的递进，局部收束并让出主通行。"
+      ],
+      "materialLanguage": [
+        {
+          "material": "建筑一体化珠光半透明曲面系统",
+          "behavior": [
+            "连续主曲面与少量错层辅助薄层具有精致薄边、可辨层间深度和透景留白",
+            "自然光穿透时呈轻微珍珠母贝内反射，弱紫仅在局部材料内层出现；曲面后方面询设备与服务关系仍可辨"
+          ],
+          "brandRole": "从侧向建筑界面局部连接上部边界，沿候客及面询边缘有起止地展开，建立品牌艺术特征并参与分隔，让出完整前台、通行面和大部分顶面",
+          "forbidden": [
+            "密集羽片、花瓣团块与不透明艺术墙",
+            "整体紫色染色、自发光浮雕和独立巨大雕塑"
+          ]
+        },
+        {
+          "material": "暖白米白矿物基底",
+          "behavior": [
+            "温暖柔和的漫反射，保留真实表面质感和体积",
+            "与木质、软包及半透明界面形成清楚但低对比的层次"
+          ],
+          "brandRole": "建立完整实体建筑、安静顶面与可读入口框景",
+          "forbidden": [
+            "冷白发蓝的无差别表面",
+            "高对比镜面拼贴和过曝洗白"
+          ]
+        },
+        {
+          "material": "浅木质与暖中性软包",
+          "behavior": [
+            "浅木质保留自然纹理与温暖反射，软包呈柔和细腻触感",
+            "材料变化服务于前台、候客和半开放服务区的使用层次"
+          ],
+          "brandRole": "为接待工作、就坐交流与局部服务界面提供自然温暖的商业功能材质",
+          "forbidden": [
+            "紫色软包与大面积高饱和饰面",
+            "以装饰家具堆积代替清楚的功能分区"
+          ]
+        }
+      ],
+      "lightingLanguage": {
+        "source": [
+          "温暖、柔和、均匀的漫射自然日光",
+          "少量克制的暖调建筑间接光"
+        ],
+        "contrast": "暖白建筑、浅木质和中性软包具有可辨的温和明暗层次，半透明界面保留柔和透射与边缘细节",
+        "interactionWithMaterials": [
+          "漫射自然光温暖地照亮前台、候客与半开放服务分区，家具和地面呈宽缓柔和阴影",
+          "浅木质保留自然纹理与暖色反射，暖白墙面、软包和透光界面彼此可区分",
+          "局部珠光随自然光产生很弱的内层虹彩，适度曝光保持表面体积、透景和薄边细节"
+        ],
+        "forbidden": [
+          "冷白偏蓝的整体照明与玻璃发灰",
+          "过曝抹平浅色材料层次",
+          "紫色灯带、舞台照明与高饱和发光装置",
+          "强直射光、硬阴影和抢夺空间焦点的独立雕塑灯具"
+        ]
+      },
+      "colorBehavior": {
+        "primary": [
+          {
+            "name": "暖白与米白",
+            "role": "温暖柔和的建筑基底",
+            "surfaceApplicability": "实体墙、地面与安静顶面；保留材料明暗差异，不以纯白过曝抹平表面",
+            "spatialUsage": "dominant_field"
+          }
+        ],
+        "secondary": [
+          {
+            "name": "浅木色与暖中性色",
+            "role": "建立真实商业家具与局部墙面的温暖层次",
+            "surfaceApplicability": "前台局部饰面、候客家具木质细节与中性软包、局部服务区墙面；不覆盖全部建筑界面",
+            "spatialUsage": "secondary_surface"
+          }
+        ],
+        "accent": [
+          {
+            "name": "品牌紫",
+            "role": "非常有限的珠光内反射，正式品牌内容以后期真实素材体现",
+            "surfaceApplicability": "仅少量半透明界面的局部内层弱虹彩；不用于家具、花瓶、窗帘或发光灯带",
+            "spatialUsage": "local_accent"
+          }
+        ],
+        "forbidden": [
+          "紫色扩散到家具、软包、窗帘或大面积建筑表面",
+          "冷白偏蓝的单一色场与浅色材料层次消失"
+        ]
+      },
+      "sceneProgram": [
+        "入口到达与清楚的分流区",
+        "正式接待与员工工作区",
+        "成组候客与短时交流区",
+        "主厅边缘一处半开放皮肤/美学专业面询工作位",
+        "通向私密服务的受屏蔽过渡边界"
+      ],
+      "functionalNetwork": [
+        "Reception: open arrival leads directly to the complete reception counter, linked laterally to grouped waiting in the same hall; both lead to one semi-open skin/facial aesthetics advisory node at the hall edge, then screened private service access."
+      ],
+      "functionalRelationships": [
+        "Reception: each node retains usable space and clear circulation; a short translucent advisory boundary protects privacy while the opposing seats and shared screen remain readable; an offset return only beyond this node screens private access without blocking arrival; treatment activity and care beds and private interiors stay off frame."
+      ],
+      "mustBeVisible": [
+        "A complete reception counter recognizable from the oblique entrance as the primary service anchor; service front, staff worktop, small office equipment and visitor approach are readable at credible scale",
+        "One complete sofa and armchair waiting group with small tables, usable seating and conversation space, warm neutral upholstery and light timber details, with circulation clear around it",
+        "One edge advisory workstation: a freestanding professional worktop separates consultant equipment-operation side and guest side, one accessible chair on each side, seat fronts facing each other across the table; a turned display permits shared viewing, even with empty seats. The light screen shows non-identifying skin surface texture, facial contour zones or aesthetic proportion diagrams; no skull, brain, organs, cross-sections, CT/MRI, text, numbers, diagnoses, personal images or outcome promises",
+        "Open left foreground: no blocking wall, circular glass room, cylindrical display or ring pendant; no facial-analysis advertising screen at reception",
+        "One connected pearlescent system with a complete main curve, few thin layers, fine edges and see-through depth; no flat wall applique, ordinary glass screen, shell wall, cross-hall ribbon or giant enclosing arch",
+        "One small flat clean unlettered identity surface on an architectural interface, outside the main circulation and unobstructed; small operational carriers remain subordinate to the complete functional areas"
+      ],
+      "compositionRequirements": [
+        "入口斜向建筑摄影：完整开阔主厅为先，前台为主要服务锚点，候客次之，面询位于边缘，私密转场从属；前台正面、员工侧及访客接近面可读。",
+        "保持正常透视与可信人体尺度，各节点可使用、可通行；沙发单椅小桌成组，不形成茶席、走廊或酒店大堂，不靠重复家具或营销架补功能。"
+      ],
+      "brandRoleManifestation": [
+        "接待区：珠光建筑曲面以连接与透景转折组织空间节奏；完整主曲面与少量辅助薄层保留薄边、留缝、真实层间深度，不退化墙饰。"
+      ],
+      "signatureSpatialMechanism": [
+        "接待区：珠光建筑曲面以连接与透景转折组织空间节奏；完整主曲面与少量辅助薄层保留薄边、留缝、真实层间深度，不退化墙饰。"
+      ],
+      "positiveDifferentiators": [
+        "具有美术馆气质的专业医美商业接待主厅：完整前台、成组候客与主厅边缘一处半开放皮肤/美学面询工作位共同组织开阔空间；一组与侧向建筑连接、局部向上部延伸的珠光半透明弧形界面参与候客与面询边界，完整主曲面、少量辅助薄层和结构留白形成可辨艺术语言；暖白米白基底、局部浅木与柔和暖日光保持真实材料层次。"
+      ],
+      "status": "ready"
+    },
+    "packaging": {
+      "status": "ready",
+      "packagingConcept": "礼盒般的尊贵体验——将服务包装成一份珍贵的礼物，强调开启过程中的仪式感。",
+      "productAndCategoryRole": [
+        "术后护理包",
+        "会员礼品",
+        "产品套装"
+      ],
+      "structureStrategy": [
+        {
+          "structure": "翻盖礼盒",
+          "purpose": "提供正式的开启体验，保护内部物品。",
+          "locked": false,
+          "evidenceRefs": [
+            "0fc66a1b-21d4-4051-b07d-daf78753545c"
+          ]
+        },
+        {
+          "structure": "丝带手提袋",
+          "purpose": "便于携带，强化礼品感。",
+          "locked": false,
+          "evidenceRefs": [
+            "0fc66a1b-21d4-4051-b07d-daf78753545c",
+            "5d2c1eef-872b-49c7-b98a-a7fc747b4e96"
+          ]
+        }
+      ],
+      "openingExperience": [
+        "解开丝带/磁吸翻盖",
+        "看到白色内衬和紫色品牌元素",
+        "取出物品时的阻尼感"
+      ],
+      "productArrangement": [
+        "分层放置",
+        "独立包装",
+        "说明书/卡片置于顶层"
+      ],
+      "graphicTranslation": [
+        {
+          "sourceMeaning": "羽毛纹理",
+          "packagingExpression": [
+            "击凸/UV工艺",
+            "局部烫银",
+            "底纹印刷"
+          ],
+          "forbiddenLiteralUse": [
+            "全彩印刷羽毛照片"
+          ]
+        }
+      ],
+      "informationHierarchy": [
+        "Logo (最显著)",
+        "品牌Slogan",
+        "产品名称/功能",
+        "详细说明/成分"
+      ],
+      "substrateLanguage": [
+        "触感纸（类皮肤/丝绸触感）",
+        "特种纸（珠光/纹理）",
+        "环保纸板"
+      ],
+      "craftLanguage": [
+        {
+          "craft": "烫金/烫银",
+          "purpose": "提升精致度，呼应金属材质语言。",
+          "forbiddenUse": [
+            "大面积使用（显俗气）"
+          ]
+        },
+        {
+          "craft": "击凸",
+          "purpose": "增加触感，模拟羽毛的立体感。",
+          "forbiddenUse": [
+            "过度复杂的图案"
+          ]
+        }
+      ],
+      "colorBehavior": {
+        "base": [
+          "白色",
+          "浅灰色"
+        ],
+        "identity": [
+          "Peacock Violet"
+        ],
+        "accent": [
+          "银色",
+          "金色"
+        ],
+        "forbidden": [
+          "黑色为主（过于沉重）",
+          "高饱和度对比色"
+        ]
+      },
+      "logoPolicy": [
+        "Logo必须清晰可见",
+        "不得改变Logo颜色（除非单色反白）",
+        "保持安全边距"
+      ],
+      "seriesArchitecture": [
+        "通过颜色或图形区分不同产品线/服务等级",
+        "保持统一的版式和材质"
+      ],
+      "photographyDirection": [
+        "静物摄影",
+        "柔和光线",
+        "强调材质质感",
+        "紫色背景或道具点缀"
+      ],
+      "packagingMisreadRisks": [],
+      "missingRequiredFields": []
+    },
+    "poster": {
+      "status": "interface_only",
+      "concept": "人与孔雀/羽毛的梦幻互动——通过超现实或艺术化的场景，表达“因美而生”和“蜕变”的主题。",
+      "expressionLanguage": [
+        "紫色调主导",
+        "光影效果（丁达尔效应/反射）",
+        "人物剪影或背影（保持神秘感）",
+        "抽象羽毛元素作为背景或前景"
+      ],
+      "misreadRisks": []
+    },
+    "vi": {
+      "status": "interface_only",
+      "concept": "精致入微——将Logo和辅助图形应用到各种接触点，保持一致性和高品质感。",
+      "expressionLanguage": [
+        "极简排版",
+        "留白",
+        "高品质印刷/制作工艺",
+        "紫色点缀"
+      ],
+      "misreadRisks": []
+    }
+  },
+  "colorSystem": {
+    "primary": [
+      {
+        "name": "暖白与米白",
+        "role": "温暖柔和的建筑基底",
+        "surfaceApplicability": "实体墙、地面与安静顶面；保留材料明暗差异，不以纯白过曝抹平表面",
+        "spatialUsage": "dominant_field"
+      }
+    ],
+    "secondary": [
+      {
+        "name": "浅木色与暖中性色",
+        "role": "建立真实商业家具与局部墙面的温暖层次",
+        "surfaceApplicability": "前台局部饰面、候客家具木质细节与中性软包、局部服务区墙面；不覆盖全部建筑界面",
+        "spatialUsage": "secondary_surface"
+      }
+    ],
+    "accent": [
+      {
+        "name": "品牌紫",
+        "role": "非常有限的珠光内反射，正式品牌内容以后期真实素材体现",
+        "surfaceApplicability": "仅少量半透明界面的局部内层弱虹彩；不用于家具、花瓶、窗帘或发光灯带",
+        "spatialUsage": "local_accent"
+      }
+    ],
+    "forbidden": [
+      "紫色扩散到家具、软包、窗帘或大面积建筑表面",
+      "冷白偏蓝的单一色场与浅色材料层次消失"
+    ]
+  },
+  "materialSystem": [
+    {
+      "material": "建筑一体化珠光半透明曲面系统",
+      "behavior": [
+        "连续主曲面与少量错层辅助薄层具有精致薄边、可辨层间深度和透景留白",
+        "自然光穿透时呈轻微珍珠母贝内反射，弱紫仅在局部材料内层出现；曲面后方面询设备与服务关系仍可辨"
+      ],
+      "brandRole": "从侧向建筑界面局部连接上部边界，沿候客及面询边缘有起止地展开，建立品牌艺术特征并参与分隔，让出完整前台、通行面和大部分顶面",
+      "forbidden": [
+        "密集羽片、花瓣团块与不透明艺术墙",
+        "整体紫色染色、自发光浮雕和独立巨大雕塑"
+      ]
+    },
+    {
+      "material": "暖白米白矿物基底",
+      "behavior": [
+        "温暖柔和的漫反射，保留真实表面质感和体积",
+        "与木质、软包及半透明界面形成清楚但低对比的层次"
+      ],
+      "brandRole": "建立完整实体建筑、安静顶面与可读入口框景",
+      "forbidden": [
+        "冷白发蓝的无差别表面",
+        "高对比镜面拼贴和过曝洗白"
+      ]
+    },
+    {
+      "material": "浅木质与暖中性软包",
+      "behavior": [
+        "浅木质保留自然纹理与温暖反射，软包呈柔和细腻触感",
+        "材料变化服务于前台、候客和半开放服务区的使用层次"
+      ],
+      "brandRole": "为接待工作、就坐交流与局部服务界面提供自然温暖的商业功能材质",
+      "forbidden": [
+        "紫色软包与大面积高饱和饰面",
+        "以装饰家具堆积代替清楚的功能分区"
+      ]
+    }
+  ],
+  "lightingSystem": {
+    "source": [
+      "温暖、柔和、均匀的漫射自然日光",
+      "少量克制的暖调建筑间接光"
+    ],
+    "contrast": "暖白建筑、浅木质和中性软包具有可辨的温和明暗层次，半透明界面保留柔和透射与边缘细节",
+    "interactionWithMaterials": [
+      "漫射自然光温暖地照亮前台、候客与半开放服务分区，家具和地面呈宽缓柔和阴影",
+      "浅木质保留自然纹理与暖色反射，暖白墙面、软包和透光界面彼此可区分",
+      "局部珠光随自然光产生很弱的内层虹彩，适度曝光保持表面体积、透景和薄边细节"
+    ],
+    "forbidden": [
+      "冷白偏蓝的整体照明与玻璃发灰",
+      "过曝抹平浅色材料层次",
+      "紫色灯带、舞台照明与高饱和发光装置",
+      "强直射光、硬阴影和抢夺空间焦点的独立雕塑灯具"
+    ]
+  },
+  "provenance": {
+    "createdFrom": [
+      "asset:fec0db86-029d-4be9-9641-c2041f754033",
+      "asset:cbd0c360-3f94-46bd-9cc8-325b98bbd0e2",
+      "asset:fe40b0b3-22ce-4616-ae5a-8c2370a0791c",
+      "asset:28e21bbc-d672-4ff6-8b87-34c162b5afed",
+      "asset:2e36e497-8f1f-40fa-8cfc-12416209f75a",
+      "asset:cff2880c-0596-4b6e-b2b8-1e0397b53d1b",
+      "asset:e3172c14-c857-4017-91c9-f502edd62310",
+      "asset:5f45f71a-818a-4643-b9cd-e18c3db032a2",
+      "asset:501f7c5c-55ce-4580-95e3-b7e0840bacd9",
+      "asset:5498865f-ab3c-4e6a-ac04-420eeb86bc58",
+      "asset:cd7a0004-bbc6-4347-9d3a-ecd8a1b5d06f",
+      "asset:3a211b67-8d69-43c9-93df-93342d3d5590",
+      "asset:504fa3c0-d34b-429a-b557-c325545ba68c",
+      "asset:54f7d566-21a8-45c5-9329-a450ef89f17b",
+      "asset:3c4dbaba-506c-4bed-9871-417a4807a241",
+      "asset:1b2ed1f8-4113-460e-9494-e164164a94f1",
+      "asset:0fc66a1b-21d4-4051-b07d-daf78753545c",
+      "asset:38182230-dce3-418c-a37a-005071460d28",
+      "asset:ffdd4032-7c0d-417c-aa6e-c92057446012",
+      "asset:d8b0ed0d-6f9a-46c5-92c2-af243cfdb996",
+      "asset:5d2c1eef-872b-49c7-b98a-a7fc747b4e96",
+      "asset:70d6818c-8686-4d0a-9a52-5a75f6b038f0",
+      "asset:adf86690-8fa7-46f8-bfdd-eba899ad9f25",
+      "asset:5aa70ece-6b70-4024-a067-f1b4a5594ad5",
+      "asset:99240a14-0a1d-4beb-9076-fedff2cb4e5b",
+      "asset:f34365dc-79f7-446d-8919-e33398234a72",
+      "asset:a0b76585-9a41-4c38-8cd9-95df7a6f5840",
+      "project_user_design_decision"
+    ],
+    "generatedAt": "2026-10-15T15:27:19.003Z",
+    "modelId": "qwen3.6-plus",
+    "sourceFingerprint": "d0b709ca3db95b1d5787be1fa5e9bcd4a94f0300a3e6017119215acd27b54485",
+    "userConfirmedFields": [
+      "mediaTranslations.spatial",
+      "colorSystem",
+      "materialSystem",
+      "lightingSystem"
+    ],
+    "userConfirmationId": "4f77ba8c-4305-483c-8f07-8285fea614bc",
+    "userConfirmationSource": "2026-10-20 用户授权P7a：以021a6b6和P7确认方向为基线，仅压缩六字段重复表达，保留五节点服务顺序、入口开放视廊、完整前台候客、边缘独立面询隔台相向、私密入口及珠光建筑职责。色彩材料光学自然光与商业功能冻结；新隔离副本正式网页保存确认、编译及standard零参考离线预演。真实模型/Qwen/收费调用0，无生产修改、Golden更新、重试、合并发布；完成后停止待审核。"
+  },
+  "validation": {
+    "hardFactStatus": "pass",
+    "mode": "formal_upgrade",
+    "missingRequiredFacts": [],
+    "conflicts": [],
+    "executionDataStatus": "ready",
+    "missingExecutionFields": []
+  },
+  "repairMetadata": {
+    "schemaVersion": "1.0",
+    "fields": {
+      "mediaTranslations.spatial.functionalRelationships": {
+        "status": "inferred",
+        "confidence": 0.85,
+        "evidenceRefs": [
+          "fec0db86-029d-4be9-9641-c2041f754033",
+          "501f7c5c-55ce-4580-95e3-b7e0840bacd9",
+          "cd7a0004-bbc6-4347-9d3a-ecd8a1b5d06f"
+        ],
+        "generatedBy": "repair_model",
+        "sourceFingerprint": "a2530c28a7911a21e082482e9008399817c5b24c6999bc12a3c8b2b7749d7619",
+        "schemaVersion": "1.0",
+        "repairVersion": "1.0",
+        "repairedAt": "2026-10-15T15:27:53.900Z"
+      },
+      "mediaTranslations.spatial.functionalNetwork": {
+        "status": "proposed",
+        "confidence": 0.8,
+        "evidenceRefs": [
+          "cff2880c-0596-4b6e-b2b8-1e0397b53d1b",
+          "54f7d566-21a8-45c5-9329-a450ef89f17b",
+          "3c4dbaba-506c-4bed-9871-417a4807a241"
+        ],
+        "generatedBy": "repair_model",
+        "sourceFingerprint": "a2530c28a7911a21e082482e9008399817c5b24c6999bc12a3c8b2b7749d7619",
+        "schemaVersion": "1.0",
+        "repairVersion": "1.0",
+        "repairedAt": "2026-10-15T15:27:53.900Z"
+      }
+    }
+  }
+}

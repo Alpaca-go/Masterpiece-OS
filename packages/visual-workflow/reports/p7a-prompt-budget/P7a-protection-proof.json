@@ -1,0 +1,388 @@
+{
+  "status": "PASS",
+  "branch": "fix/jiuzhou-final-spatial-balance",
+  "baselineHead": "021a6b6673c5300ae54da8280afdd62aca3b2e1c",
+  "initialWorktreeClean": true,
+  "source": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-p7\\browser-review\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+  "testCopy": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-p7a\\browser-review\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+  "protectedRoots": [
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architectural-refinement\\confirmed-browser\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "files": 65,
+      "beforeInventorySha256": "50ad2e0ec7f7a83c18309b35fe19e9aed1b35cc9034ce2856d100267c3c6f77d",
+      "afterInventorySha256": "50ad2e0ec7f7a83c18309b35fe19e9aed1b35cc9034ce2856d100267c3c6f77d",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\reports\\architectural-integration",
+      "files": 45,
+      "beforeInventorySha256": "d6d19ac6a756269844bbb537135230a905b1fe5b7539883d9b7a3a8239aeb4e7",
+      "afterInventorySha256": "d6d19ac6a756269844bbb537135230a905b1fe5b7539883d9b7a3a8239aeb4e7",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architectural-integration\\confirmed-review\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "files": 62,
+      "beforeInventorySha256": "07ffc3a2c9c4bf3d6a4d392b317cf7c28533552bb6413264ba72842535cbbd88",
+      "afterInventorySha256": "07ffc3a2c9c4bf3d6a4d392b317cf7c28533552bb6413264ba72842535cbbd88",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architectural-integration\\real-validation\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "files": 82,
+      "beforeInventorySha256": "9f5a447ba3494328663d6d644905950c647f8bc0a5aa592a81e7204c61c73286",
+      "afterInventorySha256": "9f5a447ba3494328663d6d644905950c647f8bc0a5aa592a81e7204c61c73286",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architectural-language\\confirmed-copy\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "files": 78,
+      "beforeInventorySha256": "7a28e540b1eebb719ecdeaebea439e0fb4ba79a5d603bac18307f366fad02814",
+      "afterInventorySha256": "7a28e540b1eebb719ecdeaebea439e0fb4ba79a5d603bac18307f366fad02814",
+      "unchanged": true
+    },
+    {
+      "root": "C:\\Users\\kyrie\\AppData\\Roaming\\masterpiece-os-desktop\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "files": 46,
+      "beforeInventorySha256": "29a4f69e069e70c6da1706d1b14541d779b0e140e53fe5ba43d0a2455cf6e9b1",
+      "afterInventorySha256": "29a4f69e069e70c6da1706d1b14541d779b0e140e53fe5ba43d0a2455cf6e9b1",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\reports\\architectural-refinement",
+      "files": 29,
+      "beforeInventorySha256": "968f54142ada137668b6831a02df97b67f6c69f31e7e478587aa4c9b3268f57e",
+      "afterInventorySha256": "968f54142ada137668b6831a02df97b67f6c69f31e7e478587aa4c9b3268f57e",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architectural-refinement\\real-validation\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "files": 62,
+      "beforeInventorySha256": "5c1c95b855783ba4f09f9fb317284cf45a6b43d8760177990ae5ae36ba2c940b",
+      "afterInventorySha256": "5c1c95b855783ba4f09f9fb317284cf45a6b43d8760177990ae5ae36ba2c940b",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architectural-refinement\\real-validation\\authorized-execution",
+      "files": 10,
+      "beforeInventorySha256": "ab576c95e5cad89883cd73c658380c642811c27ee8b1ebb07b24df692d8a6059",
+      "afterInventorySha256": "ab576c95e5cad89883cd73c658380c642811c27ee8b1ebb07b24df692d8a6059",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\reports\\architectural-refinement-validation",
+      "files": 17,
+      "beforeInventorySha256": "7de3fda41465bff4290b8d6731734708fe7102548fa7d58dc64e825ce782b5b8",
+      "afterInventorySha256": "7de3fda41465bff4290b8d6731734708fe7102548fa7d58dc64e825ce782b5b8",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\commercial-attribute\\confirmed-review\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "files": 68,
+      "beforeInventorySha256": "8091700d3cda8a761ef058960f4df37a90f54d91273537e22bc756625e61f377",
+      "afterInventorySha256": "8091700d3cda8a761ef058960f4df37a90f54d91273537e22bc756625e61f377",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\reports\\commercial-attribute",
+      "files": 30,
+      "beforeInventorySha256": "cff202a98f000ad0fdb61a84d2092d0289edb7c4dda812dc207fa1514858ca1f",
+      "afterInventorySha256": "cff202a98f000ad0fdb61a84d2092d0289edb7c4dda812dc207fa1514858ca1f",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\commercial-attribute\\real-validation\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "files": 65,
+      "beforeInventorySha256": "5cf0d86f7cc7e71bb34b07b82f0574b8fc06f8f6ac9f2bfd4b7e3bfdb88fe779",
+      "afterInventorySha256": "5cf0d86f7cc7e71bb34b07b82f0574b8fc06f8f6ac9f2bfd4b7e3bfdb88fe779",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\commercial-attribute\\real-validation\\authorized-execution",
+      "files": 10,
+      "beforeInventorySha256": "36eba254fa72a32a9ce55da6ed567d5b5471fc62fe92e2407521c551f2dc1454",
+      "afterInventorySha256": "36eba254fa72a32a9ce55da6ed567d5b5471fc62fe92e2407521c551f2dc1454",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\reports\\commercial-attribute-validation",
+      "files": 19,
+      "beforeInventorySha256": "ccfd23fa6e33852c3da25304157b21be38cd0a600aad768662ab2c180603352f",
+      "afterInventorySha256": "ccfd23fa6e33852c3da25304157b21be38cd0a600aad768662ab2c180603352f",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-p7\\browser-review\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "files": 261,
+      "beforeInventorySha256": "6c88dd68340083a58a4b940328fef9a8a4065efed09e3d2cb9b7c92a858d15a0",
+      "afterInventorySha256": "6c88dd68340083a58a4b940328fef9a8a4065efed09e3d2cb9b7c92a858d15a0",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-spatial-balance\\real-validation",
+      "files": 282,
+      "beforeInventorySha256": "b0008b0aeccf75377109eb381b608193328b32d051110b1bbcef565fa2a75a2e",
+      "afterInventorySha256": "b0008b0aeccf75377109eb381b608193328b32d051110b1bbcef565fa2a75a2e",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-art-medical\\real-validation",
+      "files": 243,
+      "beforeInventorySha256": "3628daa3d9258c095023d3909cb124f4760c10d1d2a2770b916cf19bfc1af43d",
+      "afterInventorySha256": "3628daa3d9258c095023d3909cb124f4760c10d1d2a2770b916cf19bfc1af43d",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\reports",
+      "files": 561,
+      "beforeInventorySha256": "c4976cd6a7654aeabcc6ce6c6a118ea029f43dce38c5b079b17b0a57e201c638",
+      "afterInventorySha256": "c4976cd6a7654aeabcc6ce6c6a118ea029f43dce38c5b079b17b0a57e201c638",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-local-boundaries",
+      "files": 619,
+      "beforeInventorySha256": "d6b5bc7f32f5bbf22aedcd4ea4beb6ace8693b4ae7dbda78c3b6481aac09125d",
+      "afterInventorySha256": "d6b5bc7f32f5bbf22aedcd4ea4beb6ace8693b4ae7dbda78c3b6481aac09125d",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-p7",
+      "files": 287,
+      "beforeInventorySha256": "ced467e322f86256e4a3c5123a3e6106dd950923ed2e35eb63a6d4cf7452aa2d",
+      "afterInventorySha256": "ced467e322f86256e4a3c5123a3e6106dd950923ed2e35eb63a6d4cf7452aa2d",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architecture-commercial-layer\\single-image-validation\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "files": 88,
+      "beforeInventorySha256": "eb8fc3cf637122349e88e64482c9074b6f2f9be7cb19c029b2085874d14ec681",
+      "afterInventorySha256": "eb8fc3cf637122349e88e64482c9074b6f2f9be7cb19c029b2085874d14ec681",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architecture-commercial-layer\\single-image-validation\\authorized-execution",
+      "files": 19,
+      "beforeInventorySha256": "a4f95ae2f2999a25e66fcfd055c65e4b9a2adc3c72e10b3739514d262f6a6bec",
+      "afterInventorySha256": "a4f95ae2f2999a25e66fcfd055c65e4b9a2adc3c72e10b3739514d262f6a6bec",
+      "unchanged": true
+    }
+  ],
+  "copyChanges": [
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-1b4d8a48-9832-454a-8cad-486f019de1a8\\compiled-prompt.json",
+      "sha256": "89de16fd0e53e89bb84efbafed6e14d51409c0cd836467981c54b2231a42b629"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-1b4d8a48-9832-454a-8cad-486f019de1a8\\compiled-prompt.md",
+      "sha256": "9e345296d4559e123b87f255843a0aead64343398d78bbba8698173cce632aa7"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-1b4d8a48-9832-454a-8cad-486f019de1a8\\effective-visual-decision-packet.json",
+      "sha256": "833fcce8587c778f937184cdd60f0053343fedc2f08c1ce5f9cbdf82d6ffae7c"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-1b4d8a48-9832-454a-8cad-486f019de1a8\\logo-post-composite-plan.json",
+      "sha256": "1c10689066eb215abb2dd96bd50a391d1352b54df29d5035d82c7112b52e19f9"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-1b4d8a48-9832-454a-8cad-486f019de1a8\\model-payload.json",
+      "sha256": "64da434790d221b5e4c11d757cb1e5d1164fa2f09af477325b3a54c4a3ada680"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-1b4d8a48-9832-454a-8cad-486f019de1a8\\project-design-direction.json",
+      "sha256": "cb7e7b6d01cc879b6390bc31fb6cb189f7c39e58df56674e0ababc60aee1102d"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-1b4d8a48-9832-454a-8cad-486f019de1a8\\prompt-source-map.json",
+      "sha256": "09319dcfceb4d999c8a1fb199252ba384a754103a717b356f15bbfe531778794"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-1b4d8a48-9832-454a-8cad-486f019de1a8\\provider-payload-preview.json",
+      "sha256": "64da434790d221b5e4c11d757cb1e5d1164fa2f09af477325b3a54c4a3ada680"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-1b4d8a48-9832-454a-8cad-486f019de1a8\\target-scene-projection.json",
+      "sha256": "46b04f6bff15622ecdbc6d6753cec7fcf687bfacf4c2e3afac367b5dff1704d7"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-1b4d8a48-9832-454a-8cad-486f019de1a8\\task-contract.json",
+      "sha256": "e47bbd84f703154b648c8e8a12ba68be3bee2e065c44e731b385929a08c177e9"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-1b4d8a48-9832-454a-8cad-486f019de1a8\\trace.json",
+      "sha256": "3676d27bb31117677c51e3236a8bd11e40634a4fb8bcc3fb0d2bd1a6414cd842"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-1b4d8a48-9832-454a-8cad-486f019de1a8\\workflow-implementation.json",
+      "sha256": "4bb2f3660f2186b291f5110eb30aba8c9960ed7d28971cbe283808237b897e54"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-a987452a-ea58-474a-8558-3c9f2e0258ba\\compiled-prompt.json",
+      "sha256": "73b8df6e4548fac1c71c14efda0350cf7391c135738efccff2c6ecceaac7f992"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-a987452a-ea58-474a-8558-3c9f2e0258ba\\compiled-prompt.md",
+      "sha256": "2bbe71845f27f48f383e85420f3e526f974e590cd44e6529662a08f73570849d"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-a987452a-ea58-474a-8558-3c9f2e0258ba\\effective-visual-decision-packet.json",
+      "sha256": "e56588e5cd8ebfee2183b7a3af6adee9e966500110b0f35f36e9dcb944fb5e41"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-a987452a-ea58-474a-8558-3c9f2e0258ba\\logo-post-composite-plan.json",
+      "sha256": "66d87d5fc87e67aa6a57273cc92c06327984f9105a0ac164578508baa5b1785e"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-a987452a-ea58-474a-8558-3c9f2e0258ba\\model-payload.json",
+      "sha256": "8758e1016e016e7a69c45aa08480ef60a19ef6fd852fbbf32265ccdf47c38db0"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-a987452a-ea58-474a-8558-3c9f2e0258ba\\project-design-direction.json",
+      "sha256": "7ca63e852833955bc403683b98ee8e7f7cd70221f0b485916e4ba782f25aa5e1"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-a987452a-ea58-474a-8558-3c9f2e0258ba\\prompt-source-map.json",
+      "sha256": "09319dcfceb4d999c8a1fb199252ba384a754103a717b356f15bbfe531778794"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-a987452a-ea58-474a-8558-3c9f2e0258ba\\provider-payload-preview.json",
+      "sha256": "8758e1016e016e7a69c45aa08480ef60a19ef6fd852fbbf32265ccdf47c38db0"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-a987452a-ea58-474a-8558-3c9f2e0258ba\\target-scene-projection.json",
+      "sha256": "46b04f6bff15622ecdbc6d6753cec7fcf687bfacf4c2e3afac367b5dff1704d7"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-a987452a-ea58-474a-8558-3c9f2e0258ba\\task-contract.json",
+      "sha256": "11017f838cf0b01154bd470f56d679c0245f12b0891ebb500e7ae2c85322383a"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-a987452a-ea58-474a-8558-3c9f2e0258ba\\trace.json",
+      "sha256": "975fbafab9fcc51f2e30a1cb57fd4af5eca205b4c5008f18ca4f5c7465a29065"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-a987452a-ea58-474a-8558-3c9f2e0258ba\\workflow-implementation.json",
+      "sha256": "4bb2f3660f2186b291f5110eb30aba8c9960ed7d28971cbe283808237b897e54"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-d273a9de-d0d5-47a8-b679-613fbee042dd\\compiled-prompt.json",
+      "sha256": "3bd3bf02d22cc473990a01186e8be8243ca77e71f0e12f34e0a6ee4413d6a409"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-d273a9de-d0d5-47a8-b679-613fbee042dd\\compiled-prompt.md",
+      "sha256": "4d6b105c1b7cc74e0753bcdadc6027f71d67d40d9d993de02cf0722a649df402"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-d273a9de-d0d5-47a8-b679-613fbee042dd\\effective-visual-decision-packet.json",
+      "sha256": "b1b23726b485f7465e88c18a9edf58528ed9146526db8b89d4bbe251277037e2"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-d273a9de-d0d5-47a8-b679-613fbee042dd\\logo-post-composite-plan.json",
+      "sha256": "915503c5a87da325f4d10c77aef75910b0dd26134c3a58cddb86b4b146d08b05"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-d273a9de-d0d5-47a8-b679-613fbee042dd\\model-payload.json",
+      "sha256": "adf50440e3d1890b6c7efeadd8ea64d41bcbccc5620311bfa75c6f6210a39bfb"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-d273a9de-d0d5-47a8-b679-613fbee042dd\\output.png",
+      "sha256": "94de0c06f5fcae08d0b945f6ebe0530a4204b84fb54a44b72e6b5c598fc94bc6"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-d273a9de-d0d5-47a8-b679-613fbee042dd\\project-design-direction.json",
+      "sha256": "30d318b01d620ac54fc4ac71c8b3e7ba7028697bfe2ef97155206c01316c9cec"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-d273a9de-d0d5-47a8-b679-613fbee042dd\\prompt-source-map.json",
+      "sha256": "09319dcfceb4d999c8a1fb199252ba384a754103a717b356f15bbfe531778794"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-d273a9de-d0d5-47a8-b679-613fbee042dd\\provider-payload-preview.json",
+      "sha256": "adf50440e3d1890b6c7efeadd8ea64d41bcbccc5620311bfa75c6f6210a39bfb"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-d273a9de-d0d5-47a8-b679-613fbee042dd\\provider-payload.redacted.json",
+      "sha256": "6b7d9b50b62594ced10fd81ef28a448b039d0b1f4ca3a15e18e019749275b520"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-d273a9de-d0d5-47a8-b679-613fbee042dd\\reference-trace.json",
+      "sha256": "a45c545ca6e5c6ad10d6d5452a4882439e307abdc36929f89b5debc60a90d853"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-d273a9de-d0d5-47a8-b679-613fbee042dd\\run-trace.json",
+      "sha256": "53a84e6392c6989272b3bee1fff61dbcf65f482cc8ce69b9e69af8f243c62fbe"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-d273a9de-d0d5-47a8-b679-613fbee042dd\\run.json",
+      "sha256": "83b35ab20d52e2f9812b45eb91c91d8d42f33448b7056bb30b5f1af980b0c2c4"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-d273a9de-d0d5-47a8-b679-613fbee042dd\\target-scene-projection.json",
+      "sha256": "46b04f6bff15622ecdbc6d6753cec7fcf687bfacf4c2e3afac367b5dff1704d7"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-d273a9de-d0d5-47a8-b679-613fbee042dd\\task-contract.json",
+      "sha256": "2476f04bf801389d7219e7c548ac7bbe4e0a2843dfa7c1a6ad2cee3a46c9e979"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-d273a9de-d0d5-47a8-b679-613fbee042dd\\trace.json",
+      "sha256": "c8e75e3afd47a8fe162ffee35a2b68cc436f5c0d852adef6aec779dd54c9c0a1"
+    },
+    {
+      "path": "image-generation-vnext\\compilations\\vnext-task-d273a9de-d0d5-47a8-b679-613fbee042dd\\workflow-implementation.json",
+      "sha256": "4bb2f3660f2186b291f5110eb30aba8c9960ed7d28971cbe283808237b897e54"
+    },
+    {
+      "path": "image-generation-vnext\\creative-session.json",
+      "sha256": "9e9e8c234f2125c2068b6a74c75fc41a2121ca55147e3b3e4d406e65a1e48526"
+    },
+    {
+      "path": "project-context\\design-direction-history\\3009e5ce-3d40-4485-bae5-9bba4965f3e6.json",
+      "sha256": "29c491607077ed5e26921ee1115a475fc2d242e9a2a8c1a9659adee40c987a3b"
+    },
+    {
+      "path": "project-context\\design-direction-history\\4deaf22d-fe79-4ef7-b98a-2c9b09797f5d.json",
+      "sha256": "2a4792b63f25e0c3839f129b18a2d4a4ba314ac901f7630c06473acd7e5822f4"
+    },
+    {
+      "path": "project-context\\design-direction-history\\717b67b7-4141-43dc-8be5-c06e9e72c526.json",
+      "sha256": "72cf8047ac21429496124438b2b7a983b48cba825ca15b668d1e389a3f91f745"
+    },
+    {
+      "path": "project-context\\design-direction-history\\7d0413f4-2dbe-408b-9668-e82cd701e8ec.json",
+      "sha256": "b33da9f023b8ad5a296ac21c4d96cdab4d795a7a6db2060a85427f261114046c"
+    },
+    {
+      "path": "project-context\\design-direction-history\\81dbdef9-fb58-476b-bd25-4e78837027bd.json",
+      "sha256": "21bcc82214fa15502fe08685cd4aec6808847cca302ecace60c2f7e4208674f6"
+    },
+    {
+      "path": "project-context\\design-direction-history\\dcf9b9b7-de74-4415-9af6-5e30af2e23b3.json",
+      "sha256": "b5f7d79a9c67d7b8b094c73fe6abb21ba2d416f65d616b79c76a70067a39e4a1"
+    },
+    {
+      "path": "project-context\\design-direction.json",
+      "sha256": "4fb8a17fc48866eab7ec934fb8f4d798112d7fb4eccd3ea35e0870824670ccc9"
+    }
+  ],
+  "sourceFilesRemoved": [],
+  "productionChanges": [],
+  "frozenFields": [
+    "spatialConcept",
+    "materialLanguage",
+    "lightingLanguage",
+    "colorPolicy",
+    "functionalProgram",
+    "mustAvoid",
+    "lightingContrast",
+    "lightingInteraction",
+    "lightingAvoid",
+    "colorAvoid",
+    "colorEntries",
+    "materialEntries"
+  ],
+  "allFrozenFieldsExact": true,
+  "referenceImagesImported": 0,
+  "realCredentialsReadOrCopied": false
+}

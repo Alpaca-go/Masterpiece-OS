@@ -1,0 +1,2 @@
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"ecfcdf23-a81d-4cd2-8250-74ecd221b7fb","taskId":"vnext-task-d273a9de-d0d5-47a8-b679-613fbee042dd","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":10451,"compileDurationMs":53.225}
+{"status":"OFFLINE_PASS_ONLY","changedFields":6,"fieldFidelityRows":38,"formalCharacters":10451,"providerCharacters":10554,"realProviderCalls":0}

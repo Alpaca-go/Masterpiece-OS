@@ -1,0 +1,38 @@
+✔ bilingual background scope works for neutral and chromatic colors (2.8245ms)
+✔ identity rank and color names cannot manufacture spatial scope (0.8197ms)
+✔ role, ratio and carrier mutations reach the final compiler while materials and functions stay fixed (92.2767ms)
+✔ conflicting scope is visible, not resolved through matcher order (6.2519ms)
+✔ chromatic and neutral materials preserve carrier, optical behavior and role without adding optics (20.2874ms)
+✔ lighting retains supplied optical interaction and filters identity light (0.2072ms)
+✔ actions retain the supplied object: Circulation flow guides visitors (0.3489ms)
+✔ actions retain the supplied object: 动线流动引导访客 (7.8667ms)
+✔ actions retain the supplied object: Layered light falls on the wall (0.4632ms)
+✔ actions retain the supplied object: 层叠光影照亮接待台 (0.2962ms)
+✔ actions retain the supplied object: Complex curved ceiling and curved walls (0.1773ms)
+✔ actions retain the supplied object: 复杂曲线天花与连续曲墙 (0.1746ms)
+✔ actions retain the supplied object: Translucent glass partitions filter views (0.0929ms)
+✔ nonspatial sources are excluded before action derivation (16.6626ms)
+✔ motif translation does not invent geometry and explicit complex architecture survives (5.8122ms)
+✔ functional movement remains outside geometric actions and material paths retain original indices (6.8762ms)
+✔ full compiler preserves complex architectural intent across industries without adding installations (22.7587ms)
+✔ post-composite identity absence never violates locked assets in generation (5.8401ms)
+✔ generated text is checked independently, with visible evidence (0.5895ms)
+✔ uncertainty and subjective quality hints never authorize regeneration (0.3659ms)
+✔ physical blocking findings retain concrete evidence without triggering paid work (0.3235ms)
+✔ non-composite modes keep identity violation evidence (0.2871ms)
+✔ text regeneration prompt does not claim pixel preservation or local editing (0.4953ms)
+✔ a second passed validation never ranks its image over the first; uncertainty is not passed (0.2037ms)
+✔ legacy retry recommendation cannot cause a second generation and paid first image remains available (56.4605ms)
+✔ explicit later invocation keeps both runs and validation summaries independently (79.6444ms)
+✔ validator exception retains successful first run and truthful unverified state (43.4272ms)
+✔ validator request declares stage and asks for separately scoped identity evidence (15.0061ms)
+✔ actual offline composite preserves the original and records confirmed logo source digest (36.9916ms)
+✔ post-composite service requires confirmation and records stage separately from visual acceptance (35.4697ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 30
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1645.174

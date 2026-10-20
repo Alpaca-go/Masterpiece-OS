@@ -1,0 +1,18 @@
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"ecfcdf23-a81d-4cd2-8250-74ecd221b7fb","taskId":"vnext-task-1b4d8a48-9832-454a-8cad-486f019de1a8","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":10449,"compileDurationMs":50.94}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Formal Prompt lost functionalRelationships: Reception: each node retains usable space and clear circulation. A short translucent advisory boundary protects privacy while the opposing seats and shared screen remain readable
+    at check (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/design-direction-editor-evidence.mjs:9:30)
+    at assertEditorSemanticFidelity (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/design-direction-editor-evidence.mjs:28:5)
+    at file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/.codex-smoke/jiuzhou-p7a/preview.mjs:40:1 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.20.0
