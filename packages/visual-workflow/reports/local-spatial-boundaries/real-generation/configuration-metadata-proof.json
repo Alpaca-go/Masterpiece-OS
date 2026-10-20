@@ -1,0 +1,22 @@
+{
+  "source": "User saved configuration in formal independent settings and replied 配置完成",
+  "profileId": "47c7b040-0617-4287-8cc8-150bf2b7726b",
+  "operation": "visual-workflow:save-profile",
+  "before": {
+    "modelType": "analysis",
+    "provider": "dashscope",
+    "protocol": "openai-chat-multimodal"
+  },
+  "after": {
+    "modelType": "image_generation",
+    "provider": "volcengine",
+    "protocol": "seedream-image"
+  },
+  "modelUnchanged": "doubao-seedream-5-0-pro-260628",
+  "endpointUnchanged": "https://ark.cn-beijing.volces.com/api/v3/images/generations",
+  "apiKeyArgumentOmitted": true,
+  "credentialFilesCopied": false,
+  "settingsFilesCopied": false,
+  "secretValuesLogged": false,
+  "preflightRerunPassed": true
+}

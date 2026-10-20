@@ -1,0 +1,57 @@
+{
+  "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-local-boundaries\\real-validation\\authorized-execution",
+  "files": [
+    {
+      "name": "authorization.json",
+      "bytes": 2680,
+      "sha256": "c41490d6e28b5d9586d1a27812d497027b4257de6f88ae9ef964f8b51fe181d2"
+    },
+    {
+      "name": "call-ledger.json",
+      "bytes": 168,
+      "sha256": "146bd90064326d282087f110b64bee93fc60cf86ba512f30d94b6b2118b67211"
+    },
+    {
+      "name": "execution-summary.json",
+      "bytes": 2139,
+      "sha256": "711e599392053251f25a1a35934df94afe8a83edc0a580b413e10943791c2de5"
+    },
+    {
+      "name": "fee-record.json",
+      "bytes": 891,
+      "sha256": "bf45afb1fc92f9372d22afec4cfb99ad841099c2cc2d002448086a910bf2626b"
+    },
+    {
+      "name": "generation-result.json",
+      "bytes": 853,
+      "sha256": "b1f87fc1cea444ea193a5b26acf5fd9c9bbbb69212778bc059e78392cac2289c"
+    },
+    {
+      "name": "image-actual-request.json",
+      "bytes": 17458,
+      "sha256": "d10093d634f6b50bfd02a09b448ab34a45b29d7209812181456b0164fe6c3623"
+    },
+    {
+      "name": "image-response-summary.json",
+      "bytes": 449,
+      "sha256": "4aa520385a85fb21356253a0cf51d9b35514dabdac7ac451bed161c9cee6f405"
+    },
+    {
+      "name": "jiuzhou-provider-original.jpg",
+      "bytes": 216815,
+      "sha256": "8a8c39675f8c8aeb9428beda457a46f3d58e03f7b75f04703b68371a94d0e725"
+    },
+    {
+      "name": "jiuzhou-standard-output.png",
+      "bytes": 2093496,
+      "sha256": "1cedc6cb10e80746d286fd3ed8fcfc1840b9664a1cdb144d655f0bf789d3fded"
+    },
+    {
+      "name": "original-image-metadata.json",
+      "bytes": 200,
+      "sha256": "11d65eddf3895c15540a36ec395c4085df2e551fb411691e023a2f30e882d7d4"
+    }
+  ],
+  "imagesRemainGitIgnored": true,
+  "rawProviderJSONSaved": false
+}

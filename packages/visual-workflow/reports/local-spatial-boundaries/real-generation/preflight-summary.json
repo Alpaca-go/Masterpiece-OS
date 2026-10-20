@@ -1,0 +1,41 @@
+{
+  "status": "PASS",
+  "branch": "fix/jiuzhou-final-spatial-balance",
+  "head": "a4e6512c9fe74eac9a75880fb286c73dc8b52071",
+  "mandatoryFiles": [
+    "review.md",
+    "field-differences.md",
+    "confirmed-direction.json",
+    "formal-prompt.txt",
+    "provider-prompt.txt",
+    "request-evidence.json",
+    "next-generation-preflight.json",
+    "gate-results.json"
+  ],
+  "compileEntry": "createShortChainGenerationService.compile",
+  "executionEntry": "createShortChainGenerationService.start",
+  "generationOnly": true,
+  "existingBusinessGuardsRetained": true,
+  "credentialRoot": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-local-boundaries\\browser-review\\user-data\\visual-workflow",
+  "executionDataRoot": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-local-boundaries/real-validation/user-data/visual-workflow",
+  "noCredentialOrSettingsCopy": true,
+  "profileId": "47c7b040-0617-4287-8cc8-150bf2b7726b",
+  "endpoint": "https://ark.cn-beijing.volces.com/api/v3/images/generations",
+  "pricing": {
+    "checkedOn": "2026-10-20",
+    "source": "https://docs.volcengine.com/docs/ark/model-pricing?lang=zh",
+    "sources": [
+      "https://docs.volcengine.com/docs/ark/model-pricing?lang=en&redirect=1",
+      "https://docs.volcengine.com/docs/ark/seedream-5-0-pro?lang=zh"
+    ],
+    "currency": "CNY",
+    "outputPriceAbove2610000Pixels": 0.6,
+    "outputPriceAtOrBelow2610000Pixels": 0.3,
+    "expected2KSingleImageCost": 0.6,
+    "inputImages": 0,
+    "actualSettledCost": null,
+    "accountDiscountsOrBalanceRead": false,
+    "abnormalFeeIndicatorsFound": false
+  },
+  "parameterSource": "https://docs.volcengine.com/docs/ark/image-generation-api?lang=en"
+}
