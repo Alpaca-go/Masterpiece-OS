@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { workflowCall, type ProjectDesignDirection } from './api';
+import { workflowCall, projectDesignDirectionStatusText, type ProjectDesignDirection } from './api';
 
 const labels = {
   spatialConcept:'空间体验与设计目标', structureLanguage:'建筑结构与空间组织', artisticFocus:'主艺术系统与空间焦点',
@@ -7,7 +7,6 @@ const labels = {
   colorAvoid:'整体配色禁用表现',functionalProgram:'功能节点（每行一个区域）',functionalNetwork:'功能网络与通行连接',
   functionalRelationships:'跨区域运营与隐私关系',visibleRequirements:'画面必须可见的功能设施',compositionRequirements:'构图、主次与画面关系',mustAvoid:'必须避免的设计表现'
 };
-const statuses = {missing:'AI 分析建议，尚未人工确认',draft:'草稿，尚未确认生效',confirmed:'已确认，将用于标准空间生图',needs_reconfirmation:'需要重新确认，当前禁止按旧方向生图'};
 function missingLabel(field:string) {
   const entry=/^(colorEntries|materialEntries)\[(\d+)\]\.(\w+)$/.exec(field);
   if (entry) {
@@ -55,12 +54,16 @@ export function ProjectDesignDirectionPanel({projectId,disabled,onState}: {
   }
   return <section className="visual-workflow__settings" aria-label="项目设计方向">
     <h3>项目设计方向</h3>
-    <p role="status">{value?statuses[value.status]:'正在读取确认状态'}{dirty?' · 有未保存修改':''}</p>
+    <p role="status">{value?projectDesignDirectionStatusText(value):'正在读取确认状态'}{dirty?' · 有未保存修改':''}</p>
     <p>这里记录用户的项目设计决策，不改写原始品牌资料。标准生图只发送文字；审美校准图片不会自动作为生图参考。</p>
     {value?.status==='needs_reconfirmation' && <p role="alert">重新分析、素材或项目资料变化后，原方向仍保留。请核对当前分析与方向，再确认生效。</p>}
     {error && <p role="alert">{error}</p>}
     {value?.validationIssues?.length ? <div role="alert"><p>以下关系尚待补充确认；当前不会用于生图：</p><ul>{value.validationIssues.map(issue=><li key={issue}>{issue}</li>)}</ul></div> : null}
-    {value?.status==='missing' && <p>以下内容来自当前项目分析，自动填充不会保存草稿或确认方向。请补充缺项，并填写人工核对依据后自行保存。</p>}
+    {value?.status==='missing' && <p>{!value.analysisSuggestion || value.analysisSuggestion.availability==='missing_packet'
+      ? '尚无分析结果。完成视觉分析后，这里会显示有来源的建议；也可手动填写并保存草稿。'
+      : value.analysisSuggestion.availability==='insufficient_evidence'
+        ? '当前分析证据不足，仅预填已有明确来源的内容，其余保持空白待补充。自动填充不会保存草稿或确认方向。'
+        : '以下内容来自当前项目分析，自动填充不会保存草稿或确认方向。请补充缺项，并填写人工核对依据后自行保存。'}</p>}
     {value?.status==='missing' && Boolean(value.analysisSuggestion?.missingFields.length) && <details><summary>待补充：分析中缺少明确来源的字段</summary><ul>{value.analysisSuggestion?.missingFields.map(item=><li key={item.field}>{missingLabel(item.field)}：待补充{item.reason==='explicit_spatial_scope_required'?'（需明确空间作用范围，不由配色角色推断）':item.reason==='explicit_material_role_required'?'（需明确材料的空间职责）':''}</li>)}</ul></details>}
     {value && fields && <details open={value.status==='missing' || undefined}><summary>查看、编辑并确认设计方向</summary>
       <fieldset disabled={disabled || saving}>

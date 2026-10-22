@@ -7,6 +7,32 @@ import {analysisDirectionSuggestion} from '../src/analysis-direction-suggestion.
 import {createProjectDesignDirectionStore} from '../src/project-design-direction.js';
 import {createVisualWorkflow} from '../src/service.js';
 import {businessFixture} from './art-direction-business-fixture.ts';
+import {projectDesignDirectionStatusText} from '../../../apps/web/src/features/visual-workflow/api.ts';
+
+test('presentation distinguishes absent Packet, insufficient evidence and usable suggestions with zero model calls',async t=>{
+  const f=await businessFixture(t,'Hospitality');
+  const store=createProjectDesignDirectionStore(f.projects);
+  const packetFile=path.join(f.paths.root,'project-context/visual-decision-packet.json');
+  const cases=[
+    {packet:null,availability:'missing_packet',label:'暂无分析结果，尚未设置设计方向'},
+    {packet:{...f.packet,mediaTranslations:{...f.packet.mediaTranslations,spatial:{status:'ready'}},creativeDecision:{strategicNegatives:['Risk-only text']}},availability:'insufficient_evidence',label:'分析证据不足，设计方向建议待补充'},
+    {packet:{...f.packet,mediaTranslations:{...f.packet.mediaTranslations,spatial:{...f.packet.mediaTranslations.spatial,status:'insufficient'}}},availability:'insufficient_evidence',label:'分析证据不足，设计方向建议待补充'},
+    {packet:f.packet,availability:'available',label:'AI 分析建议可用，尚未人工确认'},
+  ];
+  for(const item of cases){
+    if(item.packet)await fs.writeFile(packetFile,JSON.stringify(item.packet));else await fs.unlink(packetFile);
+    const view=await store.get(f.project.id);
+    assert.equal(view.status,'missing');assert.equal(view.recordSha256,null);assert.equal(view.confirmationSha256,null);
+    assert.equal(view.analysisSuggestion.availability,item.availability);
+    assert.equal(projectDesignDirectionStatusText(view),item.label);
+    assert.deepEqual(view,await store.get(f.project.id));
+    await assert.rejects(fs.access(path.join(f.paths.root,'project-context/design-direction.json')));
+  }
+  assert.equal(f.requests.length,0);assert.equal(f.validations.length,0);
+  for(const [status,label]of Object.entries({draft:'草稿，尚未确认生效',confirmed:'已确认，将用于标准空间生图',needs_reconfirmation:'需要重新确认，当前禁止按旧方向生图'})){
+    assert.equal(projectDesignDirectionStatusText({status,analysisSuggestion:{availability:'missing_packet'}} as any),label);
+  }
+});
 
 test('explicit analysis fields map deterministically with leaf provenance and without mutating the Packet',()=>{
   const packet:any=structuredAnalysisPacketFixture();

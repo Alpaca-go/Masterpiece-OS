@@ -23,11 +23,22 @@ export interface ProjectDesignDirection {
   analysisSuggestion?: {
     projectId:string;
     sourceType:'analysis_suggestion';
+    availability:'missing_packet' | 'insufficient_evidence' | 'available';
     analysisFingerprint:string;
     fields:ProjectDesignDirectionFields;
     sourcePaths:Record<string,string[]>;
     missingFields:{field:string;reason:string}[];
   };
+}
+export function projectDesignDirectionStatusText(value:ProjectDesignDirection) {
+  if (value.status!=='missing') return {
+    draft:'草稿，尚未确认生效',confirmed:'已确认，将用于标准空间生图',needs_reconfirmation:'需要重新确认，当前禁止按旧方向生图'
+  }[value.status];
+  return {
+    missing_packet:'暂无分析结果，尚未设置设计方向',
+    insufficient_evidence:'分析证据不足，设计方向建议待补充',
+    available:'AI 分析建议可用，尚未人工确认'
+  }[value.analysisSuggestion?.availability || 'missing_packet'];
 }
 export function createStandardGenerationInput(input: {
   projectId:string; family:string; subtype:string; shot:string; shotExplicit:boolean; ratio:string;

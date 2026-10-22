@@ -102,3 +102,23 @@ Evidence directory: `E:/MP-B1-evidence-20261022/` (outside Git; contains local p
 - Screenshots 01–06: automatic suggestions, pending evidence, retained P7B direction and explicit draft save.
 
 No merge or default entry switch. No B2, new image-generation experiment, deployment or release. Stop after the B1 commit and wait for human review.
+
+## Final presentation closeout — 2026-10-23
+
+Independent follow-up to `c94297196105497f91b6266238456115b45e6f4c` on the same B1 branch. The projection now adds a read-only `availability`:
+
+| Derived availability | Display for a missing direction |
+|---|---|
+| missing_packet | 暂无分析结果，尚未设置设计方向 |
+| insufficient_evidence | 分析证据不足，设计方向建议待补充 |
+| available | AI 分析建议可用，尚未人工确认 |
+
+An absent Packet is missing_packet. A Packet without any mapped positive spatial content, or whose spatial analysis is not ready, is insufficient_evidence. Explicit partial fields remain available for editing, without inventing evidence. A ready spatial analysis with mapped content is available; optional missing fields continue to show their existing pending notices. Risk/negative text alone does not make suggestions available. The description for a project without a Packet no longer claims that prefilled content comes from completed analysis.
+
+These are presentation values only. The persisted missing/draft/confirmed/needs_reconfirmation states, records, hashes, saving and confirmation are unchanged. The new UI status helper preserves all three human-record labels. Only the mapper, API type/status helper, panel text, one zero-model regression test and their three explicitly scoped integrity hashes change; Pipeline, Prompt, compiler and Adapter do not.
+
+Acceptance: **88/88 workflow regressions PASS**, including absent Packet, a stale ready flag with no spatial evidence, explicit insufficient analysis, usable suggestions, unchanged human status labels, and no read-created record. `repo:verify` (including Node Host/Web TypeScript), Web build and existing Golden checks PASS. Real model calls, user-project reanalysis and real generation: **0**. One existing offline Adapter interception aborts before transport and reproduces all three historical P7B digests above, without changing old evidence.
+
+Three isolated browser fixtures display the three labels, with normal prefill retained for usable suggestions. None creates a design-direction record/history. The P7B isolated copy retains its confirmed get() properties and all 331 original files. Formal, history, original working userData and snapshot SHA256 inventories remain unchanged; original main remains `9a93bc1aec6e0d9c272c789a8230e141041375e1` with a clean working tree.
+
+Closeout evidence: `E:/MP-B1-closeout-20261023/final-acceptance.json`; state screenshots `01-missing-packet.jpg`, `02-insufficient-evidence.jpg`, `03-suggestion-available.jpg` in the same external directory. The temporary acceptance Host is stopped after this follow-up commit. No merge, B2 or daily-instance switch.

@@ -529,7 +529,7 @@
     },
     {
       "path": "src/analysis-direction-suggestion.js",
-      "sha256": "399211b5b659686bc9159f949d1e6382ace3dd2dbae6ecdcfa0caa19878d8839"
+      "sha256": "ab6a92690104d5d963c772a418c13b3f3de61c2e5bd0135f84b777250efd3683"
     }
   ],
   "frontendFiles": [
@@ -539,7 +539,7 @@
     },
     {
       "path": "apps/web/src/features/visual-workflow/api.ts",
-      "sha256": "8d58563b50e060a5344ff3f4ffe3f22425b81d0b8b20da5650fa7ae404ab4b1a"
+      "sha256": "01fad8c94e52da1fac0e0ba33722eec7ae60a46ea617a307bcc0e77a2e90657f"
     },
     {
       "path": "apps/web/src/features/visual-workflow/visual-workflow.css",
@@ -547,7 +547,7 @@
     },
     {
       "path": "apps/web/src/features/visual-workflow/ProjectDesignDirectionPanel.tsx",
-      "sha256": "72d8a805e1de5934c0ad67cd5cc7054b80c86deb1f2180e5974a64975b3e33d2"
+      "sha256": "3a84b49aefa3ef26fa4502faefa1e07cd7925591698b4ae5d1c8d693d1dfcaf9"
     }
   ]
 }

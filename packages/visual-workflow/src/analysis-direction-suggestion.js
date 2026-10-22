@@ -78,5 +78,10 @@ export function analysisDirectionSuggestion(projectId, packet, analysisFingerpri
   fields.materialLanguage = fields.materialEntries.map(item => [item.material,item.behavior].filter(Boolean).join('：')).join('\n');
   if (fields.materialLanguage) sourcePaths.materialLanguage = Object.entries(sourcePaths).filter(([key]) => /^materialEntries\[\d+\]\.(material|behavior)$/u.test(key)).flatMap(([,paths]) => paths);
   else missing('materialLanguage');
-  return {projectId, sourceType:'analysis_suggestion', analysisFingerprint, fields, sourcePaths, missingFields};
+  // Presentation metadata only: incomplete optional fields do not turn usable
+  // suggestions into a persisted direction or imply user confirmation.
+  const hasSpatialSuggestion = Object.values(sourcePaths).some(paths => paths.some(path =>
+    path.startsWith(`${spatialPath}.`) && !path.includes('.forbidden')));
+  const availability = !packet ? 'missing_packet' : spatial.status === 'ready' && hasSpatialSuggestion ? 'available' : 'insufficient_evidence';
+  return {projectId, sourceType:'analysis_suggestion', availability, analysisFingerprint, fields, sourcePaths, missingFields};
 }
