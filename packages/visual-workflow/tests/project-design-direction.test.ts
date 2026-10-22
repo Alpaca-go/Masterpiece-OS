@@ -25,7 +25,10 @@ test('project direction saves and confirms without registering or uploading a si
   await assert.rejects(fs.access(path.join(f.paths.root,'project-context/art-direction/references.json')));
   await assert.rejects(fs.access(path.join(f.paths.root,'project-context/user-confirmed-visual-decision.json')));
   const reopened=await createProjectDesignDirectionStore(f.projects).get(f.project.id);
-  assert.deepEqual(reopened,f.confirmed);
+  const {analysisSuggestion,...existingDirection}=reopened;
+  assert.deepEqual(existingDirection,f.confirmed);
+  assert.equal(analysisSuggestion.sourceType,'analysis_suggestion');
+  assert.equal(analysisSuggestion.analysisFingerprint,reopened.analysisFingerprint);
   assert.equal(reopened.source.notOriginalBrandFact,true);
 });
 test('web standard task, effective Packet, official compiler, actual image request and validator share the confirmed direction',async t=>{

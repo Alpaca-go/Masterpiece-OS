@@ -4,6 +4,7 @@ import crypto from 'node:crypto';
 import { readJson, writeJson, inside } from './configuration.js';
 import { digest } from './art-direction-contract.js';
 import { applyUserConfirmedVisualDecision } from './generation-runtime/generation/user-confirmed-visual-decision.js';
+import { analysisDirectionSuggestion } from './analysis-direction-suggestion.js';
 
 const recordPath = 'project-context/design-direction.json';
 const legacyPath = 'project-context/user-confirmed-visual-decision.json';
@@ -176,5 +177,9 @@ export function createProjectDesignDirectionStore(projects) {
     if (JSON.stringify(current?.snapshot || null)!==JSON.stringify(snapshot || null)) fail('PROJECT_DESIGN_DIRECTION_COMPILATION_STALE');
     return current;
   }
-  return {get:async projectId=>(await state(projectId)).view,saveDraft,confirm,markForReview,capture,resolve};
+  async function get(projectId) {
+    const {view,packet}=await state(projectId);
+    return {...view,analysisSuggestion:analysisDirectionSuggestion(projectId,packet,view.analysisFingerprint)};
+  }
+  return {get,saveDraft,confirm,markForReview,capture,resolve};
 }

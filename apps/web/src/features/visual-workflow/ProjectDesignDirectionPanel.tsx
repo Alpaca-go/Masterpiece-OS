@@ -7,7 +7,15 @@ const labels = {
   colorAvoid:'整体配色禁用表现',functionalProgram:'功能节点（每行一个区域）',functionalNetwork:'功能网络与通行连接',
   functionalRelationships:'跨区域运营与隐私关系',visibleRequirements:'画面必须可见的功能设施',compositionRequirements:'构图、主次与画面关系',mustAvoid:'必须避免的设计表现'
 };
-const statuses = {missing:'未设置，当前使用分析建议',draft:'草稿，尚未确认生效',confirmed:'已确认，将用于标准空间生图',needs_reconfirmation:'需要重新确认，当前禁止按旧方向生图'};
+const statuses = {missing:'AI 分析建议，尚未人工确认',draft:'草稿，尚未确认生效',confirmed:'已确认，将用于标准空间生图',needs_reconfirmation:'需要重新确认，当前禁止按旧方向生图'};
+function missingLabel(field:string) {
+  const entry=/^(colorEntries|materialEntries)\[(\d+)\]\.(\w+)$/.exec(field);
+  if (entry) {
+    const names:Record<string,string>={name:'颜色名称',role:'视觉职责说明',surfaceApplicability:'作用表面与边界',spatialUsage:'空间作用范围',material:'材质名称',behavior:'光学表现',brandRole:'材料的空间职责',forbidden:'材料禁用表现'};
+    return `${entry[1]==='colorEntries'?'颜色':'材料'} ${Number(entry[2])+1} · ${names[entry[3] || ''] || '待明确内容'}`;
+  }
+  return labels[field as keyof typeof labels] || ({colorEntries:'颜色职责与作用范围',materialEntries:'材料与光学表现',materialLanguage:'材料概述',colorPolicy:'配色概述'} as Record<string,string>)[field] || '待明确内容';
+}
 export function ProjectDesignDirectionPanel({projectId,disabled,onState}: {
   projectId:string; disabled:boolean; onState:(value:ProjectDesignDirection | null,unsaved:boolean)=>void;
 }) {
@@ -19,13 +27,15 @@ export function ProjectDesignDirectionPanel({projectId,disabled,onState}: {
   const [saving,setSaving]=useState(false);
   const [error,setError]=useState('');
   function accept(next:ProjectDesignDirection) {
-    setValue(next);setFields(next.fields);setSource(next.source?.statement || '');setDirty(false);setConfirmed(false);onState(next,false);
+    if (next.projectId!==projectId || next.analysisSuggestion && (next.analysisSuggestion.projectId!==projectId || next.analysisSuggestion.analysisFingerprint!==next.analysisFingerprint)) throw new Error('设计方向建议与当前项目分析不匹配');
+    setValue(next);setFields(next.status==='missing' ? next.analysisSuggestion?.fields || next.fields : next.fields);setSource(next.source?.statement || '');setDirty(false);setConfirmed(false);onState(next,false);
   }
   function edit(next:ProjectDesignDirection['fields']) {
     setFields(next);setDirty(true);setConfirmed(false);onState(value,true);
   }
   useEffect(()=>{
     let active=true;
+    setValue(null);setFields(null);setSource('');setError('');setDirty(false);setConfirmed(false);
     onState(null,false);
     void workflowCall<ProjectDesignDirection>('report',projectId,'project_design_direction').then(next=>{if(active)accept(next);}).catch(reason=>{if(active)setError(String(reason.message));});
     return ()=>{active=false;};
@@ -50,10 +60,12 @@ export function ProjectDesignDirectionPanel({projectId,disabled,onState}: {
     {value?.status==='needs_reconfirmation' && <p role="alert">重新分析、素材或项目资料变化后，原方向仍保留。请核对当前分析与方向，再确认生效。</p>}
     {error && <p role="alert">{error}</p>}
     {value?.validationIssues?.length ? <div role="alert"><p>以下关系尚待补充确认；当前不会用于生图：</p><ul>{value.validationIssues.map(issue=><li key={issue}>{issue}</li>)}</ul></div> : null}
-    {value && fields && <details><summary>查看、编辑并确认设计方向</summary>
+    {value?.status==='missing' && <p>以下内容来自当前项目分析，自动填充不会保存草稿或确认方向。请补充缺项，并填写人工核对依据后自行保存。</p>}
+    {value?.status==='missing' && Boolean(value.analysisSuggestion?.missingFields.length) && <details><summary>待补充：分析中缺少明确来源的字段</summary><ul>{value.analysisSuggestion?.missingFields.map(item=><li key={item.field}>{missingLabel(item.field)}：待补充{item.reason==='explicit_spatial_scope_required'?'（需明确空间作用范围，不由配色角色推断）':item.reason==='explicit_material_role_required'?'（需明确材料的空间职责）':''}</li>)}</ul></details>}
+    {value && fields && <details open={value.status==='missing' || undefined}><summary>查看、编辑并确认设计方向</summary>
       <fieldset disabled={disabled || saving}>
         <label>决策来源与确认依据<textarea value={source} onChange={event=>{setSource(event.target.value);setDirty(true);setConfirmed(false);onState(value,true);}} placeholder="例如：用户确认的设计要求；参考作品仅用于离线审美校准" /></label>
-        {Object.entries(labels).map(([key,label])=><label key={key}>{label}<textarea data-design-field={key} value={fields[key as keyof typeof labels]} onChange={event=>edit({...fields,[key]:event.target.value})} /></label>)}
+        {Object.entries(labels).map(([key,label])=><label key={key}>{label}<textarea data-design-field={key} placeholder={value.status==='missing' && !fields[key as keyof typeof labels]?'待补充：分析中暂无明确来源':undefined} value={fields[key as keyof typeof labels]} onChange={event=>edit({...fields,[key]:event.target.value})} /></label>)}
         <h4>颜色职责与作用范围</h4><p>主色排序不代表铺满空间；每种颜色请明确实际表面和范围。</p>
         {fields.colorEntries.map((entry,index)=><fieldset key={index} data-design-color={index}><legend>颜色 {index+1}</legend><div className="visual-workflow__fields">
           <label>颜色名称<input value={entry.name} data-color-field="name" onChange={event=>edit({...fields,colorEntries:fields.colorEntries.map((item,i)=>i===index?{...item,name:event.target.value}:item)})} /></label>

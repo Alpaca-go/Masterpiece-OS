@@ -15,10 +15,19 @@ export interface ProjectDesignDirection {
   status: 'missing' | 'draft' | 'confirmed' | 'needs_reconfirmation';
   reason: string | null;
   recordSha256: string | null;
+  analysisFingerprint:string;
   source: {statement: string} | null;
   fields: ProjectDesignDirectionFields;
   validationIssues:string[];
   confirmedAt: string | null;
+  analysisSuggestion?: {
+    projectId:string;
+    sourceType:'analysis_suggestion';
+    analysisFingerprint:string;
+    fields:ProjectDesignDirectionFields;
+    sourcePaths:Record<string,string[]>;
+    missingFields:{field:string;reason:string}[];
+  };
 }
 export function createStandardGenerationInput(input: {
   projectId:string; family:string; subtype:string; shot:string; shotExplicit:boolean; ratio:string;
