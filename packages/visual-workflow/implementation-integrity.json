@@ -329,7 +329,7 @@
     },
     {
       "path": "src/generation-runtime/space/semantic/action-verbs.js",
-      "sha256": "ab0b19b888590ecf11ce64f01e7cceadd95bcdfcf8b022134b654832eb00a4e0"
+      "sha256": "9771f3f0e64821ff958f15bbbc0e48d425206fd68014b19495e6af6b16c40981"
     },
     {
       "path": "src/generation-runtime/space/semantic/compile-spatial-mechanisms.js",
@@ -349,7 +349,7 @@
     },
     {
       "path": "src/generation-runtime/space/semantic/normalize-architecture-semantics.js",
-      "sha256": "fd114d54b6ce92c3dd5e0d4d69a8bc66851216dce608ec0ca23ad1dffc028250"
+      "sha256": "e9437e881740c5ee7ce8f9ca25ea42c02abf04ce651476ea0029b5137a0afd03"
     },
     {
       "path": "src/generation-runtime/space/semantic/resolve-spatial-color-role.js",
@@ -365,7 +365,7 @@
     },
     {
       "path": "src/generation-runtime/space/semantic/separate-space-semantics.js",
-      "sha256": "2ba3e90662f6167a11082c97755af4ba671b0a3dc22e174f4fb53de55e63daaf"
+      "sha256": "17be6a91ec0d268a7c6b1f8f11c8581c4c230a9f7290ffe6130e18c6c12e7b98"
     },
     {
       "path": "src/generation-runtime/space/semantic/validate-spatial-semantics.js",

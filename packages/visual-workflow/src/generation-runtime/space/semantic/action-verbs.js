@@ -1,3 +1,4 @@
+import { isExplicitLayoutPhrase } from './separate-space-semantics.js';
 const ACTION_VERB_RULES = Object.freeze([
   // --- curve / bend / arc (FORM) ---
   {
@@ -192,7 +193,7 @@ const ACTION_VERB_RULES = Object.freeze([
     organization: "volume reads as generous but not overwhelming"
   }
 ]);
-function detectSignals(text) {
+function detectSignals(text, sourceField = '') {
   const t = String(text || "").toLowerCase();
   const found = [];
   for (const rule of ACTION_VERB_RULES) {
@@ -204,6 +205,7 @@ function detectSignals(text) {
       }
     }
   }
+  if (isExplicitLayoutPhrase(text, sourceField)) found.push('explicit_layout');
   return found;
 }
 function signalsToActions(signals) {
@@ -229,8 +231,8 @@ function signalsToActions(signals) {
   }
   return { strategy, form, organization };
 }
-function textToActions(text) {
-  const signals = detectSignals(text);
+function textToActions(text, sourceField = '') {
+  const signals = detectSignals(text, sourceField);
   const source = String(text || "").trim();
   // Signals classify existing intent; they do not authorize new objects,
   // geometry, lighting hardware or operational relationships.
@@ -253,13 +255,13 @@ function rewriteArchitectureItems(items) {
       dropped += 1;
       continue;
     }
-    const signals = detectSignals(strippedText);
+    const signals = detectSignals(strippedText, item.sourceField);
     if (signals.length === 0) {
       rewrittenItems.push({ ...item, signals: [], strategy: [], form: [], organization: [], rewritten: false, dropped: true, dropReason: "no_spatial_signal" });
       dropped += 1;
       continue;
     }
-    const actions = textToActions(strippedText);
+    const actions = textToActions(strippedText, item.sourceField);
     rewritten += 1;
     for (const s of actions.strategy) {
       const k = s.toLowerCase();

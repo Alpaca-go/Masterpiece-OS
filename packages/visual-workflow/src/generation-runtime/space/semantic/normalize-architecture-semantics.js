@@ -2,7 +2,7 @@ import {
   SPATIAL_PROPERTY_TERMS,
   ARCHITECTURE_TERMS
 } from "./lexicons.js";
-import { classifyPhrase, SEMANTIC_CLASS } from "./separate-space-semantics.js";
+import { classifyPhrase, SEMANTIC_CLASS, isExplicitLayoutPhrase } from "./separate-space-semantics.js";
 const MOTIF_SUBSTITUTIONS = Object.freeze([
   // Order matters: longest / most specific phrases first so a compound is not
   // partially matched by a shorter term.
@@ -91,7 +91,7 @@ function normalizeArchitectureSemantics(rawPhrase, sourceField = "") {
     }
   }
   text = cleanText(text);
-  const included = analysis.classification !== SEMANTIC_CLASS.BRAND_MOTIF && Boolean(text) && hasSpatialContent(text);
+  const included = analysis.classification !== SEMANTIC_CLASS.BRAND_MOTIF && Boolean(text) && (hasSpatialContent(text) || isExplicitLayoutPhrase(text, sourceField));
   return {
     raw,
     normalized: included ? text : null,

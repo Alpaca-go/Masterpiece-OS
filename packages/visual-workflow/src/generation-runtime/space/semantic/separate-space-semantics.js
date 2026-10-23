@@ -69,7 +69,7 @@ function classifyPhrase(rawPhrase, sourceField = "") {
   const decorativeObjectHits = [...DECORATIVE_OBJECT_TERMS].filter((t) => hasTermAsWord(text, t));
   const hasMotif = motifHits.length > 0;
   const hasColor = colorHits.length > 0;
-  const hasArch = archHits > 0 || propertyHits > 0;
+  const hasArch = archHits > 0 || propertyHits > 0 || isExplicitLayoutPhrase(rawPhrase, field);
   const hasDecorativeObject = decorativeObjectHits.length > 0;
   const brandProvenance = BRAND_PROVENANCE_FIELDS.has(field);
   const functionalProvenance = FUNCTIONAL_PROVENANCE_FIELDS.has(field);
@@ -109,6 +109,11 @@ function classifyPhrase(rawPhrase, sourceField = "") {
     accent,
     geometryAction
   };
+}
+// Only a complete layout statement in the dedicated structural field grants
+// spatial meaning. Marketing, menu, risk and brand prose cannot use this path.
+function isExplicitLayoutPhrase(text, sourceField) {
+  return sourceField === 'structureLanguage' && /^(?:开放式(?:空间|布局|厨房|明档)?|明档(?:厨房|操作区)?|open[- ]plan(?: layout)?|open kitchen)[。.!！]?$/iu.test(String(text || '').trim());
 }
 function separateSpaceSemantics(items) {
   const buckets = {
@@ -152,6 +157,7 @@ function separateSpaceSemantics(items) {
   return buckets;
 }
 export {
+  isExplicitLayoutPhrase,
   SEMANTIC_CLASS,
   classifyPhrase,
   separateSpaceSemantics
