@@ -501,7 +501,7 @@
     },
     {
       "path": "src/service.js",
-      "sha256": "1386ec2724fc3fa4af4b1769c4fcdb91abb8962366aac70cee5cae261f0e85d7"
+      "sha256": "9b2f7ab0d11f2135459a6b5ec40629effb11656a76a0dc7009f872566fc80544"
     },
     {
       "path": "src/support/creative-production-runtime/src/packaging-translation.js",
@@ -530,6 +530,10 @@
     {
       "path": "src/analysis-direction-suggestion.js",
       "sha256": "ab6a92690104d5d963c772a418c13b3f3de61c2e5bd0135f84b777250efd3683"
+    },
+    {
+      "path": "src/generation-baseline-lock.js",
+      "sha256": "dd13f84fa39cefd9941f242428abe0418d6537b1cb3ddaa25552deb3e82d6111"
     }
   ],
   "frontendFiles": [

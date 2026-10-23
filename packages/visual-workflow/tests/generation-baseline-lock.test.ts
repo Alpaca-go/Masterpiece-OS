@@ -1,0 +1,41 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import {createGenerationBaselineGuard} from '../src/generation-baseline-lock.js';
+import {createVisualWorkflow} from '../src/service.js';
+
+const sha=(value:any)=>crypto.createHash('sha256').update(value).digest('hex');
+test('baseline lock prevents input/model/code drift and old tasks; other projects remain independent, zero network',async t=>{
+  const root=await fs.mkdtemp(path.join(os.tmpdir(),'baseline-lock-'));t.after(()=>fs.rm(root,{recursive:true,force:true}));
+  const id=crypto.randomUUID();const directory=path.join(root,'data/projects',id);await fs.mkdir(directory,{recursive:true});
+  await fs.writeFile(directory+'/project.json','original');
+  const profile={id:'local-model',model:'fixture'};const settings={imageProfileId:profile.id,profiles:[profile]};
+  await fs.writeFile(root+'/settings.json',JSON.stringify(settings));
+  const implementation={implementationDigest:'reviewed-code'};
+  const lock={projectId:id,files:[{path:'project.json',sha256:sha('original')}],recordSha256:'record',analysisFingerprint:'analysis',profileSha256:sha(JSON.stringify(profile)),implementationDigest:implementation.implementationDigest};
+  const policy={schemaVersion:'1.0',projects:[lock]};await fs.writeFile(root+'/generation-baseline-locks.json',JSON.stringify(policy));
+  const guard=createGenerationBaselineGuard(root,{projectRoot:()=>directory});const input={projectId:id,task:{deliverableFamily:'space',generationBasis:'standard'}};
+  await guard('visual-workflow:compile',[input],implementation);
+  for(const op of ['analyze','update-project','import-files','select-logo','import-project'])await assert.rejects(guard('visual-workflow:'+op,[id],implementation),/BASELINE_LOCKED/);
+  await guard('visual-workflow:analyze',[crypto.randomUUID()],implementation);
+  await assert.rejects(guard('visual-workflow:compile',[input],{implementationDigest:'changed'}),/implementation changed/);
+  await fs.writeFile(directory+'/project.json','changed');await assert.rejects(guard('visual-workflow:compile',[input],implementation),/input changed/);await fs.writeFile(directory+'/project.json','original');
+  await fs.writeFile(root+'/settings.json',JSON.stringify({...settings,profiles:[{...profile,model:'different'}]}));await assert.rejects(guard('visual-workflow:compile',[input],implementation),/model configuration/);await fs.writeFile(root+'/settings.json',JSON.stringify(settings));
+  await assert.rejects(guard('visual-workflow:compile',[{...input,task:{...input.task,referenceAssetIds:['reference']}}],implementation),/without references/);
+  const taskId='vnext-task-'+crypto.randomUUID();const compiled=directory+'/image-generation-vnext/compilations/'+taskId;await fs.mkdir(compiled,{recursive:true});await fs.writeFile(compiled+'/project-design-direction.json','null');
+  await assert.rejects(guard('visual-workflow:generate',[{projectId:id,taskId}],implementation),/旧任务/);
+  await fs.writeFile(compiled+'/project-design-direction.json',JSON.stringify({projectId:id,recordSha256:'record',analysisFingerprint:'analysis'}));await guard('visual-workflow:generate',[{projectId:id,taskId}],implementation);
+  await fs.unlink(root+'/generation-baseline-locks.json');await assert.rejects(guard('visual-workflow:compile',[input],implementation),/policy changed/);
+  const ordinary=createGenerationBaselineGuard(root,{projectRoot:()=>directory});await ordinary('visual-workflow:compile',[input],implementation);
+  await fs.writeFile(directory+'/generation-baseline-required.json',JSON.stringify({required:true}));
+  await assert.rejects(createGenerationBaselineGuard(root,{projectRoot:()=>directory})('visual-workflow:compile',[input],implementation),/required baseline policy is missing/);
+  // The normal business composition applies the guard before any model/credential access.
+  await fs.writeFile(root+'/generation-baseline-locks.json',JSON.stringify(policy));let networkCalls=0;
+  const workflow=createVisualWorkflow({root,fetchImpl:()=>{networkCalls++;throw new Error('NETWORK_FORBIDDEN');}});
+  await assert.rejects(workflow.operations['visual-workflow:analyze']({},id),/BASELINE_LOCKED/);
+  await assert.rejects(workflow.operations['visual-workflow:generate']({},{projectId:id,taskId}),/implementation changed/);
+  assert.equal(networkCalls,0);
+});

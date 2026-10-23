@@ -13,6 +13,7 @@ import { verifyImplementation } from './integrity.js';
 import { createArtDirectionStore } from './art-direction-store.js';
 import { assertArtDirectionModel } from './art-direction-contract.js';
 import { createProjectDesignDirectionStore } from './project-design-direction.js';
+import { createGenerationBaselineGuard } from './generation-baseline-lock.js';
 
 // This is the only production composition root for this bounded workflow.
 // Other product domains receive neither its services nor its storage paths.
@@ -22,6 +23,7 @@ export function createVisualWorkflow(options) {
   const projects = createProjectStore(path.join(root, 'data'));
   const artDirection = createArtDirectionStore(projects);
   const designDirection = createProjectDesignDirectionStore(projects);
+  const baselineGuard = createGenerationBaselineGuard(root,projects);
   const emit = options.emit || (() => {});
   const pipeline = createPipelineService(projects, configuration.readCredentials, configuration.get,
     progress => emit('visual-workflow:analysis-progress', progress),
@@ -179,6 +181,7 @@ export function createVisualWorkflow(options) {
   const operations = Object.freeze(Object.fromEntries(Object.entries(handlers).map(([channel, handler]) => [channel, async (...args) => {
     verified ||= verifyImplementation();
     const implementation = await verified;
+    await baselineGuard(channel,args.slice(1),implementation);
     const result = await handler(...args);
     if ((channel === 'visual-workflow:analyze' || channel === 'visual-workflow:compile') && result) {
       const directory = result.artifactDirectory || (await projects.paths(args[1])).runtime;
