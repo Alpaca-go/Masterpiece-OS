@@ -44,6 +44,20 @@ export function createProjectStore(dataRoot) {
     }
     return projects.sort((a,b) => b.updatedAt.localeCompare(a.updatedAt));
   }
+  async function updateDetails(id, input = {}) {
+    const project = await get(id);
+    if (project.status === 'running') throw new Error('分析期间不能修改项目资料');
+    if (typeof input.expectedUpdatedAt !== 'string' || input.expectedUpdatedAt !== project.updatedAt) throw new Error('项目资料已变化，请重新打开项目后再保存');
+    const projectName = typeof input.projectName === 'string' ? input.projectName.trim() : '';
+    const industry = typeof input.industry === 'string' ? input.industry.trim() : '';
+    if (!projectName || projectName.length > 200 || !industry || industry.length > 200) throw new Error('项目名称和所属行业不能为空，且各不超过 200 字');
+    if (projectName === project.projectName && industry === project.industry) return project;
+    // Identity is an analysis input. Retain historical outputs, but never reuse
+    // their context for generation under new project facts.
+    return update(id, {projectName,brandName:projectName,industry,projectNameSource:'user_input',projectNameConfidence:1,
+      factConfidence:{...project.factConfidence,brandName:1,industry:1},
+      status:project.assets.length ? 'ready' : 'draft',visualContextStatus:'missing',visualContextVNextStatus:'missing'});
+  }
   async function create(input = {}) {
     const id = crypto.randomUUID();
     const name = String(input.projectName || '未命名视觉项目').trim();
@@ -94,5 +108,5 @@ export function createProjectStore(dataRoot) {
     const project = await get(id);
     return { projectId: id, totalFiles: project.assets.length, imageCount: project.imageCount, items: project.assets.map(asset => ({ ...asset, name: asset.originalName, kind: asset.mimeType.startsWith('image/') ? 'image' : 'pdf', usage: 'analysis_source' })) };
   }
-  return { create, list, get, update, paths, scan, importFiles, projectRoot };
+  return { create, list, get, update, updateDetails, paths, scan, importFiles, projectRoot };
 }

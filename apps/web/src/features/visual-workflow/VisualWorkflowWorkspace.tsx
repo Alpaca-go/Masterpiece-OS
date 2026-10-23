@@ -79,6 +79,7 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
     finally { setBusy(''); await refresh().catch(() => {}); }
   }
   async function open(item: WorkflowProject) {
+    setName(item.projectName);setIndustry(item.industry);
     setDesignDirection(null);setDirectionUnsaved(false);
     setProject(item); setReport(''); setImage(''); setRun(null); setResultLabel(''); setStep(item.status === 'completed' ? 2 : 0);
     if (item.lastReportFilename) setReport(await workflowCall<string>('report', item.id) || '');
@@ -99,6 +100,7 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
         setProject(current);
       }
       setProjects(await workflowCall<WorkflowProject[]>('list-projects')); setProgress('素材导入完成');
+      if (current) {setName(current.projectName);setIndustry(current.industry);}
     });
   }
   async function analyze() {
@@ -107,7 +109,7 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
       setStep(1); setProgress('正在整理素材');
       try {
         const result = await workflowCall<{project: WorkflowProject}>('analyze', project.id, true);
-        setProject(result.project); setReport(await workflowCall<string>('report', project.id) || ''); setStep(2);
+        setProject(result.project);setName(result.project.projectName);setIndustry(result.project.industry); setReport(await workflowCall<string>('report', project.id) || ''); setStep(2);
       } finally {setDirectionRefresh(value=>value+1);}
     });
   }
@@ -137,7 +139,8 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
       setImage(result.dataUrl);setResultLabel('原始 Logo 后期合成完成');
     });
   }
-  const canGenerate = project?.status === 'completed' && project.visualContextVNextStatus === 'ready';
+  const metadataUnsaved = Boolean(project && (name!==project.projectName || industry!==project.industry));
+  const canGenerate = !metadataUnsaved && project?.status === 'completed' && project.visualContextVNextStatus === 'ready';
   const html = DOMPurify.sanitize(marked.parse(report, { async: false }));
 
   return <div className="visual-workflow">
@@ -160,7 +163,7 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
     </section>}
     {!settings?.analysisProfileId && !showSettings && <div className="visual-workflow__progress">请先<button onClick={() => setShowSettings(true)}>配置此功能的分析与生图模型</button></div>}
     <div className="visual-workflow__layout">
-      <aside className="visual-workflow__projects"><button disabled={Boolean(busy)} onClick={() => {setProject(null); setStep(0); setImage(''); setReport('');}}>＋ 新建视觉项目</button>
+      <aside className="visual-workflow__projects"><button disabled={Boolean(busy)} onClick={() => {setProject(null);setName('');setIndustry('');setDescription(''); setStep(0); setImage(''); setReport('');}}>＋ 新建视觉项目</button>
         {legacyId && !projects.some(p => p.id === legacyId) && <button disabled={Boolean(busy)} onClick={() => void action('正在迁入项目副本', async () => { await open(await workflowCall<WorkflowProject>('import-project', legacyId)); })}>迁入并打开原项目</button>}
         <p>独立项目</p>{projects.map(item => <button key={item.id} disabled={Boolean(busy)} className={project?.id === item.id ? 'is-selected' : ''} onClick={() => void action('正在打开项目', () => open(item))}><strong>{item.projectName}</strong><small>{statusLabels[item.status] || item.status} · {item.assetCount} 个素材</small></button>)}
         {!projects.length && <p>创建项目或从首页选择已有项目，一次性迁入其素材和分析结果。</p>}
@@ -170,13 +173,14 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
         <h2>{project?.projectName || '新建视觉项目'}</h2>
         {project && <ProjectDesignDirectionPanel key={`${project.id}:${project.status}:${directionRefresh}`} projectId={project.id} disabled={Boolean(busy)} onState={(value,unsaved)=>{setDesignDirection(value);setDirectionUnsaved(unsaved);}} />}
         {step === 0 && <section><div className="visual-workflow__fields">
-          <label>项目 / 品牌名称<input value={project?.projectName || name} disabled={Boolean(project)} onChange={event => setName(event.target.value)} /></label>
-          <label>所属行业<input value={project?.industry || industry} disabled={Boolean(project)} onChange={event => setIndustry(event.target.value)} /></label>
+          <label>项目 / 品牌名称<input value={name} maxLength={200} disabled={Boolean(busy) || project?.status==='running'} onChange={event => setName(event.target.value)} /></label>
+          <label>所属行业<input value={industry} maxLength={200} disabled={Boolean(busy) || project?.status==='running'} onChange={event => setIndustry(event.target.value)} /></label>
           {!project && <label>项目说明<textarea value={description} onChange={event => setDescription(event.target.value)} /></label>}
-        </div><div className="visual-workflow__upload"><label>选择图片、PDF 或 ZIP<input type="file" multiple accept=".png,.jpg,.jpeg,.webp,.pdf,.zip" disabled={Boolean(busy)} onChange={event => void upload(event.target.files)} /></label><label>导入文件夹<input type="file" multiple {...{webkitdirectory: ''}} disabled={Boolean(busy)} onChange={event => void upload(event.target.files)} /></label></div>
-          {project && <><p>已导入 {project.assetCount} 个素材。原始 Logo 会保持锁定。</p><label>原始 Logo<select value={project.assets.find(a => a.role === 'logo')?.id || ''} disabled={Boolean(busy)} onChange={event => void action('正在设置原始 Logo', async () => { setProject(await workflowCall<WorkflowProject>('select-logo', project.id, event.target.value)); })}><option value="">选择已导入的 Logo 图片</option>{project.assets.filter(a => a.mimeType.startsWith('image/')).map(asset => <option key={asset.id} value={asset.id}>{asset.originalName}</option>)}</select></label><ul className="visual-workflow__asset-list">{project.assets.map(asset => <li key={asset.id}>{asset.originalName}{asset.role === 'logo' ? ' · 原始 Logo' : ''}</li>)}</ul><button disabled={Boolean(busy) || !project.assetCount || !settings?.analysisProfileId} onClick={() => void analyze()}>开始视觉分析</button></>}
+        </div>{project && <><button type="button" disabled={Boolean(busy) || project.status==='running' || !metadataUnsaved || !name.trim() || !industry.trim()} onClick={()=>void action('正在保存项目资料',async()=>{const saved=await workflowCall<WorkflowProject>('update-project',project.id,{projectName:name,industry,expectedUpdatedAt:project.updatedAt});setProject(saved);setName(saved.projectName);setIndustry(saved.industry);setDirectionRefresh(value=>value+1);})}>保存项目资料</button><p>{metadataUnsaved?'有未保存的项目资料。修改名称或行业后，历史报告保留，需重新分析后才能生图，并重新核对设计方向。':'项目资料已保存。'}</p></>}
+        <div className="visual-workflow__upload"><label>选择图片、PDF 或 ZIP<input type="file" multiple accept=".png,.jpg,.jpeg,.webp,.pdf,.zip" disabled={Boolean(busy) || metadataUnsaved} onChange={event => void upload(event.target.files)} /></label><label>导入文件夹<input type="file" multiple {...{webkitdirectory: ''}} disabled={Boolean(busy) || metadataUnsaved} onChange={event => void upload(event.target.files)} /></label></div>
+          {project && <><p>已导入 {project.assetCount} 个素材。原始 Logo 会保持锁定。</p><label>原始 Logo<select value={project.assets.find(a => a.role === 'logo')?.id || ''} disabled={Boolean(busy)} onChange={event => void action('正在设置原始 Logo', async () => { setProject(await workflowCall<WorkflowProject>('select-logo', project.id, event.target.value)); })}><option value="">选择已导入的 Logo 图片</option>{project.assets.filter(a => a.mimeType.startsWith('image/')).map(asset => <option key={asset.id} value={asset.id}>{asset.originalName}</option>)}</select></label><ul className="visual-workflow__asset-list">{project.assets.map(asset => <li key={asset.id}>{asset.originalName}{asset.role === 'logo' ? ' · 原始 Logo' : ''}</li>)}</ul><button disabled={Boolean(busy) || !project.assetCount || metadataUnsaved || !settings?.analysisProfileId} onClick={() => void analyze()}>开始视觉分析</button></>}
         </section>}
-        {step === 1 && <section><p>{progress || '使用本项目的素材分析品牌视觉与设计方向。'}</p>{project?.lastError && <p role="alert">{project.lastError}</p>}<button disabled={Boolean(busy) || !settings?.analysisProfileId} onClick={() => void analyze()}>重新分析</button>{busy && project && <button onClick={() => void workflowCall('cancel-analysis', project.id)}>取消分析</button>}</section>}
+        {step === 1 && <section><p>{progress || '使用本项目的素材分析品牌视觉与设计方向。'}</p>{project?.lastError && <p role="alert">{project.lastError}</p>}<button disabled={Boolean(busy) || metadataUnsaved || !settings?.analysisProfileId} onClick={() => void analyze()}>重新分析</button>{busy && project && <button onClick={() => void workflowCall('cancel-analysis', project.id)}>取消分析</button>}</section>}
         {step === 2 && <section><button disabled={Boolean(busy) || !canGenerate} onClick={() => setStep(3)}>进入智能生图 →</button><article className="visual-workflow__report" dangerouslySetInnerHTML={{__html: html}} /></section>}
         {step === 3 && <section className="visual-workflow__generation"><form onSubmit={event => {event.preventDefault(); void generate();}}>
           <label>成果类型<select value={family} onChange={event => { const next = event.target.value; const defaults = DEFAULTS[next]; setFamily(next); setSubtype(defaults?.[0] || ''); setShot(defaults?.[1] || ''); setShotExplicit(false); }}>{Object.entries(FAMILY_LABELS).map(([id, label]) => <option key={id} value={id}>{label}</option>)}</select></label>

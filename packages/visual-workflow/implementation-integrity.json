@@ -429,7 +429,7 @@
     },
     {
       "path": "src/project-store.js",
-      "sha256": "f540574039b3289dec7a2bce97f776c9c35ae2a767f4722c6342a2d2644942bc"
+      "sha256": "da493e7a958ebf356e519c855a89b8d96965597a9ad07cb9b14f3b476da4c376"
     },
     {
       "path": "src/runtime/analysis-contract.js",
@@ -501,7 +501,7 @@
     },
     {
       "path": "src/service.js",
-      "sha256": "4ff5a003869bdadfc97f3d0b743d4a04acba66ee76bc784edaf651b586013b39"
+      "sha256": "1386ec2724fc3fa4af4b1769c4fcdb91abb8962366aac70cee5cae261f0e85d7"
     },
     {
       "path": "src/support/creative-production-runtime/src/packaging-translation.js",
@@ -535,11 +535,11 @@
   "frontendFiles": [
     {
       "path": "apps/web/src/features/visual-workflow/VisualWorkflowWorkspace.tsx",
-      "sha256": "18a7c7e2c13de9875bb74256ceb9feb1e6fee9ca6b186391e5519dc567ba7d29"
+      "sha256": "27e9fb3beb087463c08e190530c6693cd36b18aa64a25add839023d798ce835d"
     },
     {
       "path": "apps/web/src/features/visual-workflow/api.ts",
-      "sha256": "01fad8c94e52da1fac0e0ba33722eec7ae60a46ea617a307bcc0e77a2e90657f"
+      "sha256": "a46b48f0bf82d7ef5fd55ad03e6bede0e2c43910e6f61e381b038effd558cc3a"
     },
     {
       "path": "apps/web/src/features/visual-workflow/visual-workflow.css",

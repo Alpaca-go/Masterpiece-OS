@@ -1,7 +1,7 @@
 export interface WorkflowProfile { id: string; name: string; modelId: string; modelType: string; provider: string; baseUrl: string; protocol: string; hasApiKey: boolean }
 export interface WorkflowSettings { profiles: WorkflowProfile[]; analysisProfileId: string | null; imageProfileId: string | null }
 export interface WorkflowAsset { id: string; originalName: string; role: string; mimeType: string }
-export interface WorkflowProject { id: string; projectName: string; brandName: string; industry: string; description: string; status: string; assetCount: number; assets: WorkflowAsset[]; lastReportFilename?: string; visualContextVNextStatus?: string; lastError?: string }
+export interface WorkflowProject { id: string; projectName: string; brandName: string; industry: string; description: string; status: string; assetCount: number; assets: WorkflowAsset[]; updatedAt:string; lastReportFilename?: string; visualContextVNextStatus?: string; lastError?: string }
 export interface WorkflowRun { runId: string; status: string; errorMessage?: string; images: Array<{imageId: string}> }
 export type WorkflowOptions = Record<string, { subtypes: string[]; shots: string[] }>;
 export interface DesignColorEntry { name:string; paletteRole:string; role:string; surfaceApplicability:string; spatialUsage:string }

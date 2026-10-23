@@ -132,6 +132,10 @@ export function createVisualWorkflow(options) {
     'visual-workflow:import-configuration': () => importConfiguration(),
     'visual-workflow:list-projects': async () => Promise.all((await projects.list()).map(pipeline.reconcileOrphanedProject)),
     'visual-workflow:create-project': (_context, input) => projects.create(input),
+    'visual-workflow:update-project': (_context, id, input) => {
+      if (pipeline.isActive(id)) throw new Error('分析期间不能修改项目资料');
+      return projects.updateDetails(id,input);
+    },
     'visual-workflow:import-files': (_context, id, files) => {
       if (files?.purpose === 'project_design_direction') {
         if (files.action === 'save_draft') return designDirection.saveDraft(id,files);
