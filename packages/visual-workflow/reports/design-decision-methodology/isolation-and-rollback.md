@@ -1,5 +1,7 @@
 # 隔离与退出方案
 
+> 本文描述第一阶段。第二阶段已在实验目录修改独立工作流与其前端，见 [实现记录](automatic-proposal-implementation.md)。原工作区及恢复提交仍不变；第二阶段的启动脚本明确隔离 userData，禁止把实验配置复制回正式目录。
+
 - 原工作区：`E:/Masterpiece-OS-Main-Publish-20261015-Verified`，本地 `main`。
 - 本轮恢复提交：`98bcac78943bd97a24d8f536ada833a929b31672`。这是本轮起点，不替代仓库历史 freeze PIN，也不宣布新的质量冻结。
 - 实验分支：`experiment/design-decision-methodology`。

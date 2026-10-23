@@ -27,7 +27,9 @@ export function ProjectDesignDirectionPanel({projectId,disabled,onState}: {
   const [error,setError]=useState('');
   function accept(next:ProjectDesignDirection) {
     if (next.projectId!==projectId || next.analysisSuggestion && (next.analysisSuggestion.projectId!==projectId || next.analysisSuggestion.analysisFingerprint!==next.analysisFingerprint)) throw new Error('设计方向建议与当前项目分析不匹配');
-    setValue(next);setFields(next.status==='missing' ? next.analysisSuggestion?.fields || next.fields : next.fields);setSource(next.source?.statement || '');setDirty(false);setConfirmed(false);onState(next,false);
+    setValue(next);setFields(next.status==='missing' ? next.analysisSuggestion?.fields || next.fields : next.fields);
+    setSource(next.source?.statement || (next.status==='missing' && next.analysisSuggestion?.designProposal ? '当前项目分析生成的模型设计提案；原始事实、设计假设及待确认条件分别保留，需人工核对后确认。' : ''));
+    setDirty(false);setConfirmed(false);onState(next,false);
   }
   function edit(next:ProjectDesignDirection['fields']) {
     setFields(next);setDirty(true);setConfirmed(false);onState(value,true);
@@ -58,6 +60,10 @@ export function ProjectDesignDirectionPanel({projectId,disabled,onState}: {
     <p>这里记录用户的项目设计决策，不改写原始品牌资料。标准生图只发送文字；审美校准图片不会自动作为生图参考。</p>
     {value?.status==='needs_reconfirmation' && <p role="alert">重新分析、素材或项目资料变化后，原方向仍保留。请核对当前分析与方向，再确认生效。</p>}
     {error && <p role="alert">{error}</p>}
+    {value?.status==='missing' && value.analysisSuggestion?.designProposal && <div>
+      <p>模型已自动补全设计提案。以下是推导依据和设计假设，不代表原始资料或已确认事实；请核对后保存并确认。</p>
+      {(['basis','assumptions','unresolvedQuestions'] as const).map(key=><details key={key} open={key==='unresolvedQuestions'}><summary>{{basis:'设计推导依据',assumptions:'方案成立的假设',unresolvedQuestions:'仍需确认的条件'}[key]}</summary><ul>{value.analysisSuggestion?.designProposal?.[key].map((item,index)=><li key={index}>{item}</li>)}</ul></details>)}
+    </div>}
     {value?.validationIssues?.length ? <div role="alert"><p>以下关系尚待补充确认；当前不会用于生图：</p><ul>{value.validationIssues.map(issue=><li key={issue}>{issue}</li>)}</ul></div> : null}
     {value?.status==='missing' && <p>{!value.analysisSuggestion || value.analysisSuggestion.availability==='missing_packet'
       ? '尚无分析结果。完成视觉分析后，这里会显示有来源的建议；也可手动填写并保存草稿。'

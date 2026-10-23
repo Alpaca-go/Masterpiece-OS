@@ -365,7 +365,7 @@
     },
     {
       "path": "src/generation-runtime/space/semantic/separate-space-semantics.js",
-      "sha256": "17be6a91ec0d268a7c6b1f8f11c8581c4c230a9f7290ffe6130e18c6c12e7b98"
+      "sha256": "714dca781a2d6e9de72a303da36a85b53818febada6b854029c0670b50ac3fb3"
     },
     {
       "path": "src/generation-runtime/space/semantic/validate-spatial-semantics.js",
@@ -485,11 +485,11 @@
     },
     {
       "path": "src/runtime/unified-visual-understanding.js",
-      "sha256": "8bbde6962d9fbb4b780a82c94851764765b524270a3f086ebe2ba2295da452f7"
+      "sha256": "ef96ba694ba77f3ec125afbe478a9bf9c57c812a177788293e0eff64a5bbacd9"
     },
     {
       "path": "src/runtime/visual-decision-packet.js",
-      "sha256": "c2cd5758fa708cc1263bfcbf95c3d51816ac4097d4d35da4e488b26dada3e89a"
+      "sha256": "3356a06a9defa7a727f9aaa667e1f2ac19ebb43f78485f80f9f60b8cdd666e65"
     },
     {
       "path": "src/runtime/visual-decision-report-compiler.js",
@@ -529,7 +529,7 @@
     },
     {
       "path": "src/analysis-direction-suggestion.js",
-      "sha256": "ab6a92690104d5d963c772a418c13b3f3de61c2e5bd0135f84b777250efd3683"
+      "sha256": "6cca49c384f0601675c2700efb447577f4929428b7f49d36c351e69110f3a18d"
     },
     {
       "path": "src/generation-baseline-lock.js",
@@ -543,7 +543,7 @@
     },
     {
       "path": "apps/web/src/features/visual-workflow/api.ts",
-      "sha256": "a46b48f0bf82d7ef5fd55ad03e6bede0e2c43910e6f61e381b038effd558cc3a"
+      "sha256": "204d7f19eceeb1dd299c934c45762c36be344dc1466fd8377ec4d242c015ab4c"
     },
     {
       "path": "apps/web/src/features/visual-workflow/visual-workflow.css",
@@ -551,7 +551,7 @@
     },
     {
       "path": "apps/web/src/features/visual-workflow/ProjectDesignDirectionPanel.tsx",
-      "sha256": "3a84b49aefa3ef26fa4502faefa1e07cd7925591698b4ae5d1c8d693d1dfcaf9"
+      "sha256": "f18a3cecdad3e0c888be6212540af05ec2735711c847a6178ddeabc7f1e61f5f"
     }
   ]
 }

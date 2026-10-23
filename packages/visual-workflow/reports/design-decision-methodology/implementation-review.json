@@ -1,0 +1,48 @@
+{
+  "status": "applied-explicit-reviewed-scope",
+  "authorization": "User explicitly requested replacing native strategy in the isolated experiment with automatic model design proposals, then said to begin.",
+  "baseline": "980cc45e704837315d3f55452da05a8dacffa3c2",
+  "qualityAcceptance": "pending-separate-quality-repair",
+  "scope": "Four independent backend modules and two independent UI files. No shared code, model adapter, retry or Golden change.",
+  "oldManifestSha256": "bac01b2b773989fe99fb7568b05a3a9b8eb2621c802bccbc2150ff4e459d1a95",
+  "entries": [
+    {
+      "group": "files",
+      "path": "src/generation-runtime/space/semantic/separate-space-semantics.js",
+      "before": "17be6a91ec0d268a7c6b1f8f11c8581c4c230a9f7290ffe6130e18c6c12e7b98",
+      "after": "714dca781a2d6e9de72a303da36a85b53818febada6b854029c0670b50ac3fb3"
+    },
+    {
+      "group": "files",
+      "path": "src/runtime/unified-visual-understanding.js",
+      "before": "8bbde6962d9fbb4b780a82c94851764765b524270a3f086ebe2ba2295da452f7",
+      "after": "ef96ba694ba77f3ec125afbe478a9bf9c57c812a177788293e0eff64a5bbacd9"
+    },
+    {
+      "group": "files",
+      "path": "src/runtime/visual-decision-packet.js",
+      "before": "c2cd5758fa708cc1263bfcbf95c3d51816ac4097d4d35da4e488b26dada3e89a",
+      "after": "3356a06a9defa7a727f9aaa667e1f2ac19ebb43f78485f80f9f60b8cdd666e65"
+    },
+    {
+      "group": "files",
+      "path": "src/analysis-direction-suggestion.js",
+      "before": "ab6a92690104d5d963c772a418c13b3f3de61c2e5bd0135f84b777250efd3683",
+      "after": "6cca49c384f0601675c2700efb447577f4929428b7f49d36c351e69110f3a18d"
+    },
+    {
+      "group": "frontendFiles",
+      "path": "apps/web/src/features/visual-workflow/api.ts",
+      "before": "a46b48f0bf82d7ef5fd55ad03e6bede0e2c43910e6f61e381b038effd558cc3a",
+      "after": "204d7f19eceeb1dd299c934c45762c36be344dc1466fd8377ec4d242c015ab4c"
+    },
+    {
+      "group": "frontendFiles",
+      "path": "apps/web/src/features/visual-workflow/ProjectDesignDirectionPanel.tsx",
+      "before": "3a84b49aefa3ef26fa4502faefa1e07cd7925591698b4ae5d1c8d693d1dfcaf9",
+      "after": "f18a3cecdad3e0c888be6212540af05ec2735711c847a6178ddeabc7f1e61f5f"
+    }
+  ],
+  "newManifestSha256": "8646f6664d40f0c2de3b6428c98edaf862600ce57b6be29cf16fc95266c2c952",
+  "visualAcceptance": "not-evaluated"
+}

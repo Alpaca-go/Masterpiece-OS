@@ -28,6 +28,7 @@ export interface ProjectDesignDirection {
     fields:ProjectDesignDirectionFields;
     sourcePaths:Record<string,string[]>;
     missingFields:{field:string;reason:string}[];
+    designProposal?: {sourceType:'model_proposal';basis:string[];assumptions:string[];unresolvedQuestions:string[]};
   };
 }
 export function projectDesignDirectionStatusText(value:ProjectDesignDirection) {
