@@ -1,0 +1,186 @@
+{
+  "phase": "RKS-01E",
+  "baselineCommit": "224dc525845521e10f7a710e64120308a2f06054",
+  "sourcePolicy": "Only identity metadata/hashes and synthetic evidence; no live project content copied to Git",
+  "counters": {
+    "realAnalysis": 0,
+    "realGeneration": 0,
+    "realValidation": 0,
+    "automaticRetries": 0
+  },
+  "image1": {
+    "userProvidedPath": "C:/Users/kyrie/Downloads/ChatGPT 图像 2026年10月24日 17_57_30.png",
+    "sha256": "9cf31507e9566e3d754ac6f006b64d97d037a279782177125a0d51a94196b03c",
+    "sizeBytes": 2881625,
+    "identityStatus": "confirmed_user_designated_file",
+    "runAssociation": "undetermined"
+  },
+  "candidate": {
+    "projectId": "3b5b03c0-915a-41aa-9c54-4ffaa166ab88",
+    "runId": "a4401411-f450-4e70-ac83-04c4b6599ec6",
+    "taskId": "vnext-task-2164ef3f-a305-4fc3-a7bb-6813788f7d76",
+    "root": "%APPDATA%/masterpiece-os-desktop/visual-workflow/data/projects/<projectId>/image-generation-vnext/compilations/<taskId>",
+    "status": "succeeded",
+    "createdAt": "2026-10-23T05:50:13.777Z",
+    "completedAt": "2026-10-23T05:51:34.960Z",
+    "outputSha256": "a54272219939f4aeb28168f7cdf69b281b759f872c9572eb24fbea89e5a2b9e3",
+    "recordedOutputSha256": "a54272219939f4aeb28168f7cdf69b281b759f872c9572eb24fbea89e5a2b9e3",
+    "outputHashMatchesRun": true,
+    "outputHashMatchesImage1": false,
+    "image1Association": "not_established; different hash and visibly different composition",
+    "p7bPolicyAssociation": "undetermined; directory or implementation digest is insufficient",
+    "metadataArtifacts": [
+      {
+        "path": "run.json",
+        "sha256": "570217fc9b2b413c72693d8274d1f0ded4b0ab4097eed47e387e1ca11abdb109"
+      },
+      {
+        "path": "task-contract.json",
+        "sha256": "5bd81f5174b5ccbe110d113a827da251970ea583c5a1cee4afc9a46379737000"
+      },
+      {
+        "path": "workflow-implementation.json",
+        "sha256": "05b05855b6516c8f32ef327c5b73c6fa1f49f3d4f15d64d39354167083a94db4"
+      },
+      {
+        "path": "project-design-direction.json",
+        "sha256": "38e0b9de817f645c4bec37c0d4a3e58baecccb040f5718dc069a72c7385a0bed"
+      },
+      {
+        "path": "target-scene-projection.json",
+        "sha256": "46b04f6bff15622ecdbc6d6753cec7fcf687bfacf4c2e3afac367b5dff1704d7"
+      },
+      {
+        "path": "output.png",
+        "sha256": "a54272219939f4aeb28168f7cdf69b281b759f872c9572eb24fbea89e5a2b9e3"
+      }
+    ],
+    "originalCandidateArtifactsUnchangedAcrossFinalVerification": true,
+    "inventoryTiming": "captured after initial read-only inspection and first regression, before final repository verification; not a pre-task whole-store snapshot"
+  },
+  "sources": [
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/source-adapter.js",
+      "sha256": "ab726f3af21c98ed6fca26d2971b0ed8bd5772e18060bff1ef169817e0da92a5",
+      "baselineSha256": "ab726f3af21c98ed6fca26d2971b0ed8bd5772e18060bff1ef169817e0da92a5",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/compiler.js",
+      "sha256": "0b90295b72f3926da8de474e7d2c8bf1ce40961003eeede4fa1fbe461f6957d8",
+      "baselineSha256": "0b90295b72f3926da8de474e7d2c8bf1ce40961003eeede4fa1fbe461f6957d8",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/semantic/separate-space-semantics.js",
+      "sha256": "714dca781a2d6e9de72a303da36a85b53818febada6b854029c0670b50ac3fb3",
+      "baselineSha256": "714dca781a2d6e9de72a303da36a85b53818febada6b854029c0670b50ac3fb3",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/semantic/sanitize-brand-expression.js",
+      "sha256": "61450e0af3d1ebb9d4315c9bf28a2fa2c96b530881607a4e9fade22e6efe3e90",
+      "baselineSha256": "61450e0af3d1ebb9d4315c9bf28a2fa2c96b530881607a4e9fade22e6efe3e90",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/scene-projection/target-scene-projection.js",
+      "sha256": "5a773b1403ab232d90be0c8d665bd2b5f119d17b05fee7a446b86fc485c0f78d",
+      "baselineSha256": "5a773b1403ab232d90be0c8d665bd2b5f119d17b05fee7a446b86fc485c0f78d",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/generation/compile.js",
+      "sha256": "0d01aea348d2c4853d0e5fcff18c9d3b1e964dae1d642821a91590c39754212a",
+      "baselineSha256": "0d01aea348d2c4853d0e5fcff18c9d3b1e964dae1d642821a91590c39754212a",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/generation/task-contract.js",
+      "sha256": "1feea579a9bc015f9a3c53f3e9c75c4506e97b4ed94883a3f939dc1ea53cc8e4",
+      "baselineSha256": "1feea579a9bc015f9a3c53f3e9c75c4506e97b4ed94883a3f939dc1ea53cc8e4",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/generation/template-registry.js",
+      "sha256": "7d2a5b2d81cee5af33bfff798ba58e665bfb404b4a93c103afc7aac80446b639",
+      "baselineSha256": "7d2a5b2d81cee5af33bfff798ba58e665bfb404b4a93c103afc7aac80446b639",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/generation/seedream-adapter.js",
+      "sha256": "1a150deb5b1e495ca6bf8cb01de8566bca87012be4f36bbcfa7abf922b8926ec",
+      "baselineSha256": "1a150deb5b1e495ca6bf8cb01de8566bca87012be4f36bbcfa7abf922b8926ec",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/src/analysis-direction-suggestion.js",
+      "sha256": "6cca49c384f0601675c2700efb447577f4929428b7f49d36c351e69110f3a18d",
+      "baselineSha256": "6cca49c384f0601675c2700efb447577f4929428b7f49d36c351e69110f3a18d",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/src/project-design-direction.js",
+      "sha256": "cccd26e77c37a542a86598f7a9a8b612afbdf5c0c08c73aebb9c9d7d1b605a7d",
+      "baselineSha256": "cccd26e77c37a542a86598f7a9a8b612afbdf5c0c08c73aebb9c9d7d1b605a7d",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/implementation-integrity.json",
+      "sha256": "8646f6664d40f0c2de3b6428c98edaf862600ce57b6be29cf16fc95266c2c952",
+      "baselineSha256": "8646f6664d40f0c2de3b6428c98edaf862600ce57b6be29cf16fc95266c2c952",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/offline-compile-comparison.json",
+      "sha256": "e17e85f77b54ac434d4b8bc4e7d2b891f7443058ef1c97a2b9c3496982fdeb1f",
+      "baselineSha256": "e17e85f77b54ac434d4b8bc4e7d2b891f7443058ef1c97a2b9c3496982fdeb1f",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/rks-candidate-knowledge.json",
+      "sha256": "4517b041fd373babd6ce223f247ad32ea8089865b2fb5edf496691d81351d735",
+      "baselineSha256": "4517b041fd373babd6ce223f247ad32ea8089865b2fb5edf496691d81351d735",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/ftt-direction-proposal.json",
+      "sha256": "b53d9b27f0bcec2f1010171aaa3c2580a8fa11a44ec790cda510229cfb20ca1e",
+      "baselineSha256": "b53d9b27f0bcec2f1010171aaa3c2580a8fa11a44ec790cda510229cfb20ca1e",
+      "unchanged": true
+    },
+    {
+      "path": "tests/runtime-application/analysis-runtime-fixtures.ts",
+      "sha256": "236edab52a15a5a9a977b5f72c90d611ad6e8904cdcb988cc5b992daf9dc9313",
+      "baselineSha256": "236edab52a15a5a9a977b5f72c90d611ad6e8904cdcb988cc5b992daf9dc9313",
+      "unchanged": true
+    }
+  ],
+  "syntheticEvidence": {
+    "path": "RKS-01E-field-lineage.json",
+    "sha256": "ac1a4f186e243a51b5e78958169f56ae0561f67e8d1d8120ad78c9cd48b23f7f"
+  },
+  "validation": {
+    "workflowTests": {
+      "passed": 150,
+      "failed": 0
+    },
+    "golden": {
+      "overall": "PASS",
+      "providerCalls": 0,
+      "autoUpdated": false
+    },
+    "repoVerify": "PASS; includes current-flows and 56 guard tests",
+    "repoVerifyHistory": {
+      "initial": "PASS",
+      "firstFinal": "PASS",
+      "staged": "FAIL: existing document-context-service cancellation polling assertion at line 300; 1293/1294 runtime application tests passed",
+      "focusedRecheck": "PASS",
+      "fullRecheck": "PASS",
+      "cause": "undetermined; timing-sensitive behavior observed, no unrelated repair",
+      "failedLog": "staged-repo-verify.log",
+      "passedLog": "staged-repo-verify-recheck.log"
+    },
+    "logs": ".codex-smoke/rks-01e (ignored, not committed)"
+  }
+}

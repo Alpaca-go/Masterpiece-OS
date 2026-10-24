@@ -1,0 +1,2586 @@
+{
+  "scope": "synthetic only; no live project record, no image 1 attribution, no knowledge promotion",
+  "baselineCommit": "224dc525845521e10f7a710e64120308a2f06054",
+  "counters": {
+    "realAnalysis": 0,
+    "realGeneration": 0,
+    "realValidation": 0,
+    "automaticRetries": 0,
+    "networkAttempts": 0
+  },
+  "packetSha256": "da1bcbed3403b66642d50ac99558079a0987d91f1e32f73ca8711588559cd90d",
+  "rks01dReplayPromptMatches": true,
+  "controls": {
+    "projectId": "project-generic",
+    "taskId": "rks-field-lineage-synthetic",
+    "deliverableFamily": "space",
+    "count": 1,
+    "aspectRatio": "16:9",
+    "generationBasis": "standard",
+    "referenceAssetIds": [],
+    "logoUsageMode": "post_composite",
+    "currentInstruction": "Show a credible operating restaurant with a clear entrance and dining depth."
+  },
+  "shotInputProbes": [
+    {
+      "shot": "dining_view",
+      "accepted": false,
+      "error": "No vNext template registered for shot.space.dining_view"
+    },
+    {
+      "shot": "operational_dining_view",
+      "accepted": false,
+      "error": "No vNext template registered for shot.space.operational_dining_view"
+    }
+  ],
+  "results": [
+    {
+      "id": "rks01d-replay",
+      "task": {
+        "projectId": "project-generic",
+        "taskId": "rks-field-lineage-synthetic",
+        "deliverableFamily": "space",
+        "count": 1,
+        "aspectRatio": "16:9",
+        "generationBasis": "standard",
+        "referenceAssetIds": [],
+        "logoUsageMode": "post_composite",
+        "currentInstruction": "Show a credible operating restaurant with a clear entrance and dining depth.",
+        "subtype": "lobby",
+        "shot": "entrance_view"
+      },
+      "resolvedView": "public_overview_view",
+      "resolvedShotSource": "target_scene_default",
+      "targetSceneProjection": {
+        "targetScene": "lobby",
+        "targetProgramId": "lobby",
+        "functionalBlockSource": "source_shot_scope",
+        "architectureBridgeSource": "source_shot_scope",
+        "operationConstraintsSource": "source_shot_scope",
+        "viewStrategySource": "target_scene_default"
+      },
+      "fields": [
+        {
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[0]",
+          "value": "chef preparing food",
+          "classification": {
+            "classification": "brand_motif",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 0,
+            "propertyHits": 0,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          },
+          "rawPassThrough": [
+            "chef preparing food"
+          ],
+          "beforeProjection": {
+            "brandSanitizer": [
+              {
+                "text": "chef preparing food",
+                "raw": "chef preparing food",
+                "disposition": "kept"
+              }
+            ],
+            "compositionEligible": false
+          },
+          "projection": {
+            "compositionEntries": [],
+            "brandEntries": [
+              {
+                "text": "chef preparing food",
+                "sourcePath": "derived.brandSanitization.lines[2]",
+                "sourceContainer": "brandSanitization.lines",
+                "sceneScope": "current_shot",
+                "clauses": [
+                  {
+                    "text": "chef preparing food",
+                    "sceneScope": "current_shot",
+                    "visibilityAuthority": "current_shot"
+                  }
+                ],
+                "detectedScenes": [],
+                "currentShotText": "chef preparing food",
+                "boundaryConstraints": [],
+                "offFrameEntities": [],
+                "evidenceClass": "system_inference",
+                "scopeReason": "source_compatible_with_shot"
+              }
+            ],
+            "originalEntryScopeProbe": {
+              "text": "chef preparing food",
+              "sourcePath": "mediaTranslations.spatial.mustBeVisible[0]",
+              "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+              "sceneScope": "current_shot",
+              "clauses": [
+                {
+                  "text": "chef preparing food",
+                  "sceneScope": "current_shot",
+                  "visibilityAuthority": "current_shot"
+                }
+              ],
+              "detectedScenes": [],
+              "currentShotText": "chef preparing food",
+              "boundaryConstraints": [],
+              "offFrameEntities": [],
+              "evidenceClass": "system_inference",
+              "scopeReason": "source_compatible_with_shot"
+            },
+            "brandScopeProbe": {
+              "text": "chef preparing food",
+              "sourcePath": "brandSanitization.lines[0]",
+              "sceneScope": "current_shot",
+              "clauses": [
+                {
+                  "text": "chef preparing food",
+                  "sceneScope": "current_shot",
+                  "visibilityAuthority": "current_shot"
+                }
+              ],
+              "detectedScenes": [],
+              "currentShotText": "chef preparing food",
+              "boundaryConstraints": [],
+              "offFrameEntities": [],
+              "evidenceClass": "system_inference",
+              "scopeReason": "source_compatible_with_shot"
+            }
+          },
+          "promptSource": {
+            "composition": [],
+            "brand": [],
+            "canonicalOwners": []
+          },
+          "sourceMap": {
+            "composition": [
+              "taskContract.aspectRatio|scene",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "functional_requirement": [
+              "spatial.sceneProgram",
+              "spatial.functionalNetwork",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "brand_translation": [
+              "projectFacts",
+              "semantic.brandMotifSemantics",
+              "semantic.decorativeIdentitySemantics",
+              "semantic.colorAccentSemantics",
+              "spatial.brandRoleManifestation",
+              "_raw.mustBeVisible (identity items only)"
+            ]
+          },
+          "losses": [
+            {
+              "stage": "source-adapter.splitMustBeVisible",
+              "reason": "mustBeVisible is brand provenance; no architectural/motif/color hit defaults to brand_motif; excluded from composition before scene projection"
+            },
+            {
+              "stage": "source-adapter.projectedBrandManifestation.filter",
+              "reason": "text is in rawMustBeVisible functionalItems but is not artisticFocus; removed without a retained functional owner"
+            }
+          ],
+          "finalPromptRetained": false,
+          "providerPromptRetained": false
+        },
+        {
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[1]",
+          "value": "steam above dishes",
+          "classification": {
+            "classification": "brand_motif",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 0,
+            "propertyHits": 0,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          },
+          "rawPassThrough": [
+            "steam above dishes"
+          ],
+          "beforeProjection": {
+            "brandSanitizer": [
+              {
+                "text": "steam above dishes",
+                "raw": "steam above dishes",
+                "disposition": "kept"
+              }
+            ],
+            "compositionEligible": false
+          },
+          "projection": {
+            "compositionEntries": [],
+            "brandEntries": [
+              {
+                "text": "steam above dishes",
+                "sourcePath": "derived.brandSanitization.lines[3]",
+                "sourceContainer": "brandSanitization.lines",
+                "sceneScope": "current_shot",
+                "clauses": [
+                  {
+                    "text": "steam above dishes",
+                    "sceneScope": "current_shot",
+                    "visibilityAuthority": "current_shot"
+                  }
+                ],
+                "detectedScenes": [],
+                "currentShotText": "steam above dishes",
+                "boundaryConstraints": [],
+                "offFrameEntities": [],
+                "evidenceClass": "system_inference",
+                "scopeReason": "source_compatible_with_shot"
+              }
+            ],
+            "originalEntryScopeProbe": {
+              "text": "steam above dishes",
+              "sourcePath": "mediaTranslations.spatial.mustBeVisible[1]",
+              "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+              "sceneScope": "current_shot",
+              "clauses": [
+                {
+                  "text": "steam above dishes",
+                  "sceneScope": "current_shot",
+                  "visibilityAuthority": "current_shot"
+                }
+              ],
+              "detectedScenes": [],
+              "currentShotText": "steam above dishes",
+              "boundaryConstraints": [],
+              "offFrameEntities": [],
+              "evidenceClass": "system_inference",
+              "scopeReason": "source_compatible_with_shot"
+            },
+            "brandScopeProbe": {
+              "text": "steam above dishes",
+              "sourcePath": "brandSanitization.lines[1]",
+              "sceneScope": "current_shot",
+              "clauses": [
+                {
+                  "text": "steam above dishes",
+                  "sceneScope": "current_shot",
+                  "visibilityAuthority": "current_shot"
+                }
+              ],
+              "detectedScenes": [],
+              "currentShotText": "steam above dishes",
+              "boundaryConstraints": [],
+              "offFrameEntities": [],
+              "evidenceClass": "system_inference",
+              "scopeReason": "source_compatible_with_shot"
+            }
+          },
+          "promptSource": {
+            "composition": [],
+            "brand": [],
+            "canonicalOwners": []
+          },
+          "sourceMap": {
+            "composition": [
+              "taskContract.aspectRatio|scene",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "functional_requirement": [
+              "spatial.sceneProgram",
+              "spatial.functionalNetwork",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "brand_translation": [
+              "projectFacts",
+              "semantic.brandMotifSemantics",
+              "semantic.decorativeIdentitySemantics",
+              "semantic.colorAccentSemantics",
+              "spatial.brandRoleManifestation",
+              "_raw.mustBeVisible (identity items only)"
+            ]
+          },
+          "losses": [
+            {
+              "stage": "source-adapter.splitMustBeVisible",
+              "reason": "mustBeVisible is brand provenance; no architectural/motif/color hit defaults to brand_motif; excluded from composition before scene projection"
+            },
+            {
+              "stage": "source-adapter.projectedBrandManifestation.filter",
+              "reason": "text is in rawMustBeVisible functionalItems but is not artisticFocus; removed without a retained functional owner"
+            }
+          ],
+          "finalPromptRetained": false,
+          "providerPromptRetained": false
+        },
+        {
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[2]",
+          "value": "customers dining at tables",
+          "classification": {
+            "classification": "brand_motif",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 0,
+            "propertyHits": 0,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          },
+          "rawPassThrough": [
+            "customers dining at tables"
+          ],
+          "beforeProjection": {
+            "brandSanitizer": [
+              {
+                "text": "customers dining at tables",
+                "raw": "customers dining at tables",
+                "disposition": "kept"
+              }
+            ],
+            "compositionEligible": false
+          },
+          "projection": {
+            "compositionEntries": [],
+            "brandEntries": [
+              {
+                "text": "customers dining at tables",
+                "sourcePath": "derived.brandSanitization.lines[4]",
+                "sourceContainer": "brandSanitization.lines",
+                "sceneScope": "off_frame_dependency",
+                "clauses": [
+                  {
+                    "text": "customers dining at tables",
+                    "sceneScope": "off_frame_dependency",
+                    "visibilityAuthority": "off_frame_interior"
+                  }
+                ],
+                "detectedScenes": [
+                  "dining"
+                ],
+                "currentShotText": "",
+                "boundaryConstraints": [],
+                "offFrameEntities": [
+                  {
+                    "text": "customers dining at tables",
+                    "sceneScope": "off_frame_dependency",
+                    "visibilityAuthority": "off_frame_interior"
+                  }
+                ],
+                "evidenceClass": "system_inference",
+                "scopeReason": "foreign_scene_entity"
+              }
+            ],
+            "originalEntryScopeProbe": {
+              "text": "customers dining at tables",
+              "sourcePath": "mediaTranslations.spatial.mustBeVisible[2]",
+              "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+              "sceneScope": "off_frame_dependency",
+              "clauses": [
+                {
+                  "text": "customers dining at tables",
+                  "sceneScope": "off_frame_dependency",
+                  "visibilityAuthority": "off_frame_interior"
+                }
+              ],
+              "detectedScenes": [
+                "dining"
+              ],
+              "currentShotText": "",
+              "boundaryConstraints": [],
+              "offFrameEntities": [
+                {
+                  "text": "customers dining at tables",
+                  "sceneScope": "off_frame_dependency",
+                  "visibilityAuthority": "off_frame_interior"
+                }
+              ],
+              "evidenceClass": "system_inference",
+              "scopeReason": "foreign_scene_entity"
+            },
+            "brandScopeProbe": {
+              "text": "customers dining at tables",
+              "sourcePath": "brandSanitization.lines[2]",
+              "sceneScope": "off_frame_dependency",
+              "clauses": [
+                {
+                  "text": "customers dining at tables",
+                  "sceneScope": "off_frame_dependency",
+                  "visibilityAuthority": "off_frame_interior"
+                }
+              ],
+              "detectedScenes": [
+                "dining"
+              ],
+              "currentShotText": "",
+              "boundaryConstraints": [],
+              "offFrameEntities": [
+                {
+                  "text": "customers dining at tables",
+                  "sceneScope": "off_frame_dependency",
+                  "visibilityAuthority": "off_frame_interior"
+                }
+              ],
+              "evidenceClass": "system_inference",
+              "scopeReason": "foreign_scene_entity"
+            }
+          },
+          "promptSource": {
+            "composition": [],
+            "brand": [],
+            "canonicalOwners": []
+          },
+          "sourceMap": {
+            "composition": [
+              "taskContract.aspectRatio|scene",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "functional_requirement": [
+              "spatial.sceneProgram",
+              "spatial.functionalNetwork",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "brand_translation": [
+              "projectFacts",
+              "semantic.brandMotifSemantics",
+              "semantic.decorativeIdentitySemantics",
+              "semantic.colorAccentSemantics",
+              "spatial.brandRoleManifestation",
+              "_raw.mustBeVisible (identity items only)"
+            ]
+          },
+          "losses": [
+            {
+              "stage": "source-adapter.splitMustBeVisible",
+              "reason": "mustBeVisible is brand provenance; no architectural/motif/color hit defaults to brand_motif; excluded from composition before scene projection"
+            },
+            {
+              "stage": "source-adapter.projectList -> scopeSourceEntries",
+              "reason": "foreign_scene_entity; target subtype does not allow the dining scene"
+            }
+          ],
+          "finalPromptRetained": false,
+          "providerPromptRetained": false
+        }
+      ],
+      "finalPrompt": "# Task\n\nGenerate a single premium-grade space image for **Example Brand** (Restaurant).\nScene: `lobby` / public_overview_view.\nTask: Show a credible operating restaurant with a clear entrance and dining depth.\nAspect ratio: 16:9.\n\n# Spatial Intent\n\n> The experience goal and spatial strategy set the tone before any building mechanism.\n\n**Experience Goal**: Warm neighborhood dining with visible cooking\n\n**Spatial Strategy**: source-scoped decisions are stated once in Architecture Language.\n\n# Architecture Language\n\n> Preserve the supplied subjects, carriers and action scopes. These are project proposals; do not add walls, ceilings or lighting hardware from generic action words.\n\n**Source-scoped architectural decisions (each stated once)**:\n- Layered open frames guide movement\n- open frame\n\n# Architecture Context\n\nNo optional architecture examples have been selected for this request. Brand name and industry do not grant example authority.\nUse project decisions and the current user instruction. Artistic focus may coexist with practical reception, waiting, access and privacy requirements; examples cannot replace either dimension.\nDo not infer construction details from historical accepted images or from an industry's customary appearance. Preserve explicitly requested complex architecture without importing unrelated scene mechanisms.\n\n# Architecture-Function Bridge\n\n> Artistic character and commercial operations are simultaneous requirements. Industry constrains use, access and privacy; it does not dictate an architectural style.\n\n**Commercial Purpose**: A welcoming service destination\n\n**Spatial Translation (architecture → commercial action)**:\nCurrent-shot nodes and relationships are stated in Functional & Commercial Requirement.\n\n**Operation Constraints (hard, must hold)**:\n- guest sees service point from arrival\n\n**Human Experience (path + rhythm)**:\n- staff guides guest\n- identity at arrival\n\n**Commercial Reality (compatible with project artistic character)**:\nPreserve the supplied differentiators in Functional & Commercial Requirement together with the artistic focus in Composition.\n\n**Concept Drift Guards (must avoid)**:\n- generic decoration\n\n**Cross-zone operational constraints (current-shot boundary only; other interiors remain off frame)**:\n- No additional cross-zone relationship is established by the supplied sources.\n\nOff-frame program dependencies are retained in the source trace. Preserve access and privacy boundaries without exposing the interiors of other program areas.\n\n# Architectural Concept\n\nUse the experience goal in Spatial Intent and the source-scoped decisions in Architecture Language together with the artistic hierarchy in Composition.\nUser instructions take priority over model proposals and optional examples. Do not make a generic building template displace the project's artistic expression.\n\n# Architecture DNA\n\n**Decision relationships**: Architecture Language owns architectural actions; Spatial Color Roles owns color scope; Material System owns optical behavior; Composition owns focal hierarchy.\nKeep buildable junctions, readable circulation and human scale. Complex curves, restrained geometry, strong color and gallery-like character remain available when supported by project intent. No industry-wide aesthetic is imposed.\n\n# Brand Translation\n\n> Preserve project identity and artistic expression together with the functional program. The artistic focus is stated in Composition.\n> Brand identity (logo, wordmark, signage text) is composited AFTER generation; do NOT render it in-scene.\n**Brand**: Example Brand | **Industry**: Restaurant\n**Brand Role**: see the Commercial Purpose in Architecture-Function Bridge.\n**Brand Role Manifestation in Space**:\n- Visible service steps\n- identity at arrival\n- Turn service clarity into a spatial and material system\n\n# Functional & Commercial Requirement\n\n**Current-shot Program Nodes (source-scoped; other areas remain off frame)**:\n- arrival\n- service\n\n**Functional Network**:\n- guests enter through arrival zone; see service point\n- service flow loops guests back to waiting before exit\n\n**Visible hierarchy**: see Composition; an artistic focus does not replace operational facilities.\n\n**Positive Differentiators**:\n- Service logic is visible\n\n# Spatial Color Roles\n\nPalette identity rank does not determine interior area. Entries below are existing model proposals, not user-confirmed facts.\nProposed scopes and ratios retain their source meaning for review. Do not execute an unconfirmed dominant field or area allocation as a mandatory instruction. Area authority remains pending unless explicitly supplied by the current user instruction; that instruction takes priority.\nUnknown ratios stay unknown. Neither a color name, a palette rank, a gradient nor a proposed role independently authorizes geometry or whole-room color coverage.\n- warm white | palette: primary | proposed spatial scope: unspecified | execution authority: proposal_only\n  role: clear base\n  area ratio: unknown\n- natural wood | palette: secondary | proposed spatial scope: unspecified | execution authority: proposal_only\n  role: human warmth\n  area ratio: unknown\n- identity black | palette: accent | proposed spatial scope: unspecified | execution authority: proposal_only\n  role: precise identity emphasis\n  area ratio: unknown\n\n# Material System\n\n- **matte metal**: precise edge\n  brand role: makes service order legible\n  avoid: mirror finish\n\n# Lighting System\n\n**Primary Strategy**: soft area light\n**Contrast**: low contrast\n**Light / Material Behavior**:\n- soft reflection\n**Lighting Prohibitions**:\n- colored effect light\n\n# Composition & Photography\n\n**Output Ratio**: 16:9\n**Project Artistic Focus (separate from operational facilities)**:\n- No artistic installation is required by the supplied sources.\nDo not demote a supplied core artwork to background texture. Its mounting, dimensions and optical construction remain unspecified unless supplied; do not invent them.\n**Operational Elements (remain usable alongside the artistic focus)**:\n**Positive Differentiators**:\nUse the differentiators in Functional & Commercial Requirement without repeating them as additional demands.\nUse a credible commercial architectural camera: controlled perspective, depth, hierarchy and human scale.\n\n# Rendering Requirements\n\n- High-end architectural visualization, photoreal, physically based materials.\n- Balanced exposure, accurate white balance, readable texture and shadow detail.\n- No blown highlights; clean, resolved, professionally finished.\n\n# Prohibited (fail-closed)\n\nThe following MUST NOT appear in the generated image:\n- no rendered brand name, wordmark, logotype, signage text, or illuminated letters in the scene\n- no generic AI clinic look, no stock-photo medical aesthetic template\n- mirror finish\n- colored effect light\n- neon gradient",
+      "promptSha256": "e3f495879cdebd59afb54f4c289bb6e8c743b485717ce2bf5e3388d30e5b5a2e",
+      "semanticStatus": "blocked_field_loss"
+    },
+    {
+      "id": "lobby-explicit-entrance",
+      "task": {
+        "projectId": "project-generic",
+        "taskId": "rks-field-lineage-synthetic",
+        "deliverableFamily": "space",
+        "count": 1,
+        "aspectRatio": "16:9",
+        "generationBasis": "standard",
+        "referenceAssetIds": [],
+        "logoUsageMode": "post_composite",
+        "currentInstruction": "Show a credible operating restaurant with a clear entrance and dining depth.",
+        "subtype": "lobby",
+        "shot": "entrance_view",
+        "shotSource": "user_explicit"
+      },
+      "resolvedView": "entrance_view",
+      "resolvedShotSource": "user_explicit",
+      "targetSceneProjection": {
+        "targetScene": "lobby",
+        "targetProgramId": "lobby",
+        "functionalBlockSource": "source_shot_scope",
+        "architectureBridgeSource": "source_shot_scope",
+        "operationConstraintsSource": "source_shot_scope",
+        "viewStrategySource": "user_explicit"
+      },
+      "fields": [
+        {
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[0]",
+          "value": "chef preparing food",
+          "classification": {
+            "classification": "brand_motif",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 0,
+            "propertyHits": 0,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          },
+          "rawPassThrough": [
+            "chef preparing food"
+          ],
+          "beforeProjection": {
+            "brandSanitizer": [
+              {
+                "text": "chef preparing food",
+                "raw": "chef preparing food",
+                "disposition": "kept"
+              }
+            ],
+            "compositionEligible": false
+          },
+          "projection": {
+            "compositionEntries": [],
+            "brandEntries": [
+              {
+                "text": "chef preparing food",
+                "sourcePath": "derived.brandSanitization.lines[2]",
+                "sourceContainer": "brandSanitization.lines",
+                "sceneScope": "current_shot",
+                "clauses": [
+                  {
+                    "text": "chef preparing food",
+                    "sceneScope": "current_shot",
+                    "visibilityAuthority": "current_shot"
+                  }
+                ],
+                "detectedScenes": [],
+                "currentShotText": "chef preparing food",
+                "boundaryConstraints": [],
+                "offFrameEntities": [],
+                "evidenceClass": "system_inference",
+                "scopeReason": "source_compatible_with_shot"
+              }
+            ],
+            "originalEntryScopeProbe": {
+              "text": "chef preparing food",
+              "sourcePath": "mediaTranslations.spatial.mustBeVisible[0]",
+              "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+              "sceneScope": "current_shot",
+              "clauses": [
+                {
+                  "text": "chef preparing food",
+                  "sceneScope": "current_shot",
+                  "visibilityAuthority": "current_shot"
+                }
+              ],
+              "detectedScenes": [],
+              "currentShotText": "chef preparing food",
+              "boundaryConstraints": [],
+              "offFrameEntities": [],
+              "evidenceClass": "system_inference",
+              "scopeReason": "source_compatible_with_shot"
+            },
+            "brandScopeProbe": {
+              "text": "chef preparing food",
+              "sourcePath": "brandSanitization.lines[0]",
+              "sceneScope": "current_shot",
+              "clauses": [
+                {
+                  "text": "chef preparing food",
+                  "sceneScope": "current_shot",
+                  "visibilityAuthority": "current_shot"
+                }
+              ],
+              "detectedScenes": [],
+              "currentShotText": "chef preparing food",
+              "boundaryConstraints": [],
+              "offFrameEntities": [],
+              "evidenceClass": "system_inference",
+              "scopeReason": "source_compatible_with_shot"
+            }
+          },
+          "promptSource": {
+            "composition": [],
+            "brand": [],
+            "canonicalOwners": []
+          },
+          "sourceMap": {
+            "composition": [
+              "taskContract.aspectRatio|scene",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "functional_requirement": [
+              "spatial.sceneProgram",
+              "spatial.functionalNetwork",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "brand_translation": [
+              "projectFacts",
+              "semantic.brandMotifSemantics",
+              "semantic.decorativeIdentitySemantics",
+              "semantic.colorAccentSemantics",
+              "spatial.brandRoleManifestation",
+              "_raw.mustBeVisible (identity items only)"
+            ]
+          },
+          "losses": [
+            {
+              "stage": "source-adapter.splitMustBeVisible",
+              "reason": "mustBeVisible is brand provenance; no architectural/motif/color hit defaults to brand_motif; excluded from composition before scene projection"
+            },
+            {
+              "stage": "source-adapter.projectedBrandManifestation.filter",
+              "reason": "text is in rawMustBeVisible functionalItems but is not artisticFocus; removed without a retained functional owner"
+            }
+          ],
+          "finalPromptRetained": false,
+          "providerPromptRetained": false
+        },
+        {
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[1]",
+          "value": "steam above dishes",
+          "classification": {
+            "classification": "brand_motif",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 0,
+            "propertyHits": 0,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          },
+          "rawPassThrough": [
+            "steam above dishes"
+          ],
+          "beforeProjection": {
+            "brandSanitizer": [
+              {
+                "text": "steam above dishes",
+                "raw": "steam above dishes",
+                "disposition": "kept"
+              }
+            ],
+            "compositionEligible": false
+          },
+          "projection": {
+            "compositionEntries": [],
+            "brandEntries": [
+              {
+                "text": "steam above dishes",
+                "sourcePath": "derived.brandSanitization.lines[3]",
+                "sourceContainer": "brandSanitization.lines",
+                "sceneScope": "current_shot",
+                "clauses": [
+                  {
+                    "text": "steam above dishes",
+                    "sceneScope": "current_shot",
+                    "visibilityAuthority": "current_shot"
+                  }
+                ],
+                "detectedScenes": [],
+                "currentShotText": "steam above dishes",
+                "boundaryConstraints": [],
+                "offFrameEntities": [],
+                "evidenceClass": "system_inference",
+                "scopeReason": "source_compatible_with_shot"
+              }
+            ],
+            "originalEntryScopeProbe": {
+              "text": "steam above dishes",
+              "sourcePath": "mediaTranslations.spatial.mustBeVisible[1]",
+              "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+              "sceneScope": "current_shot",
+              "clauses": [
+                {
+                  "text": "steam above dishes",
+                  "sceneScope": "current_shot",
+                  "visibilityAuthority": "current_shot"
+                }
+              ],
+              "detectedScenes": [],
+              "currentShotText": "steam above dishes",
+              "boundaryConstraints": [],
+              "offFrameEntities": [],
+              "evidenceClass": "system_inference",
+              "scopeReason": "source_compatible_with_shot"
+            },
+            "brandScopeProbe": {
+              "text": "steam above dishes",
+              "sourcePath": "brandSanitization.lines[1]",
+              "sceneScope": "current_shot",
+              "clauses": [
+                {
+                  "text": "steam above dishes",
+                  "sceneScope": "current_shot",
+                  "visibilityAuthority": "current_shot"
+                }
+              ],
+              "detectedScenes": [],
+              "currentShotText": "steam above dishes",
+              "boundaryConstraints": [],
+              "offFrameEntities": [],
+              "evidenceClass": "system_inference",
+              "scopeReason": "source_compatible_with_shot"
+            }
+          },
+          "promptSource": {
+            "composition": [],
+            "brand": [],
+            "canonicalOwners": []
+          },
+          "sourceMap": {
+            "composition": [
+              "taskContract.aspectRatio|scene",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "functional_requirement": [
+              "spatial.sceneProgram",
+              "spatial.functionalNetwork",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "brand_translation": [
+              "projectFacts",
+              "semantic.brandMotifSemantics",
+              "semantic.decorativeIdentitySemantics",
+              "semantic.colorAccentSemantics",
+              "spatial.brandRoleManifestation",
+              "_raw.mustBeVisible (identity items only)"
+            ]
+          },
+          "losses": [
+            {
+              "stage": "source-adapter.splitMustBeVisible",
+              "reason": "mustBeVisible is brand provenance; no architectural/motif/color hit defaults to brand_motif; excluded from composition before scene projection"
+            },
+            {
+              "stage": "source-adapter.projectedBrandManifestation.filter",
+              "reason": "text is in rawMustBeVisible functionalItems but is not artisticFocus; removed without a retained functional owner"
+            }
+          ],
+          "finalPromptRetained": false,
+          "providerPromptRetained": false
+        },
+        {
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[2]",
+          "value": "customers dining at tables",
+          "classification": {
+            "classification": "brand_motif",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 0,
+            "propertyHits": 0,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          },
+          "rawPassThrough": [
+            "customers dining at tables"
+          ],
+          "beforeProjection": {
+            "brandSanitizer": [
+              {
+                "text": "customers dining at tables",
+                "raw": "customers dining at tables",
+                "disposition": "kept"
+              }
+            ],
+            "compositionEligible": false
+          },
+          "projection": {
+            "compositionEntries": [],
+            "brandEntries": [
+              {
+                "text": "customers dining at tables",
+                "sourcePath": "derived.brandSanitization.lines[4]",
+                "sourceContainer": "brandSanitization.lines",
+                "sceneScope": "off_frame_dependency",
+                "clauses": [
+                  {
+                    "text": "customers dining at tables",
+                    "sceneScope": "off_frame_dependency",
+                    "visibilityAuthority": "off_frame_interior"
+                  }
+                ],
+                "detectedScenes": [
+                  "dining"
+                ],
+                "currentShotText": "",
+                "boundaryConstraints": [],
+                "offFrameEntities": [
+                  {
+                    "text": "customers dining at tables",
+                    "sceneScope": "off_frame_dependency",
+                    "visibilityAuthority": "off_frame_interior"
+                  }
+                ],
+                "evidenceClass": "system_inference",
+                "scopeReason": "foreign_scene_entity"
+              }
+            ],
+            "originalEntryScopeProbe": {
+              "text": "customers dining at tables",
+              "sourcePath": "mediaTranslations.spatial.mustBeVisible[2]",
+              "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+              "sceneScope": "off_frame_dependency",
+              "clauses": [
+                {
+                  "text": "customers dining at tables",
+                  "sceneScope": "off_frame_dependency",
+                  "visibilityAuthority": "off_frame_interior"
+                }
+              ],
+              "detectedScenes": [
+                "dining"
+              ],
+              "currentShotText": "",
+              "boundaryConstraints": [],
+              "offFrameEntities": [
+                {
+                  "text": "customers dining at tables",
+                  "sceneScope": "off_frame_dependency",
+                  "visibilityAuthority": "off_frame_interior"
+                }
+              ],
+              "evidenceClass": "system_inference",
+              "scopeReason": "foreign_scene_entity"
+            },
+            "brandScopeProbe": {
+              "text": "customers dining at tables",
+              "sourcePath": "brandSanitization.lines[2]",
+              "sceneScope": "off_frame_dependency",
+              "clauses": [
+                {
+                  "text": "customers dining at tables",
+                  "sceneScope": "off_frame_dependency",
+                  "visibilityAuthority": "off_frame_interior"
+                }
+              ],
+              "detectedScenes": [
+                "dining"
+              ],
+              "currentShotText": "",
+              "boundaryConstraints": [],
+              "offFrameEntities": [
+                {
+                  "text": "customers dining at tables",
+                  "sceneScope": "off_frame_dependency",
+                  "visibilityAuthority": "off_frame_interior"
+                }
+              ],
+              "evidenceClass": "system_inference",
+              "scopeReason": "foreign_scene_entity"
+            }
+          },
+          "promptSource": {
+            "composition": [],
+            "brand": [],
+            "canonicalOwners": []
+          },
+          "sourceMap": {
+            "composition": [
+              "taskContract.aspectRatio|scene",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "functional_requirement": [
+              "spatial.sceneProgram",
+              "spatial.functionalNetwork",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "brand_translation": [
+              "projectFacts",
+              "semantic.brandMotifSemantics",
+              "semantic.decorativeIdentitySemantics",
+              "semantic.colorAccentSemantics",
+              "spatial.brandRoleManifestation",
+              "_raw.mustBeVisible (identity items only)"
+            ]
+          },
+          "losses": [
+            {
+              "stage": "source-adapter.splitMustBeVisible",
+              "reason": "mustBeVisible is brand provenance; no architectural/motif/color hit defaults to brand_motif; excluded from composition before scene projection"
+            },
+            {
+              "stage": "source-adapter.projectList -> scopeSourceEntries",
+              "reason": "foreign_scene_entity; target subtype does not allow the dining scene"
+            }
+          ],
+          "finalPromptRetained": false,
+          "providerPromptRetained": false
+        }
+      ],
+      "finalPrompt": "# Task\n\nGenerate a single premium-grade space image for **Example Brand** (Restaurant).\nScene: `lobby` / entrance_view.\nTask: Show a credible operating restaurant with a clear entrance and dining depth.\nAspect ratio: 16:9.\n\n# Spatial Intent\n\n> The experience goal and spatial strategy set the tone before any building mechanism.\n\n**Experience Goal**: Warm neighborhood dining with visible cooking\n\n**Spatial Strategy**: source-scoped decisions are stated once in Architecture Language.\n\n# Architecture Language\n\n> Preserve the supplied subjects, carriers and action scopes. These are project proposals; do not add walls, ceilings or lighting hardware from generic action words.\n\n**Source-scoped architectural decisions (each stated once)**:\n- Layered open frames guide movement\n- open frame\n\n# Architecture Context\n\nNo optional architecture examples have been selected for this request. Brand name and industry do not grant example authority.\nUse project decisions and the current user instruction. Artistic focus may coexist with practical reception, waiting, access and privacy requirements; examples cannot replace either dimension.\nDo not infer construction details from historical accepted images or from an industry's customary appearance. Preserve explicitly requested complex architecture without importing unrelated scene mechanisms.\n\n# Architecture-Function Bridge\n\n> Artistic character and commercial operations are simultaneous requirements. Industry constrains use, access and privacy; it does not dictate an architectural style.\n\n**Commercial Purpose**: A welcoming service destination\n\n**Spatial Translation (architecture → commercial action)**:\nCurrent-shot nodes and relationships are stated in Functional & Commercial Requirement.\n\n**Operation Constraints (hard, must hold)**:\n- guest sees service point from arrival\n\n**Human Experience (path + rhythm)**:\n- staff guides guest\n- identity at arrival\n\n**Commercial Reality (compatible with project artistic character)**:\nPreserve the supplied differentiators in Functional & Commercial Requirement together with the artistic focus in Composition.\n\n**Concept Drift Guards (must avoid)**:\n- generic decoration\n\n**Cross-zone operational constraints (current-shot boundary only; other interiors remain off frame)**:\n- No additional cross-zone relationship is established by the supplied sources.\n\nOff-frame program dependencies are retained in the source trace. Preserve access and privacy boundaries without exposing the interiors of other program areas.\n\n# Architectural Concept\n\nUse the experience goal in Spatial Intent and the source-scoped decisions in Architecture Language together with the artistic hierarchy in Composition.\nUser instructions take priority over model proposals and optional examples. Do not make a generic building template displace the project's artistic expression.\n\n# Architecture DNA\n\n**Decision relationships**: Architecture Language owns architectural actions; Spatial Color Roles owns color scope; Material System owns optical behavior; Composition owns focal hierarchy.\nKeep buildable junctions, readable circulation and human scale. Complex curves, restrained geometry, strong color and gallery-like character remain available when supported by project intent. No industry-wide aesthetic is imposed.\n\n# Brand Translation\n\n> Preserve project identity and artistic expression together with the functional program. The artistic focus is stated in Composition.\n> Brand identity (logo, wordmark, signage text) is composited AFTER generation; do NOT render it in-scene.\n**Brand**: Example Brand | **Industry**: Restaurant\n**Brand Role**: see the Commercial Purpose in Architecture-Function Bridge.\n**Brand Role Manifestation in Space**:\n- Visible service steps\n- identity at arrival\n- Turn service clarity into a spatial and material system\n\n# Functional & Commercial Requirement\n\n**Current-shot Program Nodes (source-scoped; other areas remain off frame)**:\n- arrival\n- service\n\n**Functional Network**:\n- guests enter through arrival zone; see service point\n- service flow loops guests back to waiting before exit\n\n**Visible hierarchy**: see Composition; an artistic focus does not replace operational facilities.\n\n**Positive Differentiators**:\n- Service logic is visible\n\n# Spatial Color Roles\n\nPalette identity rank does not determine interior area. Entries below are existing model proposals, not user-confirmed facts.\nProposed scopes and ratios retain their source meaning for review. Do not execute an unconfirmed dominant field or area allocation as a mandatory instruction. Area authority remains pending unless explicitly supplied by the current user instruction; that instruction takes priority.\nUnknown ratios stay unknown. Neither a color name, a palette rank, a gradient nor a proposed role independently authorizes geometry or whole-room color coverage.\n- warm white | palette: primary | proposed spatial scope: unspecified | execution authority: proposal_only\n  role: clear base\n  area ratio: unknown\n- natural wood | palette: secondary | proposed spatial scope: unspecified | execution authority: proposal_only\n  role: human warmth\n  area ratio: unknown\n- identity black | palette: accent | proposed spatial scope: unspecified | execution authority: proposal_only\n  role: precise identity emphasis\n  area ratio: unknown\n\n# Material System\n\n- **matte metal**: precise edge\n  brand role: makes service order legible\n  avoid: mirror finish\n\n# Lighting System\n\n**Primary Strategy**: soft area light\n**Contrast**: low contrast\n**Light / Material Behavior**:\n- soft reflection\n**Lighting Prohibitions**:\n- colored effect light\n\n# Composition & Photography\n\n**Output Ratio**: 16:9\n**Project Artistic Focus (separate from operational facilities)**:\n- No artistic installation is required by the supplied sources.\nDo not demote a supplied core artwork to background texture. Its mounting, dimensions and optical construction remain unspecified unless supplied; do not invent them.\n**Operational Elements (remain usable alongside the artistic focus)**:\n**Positive Differentiators**:\nUse the differentiators in Functional & Commercial Requirement without repeating them as additional demands.\nUse a credible commercial architectural camera: controlled perspective, depth, hierarchy and human scale.\n\n# Rendering Requirements\n\n- High-end architectural visualization, photoreal, physically based materials.\n- Balanced exposure, accurate white balance, readable texture and shadow detail.\n- No blown highlights; clean, resolved, professionally finished.\n\n# Prohibited (fail-closed)\n\nThe following MUST NOT appear in the generated image:\n- no rendered brand name, wordmark, logotype, signage text, or illuminated letters in the scene\n- no generic AI clinic look, no stock-photo medical aesthetic template\n- mirror finish\n- colored effect light\n- neon gradient",
+      "promptSha256": "d1f6586e41d7c8fb8a369dad20df09139527775677adfe9e843c6f9434a50e84",
+      "semanticStatus": "blocked_field_loss"
+    },
+    {
+      "id": "lobby-explicit-wide",
+      "task": {
+        "projectId": "project-generic",
+        "taskId": "rks-field-lineage-synthetic",
+        "deliverableFamily": "space",
+        "count": 1,
+        "aspectRatio": "16:9",
+        "generationBasis": "standard",
+        "referenceAssetIds": [],
+        "logoUsageMode": "post_composite",
+        "currentInstruction": "Show a credible operating restaurant with a clear entrance and dining depth.",
+        "subtype": "lobby",
+        "shot": "three_quarter_wide",
+        "shotSource": "user_explicit"
+      },
+      "resolvedView": "three_quarter_wide",
+      "resolvedShotSource": "user_explicit",
+      "targetSceneProjection": {
+        "targetScene": "lobby",
+        "targetProgramId": "lobby",
+        "functionalBlockSource": "source_shot_scope",
+        "architectureBridgeSource": "source_shot_scope",
+        "operationConstraintsSource": "source_shot_scope",
+        "viewStrategySource": "user_explicit"
+      },
+      "fields": [
+        {
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[0]",
+          "value": "chef preparing food",
+          "classification": {
+            "classification": "brand_motif",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 0,
+            "propertyHits": 0,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          },
+          "rawPassThrough": [
+            "chef preparing food"
+          ],
+          "beforeProjection": {
+            "brandSanitizer": [
+              {
+                "text": "chef preparing food",
+                "raw": "chef preparing food",
+                "disposition": "kept"
+              }
+            ],
+            "compositionEligible": false
+          },
+          "projection": {
+            "compositionEntries": [],
+            "brandEntries": [
+              {
+                "text": "chef preparing food",
+                "sourcePath": "derived.brandSanitization.lines[2]",
+                "sourceContainer": "brandSanitization.lines",
+                "sceneScope": "current_shot",
+                "clauses": [
+                  {
+                    "text": "chef preparing food",
+                    "sceneScope": "current_shot",
+                    "visibilityAuthority": "current_shot"
+                  }
+                ],
+                "detectedScenes": [],
+                "currentShotText": "chef preparing food",
+                "boundaryConstraints": [],
+                "offFrameEntities": [],
+                "evidenceClass": "system_inference",
+                "scopeReason": "source_compatible_with_shot"
+              }
+            ],
+            "originalEntryScopeProbe": {
+              "text": "chef preparing food",
+              "sourcePath": "mediaTranslations.spatial.mustBeVisible[0]",
+              "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+              "sceneScope": "current_shot",
+              "clauses": [
+                {
+                  "text": "chef preparing food",
+                  "sceneScope": "current_shot",
+                  "visibilityAuthority": "current_shot"
+                }
+              ],
+              "detectedScenes": [],
+              "currentShotText": "chef preparing food",
+              "boundaryConstraints": [],
+              "offFrameEntities": [],
+              "evidenceClass": "system_inference",
+              "scopeReason": "source_compatible_with_shot"
+            },
+            "brandScopeProbe": {
+              "text": "chef preparing food",
+              "sourcePath": "brandSanitization.lines[0]",
+              "sceneScope": "current_shot",
+              "clauses": [
+                {
+                  "text": "chef preparing food",
+                  "sceneScope": "current_shot",
+                  "visibilityAuthority": "current_shot"
+                }
+              ],
+              "detectedScenes": [],
+              "currentShotText": "chef preparing food",
+              "boundaryConstraints": [],
+              "offFrameEntities": [],
+              "evidenceClass": "system_inference",
+              "scopeReason": "source_compatible_with_shot"
+            }
+          },
+          "promptSource": {
+            "composition": [],
+            "brand": [],
+            "canonicalOwners": []
+          },
+          "sourceMap": {
+            "composition": [
+              "taskContract.aspectRatio|scene",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "functional_requirement": [
+              "spatial.sceneProgram",
+              "spatial.functionalNetwork",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "brand_translation": [
+              "projectFacts",
+              "semantic.brandMotifSemantics",
+              "semantic.decorativeIdentitySemantics",
+              "semantic.colorAccentSemantics",
+              "spatial.brandRoleManifestation",
+              "_raw.mustBeVisible (identity items only)"
+            ]
+          },
+          "losses": [
+            {
+              "stage": "source-adapter.splitMustBeVisible",
+              "reason": "mustBeVisible is brand provenance; no architectural/motif/color hit defaults to brand_motif; excluded from composition before scene projection"
+            },
+            {
+              "stage": "source-adapter.projectedBrandManifestation.filter",
+              "reason": "text is in rawMustBeVisible functionalItems but is not artisticFocus; removed without a retained functional owner"
+            }
+          ],
+          "finalPromptRetained": false,
+          "providerPromptRetained": false
+        },
+        {
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[1]",
+          "value": "steam above dishes",
+          "classification": {
+            "classification": "brand_motif",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 0,
+            "propertyHits": 0,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          },
+          "rawPassThrough": [
+            "steam above dishes"
+          ],
+          "beforeProjection": {
+            "brandSanitizer": [
+              {
+                "text": "steam above dishes",
+                "raw": "steam above dishes",
+                "disposition": "kept"
+              }
+            ],
+            "compositionEligible": false
+          },
+          "projection": {
+            "compositionEntries": [],
+            "brandEntries": [
+              {
+                "text": "steam above dishes",
+                "sourcePath": "derived.brandSanitization.lines[3]",
+                "sourceContainer": "brandSanitization.lines",
+                "sceneScope": "current_shot",
+                "clauses": [
+                  {
+                    "text": "steam above dishes",
+                    "sceneScope": "current_shot",
+                    "visibilityAuthority": "current_shot"
+                  }
+                ],
+                "detectedScenes": [],
+                "currentShotText": "steam above dishes",
+                "boundaryConstraints": [],
+                "offFrameEntities": [],
+                "evidenceClass": "system_inference",
+                "scopeReason": "source_compatible_with_shot"
+              }
+            ],
+            "originalEntryScopeProbe": {
+              "text": "steam above dishes",
+              "sourcePath": "mediaTranslations.spatial.mustBeVisible[1]",
+              "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+              "sceneScope": "current_shot",
+              "clauses": [
+                {
+                  "text": "steam above dishes",
+                  "sceneScope": "current_shot",
+                  "visibilityAuthority": "current_shot"
+                }
+              ],
+              "detectedScenes": [],
+              "currentShotText": "steam above dishes",
+              "boundaryConstraints": [],
+              "offFrameEntities": [],
+              "evidenceClass": "system_inference",
+              "scopeReason": "source_compatible_with_shot"
+            },
+            "brandScopeProbe": {
+              "text": "steam above dishes",
+              "sourcePath": "brandSanitization.lines[1]",
+              "sceneScope": "current_shot",
+              "clauses": [
+                {
+                  "text": "steam above dishes",
+                  "sceneScope": "current_shot",
+                  "visibilityAuthority": "current_shot"
+                }
+              ],
+              "detectedScenes": [],
+              "currentShotText": "steam above dishes",
+              "boundaryConstraints": [],
+              "offFrameEntities": [],
+              "evidenceClass": "system_inference",
+              "scopeReason": "source_compatible_with_shot"
+            }
+          },
+          "promptSource": {
+            "composition": [],
+            "brand": [],
+            "canonicalOwners": []
+          },
+          "sourceMap": {
+            "composition": [
+              "taskContract.aspectRatio|scene",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "functional_requirement": [
+              "spatial.sceneProgram",
+              "spatial.functionalNetwork",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "brand_translation": [
+              "projectFacts",
+              "semantic.brandMotifSemantics",
+              "semantic.decorativeIdentitySemantics",
+              "semantic.colorAccentSemantics",
+              "spatial.brandRoleManifestation",
+              "_raw.mustBeVisible (identity items only)"
+            ]
+          },
+          "losses": [
+            {
+              "stage": "source-adapter.splitMustBeVisible",
+              "reason": "mustBeVisible is brand provenance; no architectural/motif/color hit defaults to brand_motif; excluded from composition before scene projection"
+            },
+            {
+              "stage": "source-adapter.projectedBrandManifestation.filter",
+              "reason": "text is in rawMustBeVisible functionalItems but is not artisticFocus; removed without a retained functional owner"
+            }
+          ],
+          "finalPromptRetained": false,
+          "providerPromptRetained": false
+        },
+        {
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[2]",
+          "value": "customers dining at tables",
+          "classification": {
+            "classification": "brand_motif",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 0,
+            "propertyHits": 0,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          },
+          "rawPassThrough": [
+            "customers dining at tables"
+          ],
+          "beforeProjection": {
+            "brandSanitizer": [
+              {
+                "text": "customers dining at tables",
+                "raw": "customers dining at tables",
+                "disposition": "kept"
+              }
+            ],
+            "compositionEligible": false
+          },
+          "projection": {
+            "compositionEntries": [],
+            "brandEntries": [
+              {
+                "text": "customers dining at tables",
+                "sourcePath": "derived.brandSanitization.lines[4]",
+                "sourceContainer": "brandSanitization.lines",
+                "sceneScope": "off_frame_dependency",
+                "clauses": [
+                  {
+                    "text": "customers dining at tables",
+                    "sceneScope": "off_frame_dependency",
+                    "visibilityAuthority": "off_frame_interior"
+                  }
+                ],
+                "detectedScenes": [
+                  "dining"
+                ],
+                "currentShotText": "",
+                "boundaryConstraints": [],
+                "offFrameEntities": [
+                  {
+                    "text": "customers dining at tables",
+                    "sceneScope": "off_frame_dependency",
+                    "visibilityAuthority": "off_frame_interior"
+                  }
+                ],
+                "evidenceClass": "system_inference",
+                "scopeReason": "foreign_scene_entity"
+              }
+            ],
+            "originalEntryScopeProbe": {
+              "text": "customers dining at tables",
+              "sourcePath": "mediaTranslations.spatial.mustBeVisible[2]",
+              "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+              "sceneScope": "off_frame_dependency",
+              "clauses": [
+                {
+                  "text": "customers dining at tables",
+                  "sceneScope": "off_frame_dependency",
+                  "visibilityAuthority": "off_frame_interior"
+                }
+              ],
+              "detectedScenes": [
+                "dining"
+              ],
+              "currentShotText": "",
+              "boundaryConstraints": [],
+              "offFrameEntities": [
+                {
+                  "text": "customers dining at tables",
+                  "sceneScope": "off_frame_dependency",
+                  "visibilityAuthority": "off_frame_interior"
+                }
+              ],
+              "evidenceClass": "system_inference",
+              "scopeReason": "foreign_scene_entity"
+            },
+            "brandScopeProbe": {
+              "text": "customers dining at tables",
+              "sourcePath": "brandSanitization.lines[2]",
+              "sceneScope": "off_frame_dependency",
+              "clauses": [
+                {
+                  "text": "customers dining at tables",
+                  "sceneScope": "off_frame_dependency",
+                  "visibilityAuthority": "off_frame_interior"
+                }
+              ],
+              "detectedScenes": [
+                "dining"
+              ],
+              "currentShotText": "",
+              "boundaryConstraints": [],
+              "offFrameEntities": [
+                {
+                  "text": "customers dining at tables",
+                  "sceneScope": "off_frame_dependency",
+                  "visibilityAuthority": "off_frame_interior"
+                }
+              ],
+              "evidenceClass": "system_inference",
+              "scopeReason": "foreign_scene_entity"
+            }
+          },
+          "promptSource": {
+            "composition": [],
+            "brand": [],
+            "canonicalOwners": []
+          },
+          "sourceMap": {
+            "composition": [
+              "taskContract.aspectRatio|scene",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "functional_requirement": [
+              "spatial.sceneProgram",
+              "spatial.functionalNetwork",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "brand_translation": [
+              "projectFacts",
+              "semantic.brandMotifSemantics",
+              "semantic.decorativeIdentitySemantics",
+              "semantic.colorAccentSemantics",
+              "spatial.brandRoleManifestation",
+              "_raw.mustBeVisible (identity items only)"
+            ]
+          },
+          "losses": [
+            {
+              "stage": "source-adapter.splitMustBeVisible",
+              "reason": "mustBeVisible is brand provenance; no architectural/motif/color hit defaults to brand_motif; excluded from composition before scene projection"
+            },
+            {
+              "stage": "source-adapter.projectList -> scopeSourceEntries",
+              "reason": "foreign_scene_entity; target subtype does not allow the dining scene"
+            }
+          ],
+          "finalPromptRetained": false,
+          "providerPromptRetained": false
+        }
+      ],
+      "finalPrompt": "# Task\n\nGenerate a single premium-grade space image for **Example Brand** (Restaurant).\nScene: `lobby` / three_quarter_wide.\nTask: Show a credible operating restaurant with a clear entrance and dining depth.\nAspect ratio: 16:9.\n\n# Spatial Intent\n\n> The experience goal and spatial strategy set the tone before any building mechanism.\n\n**Experience Goal**: Warm neighborhood dining with visible cooking\n\n**Spatial Strategy**: source-scoped decisions are stated once in Architecture Language.\n\n# Architecture Language\n\n> Preserve the supplied subjects, carriers and action scopes. These are project proposals; do not add walls, ceilings or lighting hardware from generic action words.\n\n**Source-scoped architectural decisions (each stated once)**:\n- Layered open frames guide movement\n- open frame\n\n# Architecture Context\n\nNo optional architecture examples have been selected for this request. Brand name and industry do not grant example authority.\nUse project decisions and the current user instruction. Artistic focus may coexist with practical reception, waiting, access and privacy requirements; examples cannot replace either dimension.\nDo not infer construction details from historical accepted images or from an industry's customary appearance. Preserve explicitly requested complex architecture without importing unrelated scene mechanisms.\n\n# Architecture-Function Bridge\n\n> Artistic character and commercial operations are simultaneous requirements. Industry constrains use, access and privacy; it does not dictate an architectural style.\n\n**Commercial Purpose**: A welcoming service destination\n\n**Spatial Translation (architecture → commercial action)**:\nCurrent-shot nodes and relationships are stated in Functional & Commercial Requirement.\n\n**Operation Constraints (hard, must hold)**:\n- guest sees service point from arrival\n\n**Human Experience (path + rhythm)**:\n- staff guides guest\n- identity at arrival\n\n**Commercial Reality (compatible with project artistic character)**:\nPreserve the supplied differentiators in Functional & Commercial Requirement together with the artistic focus in Composition.\n\n**Concept Drift Guards (must avoid)**:\n- generic decoration\n\n**Cross-zone operational constraints (current-shot boundary only; other interiors remain off frame)**:\n- No additional cross-zone relationship is established by the supplied sources.\n\nOff-frame program dependencies are retained in the source trace. Preserve access and privacy boundaries without exposing the interiors of other program areas.\n\n# Architectural Concept\n\nUse the experience goal in Spatial Intent and the source-scoped decisions in Architecture Language together with the artistic hierarchy in Composition.\nUser instructions take priority over model proposals and optional examples. Do not make a generic building template displace the project's artistic expression.\n\n# Architecture DNA\n\n**Decision relationships**: Architecture Language owns architectural actions; Spatial Color Roles owns color scope; Material System owns optical behavior; Composition owns focal hierarchy.\nKeep buildable junctions, readable circulation and human scale. Complex curves, restrained geometry, strong color and gallery-like character remain available when supported by project intent. No industry-wide aesthetic is imposed.\n\n# Brand Translation\n\n> Preserve project identity and artistic expression together with the functional program. The artistic focus is stated in Composition.\n> Brand identity (logo, wordmark, signage text) is composited AFTER generation; do NOT render it in-scene.\n**Brand**: Example Brand | **Industry**: Restaurant\n**Brand Role**: see the Commercial Purpose in Architecture-Function Bridge.\n**Brand Role Manifestation in Space**:\n- Visible service steps\n- identity at arrival\n- Turn service clarity into a spatial and material system\n\n# Functional & Commercial Requirement\n\n**Current-shot Program Nodes (source-scoped; other areas remain off frame)**:\n- arrival\n- service\n\n**Functional Network**:\n- guests enter through arrival zone; see service point\n- service flow loops guests back to waiting before exit\n\n**Visible hierarchy**: see Composition; an artistic focus does not replace operational facilities.\n\n**Positive Differentiators**:\n- Service logic is visible\n\n# Spatial Color Roles\n\nPalette identity rank does not determine interior area. Entries below are existing model proposals, not user-confirmed facts.\nProposed scopes and ratios retain their source meaning for review. Do not execute an unconfirmed dominant field or area allocation as a mandatory instruction. Area authority remains pending unless explicitly supplied by the current user instruction; that instruction takes priority.\nUnknown ratios stay unknown. Neither a color name, a palette rank, a gradient nor a proposed role independently authorizes geometry or whole-room color coverage.\n- warm white | palette: primary | proposed spatial scope: unspecified | execution authority: proposal_only\n  role: clear base\n  area ratio: unknown\n- natural wood | palette: secondary | proposed spatial scope: unspecified | execution authority: proposal_only\n  role: human warmth\n  area ratio: unknown\n- identity black | palette: accent | proposed spatial scope: unspecified | execution authority: proposal_only\n  role: precise identity emphasis\n  area ratio: unknown\n\n# Material System\n\n- **matte metal**: precise edge\n  brand role: makes service order legible\n  avoid: mirror finish\n\n# Lighting System\n\n**Primary Strategy**: soft area light\n**Contrast**: low contrast\n**Light / Material Behavior**:\n- soft reflection\n**Lighting Prohibitions**:\n- colored effect light\n\n# Composition & Photography\n\n**Output Ratio**: 16:9\n**Project Artistic Focus (separate from operational facilities)**:\n- No artistic installation is required by the supplied sources.\nDo not demote a supplied core artwork to background texture. Its mounting, dimensions and optical construction remain unspecified unless supplied; do not invent them.\n**Operational Elements (remain usable alongside the artistic focus)**:\n**Positive Differentiators**:\nUse the differentiators in Functional & Commercial Requirement without repeating them as additional demands.\nUse a credible commercial architectural camera: controlled perspective, depth, hierarchy and human scale.\n\n# Rendering Requirements\n\n- High-end architectural visualization, photoreal, physically based materials.\n- Balanced exposure, accurate white balance, readable texture and shadow detail.\n- No blown highlights; clean, resolved, professionally finished.\n\n# Prohibited (fail-closed)\n\nThe following MUST NOT appear in the generated image:\n- no rendered brand name, wordmark, logotype, signage text, or illuminated letters in the scene\n- no generic AI clinic look, no stock-photo medical aesthetic template\n- mirror finish\n- colored effect light\n- neon gradient",
+      "promptSha256": "e6f9f6e29f7eda0426cfcf1245c95bbbb3a80e2f1151624b6c87842209d5e052",
+      "semanticStatus": "blocked_field_loss"
+    },
+    {
+      "id": "dining-explicit-entrance",
+      "task": {
+        "projectId": "project-generic",
+        "taskId": "rks-field-lineage-synthetic",
+        "deliverableFamily": "space",
+        "count": 1,
+        "aspectRatio": "16:9",
+        "generationBasis": "standard",
+        "referenceAssetIds": [],
+        "logoUsageMode": "post_composite",
+        "currentInstruction": "Show a credible operating restaurant with a clear entrance and dining depth.",
+        "subtype": "dining",
+        "shot": "entrance_view",
+        "shotSource": "user_explicit"
+      },
+      "resolvedView": "entrance_view",
+      "resolvedShotSource": "user_explicit",
+      "targetSceneProjection": {
+        "targetScene": "dining",
+        "targetProgramId": "dining",
+        "functionalBlockSource": "source_shot_scope",
+        "architectureBridgeSource": "source_shot_scope",
+        "operationConstraintsSource": "source_shot_scope",
+        "viewStrategySource": "user_explicit"
+      },
+      "fields": [
+        {
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[0]",
+          "value": "chef preparing food",
+          "classification": {
+            "classification": "brand_motif",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 0,
+            "propertyHits": 0,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          },
+          "rawPassThrough": [
+            "chef preparing food"
+          ],
+          "beforeProjection": {
+            "brandSanitizer": [
+              {
+                "text": "chef preparing food",
+                "raw": "chef preparing food",
+                "disposition": "kept"
+              }
+            ],
+            "compositionEligible": false
+          },
+          "projection": {
+            "compositionEntries": [],
+            "brandEntries": [
+              {
+                "text": "chef preparing food",
+                "sourcePath": "derived.brandSanitization.lines[2]",
+                "sourceContainer": "brandSanitization.lines",
+                "sceneScope": "current_shot",
+                "clauses": [
+                  {
+                    "text": "chef preparing food",
+                    "sceneScope": "current_shot",
+                    "visibilityAuthority": "current_shot"
+                  }
+                ],
+                "detectedScenes": [],
+                "currentShotText": "chef preparing food",
+                "boundaryConstraints": [],
+                "offFrameEntities": [],
+                "evidenceClass": "system_inference",
+                "scopeReason": "source_compatible_with_shot"
+              }
+            ],
+            "originalEntryScopeProbe": {
+              "text": "chef preparing food",
+              "sourcePath": "mediaTranslations.spatial.mustBeVisible[0]",
+              "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+              "sceneScope": "current_shot",
+              "clauses": [
+                {
+                  "text": "chef preparing food",
+                  "sceneScope": "current_shot",
+                  "visibilityAuthority": "current_shot"
+                }
+              ],
+              "detectedScenes": [],
+              "currentShotText": "chef preparing food",
+              "boundaryConstraints": [],
+              "offFrameEntities": [],
+              "evidenceClass": "system_inference",
+              "scopeReason": "source_compatible_with_shot"
+            },
+            "brandScopeProbe": {
+              "text": "chef preparing food",
+              "sourcePath": "brandSanitization.lines[0]",
+              "sceneScope": "current_shot",
+              "clauses": [
+                {
+                  "text": "chef preparing food",
+                  "sceneScope": "current_shot",
+                  "visibilityAuthority": "current_shot"
+                }
+              ],
+              "detectedScenes": [],
+              "currentShotText": "chef preparing food",
+              "boundaryConstraints": [],
+              "offFrameEntities": [],
+              "evidenceClass": "system_inference",
+              "scopeReason": "source_compatible_with_shot"
+            }
+          },
+          "promptSource": {
+            "composition": [],
+            "brand": [],
+            "canonicalOwners": []
+          },
+          "sourceMap": {
+            "composition": [
+              "taskContract.aspectRatio|scene",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "functional_requirement": [
+              "spatial.sceneProgram",
+              "spatial.functionalNetwork",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "brand_translation": [
+              "projectFacts",
+              "semantic.brandMotifSemantics",
+              "semantic.decorativeIdentitySemantics",
+              "semantic.colorAccentSemantics",
+              "spatial.brandRoleManifestation",
+              "_raw.mustBeVisible (identity items only)"
+            ]
+          },
+          "losses": [
+            {
+              "stage": "source-adapter.splitMustBeVisible",
+              "reason": "mustBeVisible is brand provenance; no architectural/motif/color hit defaults to brand_motif; excluded from composition before scene projection"
+            },
+            {
+              "stage": "source-adapter.projectedBrandManifestation.filter",
+              "reason": "text is in rawMustBeVisible functionalItems but is not artisticFocus; removed without a retained functional owner"
+            }
+          ],
+          "finalPromptRetained": false,
+          "providerPromptRetained": false
+        },
+        {
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[1]",
+          "value": "steam above dishes",
+          "classification": {
+            "classification": "brand_motif",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 0,
+            "propertyHits": 0,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          },
+          "rawPassThrough": [
+            "steam above dishes"
+          ],
+          "beforeProjection": {
+            "brandSanitizer": [
+              {
+                "text": "steam above dishes",
+                "raw": "steam above dishes",
+                "disposition": "kept"
+              }
+            ],
+            "compositionEligible": false
+          },
+          "projection": {
+            "compositionEntries": [],
+            "brandEntries": [
+              {
+                "text": "steam above dishes",
+                "sourcePath": "derived.brandSanitization.lines[3]",
+                "sourceContainer": "brandSanitization.lines",
+                "sceneScope": "current_shot",
+                "clauses": [
+                  {
+                    "text": "steam above dishes",
+                    "sceneScope": "current_shot",
+                    "visibilityAuthority": "current_shot"
+                  }
+                ],
+                "detectedScenes": [],
+                "currentShotText": "steam above dishes",
+                "boundaryConstraints": [],
+                "offFrameEntities": [],
+                "evidenceClass": "system_inference",
+                "scopeReason": "source_compatible_with_shot"
+              }
+            ],
+            "originalEntryScopeProbe": {
+              "text": "steam above dishes",
+              "sourcePath": "mediaTranslations.spatial.mustBeVisible[1]",
+              "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+              "sceneScope": "current_shot",
+              "clauses": [
+                {
+                  "text": "steam above dishes",
+                  "sceneScope": "current_shot",
+                  "visibilityAuthority": "current_shot"
+                }
+              ],
+              "detectedScenes": [],
+              "currentShotText": "steam above dishes",
+              "boundaryConstraints": [],
+              "offFrameEntities": [],
+              "evidenceClass": "system_inference",
+              "scopeReason": "source_compatible_with_shot"
+            },
+            "brandScopeProbe": {
+              "text": "steam above dishes",
+              "sourcePath": "brandSanitization.lines[1]",
+              "sceneScope": "current_shot",
+              "clauses": [
+                {
+                  "text": "steam above dishes",
+                  "sceneScope": "current_shot",
+                  "visibilityAuthority": "current_shot"
+                }
+              ],
+              "detectedScenes": [],
+              "currentShotText": "steam above dishes",
+              "boundaryConstraints": [],
+              "offFrameEntities": [],
+              "evidenceClass": "system_inference",
+              "scopeReason": "source_compatible_with_shot"
+            }
+          },
+          "promptSource": {
+            "composition": [],
+            "brand": [],
+            "canonicalOwners": []
+          },
+          "sourceMap": {
+            "composition": [
+              "taskContract.aspectRatio|scene",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "functional_requirement": [
+              "spatial.sceneProgram",
+              "spatial.functionalNetwork",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "brand_translation": [
+              "projectFacts",
+              "semantic.brandMotifSemantics",
+              "semantic.decorativeIdentitySemantics",
+              "semantic.colorAccentSemantics",
+              "spatial.brandRoleManifestation",
+              "_raw.mustBeVisible (identity items only)"
+            ]
+          },
+          "losses": [
+            {
+              "stage": "source-adapter.splitMustBeVisible",
+              "reason": "mustBeVisible is brand provenance; no architectural/motif/color hit defaults to brand_motif; excluded from composition before scene projection"
+            },
+            {
+              "stage": "source-adapter.projectedBrandManifestation.filter",
+              "reason": "text is in rawMustBeVisible functionalItems but is not artisticFocus; removed without a retained functional owner"
+            }
+          ],
+          "finalPromptRetained": false,
+          "providerPromptRetained": false
+        },
+        {
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[2]",
+          "value": "customers dining at tables",
+          "classification": {
+            "classification": "brand_motif",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 0,
+            "propertyHits": 0,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          },
+          "rawPassThrough": [
+            "customers dining at tables"
+          ],
+          "beforeProjection": {
+            "brandSanitizer": [
+              {
+                "text": "customers dining at tables",
+                "raw": "customers dining at tables",
+                "disposition": "kept"
+              }
+            ],
+            "compositionEligible": false
+          },
+          "projection": {
+            "compositionEntries": [],
+            "brandEntries": [
+              {
+                "text": "customers dining at tables",
+                "sourcePath": "derived.brandSanitization.lines[4]",
+                "sourceContainer": "brandSanitization.lines",
+                "sceneScope": "current_shot",
+                "clauses": [
+                  {
+                    "text": "customers dining at tables",
+                    "sceneScope": "current_shot",
+                    "visibilityAuthority": "current_shot"
+                  }
+                ],
+                "detectedScenes": [
+                  "dining"
+                ],
+                "currentShotText": "customers dining at tables",
+                "boundaryConstraints": [],
+                "offFrameEntities": [],
+                "evidenceClass": "system_inference",
+                "scopeReason": "source_compatible_with_shot"
+              }
+            ],
+            "originalEntryScopeProbe": {
+              "text": "customers dining at tables",
+              "sourcePath": "mediaTranslations.spatial.mustBeVisible[2]",
+              "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+              "sceneScope": "current_shot",
+              "clauses": [
+                {
+                  "text": "customers dining at tables",
+                  "sceneScope": "current_shot",
+                  "visibilityAuthority": "current_shot"
+                }
+              ],
+              "detectedScenes": [
+                "dining"
+              ],
+              "currentShotText": "customers dining at tables",
+              "boundaryConstraints": [],
+              "offFrameEntities": [],
+              "evidenceClass": "system_inference",
+              "scopeReason": "source_compatible_with_shot"
+            },
+            "brandScopeProbe": {
+              "text": "customers dining at tables",
+              "sourcePath": "brandSanitization.lines[2]",
+              "sceneScope": "current_shot",
+              "clauses": [
+                {
+                  "text": "customers dining at tables",
+                  "sceneScope": "current_shot",
+                  "visibilityAuthority": "current_shot"
+                }
+              ],
+              "detectedScenes": [
+                "dining"
+              ],
+              "currentShotText": "customers dining at tables",
+              "boundaryConstraints": [],
+              "offFrameEntities": [],
+              "evidenceClass": "system_inference",
+              "scopeReason": "source_compatible_with_shot"
+            }
+          },
+          "promptSource": {
+            "composition": [],
+            "brand": [],
+            "canonicalOwners": []
+          },
+          "sourceMap": {
+            "composition": [
+              "taskContract.aspectRatio|scene",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "functional_requirement": [
+              "spatial.sceneProgram",
+              "spatial.functionalNetwork",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "brand_translation": [
+              "projectFacts",
+              "semantic.brandMotifSemantics",
+              "semantic.decorativeIdentitySemantics",
+              "semantic.colorAccentSemantics",
+              "spatial.brandRoleManifestation",
+              "_raw.mustBeVisible (identity items only)"
+            ]
+          },
+          "losses": [
+            {
+              "stage": "source-adapter.splitMustBeVisible",
+              "reason": "mustBeVisible is brand provenance; no architectural/motif/color hit defaults to brand_motif; excluded from composition before scene projection"
+            },
+            {
+              "stage": "source-adapter.projectedBrandManifestation.filter",
+              "reason": "text is in rawMustBeVisible functionalItems but is not artisticFocus; removed without a retained functional owner"
+            }
+          ],
+          "finalPromptRetained": false,
+          "providerPromptRetained": false
+        }
+      ],
+      "finalPrompt": "# Task\n\nGenerate a single premium-grade space image for **Example Brand** (Restaurant).\nScene: `dining` / entrance_view.\nTask: Show a credible operating restaurant with a clear entrance and dining depth.\nAspect ratio: 16:9.\n\n# Spatial Intent\n\n> The experience goal and spatial strategy set the tone before any building mechanism.\n\n**Experience Goal**: Warm neighborhood dining with visible cooking\n\n**Spatial Strategy**: source-scoped decisions are stated once in Architecture Language.\n\n# Architecture Language\n\n> Preserve the supplied subjects, carriers and action scopes. These are project proposals; do not add walls, ceilings or lighting hardware from generic action words.\n\n**Source-scoped architectural decisions (each stated once)**:\n- Layered open frames guide movement\n- open frame\n\n# Architecture Context\n\nNo optional architecture examples have been selected for this request. Brand name and industry do not grant example authority.\nUse project decisions and the current user instruction. Artistic focus may coexist with practical reception, waiting, access and privacy requirements; examples cannot replace either dimension.\nDo not infer construction details from historical accepted images or from an industry's customary appearance. Preserve explicitly requested complex architecture without importing unrelated scene mechanisms.\n\n# Architecture-Function Bridge\n\n> Artistic character and commercial operations are simultaneous requirements. Industry constrains use, access and privacy; it does not dictate an architectural style.\n\n**Commercial Purpose**: A welcoming service destination\n\n**Spatial Translation (architecture → commercial action)**:\nCurrent-shot nodes and relationships are stated in Functional & Commercial Requirement.\n\n**Operation Constraints (hard, must hold)**:\n- guest sees service point from arrival\n\n**Human Experience (path + rhythm)**:\n- staff guides guest\n- identity at arrival\n\n**Commercial Reality (compatible with project artistic character)**:\nPreserve the supplied differentiators in Functional & Commercial Requirement together with the artistic focus in Composition.\n\n**Concept Drift Guards (must avoid)**:\n- generic decoration\n\n**Cross-zone operational constraints (current-shot boundary only; other interiors remain off frame)**:\n- No additional cross-zone relationship is established by the supplied sources.\n\nOff-frame program dependencies are retained in the source trace. Preserve access and privacy boundaries without exposing the interiors of other program areas.\n\n# Architectural Concept\n\nUse the experience goal in Spatial Intent and the source-scoped decisions in Architecture Language together with the artistic hierarchy in Composition.\nUser instructions take priority over model proposals and optional examples. Do not make a generic building template displace the project's artistic expression.\n\n# Architecture DNA\n\n**Decision relationships**: Architecture Language owns architectural actions; Spatial Color Roles owns color scope; Material System owns optical behavior; Composition owns focal hierarchy.\nKeep buildable junctions, readable circulation and human scale. Complex curves, restrained geometry, strong color and gallery-like character remain available when supported by project intent. No industry-wide aesthetic is imposed.\n\n# Brand Translation\n\n> Preserve project identity and artistic expression together with the functional program. The artistic focus is stated in Composition.\n> Brand identity (logo, wordmark, signage text) is composited AFTER generation; do NOT render it in-scene.\n**Brand**: Example Brand | **Industry**: Restaurant\n**Brand Role**: see the Commercial Purpose in Architecture-Function Bridge.\n**Brand Role Manifestation in Space**:\n- Visible service steps\n- identity at arrival\n- Turn service clarity into a spatial and material system\n\n# Functional & Commercial Requirement\n\n**Current-shot Program Nodes (source-scoped; other areas remain off frame)**:\n- arrival\n- service\n\n**Functional Network**:\n- guests enter through arrival zone; see service point\n\n**Visible hierarchy**: see Composition; an artistic focus does not replace operational facilities.\n\n**Positive Differentiators**:\n- Service logic is visible\n\n# Spatial Color Roles\n\nPalette identity rank does not determine interior area. Entries below are existing model proposals, not user-confirmed facts.\nProposed scopes and ratios retain their source meaning for review. Do not execute an unconfirmed dominant field or area allocation as a mandatory instruction. Area authority remains pending unless explicitly supplied by the current user instruction; that instruction takes priority.\nUnknown ratios stay unknown. Neither a color name, a palette rank, a gradient nor a proposed role independently authorizes geometry or whole-room color coverage.\n- warm white | palette: primary | proposed spatial scope: unspecified | execution authority: proposal_only\n  role: clear base\n  area ratio: unknown\n- natural wood | palette: secondary | proposed spatial scope: unspecified | execution authority: proposal_only\n  role: human warmth\n  area ratio: unknown\n- identity black | palette: accent | proposed spatial scope: unspecified | execution authority: proposal_only\n  role: precise identity emphasis\n  area ratio: unknown\n\n# Material System\n\n- **matte metal**: precise edge\n  brand role: makes service order legible\n  avoid: mirror finish\n\n# Lighting System\n\n**Primary Strategy**: soft area light\n**Contrast**: low contrast\n**Light / Material Behavior**:\n- soft reflection\n**Lighting Prohibitions**:\n- colored effect light\n\n# Composition & Photography\n\n**Output Ratio**: 16:9\n**Project Artistic Focus (separate from operational facilities)**:\n- No artistic installation is required by the supplied sources.\nDo not demote a supplied core artwork to background texture. Its mounting, dimensions and optical construction remain unspecified unless supplied; do not invent them.\n**Operational Elements (remain usable alongside the artistic focus)**:\n**Positive Differentiators**:\nUse the differentiators in Functional & Commercial Requirement without repeating them as additional demands.\nUse a credible commercial architectural camera: controlled perspective, depth, hierarchy and human scale.\n\n# Rendering Requirements\n\n- High-end architectural visualization, photoreal, physically based materials.\n- Balanced exposure, accurate white balance, readable texture and shadow detail.\n- No blown highlights; clean, resolved, professionally finished.\n\n# Prohibited (fail-closed)\n\nThe following MUST NOT appear in the generated image:\n- no rendered brand name, wordmark, logotype, signage text, or illuminated letters in the scene\n- no generic AI clinic look, no stock-photo medical aesthetic template\n- mirror finish\n- colored effect light\n- neon gradient",
+      "promptSha256": "1db18a33ccee15330871639b18f87e2903bcce1808363badf6c1fa9ff2121b04",
+      "semanticStatus": "blocked_field_loss"
+    },
+    {
+      "id": "dining-explicit-wide",
+      "task": {
+        "projectId": "project-generic",
+        "taskId": "rks-field-lineage-synthetic",
+        "deliverableFamily": "space",
+        "count": 1,
+        "aspectRatio": "16:9",
+        "generationBasis": "standard",
+        "referenceAssetIds": [],
+        "logoUsageMode": "post_composite",
+        "currentInstruction": "Show a credible operating restaurant with a clear entrance and dining depth.",
+        "subtype": "dining",
+        "shot": "three_quarter_wide",
+        "shotSource": "user_explicit"
+      },
+      "resolvedView": "three_quarter_wide",
+      "resolvedShotSource": "user_explicit",
+      "targetSceneProjection": {
+        "targetScene": "dining",
+        "targetProgramId": "dining",
+        "functionalBlockSource": "source_shot_scope",
+        "architectureBridgeSource": "source_shot_scope",
+        "operationConstraintsSource": "source_shot_scope",
+        "viewStrategySource": "user_explicit"
+      },
+      "fields": [
+        {
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[0]",
+          "value": "chef preparing food",
+          "classification": {
+            "classification": "brand_motif",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 0,
+            "propertyHits": 0,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          },
+          "rawPassThrough": [
+            "chef preparing food"
+          ],
+          "beforeProjection": {
+            "brandSanitizer": [
+              {
+                "text": "chef preparing food",
+                "raw": "chef preparing food",
+                "disposition": "kept"
+              }
+            ],
+            "compositionEligible": false
+          },
+          "projection": {
+            "compositionEntries": [],
+            "brandEntries": [
+              {
+                "text": "chef preparing food",
+                "sourcePath": "derived.brandSanitization.lines[2]",
+                "sourceContainer": "brandSanitization.lines",
+                "sceneScope": "current_shot",
+                "clauses": [
+                  {
+                    "text": "chef preparing food",
+                    "sceneScope": "current_shot",
+                    "visibilityAuthority": "current_shot"
+                  }
+                ],
+                "detectedScenes": [],
+                "currentShotText": "chef preparing food",
+                "boundaryConstraints": [],
+                "offFrameEntities": [],
+                "evidenceClass": "system_inference",
+                "scopeReason": "source_compatible_with_shot"
+              }
+            ],
+            "originalEntryScopeProbe": {
+              "text": "chef preparing food",
+              "sourcePath": "mediaTranslations.spatial.mustBeVisible[0]",
+              "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+              "sceneScope": "current_shot",
+              "clauses": [
+                {
+                  "text": "chef preparing food",
+                  "sceneScope": "current_shot",
+                  "visibilityAuthority": "current_shot"
+                }
+              ],
+              "detectedScenes": [],
+              "currentShotText": "chef preparing food",
+              "boundaryConstraints": [],
+              "offFrameEntities": [],
+              "evidenceClass": "system_inference",
+              "scopeReason": "source_compatible_with_shot"
+            },
+            "brandScopeProbe": {
+              "text": "chef preparing food",
+              "sourcePath": "brandSanitization.lines[0]",
+              "sceneScope": "current_shot",
+              "clauses": [
+                {
+                  "text": "chef preparing food",
+                  "sceneScope": "current_shot",
+                  "visibilityAuthority": "current_shot"
+                }
+              ],
+              "detectedScenes": [],
+              "currentShotText": "chef preparing food",
+              "boundaryConstraints": [],
+              "offFrameEntities": [],
+              "evidenceClass": "system_inference",
+              "scopeReason": "source_compatible_with_shot"
+            }
+          },
+          "promptSource": {
+            "composition": [],
+            "brand": [],
+            "canonicalOwners": []
+          },
+          "sourceMap": {
+            "composition": [
+              "taskContract.aspectRatio|scene",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "functional_requirement": [
+              "spatial.sceneProgram",
+              "spatial.functionalNetwork",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "brand_translation": [
+              "projectFacts",
+              "semantic.brandMotifSemantics",
+              "semantic.decorativeIdentitySemantics",
+              "semantic.colorAccentSemantics",
+              "spatial.brandRoleManifestation",
+              "_raw.mustBeVisible (identity items only)"
+            ]
+          },
+          "losses": [
+            {
+              "stage": "source-adapter.splitMustBeVisible",
+              "reason": "mustBeVisible is brand provenance; no architectural/motif/color hit defaults to brand_motif; excluded from composition before scene projection"
+            },
+            {
+              "stage": "source-adapter.projectedBrandManifestation.filter",
+              "reason": "text is in rawMustBeVisible functionalItems but is not artisticFocus; removed without a retained functional owner"
+            }
+          ],
+          "finalPromptRetained": false,
+          "providerPromptRetained": false
+        },
+        {
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[1]",
+          "value": "steam above dishes",
+          "classification": {
+            "classification": "brand_motif",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 0,
+            "propertyHits": 0,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          },
+          "rawPassThrough": [
+            "steam above dishes"
+          ],
+          "beforeProjection": {
+            "brandSanitizer": [
+              {
+                "text": "steam above dishes",
+                "raw": "steam above dishes",
+                "disposition": "kept"
+              }
+            ],
+            "compositionEligible": false
+          },
+          "projection": {
+            "compositionEntries": [],
+            "brandEntries": [
+              {
+                "text": "steam above dishes",
+                "sourcePath": "derived.brandSanitization.lines[3]",
+                "sourceContainer": "brandSanitization.lines",
+                "sceneScope": "current_shot",
+                "clauses": [
+                  {
+                    "text": "steam above dishes",
+                    "sceneScope": "current_shot",
+                    "visibilityAuthority": "current_shot"
+                  }
+                ],
+                "detectedScenes": [],
+                "currentShotText": "steam above dishes",
+                "boundaryConstraints": [],
+                "offFrameEntities": [],
+                "evidenceClass": "system_inference",
+                "scopeReason": "source_compatible_with_shot"
+              }
+            ],
+            "originalEntryScopeProbe": {
+              "text": "steam above dishes",
+              "sourcePath": "mediaTranslations.spatial.mustBeVisible[1]",
+              "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+              "sceneScope": "current_shot",
+              "clauses": [
+                {
+                  "text": "steam above dishes",
+                  "sceneScope": "current_shot",
+                  "visibilityAuthority": "current_shot"
+                }
+              ],
+              "detectedScenes": [],
+              "currentShotText": "steam above dishes",
+              "boundaryConstraints": [],
+              "offFrameEntities": [],
+              "evidenceClass": "system_inference",
+              "scopeReason": "source_compatible_with_shot"
+            },
+            "brandScopeProbe": {
+              "text": "steam above dishes",
+              "sourcePath": "brandSanitization.lines[1]",
+              "sceneScope": "current_shot",
+              "clauses": [
+                {
+                  "text": "steam above dishes",
+                  "sceneScope": "current_shot",
+                  "visibilityAuthority": "current_shot"
+                }
+              ],
+              "detectedScenes": [],
+              "currentShotText": "steam above dishes",
+              "boundaryConstraints": [],
+              "offFrameEntities": [],
+              "evidenceClass": "system_inference",
+              "scopeReason": "source_compatible_with_shot"
+            }
+          },
+          "promptSource": {
+            "composition": [],
+            "brand": [],
+            "canonicalOwners": []
+          },
+          "sourceMap": {
+            "composition": [
+              "taskContract.aspectRatio|scene",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "functional_requirement": [
+              "spatial.sceneProgram",
+              "spatial.functionalNetwork",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "brand_translation": [
+              "projectFacts",
+              "semantic.brandMotifSemantics",
+              "semantic.decorativeIdentitySemantics",
+              "semantic.colorAccentSemantics",
+              "spatial.brandRoleManifestation",
+              "_raw.mustBeVisible (identity items only)"
+            ]
+          },
+          "losses": [
+            {
+              "stage": "source-adapter.splitMustBeVisible",
+              "reason": "mustBeVisible is brand provenance; no architectural/motif/color hit defaults to brand_motif; excluded from composition before scene projection"
+            },
+            {
+              "stage": "source-adapter.projectedBrandManifestation.filter",
+              "reason": "text is in rawMustBeVisible functionalItems but is not artisticFocus; removed without a retained functional owner"
+            }
+          ],
+          "finalPromptRetained": false,
+          "providerPromptRetained": false
+        },
+        {
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[2]",
+          "value": "customers dining at tables",
+          "classification": {
+            "classification": "brand_motif",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 0,
+            "propertyHits": 0,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          },
+          "rawPassThrough": [
+            "customers dining at tables"
+          ],
+          "beforeProjection": {
+            "brandSanitizer": [
+              {
+                "text": "customers dining at tables",
+                "raw": "customers dining at tables",
+                "disposition": "kept"
+              }
+            ],
+            "compositionEligible": false
+          },
+          "projection": {
+            "compositionEntries": [],
+            "brandEntries": [
+              {
+                "text": "customers dining at tables",
+                "sourcePath": "derived.brandSanitization.lines[4]",
+                "sourceContainer": "brandSanitization.lines",
+                "sceneScope": "current_shot",
+                "clauses": [
+                  {
+                    "text": "customers dining at tables",
+                    "sceneScope": "current_shot",
+                    "visibilityAuthority": "current_shot"
+                  }
+                ],
+                "detectedScenes": [
+                  "dining"
+                ],
+                "currentShotText": "customers dining at tables",
+                "boundaryConstraints": [],
+                "offFrameEntities": [],
+                "evidenceClass": "system_inference",
+                "scopeReason": "source_compatible_with_shot"
+              }
+            ],
+            "originalEntryScopeProbe": {
+              "text": "customers dining at tables",
+              "sourcePath": "mediaTranslations.spatial.mustBeVisible[2]",
+              "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+              "sceneScope": "current_shot",
+              "clauses": [
+                {
+                  "text": "customers dining at tables",
+                  "sceneScope": "current_shot",
+                  "visibilityAuthority": "current_shot"
+                }
+              ],
+              "detectedScenes": [
+                "dining"
+              ],
+              "currentShotText": "customers dining at tables",
+              "boundaryConstraints": [],
+              "offFrameEntities": [],
+              "evidenceClass": "system_inference",
+              "scopeReason": "source_compatible_with_shot"
+            },
+            "brandScopeProbe": {
+              "text": "customers dining at tables",
+              "sourcePath": "brandSanitization.lines[2]",
+              "sceneScope": "current_shot",
+              "clauses": [
+                {
+                  "text": "customers dining at tables",
+                  "sceneScope": "current_shot",
+                  "visibilityAuthority": "current_shot"
+                }
+              ],
+              "detectedScenes": [
+                "dining"
+              ],
+              "currentShotText": "customers dining at tables",
+              "boundaryConstraints": [],
+              "offFrameEntities": [],
+              "evidenceClass": "system_inference",
+              "scopeReason": "source_compatible_with_shot"
+            }
+          },
+          "promptSource": {
+            "composition": [],
+            "brand": [],
+            "canonicalOwners": []
+          },
+          "sourceMap": {
+            "composition": [
+              "taskContract.aspectRatio|scene",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "functional_requirement": [
+              "spatial.sceneProgram",
+              "spatial.functionalNetwork",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "brand_translation": [
+              "projectFacts",
+              "semantic.brandMotifSemantics",
+              "semantic.decorativeIdentitySemantics",
+              "semantic.colorAccentSemantics",
+              "spatial.brandRoleManifestation",
+              "_raw.mustBeVisible (identity items only)"
+            ]
+          },
+          "losses": [
+            {
+              "stage": "source-adapter.splitMustBeVisible",
+              "reason": "mustBeVisible is brand provenance; no architectural/motif/color hit defaults to brand_motif; excluded from composition before scene projection"
+            },
+            {
+              "stage": "source-adapter.projectedBrandManifestation.filter",
+              "reason": "text is in rawMustBeVisible functionalItems but is not artisticFocus; removed without a retained functional owner"
+            }
+          ],
+          "finalPromptRetained": false,
+          "providerPromptRetained": false
+        }
+      ],
+      "finalPrompt": "# Task\n\nGenerate a single premium-grade space image for **Example Brand** (Restaurant).\nScene: `dining` / three_quarter_wide.\nTask: Show a credible operating restaurant with a clear entrance and dining depth.\nAspect ratio: 16:9.\n\n# Spatial Intent\n\n> The experience goal and spatial strategy set the tone before any building mechanism.\n\n**Experience Goal**: Warm neighborhood dining with visible cooking\n\n**Spatial Strategy**: source-scoped decisions are stated once in Architecture Language.\n\n# Architecture Language\n\n> Preserve the supplied subjects, carriers and action scopes. These are project proposals; do not add walls, ceilings or lighting hardware from generic action words.\n\n**Source-scoped architectural decisions (each stated once)**:\n- Layered open frames guide movement\n- open frame\n\n# Architecture Context\n\nNo optional architecture examples have been selected for this request. Brand name and industry do not grant example authority.\nUse project decisions and the current user instruction. Artistic focus may coexist with practical reception, waiting, access and privacy requirements; examples cannot replace either dimension.\nDo not infer construction details from historical accepted images or from an industry's customary appearance. Preserve explicitly requested complex architecture without importing unrelated scene mechanisms.\n\n# Architecture-Function Bridge\n\n> Artistic character and commercial operations are simultaneous requirements. Industry constrains use, access and privacy; it does not dictate an architectural style.\n\n**Commercial Purpose**: A welcoming service destination\n\n**Spatial Translation (architecture → commercial action)**:\nCurrent-shot nodes and relationships are stated in Functional & Commercial Requirement.\n\n**Operation Constraints (hard, must hold)**:\n- guest sees service point from arrival\n\n**Human Experience (path + rhythm)**:\n- staff guides guest\n- identity at arrival\n\n**Commercial Reality (compatible with project artistic character)**:\nPreserve the supplied differentiators in Functional & Commercial Requirement together with the artistic focus in Composition.\n\n**Concept Drift Guards (must avoid)**:\n- generic decoration\n\n**Cross-zone operational constraints (current-shot boundary only; other interiors remain off frame)**:\n- No additional cross-zone relationship is established by the supplied sources.\n\nOff-frame program dependencies are retained in the source trace. Preserve access and privacy boundaries without exposing the interiors of other program areas.\n\n# Architectural Concept\n\nUse the experience goal in Spatial Intent and the source-scoped decisions in Architecture Language together with the artistic hierarchy in Composition.\nUser instructions take priority over model proposals and optional examples. Do not make a generic building template displace the project's artistic expression.\n\n# Architecture DNA\n\n**Decision relationships**: Architecture Language owns architectural actions; Spatial Color Roles owns color scope; Material System owns optical behavior; Composition owns focal hierarchy.\nKeep buildable junctions, readable circulation and human scale. Complex curves, restrained geometry, strong color and gallery-like character remain available when supported by project intent. No industry-wide aesthetic is imposed.\n\n# Brand Translation\n\n> Preserve project identity and artistic expression together with the functional program. The artistic focus is stated in Composition.\n> Brand identity (logo, wordmark, signage text) is composited AFTER generation; do NOT render it in-scene.\n**Brand**: Example Brand | **Industry**: Restaurant\n**Brand Role**: see the Commercial Purpose in Architecture-Function Bridge.\n**Brand Role Manifestation in Space**:\n- Visible service steps\n- identity at arrival\n- Turn service clarity into a spatial and material system\n\n# Functional & Commercial Requirement\n\n**Current-shot Program Nodes (source-scoped; other areas remain off frame)**:\n- arrival\n- service\n\n**Functional Network**:\n- guests enter through arrival zone; see service point\n\n**Visible hierarchy**: see Composition; an artistic focus does not replace operational facilities.\n\n**Positive Differentiators**:\n- Service logic is visible\n\n# Spatial Color Roles\n\nPalette identity rank does not determine interior area. Entries below are existing model proposals, not user-confirmed facts.\nProposed scopes and ratios retain their source meaning for review. Do not execute an unconfirmed dominant field or area allocation as a mandatory instruction. Area authority remains pending unless explicitly supplied by the current user instruction; that instruction takes priority.\nUnknown ratios stay unknown. Neither a color name, a palette rank, a gradient nor a proposed role independently authorizes geometry or whole-room color coverage.\n- warm white | palette: primary | proposed spatial scope: unspecified | execution authority: proposal_only\n  role: clear base\n  area ratio: unknown\n- natural wood | palette: secondary | proposed spatial scope: unspecified | execution authority: proposal_only\n  role: human warmth\n  area ratio: unknown\n- identity black | palette: accent | proposed spatial scope: unspecified | execution authority: proposal_only\n  role: precise identity emphasis\n  area ratio: unknown\n\n# Material System\n\n- **matte metal**: precise edge\n  brand role: makes service order legible\n  avoid: mirror finish\n\n# Lighting System\n\n**Primary Strategy**: soft area light\n**Contrast**: low contrast\n**Light / Material Behavior**:\n- soft reflection\n**Lighting Prohibitions**:\n- colored effect light\n\n# Composition & Photography\n\n**Output Ratio**: 16:9\n**Project Artistic Focus (separate from operational facilities)**:\n- No artistic installation is required by the supplied sources.\nDo not demote a supplied core artwork to background texture. Its mounting, dimensions and optical construction remain unspecified unless supplied; do not invent them.\n**Operational Elements (remain usable alongside the artistic focus)**:\n**Positive Differentiators**:\nUse the differentiators in Functional & Commercial Requirement without repeating them as additional demands.\nUse a credible commercial architectural camera: controlled perspective, depth, hierarchy and human scale.\n\n# Rendering Requirements\n\n- High-end architectural visualization, photoreal, physically based materials.\n- Balanced exposure, accurate white balance, readable texture and shadow detail.\n- No blown highlights; clean, resolved, professionally finished.\n\n# Prohibited (fail-closed)\n\nThe following MUST NOT appear in the generated image:\n- no rendered brand name, wordmark, logotype, signage text, or illuminated letters in the scene\n- no generic AI clinic look, no stock-photo medical aesthetic template\n- mirror finish\n- colored effect light\n- neon gradient",
+      "promptSha256": "ed867f4181aa72e7db325d6a19078fccb84f0a7ab6fb5a6c14f40aca2e737f36",
+      "semanticStatus": "blocked_field_loss"
+    },
+    {
+      "id": "dining-default",
+      "task": {
+        "projectId": "project-generic",
+        "taskId": "rks-field-lineage-synthetic",
+        "deliverableFamily": "space",
+        "count": 1,
+        "aspectRatio": "16:9",
+        "generationBasis": "standard",
+        "referenceAssetIds": [],
+        "logoUsageMode": "post_composite",
+        "currentInstruction": "Show a credible operating restaurant with a clear entrance and dining depth.",
+        "subtype": "dining",
+        "shot": "entrance_view"
+      },
+      "resolvedView": "operational_dining_view",
+      "resolvedShotSource": "target_scene_default",
+      "targetSceneProjection": {
+        "targetScene": "dining",
+        "targetProgramId": "dining",
+        "functionalBlockSource": "source_shot_scope",
+        "architectureBridgeSource": "source_shot_scope",
+        "operationConstraintsSource": "source_shot_scope",
+        "viewStrategySource": "target_scene_default"
+      },
+      "fields": [
+        {
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[0]",
+          "value": "chef preparing food",
+          "classification": {
+            "classification": "brand_motif",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 0,
+            "propertyHits": 0,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          },
+          "rawPassThrough": [
+            "chef preparing food"
+          ],
+          "beforeProjection": {
+            "brandSanitizer": [
+              {
+                "text": "chef preparing food",
+                "raw": "chef preparing food",
+                "disposition": "kept"
+              }
+            ],
+            "compositionEligible": false
+          },
+          "projection": {
+            "compositionEntries": [],
+            "brandEntries": [
+              {
+                "text": "chef preparing food",
+                "sourcePath": "derived.brandSanitization.lines[2]",
+                "sourceContainer": "brandSanitization.lines",
+                "sceneScope": "current_shot",
+                "clauses": [
+                  {
+                    "text": "chef preparing food",
+                    "sceneScope": "current_shot",
+                    "visibilityAuthority": "current_shot"
+                  }
+                ],
+                "detectedScenes": [],
+                "currentShotText": "chef preparing food",
+                "boundaryConstraints": [],
+                "offFrameEntities": [],
+                "evidenceClass": "system_inference",
+                "scopeReason": "source_compatible_with_shot"
+              }
+            ],
+            "originalEntryScopeProbe": {
+              "text": "chef preparing food",
+              "sourcePath": "mediaTranslations.spatial.mustBeVisible[0]",
+              "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+              "sceneScope": "current_shot",
+              "clauses": [
+                {
+                  "text": "chef preparing food",
+                  "sceneScope": "current_shot",
+                  "visibilityAuthority": "current_shot"
+                }
+              ],
+              "detectedScenes": [],
+              "currentShotText": "chef preparing food",
+              "boundaryConstraints": [],
+              "offFrameEntities": [],
+              "evidenceClass": "system_inference",
+              "scopeReason": "source_compatible_with_shot"
+            },
+            "brandScopeProbe": {
+              "text": "chef preparing food",
+              "sourcePath": "brandSanitization.lines[0]",
+              "sceneScope": "current_shot",
+              "clauses": [
+                {
+                  "text": "chef preparing food",
+                  "sceneScope": "current_shot",
+                  "visibilityAuthority": "current_shot"
+                }
+              ],
+              "detectedScenes": [],
+              "currentShotText": "chef preparing food",
+              "boundaryConstraints": [],
+              "offFrameEntities": [],
+              "evidenceClass": "system_inference",
+              "scopeReason": "source_compatible_with_shot"
+            }
+          },
+          "promptSource": {
+            "composition": [],
+            "brand": [],
+            "canonicalOwners": []
+          },
+          "sourceMap": {
+            "composition": [
+              "taskContract.aspectRatio|scene",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "functional_requirement": [
+              "spatial.sceneProgram",
+              "spatial.functionalNetwork",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "brand_translation": [
+              "projectFacts",
+              "semantic.brandMotifSemantics",
+              "semantic.decorativeIdentitySemantics",
+              "semantic.colorAccentSemantics",
+              "spatial.brandRoleManifestation",
+              "_raw.mustBeVisible (identity items only)"
+            ]
+          },
+          "losses": [
+            {
+              "stage": "source-adapter.splitMustBeVisible",
+              "reason": "mustBeVisible is brand provenance; no architectural/motif/color hit defaults to brand_motif; excluded from composition before scene projection"
+            },
+            {
+              "stage": "source-adapter.projectedBrandManifestation.filter",
+              "reason": "text is in rawMustBeVisible functionalItems but is not artisticFocus; removed without a retained functional owner"
+            }
+          ],
+          "finalPromptRetained": false,
+          "providerPromptRetained": false
+        },
+        {
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[1]",
+          "value": "steam above dishes",
+          "classification": {
+            "classification": "brand_motif",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 0,
+            "propertyHits": 0,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          },
+          "rawPassThrough": [
+            "steam above dishes"
+          ],
+          "beforeProjection": {
+            "brandSanitizer": [
+              {
+                "text": "steam above dishes",
+                "raw": "steam above dishes",
+                "disposition": "kept"
+              }
+            ],
+            "compositionEligible": false
+          },
+          "projection": {
+            "compositionEntries": [],
+            "brandEntries": [
+              {
+                "text": "steam above dishes",
+                "sourcePath": "derived.brandSanitization.lines[3]",
+                "sourceContainer": "brandSanitization.lines",
+                "sceneScope": "current_shot",
+                "clauses": [
+                  {
+                    "text": "steam above dishes",
+                    "sceneScope": "current_shot",
+                    "visibilityAuthority": "current_shot"
+                  }
+                ],
+                "detectedScenes": [],
+                "currentShotText": "steam above dishes",
+                "boundaryConstraints": [],
+                "offFrameEntities": [],
+                "evidenceClass": "system_inference",
+                "scopeReason": "source_compatible_with_shot"
+              }
+            ],
+            "originalEntryScopeProbe": {
+              "text": "steam above dishes",
+              "sourcePath": "mediaTranslations.spatial.mustBeVisible[1]",
+              "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+              "sceneScope": "current_shot",
+              "clauses": [
+                {
+                  "text": "steam above dishes",
+                  "sceneScope": "current_shot",
+                  "visibilityAuthority": "current_shot"
+                }
+              ],
+              "detectedScenes": [],
+              "currentShotText": "steam above dishes",
+              "boundaryConstraints": [],
+              "offFrameEntities": [],
+              "evidenceClass": "system_inference",
+              "scopeReason": "source_compatible_with_shot"
+            },
+            "brandScopeProbe": {
+              "text": "steam above dishes",
+              "sourcePath": "brandSanitization.lines[1]",
+              "sceneScope": "current_shot",
+              "clauses": [
+                {
+                  "text": "steam above dishes",
+                  "sceneScope": "current_shot",
+                  "visibilityAuthority": "current_shot"
+                }
+              ],
+              "detectedScenes": [],
+              "currentShotText": "steam above dishes",
+              "boundaryConstraints": [],
+              "offFrameEntities": [],
+              "evidenceClass": "system_inference",
+              "scopeReason": "source_compatible_with_shot"
+            }
+          },
+          "promptSource": {
+            "composition": [],
+            "brand": [],
+            "canonicalOwners": []
+          },
+          "sourceMap": {
+            "composition": [
+              "taskContract.aspectRatio|scene",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "functional_requirement": [
+              "spatial.sceneProgram",
+              "spatial.functionalNetwork",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "brand_translation": [
+              "projectFacts",
+              "semantic.brandMotifSemantics",
+              "semantic.decorativeIdentitySemantics",
+              "semantic.colorAccentSemantics",
+              "spatial.brandRoleManifestation",
+              "_raw.mustBeVisible (identity items only)"
+            ]
+          },
+          "losses": [
+            {
+              "stage": "source-adapter.splitMustBeVisible",
+              "reason": "mustBeVisible is brand provenance; no architectural/motif/color hit defaults to brand_motif; excluded from composition before scene projection"
+            },
+            {
+              "stage": "source-adapter.projectedBrandManifestation.filter",
+              "reason": "text is in rawMustBeVisible functionalItems but is not artisticFocus; removed without a retained functional owner"
+            }
+          ],
+          "finalPromptRetained": false,
+          "providerPromptRetained": false
+        },
+        {
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[2]",
+          "value": "customers dining at tables",
+          "classification": {
+            "classification": "brand_motif",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 0,
+            "propertyHits": 0,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          },
+          "rawPassThrough": [
+            "customers dining at tables"
+          ],
+          "beforeProjection": {
+            "brandSanitizer": [
+              {
+                "text": "customers dining at tables",
+                "raw": "customers dining at tables",
+                "disposition": "kept"
+              }
+            ],
+            "compositionEligible": false
+          },
+          "projection": {
+            "compositionEntries": [],
+            "brandEntries": [
+              {
+                "text": "customers dining at tables",
+                "sourcePath": "derived.brandSanitization.lines[4]",
+                "sourceContainer": "brandSanitization.lines",
+                "sceneScope": "current_shot",
+                "clauses": [
+                  {
+                    "text": "customers dining at tables",
+                    "sceneScope": "current_shot",
+                    "visibilityAuthority": "current_shot"
+                  }
+                ],
+                "detectedScenes": [
+                  "dining"
+                ],
+                "currentShotText": "customers dining at tables",
+                "boundaryConstraints": [],
+                "offFrameEntities": [],
+                "evidenceClass": "system_inference",
+                "scopeReason": "source_compatible_with_shot"
+              }
+            ],
+            "originalEntryScopeProbe": {
+              "text": "customers dining at tables",
+              "sourcePath": "mediaTranslations.spatial.mustBeVisible[2]",
+              "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+              "sceneScope": "current_shot",
+              "clauses": [
+                {
+                  "text": "customers dining at tables",
+                  "sceneScope": "current_shot",
+                  "visibilityAuthority": "current_shot"
+                }
+              ],
+              "detectedScenes": [
+                "dining"
+              ],
+              "currentShotText": "customers dining at tables",
+              "boundaryConstraints": [],
+              "offFrameEntities": [],
+              "evidenceClass": "system_inference",
+              "scopeReason": "source_compatible_with_shot"
+            },
+            "brandScopeProbe": {
+              "text": "customers dining at tables",
+              "sourcePath": "brandSanitization.lines[2]",
+              "sceneScope": "current_shot",
+              "clauses": [
+                {
+                  "text": "customers dining at tables",
+                  "sceneScope": "current_shot",
+                  "visibilityAuthority": "current_shot"
+                }
+              ],
+              "detectedScenes": [
+                "dining"
+              ],
+              "currentShotText": "customers dining at tables",
+              "boundaryConstraints": [],
+              "offFrameEntities": [],
+              "evidenceClass": "system_inference",
+              "scopeReason": "source_compatible_with_shot"
+            }
+          },
+          "promptSource": {
+            "composition": [],
+            "brand": [],
+            "canonicalOwners": []
+          },
+          "sourceMap": {
+            "composition": [
+              "taskContract.aspectRatio|scene",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "functional_requirement": [
+              "spatial.sceneProgram",
+              "spatial.functionalNetwork",
+              "composition.mustBeVisible (spatial items only)",
+              "spatial.positiveDifferentiators"
+            ],
+            "brand_translation": [
+              "projectFacts",
+              "semantic.brandMotifSemantics",
+              "semantic.decorativeIdentitySemantics",
+              "semantic.colorAccentSemantics",
+              "spatial.brandRoleManifestation",
+              "_raw.mustBeVisible (identity items only)"
+            ]
+          },
+          "losses": [
+            {
+              "stage": "source-adapter.splitMustBeVisible",
+              "reason": "mustBeVisible is brand provenance; no architectural/motif/color hit defaults to brand_motif; excluded from composition before scene projection"
+            },
+            {
+              "stage": "source-adapter.projectedBrandManifestation.filter",
+              "reason": "text is in rawMustBeVisible functionalItems but is not artisticFocus; removed without a retained functional owner"
+            }
+          ],
+          "finalPromptRetained": false,
+          "providerPromptRetained": false
+        }
+      ],
+      "finalPrompt": "# Task\n\nGenerate a single premium-grade space image for **Example Brand** (Restaurant).\nScene: `dining` / operational_dining_view.\nTask: Show a credible operating restaurant with a clear entrance and dining depth.\nAspect ratio: 16:9.\n\n# Spatial Intent\n\n> The experience goal and spatial strategy set the tone before any building mechanism.\n\n**Experience Goal**: Warm neighborhood dining with visible cooking\n\n**Spatial Strategy**: source-scoped decisions are stated once in Architecture Language.\n\n# Architecture Language\n\n> Preserve the supplied subjects, carriers and action scopes. These are project proposals; do not add walls, ceilings or lighting hardware from generic action words.\n\n**Source-scoped architectural decisions (each stated once)**:\n- Layered open frames guide movement\n- open frame\n\n# Architecture Context\n\nNo optional architecture examples have been selected for this request. Brand name and industry do not grant example authority.\nUse project decisions and the current user instruction. Artistic focus may coexist with practical reception, waiting, access and privacy requirements; examples cannot replace either dimension.\nDo not infer construction details from historical accepted images or from an industry's customary appearance. Preserve explicitly requested complex architecture without importing unrelated scene mechanisms.\n\n# Architecture-Function Bridge\n\n> Artistic character and commercial operations are simultaneous requirements. Industry constrains use, access and privacy; it does not dictate an architectural style.\n\n**Commercial Purpose**: A welcoming service destination\n\n**Spatial Translation (architecture → commercial action)**:\nCurrent-shot nodes and relationships are stated in Functional & Commercial Requirement.\n\n**Operation Constraints (hard, must hold)**:\n- guest sees service point from arrival\n\n**Human Experience (path + rhythm)**:\n- staff guides guest\n- identity at arrival\n\n**Commercial Reality (compatible with project artistic character)**:\nPreserve the supplied differentiators in Functional & Commercial Requirement together with the artistic focus in Composition.\n\n**Concept Drift Guards (must avoid)**:\n- generic decoration\n\n**Cross-zone operational constraints (current-shot boundary only; other interiors remain off frame)**:\n- No additional cross-zone relationship is established by the supplied sources.\n\nOff-frame program dependencies are retained in the source trace. Preserve access and privacy boundaries without exposing the interiors of other program areas.\n\n# Architectural Concept\n\nUse the experience goal in Spatial Intent and the source-scoped decisions in Architecture Language together with the artistic hierarchy in Composition.\nUser instructions take priority over model proposals and optional examples. Do not make a generic building template displace the project's artistic expression.\n\n# Architecture DNA\n\n**Decision relationships**: Architecture Language owns architectural actions; Spatial Color Roles owns color scope; Material System owns optical behavior; Composition owns focal hierarchy.\nKeep buildable junctions, readable circulation and human scale. Complex curves, restrained geometry, strong color and gallery-like character remain available when supported by project intent. No industry-wide aesthetic is imposed.\n\n# Brand Translation\n\n> Preserve project identity and artistic expression together with the functional program. The artistic focus is stated in Composition.\n> Brand identity (logo, wordmark, signage text) is composited AFTER generation; do NOT render it in-scene.\n**Brand**: Example Brand | **Industry**: Restaurant\n**Brand Role**: see the Commercial Purpose in Architecture-Function Bridge.\n**Brand Role Manifestation in Space**:\n- Visible service steps\n- identity at arrival\n- Turn service clarity into a spatial and material system\n\n# Functional & Commercial Requirement\n\n**Current-shot Program Nodes (source-scoped; other areas remain off frame)**:\n- arrival\n- service\n\n**Functional Network**:\n- guests enter through arrival zone; see service point\n\n**Visible hierarchy**: see Composition; an artistic focus does not replace operational facilities.\n\n**Positive Differentiators**:\n- Service logic is visible\n\n# Spatial Color Roles\n\nPalette identity rank does not determine interior area. Entries below are existing model proposals, not user-confirmed facts.\nProposed scopes and ratios retain their source meaning for review. Do not execute an unconfirmed dominant field or area allocation as a mandatory instruction. Area authority remains pending unless explicitly supplied by the current user instruction; that instruction takes priority.\nUnknown ratios stay unknown. Neither a color name, a palette rank, a gradient nor a proposed role independently authorizes geometry or whole-room color coverage.\n- warm white | palette: primary | proposed spatial scope: unspecified | execution authority: proposal_only\n  role: clear base\n  area ratio: unknown\n- natural wood | palette: secondary | proposed spatial scope: unspecified | execution authority: proposal_only\n  role: human warmth\n  area ratio: unknown\n- identity black | palette: accent | proposed spatial scope: unspecified | execution authority: proposal_only\n  role: precise identity emphasis\n  area ratio: unknown\n\n# Material System\n\n- **matte metal**: precise edge\n  brand role: makes service order legible\n  avoid: mirror finish\n\n# Lighting System\n\n**Primary Strategy**: soft area light\n**Contrast**: low contrast\n**Light / Material Behavior**:\n- soft reflection\n**Lighting Prohibitions**:\n- colored effect light\n\n# Composition & Photography\n\n**Output Ratio**: 16:9\n**Project Artistic Focus (separate from operational facilities)**:\n- No artistic installation is required by the supplied sources.\nDo not demote a supplied core artwork to background texture. Its mounting, dimensions and optical construction remain unspecified unless supplied; do not invent them.\n**Operational Elements (remain usable alongside the artistic focus)**:\n**Positive Differentiators**:\nUse the differentiators in Functional & Commercial Requirement without repeating them as additional demands.\nUse a credible commercial architectural camera: controlled perspective, depth, hierarchy and human scale.\n\n# Rendering Requirements\n\n- High-end architectural visualization, photoreal, physically based materials.\n- Balanced exposure, accurate white balance, readable texture and shadow detail.\n- No blown highlights; clean, resolved, professionally finished.\n\n# Prohibited (fail-closed)\n\nThe following MUST NOT appear in the generated image:\n- no rendered brand name, wordmark, logotype, signage text, or illuminated letters in the scene\n- no generic AI clinic look, no stock-photo medical aesthetic template\n- mirror finish\n- colored effect light\n- neon gradient",
+      "promptSha256": "84f5d33764d73aa0fe8eea01dbbee697b7573ef3939df267baff70f0ffdf67d2",
+      "semanticStatus": "blocked_field_loss"
+    }
+  ]
+}

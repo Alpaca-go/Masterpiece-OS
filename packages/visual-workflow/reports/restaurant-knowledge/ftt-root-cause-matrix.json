@@ -1,5 +1,5 @@
 {
-  "status": "partial_diagnosis_missing_actual_run",
+  "status": "partial_diagnosis_image1_identified_run_unlinked",
   "actualRun": {
     "projectId": null,
     "runId": null,
@@ -16,14 +16,22 @@
     "shot": null,
     "functionalNodes": null,
     "humanActivities": null,
-    "image1Identity": null
+    "image1Identity": {
+      "sha256": "9cf31507e9566e3d754ac6f006b64d97d037a279782177125a0d51a94196b03c",
+      "status": "confirmed_user_designated_file",
+      "runAssociation": "undetermined",
+      "evidenceRef": "RKS-01E-evidence-index.json:image1"
+    }
   },
   "rows": [
     {
       "candidateCode": "INPUT_MISSING",
       "conclusion": "UNDETERMINED",
       "status": "missing_evidence",
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "RKS-01E-evidence-index.json:image1",
+        "RKS-01E-evidence-index.json:candidate"
+      ],
       "needed": [
         "projectId",
         "runId",
@@ -40,15 +48,20 @@
         "shot",
         "functionalNodes",
         "humanActivities",
-        "image1Identity"
+        "image1ToRunBinding"
       ],
-      "reason": "未建立本次图 1 与实际运行产物的关联，不作确定归因。"
+      "reason": "图 1 文件与哈希已确认；找到的本地 FTT 候选输出哈希与画面均不同，未建立该图与 Run 的关联。停止实际归因；不得用合成字段丢失或候选状态填补。",
+      "assessment": "undetermined",
+      "assessmentScope": "image1_root_cause"
     },
     {
       "candidateCode": "ANALYSIS_MISCLASSIFICATION",
       "conclusion": "UNDETERMINED",
       "status": "missing_evidence",
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "RKS-01E-evidence-index.json:image1",
+        "RKS-01E-evidence-index.json:candidate"
+      ],
       "needed": [
         "projectId",
         "runId",
@@ -65,15 +78,20 @@
         "shot",
         "functionalNodes",
         "humanActivities",
-        "image1Identity"
+        "image1ToRunBinding"
       ],
-      "reason": "未建立本次图 1 与实际运行产物的关联，不作确定归因。"
+      "reason": "图 1 文件与哈希已确认；找到的本地 FTT 候选输出哈希与画面均不同，未建立该图与 Run 的关联。停止实际归因；不得用合成字段丢失或候选状态填补。",
+      "assessment": "undetermined",
+      "assessmentScope": "image1_root_cause"
     },
     {
       "candidateCode": "PROPOSAL_OVERRIDES_GOAL",
       "conclusion": "UNDETERMINED",
       "status": "missing_evidence",
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "RKS-01E-evidence-index.json:image1",
+        "RKS-01E-evidence-index.json:candidate"
+      ],
       "needed": [
         "projectId",
         "runId",
@@ -90,15 +108,20 @@
         "shot",
         "functionalNodes",
         "humanActivities",
-        "image1Identity"
+        "image1ToRunBinding"
       ],
-      "reason": "未建立本次图 1 与实际运行产物的关联，不作确定归因。"
+      "reason": "图 1 文件与哈希已确认；找到的本地 FTT 候选输出哈希与画面均不同，未建立该图与 Run 的关联。停止实际归因；不得用合成字段丢失或候选状态填补。",
+      "assessment": "undetermined",
+      "assessmentScope": "image1_root_cause"
     },
     {
       "candidateCode": "B1_PROJECTION_GAP",
       "conclusion": "UNDETERMINED",
       "status": "missing_evidence",
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "RKS-01E-evidence-index.json:image1",
+        "RKS-01E-evidence-index.json:candidate"
+      ],
       "needed": [
         "projectId",
         "runId",
@@ -115,15 +138,20 @@
         "shot",
         "functionalNodes",
         "humanActivities",
-        "image1Identity"
+        "image1ToRunBinding"
       ],
-      "reason": "未建立本次图 1 与实际运行产物的关联，不作确定归因。"
+      "reason": "图 1 文件与哈希已确认；找到的本地 FTT 候选输出哈希与画面均不同，未建立该图与 Run 的关联。停止实际归因；不得用合成字段丢失或候选状态填补。",
+      "assessment": "undetermined",
+      "assessmentScope": "image1_root_cause"
     },
     {
       "candidateCode": "CONFIRMATION_GAP",
       "conclusion": "UNDETERMINED",
       "status": "missing_evidence",
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "RKS-01E-evidence-index.json:image1",
+        "RKS-01E-evidence-index.json:candidate"
+      ],
       "needed": [
         "projectId",
         "runId",
@@ -140,15 +168,20 @@
         "shot",
         "functionalNodes",
         "humanActivities",
-        "image1Identity"
+        "image1ToRunBinding"
       ],
-      "reason": "未建立本次图 1 与实际运行产物的关联，不作确定归因。"
+      "reason": "图 1 文件与哈希已确认；找到的本地 FTT 候选输出哈希与画面均不同，未建立该图与 Run 的关联。停止实际归因；不得用合成字段丢失或候选状态填补。",
+      "assessment": "undetermined",
+      "assessmentScope": "image1_root_cause"
     },
     {
       "candidateCode": "COMPILER_LOSS",
       "conclusion": "UNDETERMINED",
       "status": "missing_evidence",
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "RKS-01E-evidence-index.json:image1",
+        "RKS-01E-evidence-index.json:candidate"
+      ],
       "needed": [
         "projectId",
         "runId",
@@ -165,15 +198,20 @@
         "shot",
         "functionalNodes",
         "humanActivities",
-        "image1Identity"
+        "image1ToRunBinding"
       ],
-      "reason": "未建立本次图 1 与实际运行产物的关联，不作确定归因。"
+      "reason": "图 1 文件与哈希已确认；找到的本地 FTT 候选输出哈希与画面均不同，未建立该图与 Run 的关联。停止实际归因；不得用合成字段丢失或候选状态填补。",
+      "assessment": "undetermined",
+      "assessmentScope": "image1_root_cause"
     },
     {
       "candidateCode": "SCENE_SHOT_MISMATCH",
       "conclusion": "UNDETERMINED",
       "status": "missing_evidence",
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "RKS-01E-evidence-index.json:image1",
+        "RKS-01E-evidence-index.json:candidate"
+      ],
       "needed": [
         "projectId",
         "runId",
@@ -190,15 +228,20 @@
         "shot",
         "functionalNodes",
         "humanActivities",
-        "image1Identity"
+        "image1ToRunBinding"
       ],
-      "reason": "未建立本次图 1 与实际运行产物的关联，不作确定归因。"
+      "reason": "图 1 文件与哈希已确认；找到的本地 FTT 候选输出哈希与画面均不同，未建立该图与 Run 的关联。停止实际归因；不得用合成字段丢失或候选状态填补。",
+      "assessment": "undetermined",
+      "assessmentScope": "image1_root_cause"
     },
     {
       "candidateCode": "MODEL_NONCOMPLIANCE",
       "conclusion": "UNDETERMINED",
       "status": "missing_evidence",
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "RKS-01E-evidence-index.json:image1",
+        "RKS-01E-evidence-index.json:candidate"
+      ],
       "needed": [
         "projectId",
         "runId",
@@ -215,9 +258,11 @@
         "shot",
         "functionalNodes",
         "humanActivities",
-        "image1Identity"
+        "image1ToRunBinding"
       ],
-      "reason": "未建立本次图 1 与实际运行产物的关联，不作确定归因。"
+      "reason": "图 1 文件与哈希已确认；找到的本地 FTT 候选输出哈希与画面均不同，未建立该图与 Run 的关联。停止实际归因；不得用合成字段丢失或候选状态填补。",
+      "assessment": "undetermined",
+      "assessmentScope": "image1_root_cause"
     },
     {
       "candidateCode": "PROPOSAL_OVERRIDES_GOAL",
@@ -227,7 +272,72 @@
         "historical_packet:creativeDecision.uniqueUpgradeThesis",
         "ftt-direction-brief:1.1"
       ],
-      "reason": "历史 AI 快餐升级与方案确认的社区小馆目标有偏移；不证明本次运行采用此提案。"
+      "reason": "历史 AI 快餐升级与方案确认的社区小馆目标有偏移；不证明本次运行采用此提案。",
+      "assessment": "confirmed",
+      "assessmentScope": "historical_observation_only_not_image1_root_cause"
     }
-  ]
+  ],
+  "evidenceAssessmentLegend": {
+    "confirmed": "有直接记录或可复现编译证据；仅在所标 scope 内成立",
+    "probable": "已有证据支持，尚未完整验证",
+    "undetermined": "证据不足；不得推断实际图 1 根因"
+  },
+  "rks01eFindings": [
+    {
+      "candidateCode": "INPUT_MISSING",
+      "assessment": "confirmed",
+      "scope": "identity_audit_only",
+      "finding": "User-designated image1 file SHA256 confirmed; candidate run output hash differs and visual composition differs. No run binding established.",
+      "evidenceRefs": [
+        "RKS-01E-evidence-index.json:image1",
+        "RKS-01E-evidence-index.json:candidate"
+      ]
+    },
+    {
+      "candidateCode": "COMPILER_LOSS",
+      "assessment": "confirmed",
+      "scope": "synthetic_compilation_only",
+      "finding": "All three mustBeVisible entries default to brand_motif, bypass composition; current-shot brand entries are removed by functionalItems de-duplication without a retained owner. All six controls lose them.",
+      "evidenceRefs": [
+        "RKS-01E-field-lineage.json:results",
+        "RKS-01E-field-loss-diagnosis.md"
+      ]
+    },
+    {
+      "candidateCode": "SCENE_SHOT_MISMATCH",
+      "assessment": "confirmed",
+      "scope": "synthetic_scope_policy_only",
+      "finding": "customers dining at tables is off_frame_dependency for lobby, current_shot for dining; two other entries remain current_shot. Default dining resolves operational_dining_view; explicit registered cameras preserve camera choice.",
+      "evidenceRefs": [
+        "RKS-01E-field-lineage.json:results"
+      ]
+    },
+    {
+      "candidateCode": "COMPILER_LOSS",
+      "assessment": "probable",
+      "scope": "unmeasured_other_inputs_only",
+      "finding": "Other non-architectural behavior/effect entries may take the same fallback and ownerless de-duplication path; other languages/industries/bases not comprehensively tested here.",
+      "evidenceRefs": [
+        "RKS-01E-field-loss-diagnosis.md",
+        "RKS-01E-next-stage-proposal.md"
+      ]
+    }
+  ],
+  "rks01e": {
+    "baselineCommit": "224dc525845521e10f7a710e64120308a2f06054",
+    "counters": {
+      "realAnalysis": 0,
+      "realGeneration": 0,
+      "realValidation": 0,
+      "automaticRetries": 0
+    },
+    "knowledgePromoted": false,
+    "productionModified": false,
+    "actualAttributionStopped": true,
+    "reports": [
+      "RKS-01E-run-evidence.md",
+      "RKS-01E-field-loss-diagnosis.md",
+      "RKS-01E-next-stage-proposal.md"
+    ]
+  }
 }
