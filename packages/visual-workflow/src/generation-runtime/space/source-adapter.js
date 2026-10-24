@@ -94,6 +94,10 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
   const rawFunctionalNetwork = cleanList(spatial.functionalNetwork);
   const rawSceneProgram = cleanList(spatial.sceneProgram);
   const rawMustBeVisible = cleanList(spatial.mustBeVisible);
+  const nonExecutableVisible = new Set(rawMustBeVisible.filter(text=> {
+    const analysis = classifyPhrase(text,'mustBeVisible');
+    return analysis.classificationReason === 'unresolved_visible_requirement' || [SEMANTIC_CLASS.DECORATIVE_IDENTITY,SEMANTIC_CLASS.COLOR_GEOMETRY].includes(analysis.classification);
+  }));
   const { safe: compositionMustBeVisible, brand: brandMustBeVisible } = splitMustBeVisible(rawMustBeVisible);
   const missing = [];
   // Persisted packets can carry a stale ready flag from before validation.
@@ -225,7 +229,7 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
     ...semantic.brandMotifSemantics.map((m) => m.text),
     ...brandMustBeVisible,
     ...cleanList(spatial.brandRoleManifestation)
-  ]);
+  ].filter(text=>!nonExecutableVisible.has(cleanList(text)[0])));
   if (missing.length) {
     throw Object.assign(
       new Error(`${SPACE_PHASE9B_SOURCE_INSUFFICIENT}: ${missing.join("; ")}`),
@@ -366,6 +370,18 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
   }
   let projectedBrandManifestation = brandSanitized.lines;
   const standardShot = taskContract?.generationBasis === "standard" || taskContract?.generationBasis === 'art_direction_reference';
+  // Only lists read by renderers confer execution ownership. Source/audit
+  // containers, spatialTranslation and commercialReality are not owners.
+  const executionLists = () => [
+    [functionalRaw, 'sceneProgram', 'functional_requirement', '_raw.sceneProgram'],
+    [functionalRaw, 'functionalNetwork', 'functional_requirement', '_raw.functionalNetwork'],
+    [functionalRaw, 'positiveDifferentiators', 'functional_requirement', '_raw.positiveDifferentiators'],
+    [bridgeLayers, 'operationConstraints', 'architecture_function_bridge', 'architectureFunctionBridge.operationConstraints'],
+    [bridgeLayers, 'humanExperience', 'architecture_function_bridge', 'architectureFunctionBridge.humanExperience'],
+    [bridgeLayers, 'crossSceneConstraints', 'architecture_function_bridge', 'architectureFunctionBridge.crossSceneConstraints'],
+    [compositionLayers, 'mustBeVisible', 'composition', 'composition.mustBeVisible']
+  ];
+  const visibleDeduplication = new Map();
   const sourceEntries = (items, sourcePath) => cleanList(items).map((text,index)=> {
     const original = sourcePath.split(".").reduce((value,key)=>value?.[key],packet);
     const sourceIndex = Array.isArray(original) ? original.findIndex(value=>cleanList(value)[0]===text) : -1;
@@ -408,9 +424,30 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
     compositionLayers.mustBeVisible = projectList(compositionLayers.mustBeVisible,"mediaTranslations.spatial.mustBeVisible");
     compositionLayers.positiveDifferentiators = functionalRaw.positiveDifferentiators;
     bridgeLayers = Object.fromEntries(Object.entries(bridgeLayers).map(([key,value])=>[key,Array.isArray(value) ? projectList(value,`architectureFunctionBridge.${key}`) : value]));
-    const functionalItems = new Set(cleanList(rawMustBeVisible,rawFunctionalNetwork,rawSceneProgram,spatial.peopleBehavior));
-    projectedBrandManifestation = projectList(brandSanitized.lines,"brandSanitization.lines").filter(text=>!functionalItems.has(text) || artSeen.has(text));
     bridgeLayers.crossSceneConstraints = decisionTrace.crossSceneConstraints.map(entry=>entry.text);
+    // Resolve repeated visible requirements against projected, executable
+    // lists. Raw presence never proves that another branch will render it.
+    const visibleTexts = new Set(compositionLayers.mustBeVisible);
+    const retained = new Set();
+    for (const [container, key, , ownerPath] of executionLists()) {
+      container[key] = cleanList(container[key]).filter(text => {
+        if (!visibleTexts.has(text)) return true;
+        if (!retained.has(text)) { retained.add(text); return true; }
+        const removed = visibleDeduplication.get(text) || [];
+        removed.push(ownerPath);
+        visibleDeduplication.set(text, removed);
+        return false;
+      });
+    }
+    const executed = new Set(executionLists().flatMap(([container,key]) => cleanList(container[key])));
+    const duplicateCandidates = new Set(cleanList(rawMustBeVisible,rawFunctionalNetwork,rawSceneProgram,spatial.peopleBehavior));
+    projectedBrandManifestation = projectList(brandSanitized.lines,"brandSanitization.lines").filter(text => {
+      if (!duplicateCandidates.has(text) || !executed.has(text) || artSeen.has(text)) return true;
+      const removed = visibleDeduplication.get(text) || [];
+      removed.push('_raw.brandRoleManifestation');
+      visibleDeduplication.set(text, removed);
+      return false;
+    });
     targetSceneProjection = {...targetSceneProjection, functionalBlockSource:"source_shot_scope",architectureBridgeSource:"source_shot_scope",operationConstraintsSource:"source_shot_scope"};
   }
   decisionTrace.canonicalOwners = [
@@ -444,6 +481,39 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
       }
     };
   }
+  // One record per original source index (including duplicates). This is a
+  // compilation-local audit, not persisted user confirmation or new authority.
+  decisionTrace.visibleRequirements = (Array.isArray(spatial.mustBeVisible) ? spatial.mustBeVisible : []).flatMap((raw,index) => {
+    if (typeof raw !== 'string' || !raw.trim()) return [];
+    const text = cleanList(raw)[0];
+    const sourcePath = `mediaTranslations.spatial.mustBeVisible[${index}]`;
+    const analysis = classifyPhrase(text,'mustBeVisible');
+    const sanitizer = brandSanitized.records.find(entry=>entry.raw === text);
+    const projectionInput = ['functional','architectural'].includes(analysis.classification) ? text : sanitizer?.text || text;
+    const scope = standardShot ? scopeSourceEntries([{text:projectionInput,sourcePath}],taskContract.subtype)[0] : null;
+    const projectedText = scope ? scope.sceneScope === 'unresolved' ? projectionInput : scope.currentShotText : projectionInput;
+    const outputText = projectedText;
+    const execution = executionLists().find(([container,key]) => cleanList(container[key]).includes(outputText));
+    const art = compositionLayers.artisticFocus.find(entry=>entry.text === outputText);
+    const architectureOwns = decisionTrace.architectureDecisions.some(entry=>entry.text === text && entry.sceneScope !== 'off_frame_dependency');
+    const brandOwns = projectedBrandManifestation.includes(outputText) && !art && !architectureOwns && !functionalRaw.positiveDifferentiators.includes(outputText);
+    const review = analysis.classificationReason === 'unresolved_visible_requirement';
+    const owner = review ? null : execution?.[2] || (art ? 'composition' : brandOwns ? 'brand_translation' : null);
+    const ownerPath = owner ? execution?.[3] || (art ? 'composition.artisticFocus' : '_raw.brandRoleManifestation') : null;
+    const disposition = review ? 'review_required' : analysis.classification === SEMANTIC_CLASS.DECORATIVE_IDENTITY ? 'post_composite_only'
+      : owner ? 'retained' : !standardShot && targetSceneProjection ? 'target_program_replaced'
+      : scope?.sceneScope === 'off_frame_dependency' ? 'off_frame_dependency'
+      : scope?.sceneScope === 'cross_scene_constraint' ? 'boundary_only' : 'rejected_semantics';
+    return [{sourcePath,text,classification:analysis.classification,classificationReason:analysis.classificationReason,
+      route:review ? 'review' : ['functional','architectural'].includes(analysis.classification) ? 'composition' : 'brand_or_artistic',
+      sceneProjection:{inputText:projectionInput,sceneScope:scope?.sceneScope ?? 'target_program',reason:scope?.scopeReason ?? 'target_program_authority',projectedText,
+        clauses:scope?.clauses ?? [],boundaryConstraints:scope?.boundaryConstraints ?? [],offFrameEntities:scope?.offFrameEntities ?? []},
+      owner,ownerPath,outputText:owner ? outputText : null,
+      deduplication:{removedFrom:visibleDeduplication.get(outputText) || [],duplicateSource:spatial.mustBeVisible.findIndex(value=>cleanList(value)[0] === text) !== index},
+      disposition,reason:disposition === 'retained' ? 'current_executable_owner' : disposition === 'review_required' ? 'unresolved_visible_requirement'
+        : disposition === 'post_composite_only' ? 'in_scene_identity_post_composite' : disposition === 'off_frame_dependency' ? 'foreign_scene_entity'
+        : sanitizer?.reason || disposition}];
+  });
   return {
     projectIdentity: {
       brandName: projectFacts.brandName?.value || projectContext?.brandCore?.name || "",
@@ -534,6 +604,8 @@ function splitMustBeVisible(items) {
     const text = String(item || "").trim();
     if (!text) continue;
     const analysis = classifyPhrase(text, "mustBeVisible");
+    if (analysis.classificationReason === 'unresolved_visible_requirement' || analysis.classification === SEMANTIC_CLASS.DECORATIVE_IDENTITY || analysis.classification === SEMANTIC_CLASS.COLOR_GEOMETRY) continue;
+    if (analysis.classification === SEMANTIC_CLASS.DECORATIVE_OBJECT) { brand.push(text); continue; }
     if (analysis.classification === SEMANTIC_CLASS.DECORATIVE_IDENTITY || analysis.classification === SEMANTIC_CLASS.BRAND_MOTIF || analysis.classification === SEMANTIC_CLASS.COLOR_GEOMETRY || analysis.classification === SEMANTIC_CLASS.COLOR_ACCENT || analysis.classification === SEMANTIC_CLASS.AMBIGUOUS || analysis.motifHits.length > 0 || identityRe.test(text)) {
       brand.push(text);
     } else {

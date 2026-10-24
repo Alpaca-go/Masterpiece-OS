@@ -302,6 +302,11 @@ function compileSpacePrompt(input) {
   const finalPrompt = referenceBoundaryText ? `${baseFinalPrompt}
 
 ${referenceBoundaryText}` : baseFinalPrompt;
+  layers.decisionTrace.visibleRequirements = layers.decisionTrace.visibleRequirements.map(entry => {
+    const renderedBlocks = entry.outputText ? ordered.filter(item=>item.text.includes(entry.outputText)).map(item=>item.id) : [];
+    return {...entry,renderedBlocks,finalPromptRetained:Boolean(entry.owner && renderedBlocks.includes(entry.owner)),
+      textPresentInFinalPrompt:finalPrompt.includes(entry.text)};
+  });
   const baseBlockTextsByName = Object.fromEntries(ordered.map((b) => [b.id, b.text]));
   const blockTextsByName = referenceBoundaryText ? { ...baseBlockTextsByName, reference_boundary: referenceBoundaryText } : baseBlockTextsByName;
   const budget = measurePromptBudget(finalPrompt, blockTextsByName, {
@@ -432,12 +437,12 @@ function blockSource(id,layers) {
     architecture_function_bridge: ["projectFacts.brandRole", "spatial.functionalRelationships", "spatial.sceneProgram", "spatial.brandRoleManifestation", "diagnosis.brandMisreadRisks"],
     architectural_concept: ["spatial.spatialConcept (normalized)", "semantic.architectureForm", "semantic.architectureStrategy"],
     architecture_dna: ["semantic.architectureStrategy", "semantic.architectureForm", "semantic.architectureOrganization"],
-    brand_translation: ["projectFacts", "semantic.brandMotifSemantics", "semantic.decorativeIdentitySemantics", "semantic.colorAccentSemantics", "spatial.brandRoleManifestation", "_raw.mustBeVisible (identity items only)"],
-    functional_requirement: ["spatial.sceneProgram", "spatial.functionalNetwork", "composition.mustBeVisible (spatial items only)", "spatial.positiveDifferentiators"],
+    brand_translation: ["projectIdentity", "_raw.brandRoleManifestation (sanitized, scoped, excluding separately owned items)"],
+    functional_requirement: ["_raw.sceneProgram", "_raw.functionalNetwork", "_raw.positiveDifferentiators"],
     material: ["materialSystem[].material|behavior|forbidden"],
     color: ["colorSystem.primary|secondary|accent (role, spatialUsage, ratio, surfaceApplicability)"],
     lighting: ["lightingSystem.source|contrast|interactionWithMaterials|forbidden"],
-    composition: ["taskContract.aspectRatio|scene", "composition.mustBeVisible (spatial items only)", "spatial.positiveDifferentiators", ...layers.composition.userRequirements?.length ? ['mediaTranslations.spatial.compositionRequirements'] : []],
+    composition: ["composition.aspectRatio|scene", "composition.artisticFocus", "composition.mustBeVisible (spatial items only)", ...layers.composition.userRequirements?.length ? ['mediaTranslations.spatial.compositionRequirements', 'composition.userRequirements'] : []],
     rendering: ["(deterministic rendering standard)"],
     negative_constraints: ["taskContract.mustAvoid", "diagnosis.brandMisreadRisks", "materialSystem[].forbidden", "lightingSystem.forbidden", "colorSystem.forbidden", "BASE_NEGATIVES (2 universal guards)"],
     continuation_intent: ["taskContract.continuation (source/target scene, preserve grammar, change program) \u2014 R11.1, no brand re-analysis"]
