@@ -92,6 +92,10 @@ function classifyPhrase(rawPhrase, sourceField = "") {
     classification = SEMANTIC_CLASS.BRAND_MOTIF;
   } else if (hasColor && !geometryAction) {
     classification = SEMANTIC_CLASS.COLOR_ACCENT;
+  } else if (field === 'mustBeVisible' && /\b(?:table|worktable|worktop|chair|seat|platform|counter|shelf|shelves|aisle)\b|台面|座椅|座位|货架|通道/iu.test(text) && /\b(?:across|facing|face|side|accessible|access|separates?|around|opposing)\b|相向|对侧|两侧|朝向|通行|进出|分隔/iu.test(text)) {
+    // Explicit object-use relationships retain their functional field authority.
+    // Identity, motif, decoration and color checks above still take precedence.
+    classification = SEMANTIC_CLASS.FUNCTIONAL;
   } else if (!hasArch && functionalProvenance) {
     classification = SEMANTIC_CLASS.FUNCTIONAL;
   } else if (hasArch) {

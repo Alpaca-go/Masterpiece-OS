@@ -40,6 +40,8 @@ function colorUsages(value) {
     return [{
       name,
       role,
+      ...text(candidate.surfaceApplicability) ? {surfaceApplicability:text(candidate.surfaceApplicability)} : {},
+      ...['dominant_field','secondary_surface','local_accent','soft_furnishing','detail_trim','post_composite_only'].includes(candidate.spatialUsage) ? {spatialUsage:candidate.spatialUsage} : {},
       ...Number.isFinite(ratio) && ratio >= 0 && ratio <= 100 ? { ratio } : {}
     }];
   }).slice(0, 16);
@@ -111,6 +113,11 @@ function spatialTranslation(value) {
   return {
     status: ready ? "ready" : "insufficient",
     spatialConcept,
+    ...candidate.designProposal?.sourceType === 'model_proposal' ? {designProposal:{
+      sourceType:'model_proposal', basis:strings(candidate.designProposal.basis),
+      assumptions:strings(candidate.designProposal.assumptions), unresolvedQuestions:strings(candidate.designProposal.unresolvedQuestions)
+    }} : {},
+    ...Array.isArray(candidate.compositionRequirements) ? {compositionRequirements:strings(candidate.compositionRequirements)} : {},
     brandRoleManifestation: strings(candidate.brandRoleManifestation),
     signatureSpatialMechanism: strings(candidate.signatureSpatialMechanism),
     functionalNetwork: strings(candidate.functionalNetwork),

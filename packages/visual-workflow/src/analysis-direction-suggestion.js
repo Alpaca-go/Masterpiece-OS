@@ -83,5 +83,6 @@ export function analysisDirectionSuggestion(projectId, packet, analysisFingerpri
   const hasSpatialSuggestion = Object.values(sourcePaths).some(paths => paths.some(path =>
     path.startsWith(`${spatialPath}.`) && !path.includes('.forbidden')));
   const availability = !packet ? 'missing_packet' : spatial.status === 'ready' && hasSpatialSuggestion ? 'available' : 'insufficient_evidence';
-  return {projectId, sourceType:'analysis_suggestion', availability, analysisFingerprint, fields, sourcePaths, missingFields};
+  return {projectId, sourceType:'analysis_suggestion', availability, analysisFingerprint, fields, sourcePaths, missingFields,
+    ...spatial.designProposal?.sourceType === 'model_proposal' ? {designProposal:structuredClone(spatial.designProposal)} : {}};
 }
