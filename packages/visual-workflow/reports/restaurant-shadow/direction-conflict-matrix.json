@@ -1,0 +1,106 @@
+{
+  "scope": "Direction review, not actual-run root-cause matrix",
+  "rows": [
+    {
+      "code": "RKS-CF-002",
+      "priority": "P0",
+      "claimIds": [
+        "analysis:upgrade",
+        "goal:business_format:0"
+      ],
+      "evidenceRefs": [
+        "historical_packet_fixture:e3564d51888661989eeb16de8923992a4e1148268e7f55e7427c4c70e6fb613c#creativeDecision.uniqueUpgradeThesis",
+        "offline-review:RKS02A.positioning-shift",
+        "user:RKS-02A.fixed-positioning#tags.business_format[0]"
+      ],
+      "reason": "保留双方证据；用户目标优先于冲突提案。"
+    }
+  ],
+  "alignments": [
+    {
+      "claimIds": [
+        "goal:brand_positioning:0",
+        "analysis:value-position"
+      ],
+      "status": "consistent_with_bound_goal",
+      "evidenceRefs": [
+        "historical_packet_fixture:e3564d51888661989eeb16de8923992a4e1148268e7f55e7427c4c70e6fb613c#creativeDecision.targetWorldview[1]",
+        "offline-review:RKS02A.value-position",
+        "user:RKS-02A.fixed-positioning#tags.brand_positioning[0]"
+      ],
+      "limitation": "Matching annotation only; proposal is not promoted to fact"
+    },
+    {
+      "ruleId": "dine-in-presence",
+      "claimIds": [
+        "goal:service_model:0",
+        "analysis:dine-in"
+      ],
+      "status": "compatible_within_rule_scope",
+      "evidenceRefs": [
+        "historical_packet_fixture:e3564d51888661989eeb16de8923992a4e1148268e7f55e7427c4c70e6fb613c#mediaTranslations.spatial.sceneProgram[2]",
+        "user:RKS-02A.fixed-positioning#tags.service_model[0]"
+      ],
+      "limitation": "仅支持存在堂食功能；不能证明堂食占比、座位数量或装修风格。"
+    },
+    {
+      "ruleId": "takeaway-presence",
+      "claimIds": [
+        "goal:service_model:1",
+        "analysis:takeaway"
+      ],
+      "status": "compatible_within_rule_scope",
+      "evidenceRefs": [
+        "historical_packet_fixture:e3564d51888661989eeb16de8923992a4e1148268e7f55e7427c4c70e6fb613c#mediaTranslations.spatial.sceneProgram[3]",
+        "user:RKS-02A.fixed-positioning#tags.service_model[1]"
+      ],
+      "limitation": "仅支持存在外带功能；不能证明实际需求密度或效率型视觉。"
+    }
+  ],
+  "areas": [
+    {
+      "area": "project_positioning",
+      "status": "review_required",
+      "evidence": [
+        {
+          "ruleId": "positioning-shift-neighborhood-to-fast-casual",
+          "claimIds": [
+            "goal:business_format:0",
+            "analysis:upgrade"
+          ],
+          "status": "review_required",
+          "meaning": "Proposed positioning shift requires human review; not an inferred universal style incompatibility"
+        }
+      ]
+    },
+    {
+      "area": "service_model",
+      "status": "compatible_presence_only",
+      "claimIds": [
+        "analysis:dine-in",
+        "analysis:takeaway"
+      ],
+      "limitation": "No service priority, customer count or style inferred"
+    },
+    {
+      "area": "spatial_suggestion",
+      "status": "review_required",
+      "claimIds": [
+        "analysis:spatial-concept",
+        "analysis:relationships"
+      ],
+      "limitation": "Unmapped prose retained, no arbitrary interpretation"
+    },
+    {
+      "area": "brand_mood",
+      "status": "partially_bound_review_required",
+      "claimIds": [
+        "analysis:brand-role",
+        "analysis:value-position",
+        "analysis:mood"
+      ],
+      "limitation": "Value-position annotation aligns; other mood prose remains unresolved"
+    }
+  ],
+  "actualImage1RunAssociation": "undetermined"
+}

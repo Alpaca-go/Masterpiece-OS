@@ -1,0 +1,974 @@
+{
+  "scope": "Historical Packet fixture review and fixed user targets only; no actual image1 Run attribution",
+  "fixtureProvenance": {
+    "kind": "historical_packet_copy_with_explicit_project_alias",
+    "originalProjectId": "dca9b7d4-f233-46ff-b4df-44a890f13c4f",
+    "actualImage1RunAssociation": "undetermined",
+    "goals": "Structured transcription of fixed user targets, not original property/customer facts",
+    "operationTranslation": "Offline authored observability hypotheses from the prior direction proposal/historical review; not user-confirmed project fields"
+  },
+  "result": {
+    "contractVersion": "1.0",
+    "projectId": "feng-tang-tang",
+    "status": "shadow_offline_only",
+    "boundary": {
+      "contractVersion": "1.0",
+      "projectId": "feng-tang-tang",
+      "stage": "pre_analysis",
+      "classification": {
+        "projectId": "feng-tang-tang",
+        "tags": [
+          {
+            "id": "goal:brand_positioning:0",
+            "projectId": "feng-tang-tang",
+            "dimension": "brand_positioning",
+            "tag": "approachable_value",
+            "rawValue": "亲民实惠",
+            "sourceType": "user_confirmed_design_goal",
+            "status": "confirmed",
+            "assertion": "goal",
+            "scope": "project",
+            "appliesTo": [
+              "feng-tang-tang"
+            ],
+            "evidenceRefs": [
+              "user:RKS-02A.fixed-positioning#tags.brand_positioning[0]"
+            ],
+            "sourcePath": "documents.goals.tags.brand_positioning[0]",
+            "recognized": true
+          },
+          {
+            "id": "goal:brand_positioning:1",
+            "projectId": "feng-tang-tang",
+            "dimension": "brand_positioning",
+            "tag": "regional_specialty",
+            "rawValue": "地方特色",
+            "sourceType": "user_confirmed_design_goal",
+            "status": "confirmed",
+            "assertion": "goal",
+            "scope": "project",
+            "appliesTo": [
+              "feng-tang-tang"
+            ],
+            "evidenceRefs": [
+              "user:RKS-02A.fixed-positioning#tags.brand_positioning[1]"
+            ],
+            "sourcePath": "documents.goals.tags.brand_positioning[1]",
+            "recognized": true
+          },
+          {
+            "id": "goal:business_format:0",
+            "projectId": "feng-tang-tang",
+            "dimension": "business_format",
+            "tag": "neighborhood_casual_dining",
+            "rawValue": "社区特色小馆",
+            "sourceType": "user_confirmed_design_goal",
+            "status": "confirmed",
+            "assertion": "goal",
+            "scope": "project",
+            "appliesTo": [
+              "feng-tang-tang"
+            ],
+            "evidenceRefs": [
+              "user:RKS-02A.fixed-positioning#tags.business_format[0]"
+            ],
+            "sourcePath": "documents.goals.tags.business_format[0]",
+            "recognized": true
+          },
+          {
+            "id": "goal:cuisine_product:0",
+            "projectId": "feng-tang-tang",
+            "dimension": "cuisine_product",
+            "tag": "sichuan_snacks",
+            "rawValue": "四川小吃",
+            "sourceType": "user_confirmed_design_goal",
+            "status": "confirmed",
+            "assertion": "goal",
+            "scope": "project",
+            "appliesTo": [
+              "feng-tang-tang"
+            ],
+            "evidenceRefs": [
+              "user:RKS-02A.fixed-positioning#tags.cuisine_product[0]"
+            ],
+            "sourcePath": "documents.goals.tags.cuisine_product[0]",
+            "recognized": true
+          },
+          {
+            "id": "goal:cuisine_product:1",
+            "projectId": "feng-tang-tang",
+            "dimension": "cuisine_product",
+            "tag": "qiaojiao_beef",
+            "rawValue": "跷脚牛肉",
+            "sourceType": "user_confirmed_design_goal",
+            "status": "confirmed",
+            "assertion": "goal",
+            "scope": "project",
+            "appliesTo": [
+              "feng-tang-tang"
+            ],
+            "evidenceRefs": [
+              "user:RKS-02A.fixed-positioning#tags.cuisine_product[1]"
+            ],
+            "sourcePath": "documents.goals.tags.cuisine_product[1]",
+            "recognized": true
+          },
+          {
+            "id": "goal:cultural_context:0",
+            "projectId": "feng-tang-tang",
+            "dimension": "cultural_context",
+            "tag": "sichuan_local",
+            "rawValue": "四川地域",
+            "sourceType": "user_confirmed_design_goal",
+            "status": "confirmed",
+            "assertion": "goal",
+            "scope": "project",
+            "appliesTo": [
+              "feng-tang-tang"
+            ],
+            "evidenceRefs": [
+              "user:RKS-02A.fixed-positioning#tags.cultural_context[0]"
+            ],
+            "sourcePath": "documents.goals.tags.cultural_context[0]",
+            "recognized": true
+          },
+          {
+            "id": "goal:experiential_mood:0",
+            "projectId": "feng-tang-tang",
+            "dimension": "experiential_mood",
+            "tag": "street_food_energy",
+            "rawValue": "市井烟火",
+            "sourceType": "user_confirmed_design_goal",
+            "status": "confirmed",
+            "assertion": "goal",
+            "scope": "project",
+            "appliesTo": [
+              "feng-tang-tang"
+            ],
+            "evidenceRefs": [
+              "user:RKS-02A.fixed-positioning#tags.experiential_mood[0]"
+            ],
+            "sourcePath": "documents.goals.tags.experiential_mood[0]",
+            "recognized": true
+          },
+          {
+            "id": "goal:location_context:0",
+            "projectId": "feng-tang-tang",
+            "dimension": "location_context",
+            "tag": "streetfront",
+            "rawValue": "临街",
+            "sourceType": "user_confirmed_design_goal",
+            "status": "confirmed",
+            "assertion": "goal",
+            "scope": "project",
+            "appliesTo": [
+              "feng-tang-tang"
+            ],
+            "evidenceRefs": [
+              "user:RKS-02A.fixed-positioning#tags.location_context[0]"
+            ],
+            "sourcePath": "documents.goals.tags.location_context[0]",
+            "recognized": true
+          },
+          {
+            "id": "goal:service_model:0",
+            "projectId": "feng-tang-tang",
+            "dimension": "service_model",
+            "tag": "dine_in_primary",
+            "rawValue": "堂食为主",
+            "sourceType": "user_confirmed_design_goal",
+            "status": "confirmed",
+            "assertion": "goal",
+            "scope": "project",
+            "appliesTo": [
+              "feng-tang-tang"
+            ],
+            "evidenceRefs": [
+              "user:RKS-02A.fixed-positioning#tags.service_model[0]"
+            ],
+            "sourcePath": "documents.goals.tags.service_model[0]",
+            "recognized": true
+          },
+          {
+            "id": "goal:service_model:1",
+            "projectId": "feng-tang-tang",
+            "dimension": "service_model",
+            "tag": "takeaway_supported",
+            "rawValue": "兼顾外带",
+            "sourceType": "user_confirmed_design_goal",
+            "status": "confirmed",
+            "assertion": "goal",
+            "scope": "project",
+            "appliesTo": [
+              "feng-tang-tang"
+            ],
+            "evidenceRefs": [
+              "user:RKS-02A.fixed-positioning#tags.service_model[1]"
+            ],
+            "sourcePath": "documents.goals.tags.service_model[1]",
+            "recognized": true
+          }
+        ],
+        "missingDimensions": [
+          "customers",
+          "spatial_mechanism",
+          "visual_style",
+          "material"
+        ],
+        "archetypes": [
+          {
+            "id": "AR01_neighborhood_local_eatery",
+            "evidenceRefs": [
+              "user:RKS-02A.fixed-positioning#tags.business_format[0]"
+            ]
+          }
+        ],
+        "primaryArchetype": "AR01_neighborhood_local_eatery",
+        "status": "supported",
+        "auxiliaryMechanisms": [
+          "dine_in_primary",
+          "takeaway_supported"
+        ]
+      },
+      "unknowns": [],
+      "authority": "Only caller-attested original sources and user-confirmed goals; references are not external authentication",
+      "missingFacts": [
+        "customers",
+        "location_context"
+      ]
+    },
+    "postAnalysis": {
+      "classification": {
+        "projectId": "feng-tang-tang",
+        "tags": [
+          {
+            "id": "analysis:dine-in",
+            "projectId": "feng-tang-tang",
+            "dimension": "service_model",
+            "tag": "dine_in_available",
+            "rawValue": "堂食",
+            "normalization": "exact_dictionary_alias",
+            "sourceType": "analysis_proposal",
+            "status": "probable",
+            "assertion": "proposal",
+            "scope": "project",
+            "appliesTo": [
+              "feng-tang-tang"
+            ],
+            "evidenceRefs": [
+              "historical_packet_fixture:e3564d51888661989eeb16de8923992a4e1148268e7f55e7427c4c70e6fb613c#mediaTranslations.spatial.sceneProgram[2]"
+            ],
+            "sourcePath": "packet.mediaTranslations.spatial.sceneProgram[2]",
+            "recognized": true
+          },
+          {
+            "id": "analysis:takeaway",
+            "projectId": "feng-tang-tang",
+            "dimension": "service_model",
+            "tag": "takeaway_available",
+            "rawValue": "外带",
+            "normalization": "exact_dictionary_alias",
+            "sourceType": "analysis_proposal",
+            "status": "probable",
+            "assertion": "proposal",
+            "scope": "project",
+            "appliesTo": [
+              "feng-tang-tang"
+            ],
+            "evidenceRefs": [
+              "historical_packet_fixture:e3564d51888661989eeb16de8923992a4e1148268e7f55e7427c4c70e6fb613c#mediaTranslations.spatial.sceneProgram[3]"
+            ],
+            "sourcePath": "packet.mediaTranslations.spatial.sceneProgram[3]",
+            "recognized": true
+          },
+          {
+            "id": "analysis:upgrade",
+            "projectId": "feng-tang-tang",
+            "dimension": "business_format",
+            "tag": "fast_casual_upgrade_proposal",
+            "rawValue": "从“传统川菜馆”升级为“现代川味小吃快餐”。保留“冯”字标和红色基因，但通过放大“小碗”、“巧搭配”、“热气”等元素，削弱“非遗/老字号”带来的厚重感。避免过度使用脸谱等刻板符号，聚焦于食物本身的诱惑力和品牌的亲和力。",
+            "normalization": "explicit_reviewed_exact_value_mapping",
+            "sourceType": "analysis_proposal",
+            "status": "probable",
+            "assertion": "proposal",
+            "scope": "project",
+            "appliesTo": [
+              "feng-tang-tang"
+            ],
+            "evidenceRefs": [
+              "historical_packet_fixture:e3564d51888661989eeb16de8923992a4e1148268e7f55e7427c4c70e6fb613c#creativeDecision.uniqueUpgradeThesis",
+              "offline-review:RKS02A.positioning-shift"
+            ],
+            "sourcePath": "packet.creativeDecision.uniqueUpgradeThesis",
+            "recognized": true
+          },
+          {
+            "id": "analysis:value-position",
+            "projectId": "feng-tang-tang",
+            "dimension": "brand_positioning",
+            "tag": "approachable_value",
+            "rawValue": "实惠",
+            "normalization": "explicit_reviewed_exact_value_mapping",
+            "sourceType": "analysis_proposal",
+            "status": "probable",
+            "assertion": "proposal",
+            "scope": "project",
+            "appliesTo": [
+              "feng-tang-tang"
+            ],
+            "evidenceRefs": [
+              "historical_packet_fixture:e3564d51888661989eeb16de8923992a4e1148268e7f55e7427c4c70e6fb613c#creativeDecision.targetWorldview[1]",
+              "offline-review:RKS02A.value-position"
+            ],
+            "sourcePath": "packet.creativeDecision.targetWorldview[1]",
+            "recognized": true
+          },
+          {
+            "id": "goal:brand_positioning:0",
+            "projectId": "feng-tang-tang",
+            "dimension": "brand_positioning",
+            "tag": "approachable_value",
+            "rawValue": "亲民实惠",
+            "sourceType": "user_confirmed_design_goal",
+            "status": "confirmed",
+            "assertion": "goal",
+            "scope": "project",
+            "appliesTo": [
+              "feng-tang-tang"
+            ],
+            "evidenceRefs": [
+              "user:RKS-02A.fixed-positioning#tags.brand_positioning[0]"
+            ],
+            "sourcePath": "documents.goals.tags.brand_positioning[0]",
+            "recognized": true
+          },
+          {
+            "id": "goal:brand_positioning:1",
+            "projectId": "feng-tang-tang",
+            "dimension": "brand_positioning",
+            "tag": "regional_specialty",
+            "rawValue": "地方特色",
+            "sourceType": "user_confirmed_design_goal",
+            "status": "confirmed",
+            "assertion": "goal",
+            "scope": "project",
+            "appliesTo": [
+              "feng-tang-tang"
+            ],
+            "evidenceRefs": [
+              "user:RKS-02A.fixed-positioning#tags.brand_positioning[1]"
+            ],
+            "sourcePath": "documents.goals.tags.brand_positioning[1]",
+            "recognized": true
+          },
+          {
+            "id": "goal:business_format:0",
+            "projectId": "feng-tang-tang",
+            "dimension": "business_format",
+            "tag": "neighborhood_casual_dining",
+            "rawValue": "社区特色小馆",
+            "sourceType": "user_confirmed_design_goal",
+            "status": "confirmed",
+            "assertion": "goal",
+            "scope": "project",
+            "appliesTo": [
+              "feng-tang-tang"
+            ],
+            "evidenceRefs": [
+              "user:RKS-02A.fixed-positioning#tags.business_format[0]"
+            ],
+            "sourcePath": "documents.goals.tags.business_format[0]",
+            "recognized": true
+          },
+          {
+            "id": "goal:cuisine_product:0",
+            "projectId": "feng-tang-tang",
+            "dimension": "cuisine_product",
+            "tag": "sichuan_snacks",
+            "rawValue": "四川小吃",
+            "sourceType": "user_confirmed_design_goal",
+            "status": "confirmed",
+            "assertion": "goal",
+            "scope": "project",
+            "appliesTo": [
+              "feng-tang-tang"
+            ],
+            "evidenceRefs": [
+              "user:RKS-02A.fixed-positioning#tags.cuisine_product[0]"
+            ],
+            "sourcePath": "documents.goals.tags.cuisine_product[0]",
+            "recognized": true
+          },
+          {
+            "id": "goal:cuisine_product:1",
+            "projectId": "feng-tang-tang",
+            "dimension": "cuisine_product",
+            "tag": "qiaojiao_beef",
+            "rawValue": "跷脚牛肉",
+            "sourceType": "user_confirmed_design_goal",
+            "status": "confirmed",
+            "assertion": "goal",
+            "scope": "project",
+            "appliesTo": [
+              "feng-tang-tang"
+            ],
+            "evidenceRefs": [
+              "user:RKS-02A.fixed-positioning#tags.cuisine_product[1]"
+            ],
+            "sourcePath": "documents.goals.tags.cuisine_product[1]",
+            "recognized": true
+          },
+          {
+            "id": "goal:cultural_context:0",
+            "projectId": "feng-tang-tang",
+            "dimension": "cultural_context",
+            "tag": "sichuan_local",
+            "rawValue": "四川地域",
+            "sourceType": "user_confirmed_design_goal",
+            "status": "confirmed",
+            "assertion": "goal",
+            "scope": "project",
+            "appliesTo": [
+              "feng-tang-tang"
+            ],
+            "evidenceRefs": [
+              "user:RKS-02A.fixed-positioning#tags.cultural_context[0]"
+            ],
+            "sourcePath": "documents.goals.tags.cultural_context[0]",
+            "recognized": true
+          },
+          {
+            "id": "goal:experiential_mood:0",
+            "projectId": "feng-tang-tang",
+            "dimension": "experiential_mood",
+            "tag": "street_food_energy",
+            "rawValue": "市井烟火",
+            "sourceType": "user_confirmed_design_goal",
+            "status": "confirmed",
+            "assertion": "goal",
+            "scope": "project",
+            "appliesTo": [
+              "feng-tang-tang"
+            ],
+            "evidenceRefs": [
+              "user:RKS-02A.fixed-positioning#tags.experiential_mood[0]"
+            ],
+            "sourcePath": "documents.goals.tags.experiential_mood[0]",
+            "recognized": true
+          },
+          {
+            "id": "goal:location_context:0",
+            "projectId": "feng-tang-tang",
+            "dimension": "location_context",
+            "tag": "streetfront",
+            "rawValue": "临街",
+            "sourceType": "user_confirmed_design_goal",
+            "status": "confirmed",
+            "assertion": "goal",
+            "scope": "project",
+            "appliesTo": [
+              "feng-tang-tang"
+            ],
+            "evidenceRefs": [
+              "user:RKS-02A.fixed-positioning#tags.location_context[0]"
+            ],
+            "sourcePath": "documents.goals.tags.location_context[0]",
+            "recognized": true
+          },
+          {
+            "id": "goal:service_model:0",
+            "projectId": "feng-tang-tang",
+            "dimension": "service_model",
+            "tag": "dine_in_primary",
+            "rawValue": "堂食为主",
+            "sourceType": "user_confirmed_design_goal",
+            "status": "confirmed",
+            "assertion": "goal",
+            "scope": "project",
+            "appliesTo": [
+              "feng-tang-tang"
+            ],
+            "evidenceRefs": [
+              "user:RKS-02A.fixed-positioning#tags.service_model[0]"
+            ],
+            "sourcePath": "documents.goals.tags.service_model[0]",
+            "recognized": true
+          },
+          {
+            "id": "goal:service_model:1",
+            "projectId": "feng-tang-tang",
+            "dimension": "service_model",
+            "tag": "takeaway_supported",
+            "rawValue": "兼顾外带",
+            "sourceType": "user_confirmed_design_goal",
+            "status": "confirmed",
+            "assertion": "goal",
+            "scope": "project",
+            "appliesTo": [
+              "feng-tang-tang"
+            ],
+            "evidenceRefs": [
+              "user:RKS-02A.fixed-positioning#tags.service_model[1]"
+            ],
+            "sourcePath": "documents.goals.tags.service_model[1]",
+            "recognized": true
+          }
+        ],
+        "missingDimensions": [
+          "customers",
+          "spatial_mechanism",
+          "visual_style",
+          "material"
+        ],
+        "archetypes": [
+          {
+            "id": "AR01_neighborhood_local_eatery",
+            "evidenceRefs": [
+              "user:RKS-02A.fixed-positioning#tags.business_format[0]"
+            ]
+          }
+        ],
+        "primaryArchetype": "AR01_neighborhood_local_eatery",
+        "status": "supported",
+        "auxiliaryMechanisms": [
+          "dine_in_primary",
+          "takeaway_supported"
+        ]
+      },
+      "proposals": [
+        {
+          "id": "analysis:upgrade",
+          "projectId": "feng-tang-tang",
+          "dimension": "business_format",
+          "tag": "fast_casual_upgrade_proposal",
+          "rawValue": "从“传统川菜馆”升级为“现代川味小吃快餐”。保留“冯”字标和红色基因，但通过放大“小碗”、“巧搭配”、“热气”等元素，削弱“非遗/老字号”带来的厚重感。避免过度使用脸谱等刻板符号，聚焦于食物本身的诱惑力和品牌的亲和力。",
+          "normalization": "explicit_reviewed_exact_value_mapping",
+          "sourceType": "analysis_proposal",
+          "status": "probable",
+          "assertion": "proposal",
+          "scope": "project",
+          "appliesTo": [
+            "feng-tang-tang"
+          ],
+          "evidenceRefs": [
+            "historical_packet_fixture:e3564d51888661989eeb16de8923992a4e1148268e7f55e7427c4c70e6fb613c#creativeDecision.uniqueUpgradeThesis",
+            "offline-review:RKS02A.positioning-shift"
+          ],
+          "sourcePath": "packet.creativeDecision.uniqueUpgradeThesis"
+        },
+        {
+          "id": "analysis:dine-in",
+          "projectId": "feng-tang-tang",
+          "dimension": "service_model",
+          "tag": "dine_in_available",
+          "rawValue": "堂食",
+          "normalization": "exact_dictionary_alias",
+          "sourceType": "analysis_proposal",
+          "status": "probable",
+          "assertion": "proposal",
+          "scope": "project",
+          "appliesTo": [
+            "feng-tang-tang"
+          ],
+          "evidenceRefs": [
+            "historical_packet_fixture:e3564d51888661989eeb16de8923992a4e1148268e7f55e7427c4c70e6fb613c#mediaTranslations.spatial.sceneProgram[2]"
+          ],
+          "sourcePath": "packet.mediaTranslations.spatial.sceneProgram[2]"
+        },
+        {
+          "id": "analysis:takeaway",
+          "projectId": "feng-tang-tang",
+          "dimension": "service_model",
+          "tag": "takeaway_available",
+          "rawValue": "外带",
+          "normalization": "exact_dictionary_alias",
+          "sourceType": "analysis_proposal",
+          "status": "probable",
+          "assertion": "proposal",
+          "scope": "project",
+          "appliesTo": [
+            "feng-tang-tang"
+          ],
+          "evidenceRefs": [
+            "historical_packet_fixture:e3564d51888661989eeb16de8923992a4e1148268e7f55e7427c4c70e6fb613c#mediaTranslations.spatial.sceneProgram[3]"
+          ],
+          "sourcePath": "packet.mediaTranslations.spatial.sceneProgram[3]"
+        },
+        {
+          "id": "analysis:value-position",
+          "projectId": "feng-tang-tang",
+          "dimension": "brand_positioning",
+          "tag": "approachable_value",
+          "rawValue": "实惠",
+          "normalization": "explicit_reviewed_exact_value_mapping",
+          "sourceType": "analysis_proposal",
+          "status": "probable",
+          "assertion": "proposal",
+          "scope": "project",
+          "appliesTo": [
+            "feng-tang-tang"
+          ],
+          "evidenceRefs": [
+            "historical_packet_fixture:e3564d51888661989eeb16de8923992a4e1148268e7f55e7427c4c70e6fb613c#creativeDecision.targetWorldview[1]",
+            "offline-review:RKS02A.value-position"
+          ],
+          "sourcePath": "packet.creativeDecision.targetWorldview[1]"
+        }
+      ],
+      "conflicts": [
+        {
+          "code": "RKS-CF-002",
+          "priority": "P0",
+          "claimIds": [
+            "analysis:upgrade",
+            "goal:business_format:0"
+          ],
+          "evidenceRefs": [
+            "historical_packet_fixture:e3564d51888661989eeb16de8923992a4e1148268e7f55e7427c4c70e6fb613c#creativeDecision.uniqueUpgradeThesis",
+            "offline-review:RKS02A.positioning-shift",
+            "user:RKS-02A.fixed-positioning#tags.business_format[0]"
+          ],
+          "reason": "保留双方证据；用户目标优先于冲突提案。"
+        }
+      ],
+      "ruleMatches": [
+        {
+          "ruleId": "positioning-shift-neighborhood-to-fast-casual",
+          "claimIds": [
+            "goal:business_format:0",
+            "analysis:upgrade"
+          ],
+          "status": "review_required",
+          "meaning": "Proposed positioning shift requires human review; not an inferred universal style incompatibility"
+        }
+      ],
+      "alignments": [
+        {
+          "claimIds": [
+            "goal:brand_positioning:0",
+            "analysis:value-position"
+          ],
+          "status": "consistent_with_bound_goal",
+          "evidenceRefs": [
+            "historical_packet_fixture:e3564d51888661989eeb16de8923992a4e1148268e7f55e7427c4c70e6fb613c#creativeDecision.targetWorldview[1]",
+            "offline-review:RKS02A.value-position",
+            "user:RKS-02A.fixed-positioning#tags.brand_positioning[0]"
+          ],
+          "limitation": "Matching annotation only; proposal is not promoted to fact"
+        },
+        {
+          "ruleId": "dine-in-presence",
+          "claimIds": [
+            "goal:service_model:0",
+            "analysis:dine-in"
+          ],
+          "status": "compatible_within_rule_scope",
+          "evidenceRefs": [
+            "historical_packet_fixture:e3564d51888661989eeb16de8923992a4e1148268e7f55e7427c4c70e6fb613c#mediaTranslations.spatial.sceneProgram[2]",
+            "user:RKS-02A.fixed-positioning#tags.service_model[0]"
+          ],
+          "limitation": "仅支持存在堂食功能；不能证明堂食占比、座位数量或装修风格。"
+        },
+        {
+          "ruleId": "takeaway-presence",
+          "claimIds": [
+            "goal:service_model:1",
+            "analysis:takeaway"
+          ],
+          "status": "compatible_within_rule_scope",
+          "evidenceRefs": [
+            "historical_packet_fixture:e3564d51888661989eeb16de8923992a4e1148268e7f55e7427c4c70e6fb613c#mediaTranslations.spatial.sceneProgram[3]",
+            "user:RKS-02A.fixed-positioning#tags.service_model[1]"
+          ],
+          "limitation": "仅支持存在外带功能；不能证明实际需求密度或效率型视觉。"
+        }
+      ],
+      "inspectedPaths": [
+        "packet.creativeDecision.uniqueUpgradeThesis",
+        "packet.mediaTranslations.spatial.spatialConcept",
+        "packet.mediaTranslations.spatial.sceneProgram[2]",
+        "packet.mediaTranslations.spatial.sceneProgram[3]",
+        "packet.mediaTranslations.spatial.functionalRelationships[0]",
+        "packet.projectFacts.brandRole.value",
+        "packet.creativeDecision.targetWorldview[1]",
+        "packet.creativeDecision.toneBoundaries[0].target"
+      ],
+      "coverage": "Only bound fields reviewed; all unbound Packet prose is outside semantic audit"
+    },
+    "knowledgeAudit": [
+      {
+        "knowledgeId": "rks-observation-1",
+        "scope": "industry",
+        "status": "eligible_for_review",
+        "reason": null,
+        "lifecycle": "candidate",
+        "prerequisitesState": "review_required",
+        "automaticallyApplied": false
+      },
+      {
+        "knowledgeId": "rks-observation-2",
+        "scope": "business_format",
+        "status": "eligible_for_review",
+        "reason": null,
+        "lifecycle": "candidate",
+        "prerequisitesState": "review_required",
+        "automaticallyApplied": false
+      },
+      {
+        "knowledgeId": "rks-observation-3",
+        "scope": "project",
+        "status": "eligible_for_review",
+        "reason": null,
+        "lifecycle": "candidate",
+        "prerequisitesState": "review_required",
+        "automaticallyApplied": false
+      },
+      {
+        "knowledgeId": "rks-observation-4",
+        "scope": "industry",
+        "status": "eligible_for_review",
+        "reason": null,
+        "lifecycle": "candidate",
+        "prerequisitesState": "review_required",
+        "automaticallyApplied": false
+      },
+      {
+        "knowledgeId": "rks-observation-5",
+        "scope": "project",
+        "status": "eligible_for_review",
+        "reason": null,
+        "lifecycle": "project_observation",
+        "prerequisitesState": "review_required",
+        "automaticallyApplied": false
+      }
+    ],
+    "candidateSuggestions": [
+      {
+        "field": "materialLanguage",
+        "value": "项目级候选：红砖、暖木、赤陶与暖光；不是四川餐饮通用模板。",
+        "knowledgeId": "rks-observation-3",
+        "lifecycle": "candidate",
+        "sourceType": "rks_candidate",
+        "sourcePath": "documents.materials.note",
+        "evidenceRefs": [
+          "ftt-direction-brief:6",
+          "ftt-direction-proposal.fields.materials#note"
+        ],
+        "scope": "project",
+        "requiresHumanReview": true,
+        "automaticallyApplied": false,
+        "prerequisites": [
+          "项目目标明确且镜头范围可呈现"
+        ],
+        "exceptions": [
+          "若物业、卫生或镜头约束不支持，保留冲突并人工审查"
+        ]
+      },
+      {
+        "field": "visibleRequirements",
+        "value": "chef preparing food\nsteam above dishes\ncustomers dining at tables",
+        "knowledgeId": "rks-observation-5",
+        "lifecycle": "project_observation",
+        "sourceType": "historical_human_acceptance",
+        "sourcePath": "documents.operations.visible",
+        "evidenceRefs": [
+          "human_evaluation",
+          "human_selection",
+          "human_selection:golds[0].reason:offline-authored-observable-translation#visible"
+        ],
+        "scope": "project",
+        "requiresHumanReview": true,
+        "automaticallyApplied": false,
+        "prerequisites": [
+          "项目目标明确且镜头范围可呈现"
+        ],
+        "exceptions": [
+          "若物业、卫生或镜头约束不支持，保留冲突并人工审查"
+        ]
+      },
+      {
+        "field": "functionalRelationships",
+        "value": "Kitchen preparation connects to service counter; dining tables remain accessible; takeaway handoff keeps a clear route",
+        "knowledgeId": "rks-observation-5",
+        "lifecycle": "project_observation",
+        "sourceType": "historical_human_acceptance",
+        "sourcePath": "documents.operations.relationships",
+        "evidenceRefs": [
+          "human_evaluation",
+          "human_selection",
+          "human_selection:golds[0].reason:offline-authored-observable-translation#relationships"
+        ],
+        "scope": "project",
+        "requiresHumanReview": true,
+        "automaticallyApplied": false,
+        "prerequisites": [
+          "项目目标明确且镜头范围可呈现"
+        ],
+        "exceptions": [
+          "若物业、卫生或镜头约束不支持，保留冲突并人工审查"
+        ]
+      }
+    ],
+    "suggestions": [
+      {
+        "action": "retain_confirmed_goal_and_review_proposal",
+        "code": "RKS-CF-002",
+        "claimIds": [
+          "analysis:upgrade",
+          "goal:business_format:0"
+        ],
+        "evidenceRefs": [
+          "historical_packet_fixture:e3564d51888661989eeb16de8923992a4e1148268e7f55e7427c4c70e6fb613c#creativeDecision.uniqueUpgradeThesis",
+          "offline-review:RKS02A.positioning-shift",
+          "user:RKS-02A.fixed-positioning#tags.business_format[0]"
+        ],
+        "requiresHumanReview": true
+      }
+    ],
+    "unknowns": [
+      {
+        "id": "analysis:spatial-concept",
+        "sourcePath": "packet.mediaTranslations.spatial.spatialConcept",
+        "status": "review_required",
+        "reason": "unmapped_natural_language",
+        "rawValue": "热气腾腾的川味小馆：明亮、温暖、开放、强调食物制作过程。"
+      },
+      {
+        "id": "analysis:relationships",
+        "sourcePath": "packet.mediaTranslations.spatial.functionalRelationships[0]",
+        "status": "review_required",
+        "reason": "unmapped_natural_language",
+        "rawValue": "点餐区与明档展示及取餐口相邻，形成高效服务动线；外带包装与堂食视觉统一，支持多场景消费"
+      },
+      {
+        "id": "analysis:brand-role",
+        "sourcePath": "packet.projectFacts.brandRole.value",
+        "status": "review_required",
+        "reason": "unmapped_natural_language",
+        "rawValue": "提供高性价比、地道川味（以跷脚牛肉为主）的快餐与小吃服务，强调“巧搭配”与“小碗实惠”"
+      },
+      {
+        "id": "analysis:mood",
+        "sourcePath": "packet.creativeDecision.toneBoundaries[0].target",
+        "status": "review_required",
+        "reason": "unmapped_natural_language",
+        "rawValue": "热闹、烟火气、食欲感"
+      }
+    ],
+    "b1Draft": {
+      "projectId": "feng-tang-tang",
+      "status": "proposed_offline",
+      "sourceType": "rks_shadow_suggestion",
+      "fields": {
+        "spatialConcept": "四川特色小吃、跷脚牛肉；社区临街特色小馆，亲民堂食、兼顾外带；四川地域特色与市井烟火气。",
+        "functionalRelationships": "厨房、顾客、餐桌与服务活动之间保持合理关系。"
+      },
+      "fieldSources": {
+        "spatialConcept": [
+          {
+            "value": "四川特色小吃、跷脚牛肉；社区临街特色小馆，亲民堂食、兼顾外带；四川地域特色与市井烟火气。",
+            "sourcePath": "documents.goals.directions.spatialConcept",
+            "evidenceRefs": [
+              "user:RKS-02A.fixed-positioning#directions.spatialConcept"
+            ],
+            "sourceType": "user_confirmed_design_goal"
+          }
+        ],
+        "functionalRelationships": [
+          {
+            "value": "厨房、顾客、餐桌与服务活动之间保持合理关系。",
+            "sourcePath": "documents.goals.directions.functionalRelationships",
+            "evidenceRefs": [
+              "user:RKS-02A.fixed-positioning#directions.functionalRelationships"
+            ],
+            "sourceType": "user_confirmed_design_goal"
+          }
+        ]
+      },
+      "analysisFingerprint": "0884791a5b2b0cf6351782f78840317120bcb37750a9f561f9b8648e23c46041",
+      "fingerprintAuthority": "caller_supplied_not_authenticated",
+      "requiresExplicitUserConfirmation": true,
+      "replacesExistingDirection": false,
+      "analysisPacketModified": false,
+      "candidateSuggestions": [
+        {
+          "field": "materialLanguage",
+          "value": "项目级候选：红砖、暖木、赤陶与暖光；不是四川餐饮通用模板。",
+          "knowledgeId": "rks-observation-3",
+          "lifecycle": "candidate",
+          "sourceType": "rks_candidate",
+          "sourcePath": "documents.materials.note",
+          "evidenceRefs": [
+            "ftt-direction-brief:6",
+            "ftt-direction-proposal.fields.materials#note"
+          ],
+          "scope": "project",
+          "requiresHumanReview": true,
+          "automaticallyApplied": false,
+          "prerequisites": [
+            "项目目标明确且镜头范围可呈现"
+          ],
+          "exceptions": [
+            "若物业、卫生或镜头约束不支持，保留冲突并人工审查"
+          ]
+        },
+        {
+          "field": "visibleRequirements",
+          "value": "chef preparing food\nsteam above dishes\ncustomers dining at tables",
+          "knowledgeId": "rks-observation-5",
+          "lifecycle": "project_observation",
+          "sourceType": "historical_human_acceptance",
+          "sourcePath": "documents.operations.visible",
+          "evidenceRefs": [
+            "human_evaluation",
+            "human_selection",
+            "human_selection:golds[0].reason:offline-authored-observable-translation#visible"
+          ],
+          "scope": "project",
+          "requiresHumanReview": true,
+          "automaticallyApplied": false,
+          "prerequisites": [
+            "项目目标明确且镜头范围可呈现"
+          ],
+          "exceptions": [
+            "若物业、卫生或镜头约束不支持，保留冲突并人工审查"
+          ]
+        },
+        {
+          "field": "functionalRelationships",
+          "value": "Kitchen preparation connects to service counter; dining tables remain accessible; takeaway handoff keeps a clear route",
+          "knowledgeId": "rks-observation-5",
+          "lifecycle": "project_observation",
+          "sourceType": "historical_human_acceptance",
+          "sourcePath": "documents.operations.relationships",
+          "evidenceRefs": [
+            "human_evaluation",
+            "human_selection",
+            "human_selection:golds[0].reason:offline-authored-observable-translation#relationships"
+          ],
+          "scope": "project",
+          "requiresHumanReview": true,
+          "automaticallyApplied": false,
+          "prerequisites": [
+            "项目目标明确且镜头范围可呈现"
+          ],
+          "exceptions": [
+            "若物业、卫生或镜头约束不支持，保留冲突并人工审查"
+          ]
+        }
+      ],
+      "unknownFacts": [
+        "customers",
+        "location_context"
+      ]
+    },
+    "safeguards": {
+      "productionEnabled": false,
+      "modelCalls": 0,
+      "projectWrites": 0,
+      "knowledgePromoted": false,
+      "styleOrMaterialInferredFromCuisinePriceLocation": false,
+      "image1RunAssociation": "undetermined"
+    }
+  }
+}

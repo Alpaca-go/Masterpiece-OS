@@ -1,0 +1,2095 @@
+{
+  "scope": "Existing RKS-01 six synthetic counterexamples; no project data migration",
+  "cases": [
+    {
+      "projectId": "seed-eatery",
+      "label": "FTT 合成目标（并非图 1 实际输入）",
+      "result": {
+        "contractVersion": "1.0",
+        "projectId": "seed-eatery",
+        "status": "shadow_offline_only",
+        "boundary": {
+          "contractVersion": "1.0",
+          "projectId": "seed-eatery",
+          "stage": "pre_analysis",
+          "classification": {
+            "projectId": "seed-eatery",
+            "tags": [
+              {
+                "id": "c0",
+                "projectId": "seed-eatery",
+                "dimension": "business_format",
+                "tag": "neighborhood_casual_dining",
+                "rawValue": "社区特色小馆",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "seed-eatery"
+                ],
+                "evidenceRefs": [
+                  "synthetic:seed-eatery:c0#value"
+                ],
+                "sourcePath": "documents.c0.value",
+                "recognized": true
+              },
+              {
+                "id": "c1",
+                "projectId": "seed-eatery",
+                "dimension": "location_context",
+                "tag": "streetfront",
+                "rawValue": "临街",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "seed-eatery"
+                ],
+                "evidenceRefs": [
+                  "synthetic:seed-eatery:c1#value"
+                ],
+                "sourcePath": "documents.c1.value",
+                "recognized": true
+              },
+              {
+                "id": "c2",
+                "projectId": "seed-eatery",
+                "dimension": "location_context",
+                "tag": "community_retail",
+                "rawValue": "社区底商",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "seed-eatery"
+                ],
+                "evidenceRefs": [
+                  "synthetic:seed-eatery:c2#value"
+                ],
+                "sourcePath": "documents.c2.value",
+                "recognized": true
+              },
+              {
+                "id": "c3",
+                "projectId": "seed-eatery",
+                "dimension": "service_model",
+                "tag": "efficient_service",
+                "rawValue": "高效出餐",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "seed-eatery"
+                ],
+                "evidenceRefs": [
+                  "synthetic:seed-eatery:c3#value"
+                ],
+                "sourcePath": "documents.c3.value",
+                "recognized": true
+              },
+              {
+                "id": "c4",
+                "projectId": "seed-eatery",
+                "dimension": "service_model",
+                "tag": "dine_in_primary",
+                "rawValue": "堂食为主",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "seed-eatery"
+                ],
+                "evidenceRefs": [
+                  "synthetic:seed-eatery:c4#value"
+                ],
+                "sourcePath": "documents.c4.value",
+                "recognized": true
+              },
+              {
+                "id": "c5",
+                "projectId": "seed-eatery",
+                "dimension": "visual_style",
+                "tag": "warm_rustic",
+                "rawValue": "市井复古",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "seed-eatery"
+                ],
+                "evidenceRefs": [
+                  "synthetic:seed-eatery:c5#value"
+                ],
+                "sourcePath": "documents.c5.value",
+                "recognized": true
+              },
+              {
+                "id": "c7",
+                "projectId": "seed-eatery",
+                "dimension": "cuisine_product",
+                "tag": "sichuan_snacks",
+                "rawValue": "四川小吃",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "seed-eatery"
+                ],
+                "evidenceRefs": [
+                  "synthetic:seed-eatery:c7#value"
+                ],
+                "sourcePath": "documents.c7.value",
+                "recognized": true
+              },
+              {
+                "id": "c8",
+                "projectId": "seed-eatery",
+                "dimension": "cuisine_product",
+                "tag": "qiaojiao_beef",
+                "rawValue": "跷脚牛肉",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "seed-eatery"
+                ],
+                "evidenceRefs": [
+                  "synthetic:seed-eatery:c8#value"
+                ],
+                "sourcePath": "documents.c8.value",
+                "recognized": true
+              },
+              {
+                "id": "c9",
+                "projectId": "seed-eatery",
+                "dimension": "spatial_mechanism",
+                "tag": "open_kitchen",
+                "rawValue": "明档厨房",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "seed-eatery"
+                ],
+                "evidenceRefs": [
+                  "synthetic:seed-eatery:c9#value"
+                ],
+                "sourcePath": "documents.c9.value",
+                "recognized": true
+              }
+            ],
+            "missingDimensions": [
+              "customers",
+              "brand_positioning",
+              "experiential_mood",
+              "cultural_context",
+              "material"
+            ],
+            "archetypes": [
+              {
+                "id": "AR01_neighborhood_local_eatery",
+                "evidenceRefs": [
+                  "synthetic:seed-eatery:c0#value"
+                ]
+              }
+            ],
+            "primaryArchetype": "AR01_neighborhood_local_eatery",
+            "status": "supported",
+            "auxiliaryMechanisms": [
+              "dine_in_primary",
+              "efficient_service"
+            ]
+          },
+          "unknowns": [],
+          "authority": "Only caller-attested original sources and user-confirmed goals; references are not external authentication",
+          "missingFacts": [
+            "customers",
+            "location_context"
+          ]
+        },
+        "postAnalysis": {
+          "classification": {
+            "projectId": "seed-eatery",
+            "tags": [
+              {
+                "id": "c0",
+                "projectId": "seed-eatery",
+                "dimension": "business_format",
+                "tag": "neighborhood_casual_dining",
+                "rawValue": "社区特色小馆",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "seed-eatery"
+                ],
+                "evidenceRefs": [
+                  "synthetic:seed-eatery:c0#value"
+                ],
+                "sourcePath": "documents.c0.value",
+                "recognized": true
+              },
+              {
+                "id": "c1",
+                "projectId": "seed-eatery",
+                "dimension": "location_context",
+                "tag": "streetfront",
+                "rawValue": "临街",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "seed-eatery"
+                ],
+                "evidenceRefs": [
+                  "synthetic:seed-eatery:c1#value"
+                ],
+                "sourcePath": "documents.c1.value",
+                "recognized": true
+              },
+              {
+                "id": "c2",
+                "projectId": "seed-eatery",
+                "dimension": "location_context",
+                "tag": "community_retail",
+                "rawValue": "社区底商",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "seed-eatery"
+                ],
+                "evidenceRefs": [
+                  "synthetic:seed-eatery:c2#value"
+                ],
+                "sourcePath": "documents.c2.value",
+                "recognized": true
+              },
+              {
+                "id": "c3",
+                "projectId": "seed-eatery",
+                "dimension": "service_model",
+                "tag": "efficient_service",
+                "rawValue": "高效出餐",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "seed-eatery"
+                ],
+                "evidenceRefs": [
+                  "synthetic:seed-eatery:c3#value"
+                ],
+                "sourcePath": "documents.c3.value",
+                "recognized": true
+              },
+              {
+                "id": "c4",
+                "projectId": "seed-eatery",
+                "dimension": "service_model",
+                "tag": "dine_in_primary",
+                "rawValue": "堂食为主",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "seed-eatery"
+                ],
+                "evidenceRefs": [
+                  "synthetic:seed-eatery:c4#value"
+                ],
+                "sourcePath": "documents.c4.value",
+                "recognized": true
+              },
+              {
+                "id": "c5",
+                "projectId": "seed-eatery",
+                "dimension": "visual_style",
+                "tag": "warm_rustic",
+                "rawValue": "市井复古",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "seed-eatery"
+                ],
+                "evidenceRefs": [
+                  "synthetic:seed-eatery:c5#value"
+                ],
+                "sourcePath": "documents.c5.value",
+                "recognized": true
+              },
+              {
+                "id": "c6",
+                "projectId": "seed-eatery",
+                "dimension": "visual_style",
+                "tag": "minimalist",
+                "rawValue": "极简",
+                "normalization": "exact_dictionary_alias",
+                "sourceType": "analysis_proposal",
+                "status": "probable",
+                "assertion": "proposal",
+                "scope": "project",
+                "appliesTo": [
+                  "seed-eatery"
+                ],
+                "evidenceRefs": [
+                  "synthetic:seed-eatery#annotations.c6"
+                ],
+                "sourcePath": "packet.annotations.c6",
+                "recognized": true
+              },
+              {
+                "id": "c7",
+                "projectId": "seed-eatery",
+                "dimension": "cuisine_product",
+                "tag": "sichuan_snacks",
+                "rawValue": "四川小吃",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "seed-eatery"
+                ],
+                "evidenceRefs": [
+                  "synthetic:seed-eatery:c7#value"
+                ],
+                "sourcePath": "documents.c7.value",
+                "recognized": true
+              },
+              {
+                "id": "c8",
+                "projectId": "seed-eatery",
+                "dimension": "cuisine_product",
+                "tag": "qiaojiao_beef",
+                "rawValue": "跷脚牛肉",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "seed-eatery"
+                ],
+                "evidenceRefs": [
+                  "synthetic:seed-eatery:c8#value"
+                ],
+                "sourcePath": "documents.c8.value",
+                "recognized": true
+              },
+              {
+                "id": "c9",
+                "projectId": "seed-eatery",
+                "dimension": "spatial_mechanism",
+                "tag": "open_kitchen",
+                "rawValue": "明档厨房",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "seed-eatery"
+                ],
+                "evidenceRefs": [
+                  "synthetic:seed-eatery:c9#value"
+                ],
+                "sourcePath": "documents.c9.value",
+                "recognized": true
+              }
+            ],
+            "missingDimensions": [
+              "customers",
+              "brand_positioning",
+              "experiential_mood",
+              "cultural_context",
+              "material"
+            ],
+            "archetypes": [
+              {
+                "id": "AR01_neighborhood_local_eatery",
+                "evidenceRefs": [
+                  "synthetic:seed-eatery:c0#value"
+                ]
+              }
+            ],
+            "primaryArchetype": "AR01_neighborhood_local_eatery",
+            "status": "supported",
+            "auxiliaryMechanisms": [
+              "dine_in_primary",
+              "efficient_service"
+            ]
+          },
+          "proposals": [
+            {
+              "id": "c6",
+              "projectId": "seed-eatery",
+              "dimension": "visual_style",
+              "tag": "minimalist",
+              "rawValue": "极简",
+              "normalization": "exact_dictionary_alias",
+              "sourceType": "analysis_proposal",
+              "status": "probable",
+              "assertion": "proposal",
+              "scope": "project",
+              "appliesTo": [
+                "seed-eatery"
+              ],
+              "evidenceRefs": [
+                "synthetic:seed-eatery#annotations.c6"
+              ],
+              "sourcePath": "packet.annotations.c6"
+            }
+          ],
+          "conflicts": [
+            {
+              "code": "RKS-CF-001",
+              "priority": "P1",
+              "claimIds": [
+                "c3",
+                "c6"
+              ],
+              "evidenceRefs": [
+                "synthetic:seed-eatery#annotations.c6",
+                "synthetic:seed-eatery:c3#value"
+              ],
+              "reason": "经营机制不能独立证明视觉风格。"
+            },
+            {
+              "code": "RKS-CF-002",
+              "priority": "P0",
+              "claimIds": [
+                "c5",
+                "c6"
+              ],
+              "evidenceRefs": [
+                "synthetic:seed-eatery#annotations.c6",
+                "synthetic:seed-eatery:c5#value"
+              ],
+              "reason": "保留双方证据；用户目标优先于冲突提案。"
+            },
+            {
+              "code": "RKS-CF-006",
+              "priority": "P0",
+              "claimIds": [
+                "c5",
+                "c6"
+              ],
+              "evidenceRefs": [
+                "synthetic:seed-eatery#annotations.c6",
+                "synthetic:seed-eatery:c5#value"
+              ],
+              "reason": "已确认方向不能被分析建议或旧状态静默替换。"
+            }
+          ],
+          "ruleMatches": [],
+          "alignments": [],
+          "inspectedPaths": [
+            "packet.annotations.c6"
+          ],
+          "coverage": "Only bound fields reviewed; all unbound Packet prose is outside semantic audit"
+        },
+        "knowledgeAudit": [
+          {
+            "knowledgeId": "rks-observation-1",
+            "scope": "industry",
+            "status": "withheld",
+            "reason": "cross_project_candidate_requires_review",
+            "lifecycle": "candidate",
+            "prerequisitesState": "review_required",
+            "automaticallyApplied": false
+          },
+          {
+            "knowledgeId": "rks-observation-2",
+            "scope": "business_format",
+            "status": "withheld",
+            "reason": "cross_project_candidate_requires_review",
+            "lifecycle": "candidate",
+            "prerequisitesState": "review_required",
+            "automaticallyApplied": false
+          },
+          {
+            "knowledgeId": "rks-observation-3",
+            "scope": "project",
+            "status": "withheld",
+            "reason": "project_scope_mismatch",
+            "lifecycle": "candidate",
+            "prerequisitesState": "review_required",
+            "automaticallyApplied": false
+          },
+          {
+            "knowledgeId": "rks-observation-4",
+            "scope": "industry",
+            "status": "withheld",
+            "reason": "cross_project_candidate_requires_review",
+            "lifecycle": "candidate",
+            "prerequisitesState": "review_required",
+            "automaticallyApplied": false
+          },
+          {
+            "knowledgeId": "rks-observation-5",
+            "scope": "project",
+            "status": "withheld",
+            "reason": "project_scope_mismatch",
+            "lifecycle": "project_observation",
+            "prerequisitesState": "review_required",
+            "automaticallyApplied": false
+          }
+        ],
+        "candidateSuggestions": [],
+        "suggestions": [
+          {
+            "action": "retain_confirmed_goal_and_review_proposal",
+            "code": "RKS-CF-001",
+            "claimIds": [
+              "c3",
+              "c6"
+            ],
+            "evidenceRefs": [
+              "synthetic:seed-eatery#annotations.c6",
+              "synthetic:seed-eatery:c3#value"
+            ],
+            "requiresHumanReview": true
+          },
+          {
+            "action": "retain_confirmed_goal_and_review_proposal",
+            "code": "RKS-CF-002",
+            "claimIds": [
+              "c5",
+              "c6"
+            ],
+            "evidenceRefs": [
+              "synthetic:seed-eatery#annotations.c6",
+              "synthetic:seed-eatery:c5#value"
+            ],
+            "requiresHumanReview": true
+          },
+          {
+            "action": "retain_confirmed_goal_and_review_proposal",
+            "code": "RKS-CF-006",
+            "claimIds": [
+              "c5",
+              "c6"
+            ],
+            "evidenceRefs": [
+              "synthetic:seed-eatery#annotations.c6",
+              "synthetic:seed-eatery:c5#value"
+            ],
+            "requiresHumanReview": true
+          }
+        ],
+        "unknowns": [],
+        "b1Draft": {
+          "projectId": "seed-eatery",
+          "status": "proposed_offline",
+          "sourceType": "rks_shadow_suggestion",
+          "fields": {
+            "spatialConcept": "市井复古"
+          },
+          "fieldSources": {
+            "spatialConcept": [
+              {
+                "value": "市井复古",
+                "sourcePath": "documents.c5.value",
+                "evidenceRefs": [
+                  "synthetic:seed-eatery:c5#value"
+                ],
+                "sourceType": "user_confirmed_design_goal"
+              }
+            ]
+          },
+          "analysisFingerprint": null,
+          "fingerprintAuthority": "caller_supplied_not_authenticated",
+          "requiresExplicitUserConfirmation": true,
+          "replacesExistingDirection": false,
+          "analysisPacketModified": false,
+          "candidateSuggestions": [],
+          "unknownFacts": [
+            "customers",
+            "location_context"
+          ]
+        },
+        "safeguards": {
+          "productionEnabled": false,
+          "modelCalls": 0,
+          "projectWrites": 0,
+          "knowledgePromoted": false,
+          "styleOrMaterialInferredFromCuisinePriceLocation": false,
+          "image1RunAssociation": "undetermined"
+        }
+      }
+    },
+    {
+      "projectId": "mall-casual",
+      "label": "商场标准化川味快餐",
+      "result": {
+        "contractVersion": "1.0",
+        "projectId": "mall-casual",
+        "status": "shadow_offline_only",
+        "boundary": {
+          "contractVersion": "1.0",
+          "projectId": "mall-casual",
+          "stage": "pre_analysis",
+          "classification": {
+            "projectId": "mall-casual",
+            "tags": [
+              {
+                "id": "c0",
+                "projectId": "mall-casual",
+                "dimension": "business_format",
+                "tag": "standardized_fast_casual",
+                "rawValue": "标准化快餐",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "mall-casual"
+                ],
+                "evidenceRefs": [
+                  "synthetic:mall-casual:c0#value"
+                ],
+                "sourcePath": "documents.c0.value",
+                "recognized": true
+              },
+              {
+                "id": "c1",
+                "projectId": "mall-casual",
+                "dimension": "location_context",
+                "tag": "mall",
+                "rawValue": "商场",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "mall-casual"
+                ],
+                "evidenceRefs": [
+                  "synthetic:mall-casual:c1#value"
+                ],
+                "sourcePath": "documents.c1.value",
+                "recognized": true
+              },
+              {
+                "id": "c2",
+                "projectId": "mall-casual",
+                "dimension": "service_model",
+                "tag": "efficient_service",
+                "rawValue": "高效出餐",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "mall-casual"
+                ],
+                "evidenceRefs": [
+                  "synthetic:mall-casual:c2#value"
+                ],
+                "sourcePath": "documents.c2.value",
+                "recognized": true
+              },
+              {
+                "id": "c3",
+                "projectId": "mall-casual",
+                "dimension": "visual_style",
+                "tag": "modern_bright",
+                "rawValue": "现代明亮",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "mall-casual"
+                ],
+                "evidenceRefs": [
+                  "synthetic:mall-casual:c3#value"
+                ],
+                "sourcePath": "documents.c3.value",
+                "recognized": true
+              },
+              {
+                "id": "c4",
+                "projectId": "mall-casual",
+                "dimension": "cuisine_product",
+                "tag": "sichuan_snacks",
+                "rawValue": "川味小吃",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "mall-casual"
+                ],
+                "evidenceRefs": [
+                  "synthetic:mall-casual:c4#value"
+                ],
+                "sourcePath": "documents.c4.value",
+                "recognized": true
+              }
+            ],
+            "missingDimensions": [
+              "customers",
+              "brand_positioning",
+              "experiential_mood",
+              "cultural_context",
+              "spatial_mechanism",
+              "material"
+            ],
+            "archetypes": [
+              {
+                "id": "AR02_standardized_fast_casual",
+                "evidenceRefs": [
+                  "synthetic:mall-casual:c0#value"
+                ]
+              }
+            ],
+            "primaryArchetype": "AR02_standardized_fast_casual",
+            "status": "supported",
+            "auxiliaryMechanisms": [
+              "efficient_service"
+            ]
+          },
+          "unknowns": [],
+          "authority": "Only caller-attested original sources and user-confirmed goals; references are not external authentication",
+          "missingFacts": [
+            "customers",
+            "location_context"
+          ]
+        },
+        "postAnalysis": {
+          "classification": {
+            "projectId": "mall-casual",
+            "tags": [
+              {
+                "id": "c0",
+                "projectId": "mall-casual",
+                "dimension": "business_format",
+                "tag": "standardized_fast_casual",
+                "rawValue": "标准化快餐",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "mall-casual"
+                ],
+                "evidenceRefs": [
+                  "synthetic:mall-casual:c0#value"
+                ],
+                "sourcePath": "documents.c0.value",
+                "recognized": true
+              },
+              {
+                "id": "c1",
+                "projectId": "mall-casual",
+                "dimension": "location_context",
+                "tag": "mall",
+                "rawValue": "商场",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "mall-casual"
+                ],
+                "evidenceRefs": [
+                  "synthetic:mall-casual:c1#value"
+                ],
+                "sourcePath": "documents.c1.value",
+                "recognized": true
+              },
+              {
+                "id": "c2",
+                "projectId": "mall-casual",
+                "dimension": "service_model",
+                "tag": "efficient_service",
+                "rawValue": "高效出餐",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "mall-casual"
+                ],
+                "evidenceRefs": [
+                  "synthetic:mall-casual:c2#value"
+                ],
+                "sourcePath": "documents.c2.value",
+                "recognized": true
+              },
+              {
+                "id": "c3",
+                "projectId": "mall-casual",
+                "dimension": "visual_style",
+                "tag": "modern_bright",
+                "rawValue": "现代明亮",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "mall-casual"
+                ],
+                "evidenceRefs": [
+                  "synthetic:mall-casual:c3#value"
+                ],
+                "sourcePath": "documents.c3.value",
+                "recognized": true
+              },
+              {
+                "id": "c4",
+                "projectId": "mall-casual",
+                "dimension": "cuisine_product",
+                "tag": "sichuan_snacks",
+                "rawValue": "川味小吃",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "mall-casual"
+                ],
+                "evidenceRefs": [
+                  "synthetic:mall-casual:c4#value"
+                ],
+                "sourcePath": "documents.c4.value",
+                "recognized": true
+              }
+            ],
+            "missingDimensions": [
+              "customers",
+              "brand_positioning",
+              "experiential_mood",
+              "cultural_context",
+              "spatial_mechanism",
+              "material"
+            ],
+            "archetypes": [
+              {
+                "id": "AR02_standardized_fast_casual",
+                "evidenceRefs": [
+                  "synthetic:mall-casual:c0#value"
+                ]
+              }
+            ],
+            "primaryArchetype": "AR02_standardized_fast_casual",
+            "status": "supported",
+            "auxiliaryMechanisms": [
+              "efficient_service"
+            ]
+          },
+          "proposals": [],
+          "conflicts": [],
+          "ruleMatches": [],
+          "alignments": [],
+          "inspectedPaths": [],
+          "coverage": "Only bound fields reviewed; all unbound Packet prose is outside semantic audit"
+        },
+        "knowledgeAudit": [
+          {
+            "knowledgeId": "rks-observation-1",
+            "scope": "industry",
+            "status": "withheld",
+            "reason": "cross_project_candidate_requires_review",
+            "lifecycle": "candidate",
+            "prerequisitesState": "review_required",
+            "automaticallyApplied": false
+          },
+          {
+            "knowledgeId": "rks-observation-2",
+            "scope": "business_format",
+            "status": "withheld",
+            "reason": "applicable_tags_not_supported",
+            "lifecycle": "candidate",
+            "prerequisitesState": "review_required",
+            "automaticallyApplied": false
+          },
+          {
+            "knowledgeId": "rks-observation-3",
+            "scope": "project",
+            "status": "withheld",
+            "reason": "project_scope_mismatch",
+            "lifecycle": "candidate",
+            "prerequisitesState": "review_required",
+            "automaticallyApplied": false
+          },
+          {
+            "knowledgeId": "rks-observation-4",
+            "scope": "industry",
+            "status": "withheld",
+            "reason": "cross_project_candidate_requires_review",
+            "lifecycle": "candidate",
+            "prerequisitesState": "review_required",
+            "automaticallyApplied": false
+          },
+          {
+            "knowledgeId": "rks-observation-5",
+            "scope": "project",
+            "status": "withheld",
+            "reason": "project_scope_mismatch",
+            "lifecycle": "project_observation",
+            "prerequisitesState": "review_required",
+            "automaticallyApplied": false
+          }
+        ],
+        "candidateSuggestions": [],
+        "suggestions": [],
+        "unknowns": [],
+        "b1Draft": {
+          "projectId": "mall-casual",
+          "status": "proposed_offline",
+          "sourceType": "rks_shadow_suggestion",
+          "fields": {
+            "spatialConcept": "现代明亮"
+          },
+          "fieldSources": {
+            "spatialConcept": [
+              {
+                "value": "现代明亮",
+                "sourcePath": "documents.c3.value",
+                "evidenceRefs": [
+                  "synthetic:mall-casual:c3#value"
+                ],
+                "sourceType": "user_confirmed_design_goal"
+              }
+            ]
+          },
+          "analysisFingerprint": null,
+          "fingerprintAuthority": "caller_supplied_not_authenticated",
+          "requiresExplicitUserConfirmation": true,
+          "replacesExistingDirection": false,
+          "analysisPacketModified": false,
+          "candidateSuggestions": [],
+          "unknownFacts": [
+            "customers",
+            "location_context"
+          ]
+        },
+        "safeguards": {
+          "productionEnabled": false,
+          "modelCalls": 0,
+          "projectWrites": 0,
+          "knowledgePromoted": false,
+          "styleOrMaterialInferredFromCuisinePriceLocation": false,
+          "image1RunAssociation": "undetermined"
+        }
+      }
+    },
+    {
+      "projectId": "street-takeaway",
+      "label": "临街现代外带小吃店",
+      "result": {
+        "contractVersion": "1.0",
+        "projectId": "street-takeaway",
+        "status": "shadow_offline_only",
+        "boundary": {
+          "contractVersion": "1.0",
+          "projectId": "street-takeaway",
+          "stage": "pre_analysis",
+          "classification": {
+            "projectId": "street-takeaway",
+            "tags": [
+              {
+                "id": "c0",
+                "projectId": "street-takeaway",
+                "dimension": "business_format",
+                "tag": "takeaway_shop",
+                "rawValue": "外带小吃店",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "street-takeaway"
+                ],
+                "evidenceRefs": [
+                  "synthetic:street-takeaway:c0#value"
+                ],
+                "sourcePath": "documents.c0.value",
+                "recognized": true
+              },
+              {
+                "id": "c1",
+                "projectId": "street-takeaway",
+                "dimension": "location_context",
+                "tag": "streetfront",
+                "rawValue": "临街",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "street-takeaway"
+                ],
+                "evidenceRefs": [
+                  "synthetic:street-takeaway:c1#value"
+                ],
+                "sourcePath": "documents.c1.value",
+                "recognized": true
+              },
+              {
+                "id": "c2",
+                "projectId": "street-takeaway",
+                "dimension": "service_model",
+                "tag": "takeaway_primary",
+                "rawValue": "外带为主",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "street-takeaway"
+                ],
+                "evidenceRefs": [
+                  "synthetic:street-takeaway:c2#value"
+                ],
+                "sourcePath": "documents.c2.value",
+                "recognized": true
+              },
+              {
+                "id": "c3",
+                "projectId": "street-takeaway",
+                "dimension": "visual_style",
+                "tag": "modern_bright",
+                "rawValue": "现代明亮",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "street-takeaway"
+                ],
+                "evidenceRefs": [
+                  "synthetic:street-takeaway:c3#value"
+                ],
+                "sourcePath": "documents.c3.value",
+                "recognized": true
+              }
+            ],
+            "missingDimensions": [
+              "cuisine_product",
+              "customers",
+              "brand_positioning",
+              "experiential_mood",
+              "cultural_context",
+              "spatial_mechanism",
+              "material"
+            ],
+            "archetypes": [
+              {
+                "id": "AR04_streetfront_takeaway",
+                "evidenceRefs": [
+                  "synthetic:street-takeaway:c1#value",
+                  "synthetic:street-takeaway:c2#value"
+                ]
+              }
+            ],
+            "primaryArchetype": "AR04_streetfront_takeaway",
+            "status": "supported",
+            "auxiliaryMechanisms": [
+              "takeaway_primary"
+            ]
+          },
+          "unknowns": [],
+          "authority": "Only caller-attested original sources and user-confirmed goals; references are not external authentication",
+          "missingFacts": [
+            "customers",
+            "location_context"
+          ]
+        },
+        "postAnalysis": {
+          "classification": {
+            "projectId": "street-takeaway",
+            "tags": [
+              {
+                "id": "c0",
+                "projectId": "street-takeaway",
+                "dimension": "business_format",
+                "tag": "takeaway_shop",
+                "rawValue": "外带小吃店",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "street-takeaway"
+                ],
+                "evidenceRefs": [
+                  "synthetic:street-takeaway:c0#value"
+                ],
+                "sourcePath": "documents.c0.value",
+                "recognized": true
+              },
+              {
+                "id": "c1",
+                "projectId": "street-takeaway",
+                "dimension": "location_context",
+                "tag": "streetfront",
+                "rawValue": "临街",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "street-takeaway"
+                ],
+                "evidenceRefs": [
+                  "synthetic:street-takeaway:c1#value"
+                ],
+                "sourcePath": "documents.c1.value",
+                "recognized": true
+              },
+              {
+                "id": "c2",
+                "projectId": "street-takeaway",
+                "dimension": "service_model",
+                "tag": "takeaway_primary",
+                "rawValue": "外带为主",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "street-takeaway"
+                ],
+                "evidenceRefs": [
+                  "synthetic:street-takeaway:c2#value"
+                ],
+                "sourcePath": "documents.c2.value",
+                "recognized": true
+              },
+              {
+                "id": "c3",
+                "projectId": "street-takeaway",
+                "dimension": "visual_style",
+                "tag": "modern_bright",
+                "rawValue": "现代明亮",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "street-takeaway"
+                ],
+                "evidenceRefs": [
+                  "synthetic:street-takeaway:c3#value"
+                ],
+                "sourcePath": "documents.c3.value",
+                "recognized": true
+              }
+            ],
+            "missingDimensions": [
+              "cuisine_product",
+              "customers",
+              "brand_positioning",
+              "experiential_mood",
+              "cultural_context",
+              "spatial_mechanism",
+              "material"
+            ],
+            "archetypes": [
+              {
+                "id": "AR04_streetfront_takeaway",
+                "evidenceRefs": [
+                  "synthetic:street-takeaway:c1#value",
+                  "synthetic:street-takeaway:c2#value"
+                ]
+              }
+            ],
+            "primaryArchetype": "AR04_streetfront_takeaway",
+            "status": "supported",
+            "auxiliaryMechanisms": [
+              "takeaway_primary"
+            ]
+          },
+          "proposals": [],
+          "conflicts": [],
+          "ruleMatches": [],
+          "alignments": [],
+          "inspectedPaths": [],
+          "coverage": "Only bound fields reviewed; all unbound Packet prose is outside semantic audit"
+        },
+        "knowledgeAudit": [
+          {
+            "knowledgeId": "rks-observation-1",
+            "scope": "industry",
+            "status": "withheld",
+            "reason": "cross_project_candidate_requires_review",
+            "lifecycle": "candidate",
+            "prerequisitesState": "review_required",
+            "automaticallyApplied": false
+          },
+          {
+            "knowledgeId": "rks-observation-2",
+            "scope": "business_format",
+            "status": "withheld",
+            "reason": "applicable_tags_not_supported",
+            "lifecycle": "candidate",
+            "prerequisitesState": "review_required",
+            "automaticallyApplied": false
+          },
+          {
+            "knowledgeId": "rks-observation-3",
+            "scope": "project",
+            "status": "withheld",
+            "reason": "project_scope_mismatch",
+            "lifecycle": "candidate",
+            "prerequisitesState": "review_required",
+            "automaticallyApplied": false
+          },
+          {
+            "knowledgeId": "rks-observation-4",
+            "scope": "industry",
+            "status": "withheld",
+            "reason": "cross_project_candidate_requires_review",
+            "lifecycle": "candidate",
+            "prerequisitesState": "review_required",
+            "automaticallyApplied": false
+          },
+          {
+            "knowledgeId": "rks-observation-5",
+            "scope": "project",
+            "status": "withheld",
+            "reason": "project_scope_mismatch",
+            "lifecycle": "project_observation",
+            "prerequisitesState": "review_required",
+            "automaticallyApplied": false
+          }
+        ],
+        "candidateSuggestions": [],
+        "suggestions": [],
+        "unknowns": [],
+        "b1Draft": {
+          "projectId": "street-takeaway",
+          "status": "proposed_offline",
+          "sourceType": "rks_shadow_suggestion",
+          "fields": {
+            "spatialConcept": "现代明亮"
+          },
+          "fieldSources": {
+            "spatialConcept": [
+              {
+                "value": "现代明亮",
+                "sourcePath": "documents.c3.value",
+                "evidenceRefs": [
+                  "synthetic:street-takeaway:c3#value"
+                ],
+                "sourceType": "user_confirmed_design_goal"
+              }
+            ]
+          },
+          "analysisFingerprint": null,
+          "fingerprintAuthority": "caller_supplied_not_authenticated",
+          "requiresExplicitUserConfirmation": true,
+          "replacesExistingDirection": false,
+          "analysisPacketModified": false,
+          "candidateSuggestions": [],
+          "unknownFacts": [
+            "customers",
+            "location_context"
+          ]
+        },
+        "safeguards": {
+          "productionEnabled": false,
+          "modelCalls": 0,
+          "projectWrites": 0,
+          "knowledgePromoted": false,
+          "styleOrMaterialInferredFromCuisinePriceLocation": false,
+          "image1RunAssociation": "undetermined"
+        }
+      }
+    },
+    {
+      "projectId": "community-cafe",
+      "label": "社区复古咖啡馆",
+      "result": {
+        "contractVersion": "1.0",
+        "projectId": "community-cafe",
+        "status": "shadow_offline_only",
+        "boundary": {
+          "contractVersion": "1.0",
+          "projectId": "community-cafe",
+          "stage": "pre_analysis",
+          "classification": {
+            "projectId": "community-cafe",
+            "tags": [
+              {
+                "id": "c0",
+                "projectId": "community-cafe",
+                "dimension": "business_format",
+                "tag": "cafe",
+                "rawValue": "咖啡馆",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "community-cafe"
+                ],
+                "evidenceRefs": [
+                  "synthetic:community-cafe:c0#value"
+                ],
+                "sourcePath": "documents.c0.value",
+                "recognized": true
+              },
+              {
+                "id": "c1",
+                "projectId": "community-cafe",
+                "dimension": "location_context",
+                "tag": "community_retail",
+                "rawValue": "社区底商",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "community-cafe"
+                ],
+                "evidenceRefs": [
+                  "synthetic:community-cafe:c1#value"
+                ],
+                "sourcePath": "documents.c1.value",
+                "recognized": true
+              },
+              {
+                "id": "c2",
+                "projectId": "community-cafe",
+                "dimension": "cuisine_product",
+                "tag": "coffee",
+                "rawValue": "咖啡",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "community-cafe"
+                ],
+                "evidenceRefs": [
+                  "synthetic:community-cafe:c2#value"
+                ],
+                "sourcePath": "documents.c2.value",
+                "recognized": true
+              },
+              {
+                "id": "c3",
+                "projectId": "community-cafe",
+                "dimension": "visual_style",
+                "tag": "retro",
+                "rawValue": "复古",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "community-cafe"
+                ],
+                "evidenceRefs": [
+                  "synthetic:community-cafe:c3#value"
+                ],
+                "sourcePath": "documents.c3.value",
+                "recognized": true
+              }
+            ],
+            "missingDimensions": [
+              "customers",
+              "service_model",
+              "brand_positioning",
+              "experiential_mood",
+              "cultural_context",
+              "spatial_mechanism",
+              "material"
+            ],
+            "archetypes": [],
+            "primaryArchetype": null,
+            "status": "unknown",
+            "auxiliaryMechanisms": []
+          },
+          "unknowns": [],
+          "authority": "Only caller-attested original sources and user-confirmed goals; references are not external authentication",
+          "missingFacts": [
+            "customers",
+            "location_context"
+          ]
+        },
+        "postAnalysis": {
+          "classification": {
+            "projectId": "community-cafe",
+            "tags": [
+              {
+                "id": "c0",
+                "projectId": "community-cafe",
+                "dimension": "business_format",
+                "tag": "cafe",
+                "rawValue": "咖啡馆",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "community-cafe"
+                ],
+                "evidenceRefs": [
+                  "synthetic:community-cafe:c0#value"
+                ],
+                "sourcePath": "documents.c0.value",
+                "recognized": true
+              },
+              {
+                "id": "c1",
+                "projectId": "community-cafe",
+                "dimension": "location_context",
+                "tag": "community_retail",
+                "rawValue": "社区底商",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "community-cafe"
+                ],
+                "evidenceRefs": [
+                  "synthetic:community-cafe:c1#value"
+                ],
+                "sourcePath": "documents.c1.value",
+                "recognized": true
+              },
+              {
+                "id": "c2",
+                "projectId": "community-cafe",
+                "dimension": "cuisine_product",
+                "tag": "coffee",
+                "rawValue": "咖啡",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "community-cafe"
+                ],
+                "evidenceRefs": [
+                  "synthetic:community-cafe:c2#value"
+                ],
+                "sourcePath": "documents.c2.value",
+                "recognized": true
+              },
+              {
+                "id": "c3",
+                "projectId": "community-cafe",
+                "dimension": "visual_style",
+                "tag": "retro",
+                "rawValue": "复古",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "community-cafe"
+                ],
+                "evidenceRefs": [
+                  "synthetic:community-cafe:c3#value"
+                ],
+                "sourcePath": "documents.c3.value",
+                "recognized": true
+              }
+            ],
+            "missingDimensions": [
+              "customers",
+              "service_model",
+              "brand_positioning",
+              "experiential_mood",
+              "cultural_context",
+              "spatial_mechanism",
+              "material"
+            ],
+            "archetypes": [],
+            "primaryArchetype": null,
+            "status": "unknown",
+            "auxiliaryMechanisms": []
+          },
+          "proposals": [],
+          "conflicts": [],
+          "ruleMatches": [],
+          "alignments": [],
+          "inspectedPaths": [],
+          "coverage": "Only bound fields reviewed; all unbound Packet prose is outside semantic audit"
+        },
+        "knowledgeAudit": [
+          {
+            "knowledgeId": "rks-observation-1",
+            "scope": "industry",
+            "status": "withheld",
+            "reason": "cross_project_candidate_requires_review",
+            "lifecycle": "candidate",
+            "prerequisitesState": "review_required",
+            "automaticallyApplied": false
+          },
+          {
+            "knowledgeId": "rks-observation-2",
+            "scope": "business_format",
+            "status": "withheld",
+            "reason": "applicable_tags_not_supported",
+            "lifecycle": "candidate",
+            "prerequisitesState": "review_required",
+            "automaticallyApplied": false
+          },
+          {
+            "knowledgeId": "rks-observation-3",
+            "scope": "project",
+            "status": "withheld",
+            "reason": "project_scope_mismatch",
+            "lifecycle": "candidate",
+            "prerequisitesState": "review_required",
+            "automaticallyApplied": false
+          },
+          {
+            "knowledgeId": "rks-observation-4",
+            "scope": "industry",
+            "status": "withheld",
+            "reason": "cross_project_candidate_requires_review",
+            "lifecycle": "candidate",
+            "prerequisitesState": "review_required",
+            "automaticallyApplied": false
+          },
+          {
+            "knowledgeId": "rks-observation-5",
+            "scope": "project",
+            "status": "withheld",
+            "reason": "project_scope_mismatch",
+            "lifecycle": "project_observation",
+            "prerequisitesState": "review_required",
+            "automaticallyApplied": false
+          }
+        ],
+        "candidateSuggestions": [],
+        "suggestions": [],
+        "unknowns": [],
+        "b1Draft": {
+          "projectId": "community-cafe",
+          "status": "proposed_offline",
+          "sourceType": "rks_shadow_suggestion",
+          "fields": {
+            "spatialConcept": "复古"
+          },
+          "fieldSources": {
+            "spatialConcept": [
+              {
+                "value": "复古",
+                "sourcePath": "documents.c3.value",
+                "evidenceRefs": [
+                  "synthetic:community-cafe:c3#value"
+                ],
+                "sourceType": "user_confirmed_design_goal"
+              }
+            ]
+          },
+          "analysisFingerprint": null,
+          "fingerprintAuthority": "caller_supplied_not_authenticated",
+          "requiresExplicitUserConfirmation": true,
+          "replacesExistingDirection": false,
+          "analysisPacketModified": false,
+          "candidateSuggestions": [],
+          "unknownFacts": [
+            "customers",
+            "location_context"
+          ]
+        },
+        "safeguards": {
+          "productionEnabled": false,
+          "modelCalls": 0,
+          "projectWrites": 0,
+          "knowledgePromoted": false,
+          "styleOrMaterialInferredFromCuisinePriceLocation": false,
+          "image1RunAssociation": "undetermined"
+        }
+      }
+    },
+    {
+      "projectId": "office-restaurant",
+      "label": "写字楼复古中餐厅",
+      "result": {
+        "contractVersion": "1.0",
+        "projectId": "office-restaurant",
+        "status": "shadow_offline_only",
+        "boundary": {
+          "contractVersion": "1.0",
+          "projectId": "office-restaurant",
+          "stage": "pre_analysis",
+          "classification": {
+            "projectId": "office-restaurant",
+            "tags": [
+              {
+                "id": "c0",
+                "projectId": "office-restaurant",
+                "dimension": "business_format",
+                "tag": "experience_dining",
+                "rawValue": "体验型餐厅",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "office-restaurant"
+                ],
+                "evidenceRefs": [
+                  "synthetic:office-restaurant:c0#value"
+                ],
+                "sourcePath": "documents.c0.value",
+                "recognized": true
+              },
+              {
+                "id": "c1",
+                "projectId": "office-restaurant",
+                "dimension": "location_context",
+                "tag": "office_building",
+                "rawValue": "写字楼",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "office-restaurant"
+                ],
+                "evidenceRefs": [
+                  "synthetic:office-restaurant:c1#value"
+                ],
+                "sourcePath": "documents.c1.value",
+                "recognized": true
+              },
+              {
+                "id": "c2",
+                "projectId": "office-restaurant",
+                "dimension": "cuisine_product",
+                "tag": "chinese_food",
+                "rawValue": "中餐",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "office-restaurant"
+                ],
+                "evidenceRefs": [
+                  "synthetic:office-restaurant:c2#value"
+                ],
+                "sourcePath": "documents.c2.value",
+                "recognized": true
+              },
+              {
+                "id": "c3",
+                "projectId": "office-restaurant",
+                "dimension": "visual_style",
+                "tag": "retro",
+                "rawValue": "复古",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "office-restaurant"
+                ],
+                "evidenceRefs": [
+                  "synthetic:office-restaurant:c3#value"
+                ],
+                "sourcePath": "documents.c3.value",
+                "recognized": true
+              }
+            ],
+            "missingDimensions": [
+              "customers",
+              "service_model",
+              "brand_positioning",
+              "experiential_mood",
+              "cultural_context",
+              "spatial_mechanism",
+              "material"
+            ],
+            "archetypes": [
+              {
+                "id": "AR03_experience_oriented_restaurant",
+                "evidenceRefs": [
+                  "synthetic:office-restaurant:c0#value"
+                ]
+              }
+            ],
+            "primaryArchetype": "AR03_experience_oriented_restaurant",
+            "status": "supported",
+            "auxiliaryMechanisms": []
+          },
+          "unknowns": [],
+          "authority": "Only caller-attested original sources and user-confirmed goals; references are not external authentication",
+          "missingFacts": [
+            "customers",
+            "location_context"
+          ]
+        },
+        "postAnalysis": {
+          "classification": {
+            "projectId": "office-restaurant",
+            "tags": [
+              {
+                "id": "c0",
+                "projectId": "office-restaurant",
+                "dimension": "business_format",
+                "tag": "experience_dining",
+                "rawValue": "体验型餐厅",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "office-restaurant"
+                ],
+                "evidenceRefs": [
+                  "synthetic:office-restaurant:c0#value"
+                ],
+                "sourcePath": "documents.c0.value",
+                "recognized": true
+              },
+              {
+                "id": "c1",
+                "projectId": "office-restaurant",
+                "dimension": "location_context",
+                "tag": "office_building",
+                "rawValue": "写字楼",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "office-restaurant"
+                ],
+                "evidenceRefs": [
+                  "synthetic:office-restaurant:c1#value"
+                ],
+                "sourcePath": "documents.c1.value",
+                "recognized": true
+              },
+              {
+                "id": "c2",
+                "projectId": "office-restaurant",
+                "dimension": "cuisine_product",
+                "tag": "chinese_food",
+                "rawValue": "中餐",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "office-restaurant"
+                ],
+                "evidenceRefs": [
+                  "synthetic:office-restaurant:c2#value"
+                ],
+                "sourcePath": "documents.c2.value",
+                "recognized": true
+              },
+              {
+                "id": "c3",
+                "projectId": "office-restaurant",
+                "dimension": "visual_style",
+                "tag": "retro",
+                "rawValue": "复古",
+                "sourceType": "user_confirmed_design_goal",
+                "status": "confirmed",
+                "assertion": "goal",
+                "scope": "project",
+                "appliesTo": [
+                  "office-restaurant"
+                ],
+                "evidenceRefs": [
+                  "synthetic:office-restaurant:c3#value"
+                ],
+                "sourcePath": "documents.c3.value",
+                "recognized": true
+              }
+            ],
+            "missingDimensions": [
+              "customers",
+              "service_model",
+              "brand_positioning",
+              "experiential_mood",
+              "cultural_context",
+              "spatial_mechanism",
+              "material"
+            ],
+            "archetypes": [
+              {
+                "id": "AR03_experience_oriented_restaurant",
+                "evidenceRefs": [
+                  "synthetic:office-restaurant:c0#value"
+                ]
+              }
+            ],
+            "primaryArchetype": "AR03_experience_oriented_restaurant",
+            "status": "supported",
+            "auxiliaryMechanisms": []
+          },
+          "proposals": [],
+          "conflicts": [],
+          "ruleMatches": [],
+          "alignments": [],
+          "inspectedPaths": [],
+          "coverage": "Only bound fields reviewed; all unbound Packet prose is outside semantic audit"
+        },
+        "knowledgeAudit": [
+          {
+            "knowledgeId": "rks-observation-1",
+            "scope": "industry",
+            "status": "withheld",
+            "reason": "cross_project_candidate_requires_review",
+            "lifecycle": "candidate",
+            "prerequisitesState": "review_required",
+            "automaticallyApplied": false
+          },
+          {
+            "knowledgeId": "rks-observation-2",
+            "scope": "business_format",
+            "status": "withheld",
+            "reason": "applicable_tags_not_supported",
+            "lifecycle": "candidate",
+            "prerequisitesState": "review_required",
+            "automaticallyApplied": false
+          },
+          {
+            "knowledgeId": "rks-observation-3",
+            "scope": "project",
+            "status": "withheld",
+            "reason": "project_scope_mismatch",
+            "lifecycle": "candidate",
+            "prerequisitesState": "review_required",
+            "automaticallyApplied": false
+          },
+          {
+            "knowledgeId": "rks-observation-4",
+            "scope": "industry",
+            "status": "withheld",
+            "reason": "cross_project_candidate_requires_review",
+            "lifecycle": "candidate",
+            "prerequisitesState": "review_required",
+            "automaticallyApplied": false
+          },
+          {
+            "knowledgeId": "rks-observation-5",
+            "scope": "project",
+            "status": "withheld",
+            "reason": "project_scope_mismatch",
+            "lifecycle": "project_observation",
+            "prerequisitesState": "review_required",
+            "automaticallyApplied": false
+          }
+        ],
+        "candidateSuggestions": [],
+        "suggestions": [],
+        "unknowns": [],
+        "b1Draft": {
+          "projectId": "office-restaurant",
+          "status": "proposed_offline",
+          "sourceType": "rks_shadow_suggestion",
+          "fields": {
+            "spatialConcept": "复古"
+          },
+          "fieldSources": {
+            "spatialConcept": [
+              {
+                "value": "复古",
+                "sourcePath": "documents.c3.value",
+                "evidenceRefs": [
+                  "synthetic:office-restaurant:c3#value"
+                ],
+                "sourceType": "user_confirmed_design_goal"
+              }
+            ]
+          },
+          "analysisFingerprint": null,
+          "fingerprintAuthority": "caller_supplied_not_authenticated",
+          "requiresExplicitUserConfirmation": true,
+          "replacesExistingDirection": false,
+          "analysisPacketModified": false,
+          "candidateSuggestions": [],
+          "unknownFacts": [
+            "customers",
+            "location_context"
+          ]
+        },
+        "safeguards": {
+          "productionEnabled": false,
+          "modelCalls": 0,
+          "projectWrites": 0,
+          "knowledgePromoted": false,
+          "styleOrMaterialInferredFromCuisinePriceLocation": false,
+          "image1RunAssociation": "undetermined"
+        }
+      }
+    },
+    {
+      "projectId": "unknown-brand",
+      "label": "材料不足的餐饮品牌",
+      "result": {
+        "contractVersion": "1.0",
+        "projectId": "unknown-brand",
+        "status": "shadow_offline_only",
+        "boundary": {
+          "contractVersion": "1.0",
+          "projectId": "unknown-brand",
+          "stage": "pre_analysis",
+          "classification": {
+            "projectId": "unknown-brand",
+            "tags": [],
+            "missingDimensions": [
+              "cuisine_product",
+              "business_format",
+              "location_context",
+              "customers",
+              "service_model",
+              "brand_positioning",
+              "experiential_mood",
+              "cultural_context",
+              "spatial_mechanism",
+              "visual_style",
+              "material"
+            ],
+            "archetypes": [],
+            "primaryArchetype": null,
+            "status": "unknown",
+            "auxiliaryMechanisms": []
+          },
+          "unknowns": [],
+          "authority": "Only caller-attested original sources and user-confirmed goals; references are not external authentication",
+          "missingFacts": [
+            "customers",
+            "location_context"
+          ]
+        },
+        "postAnalysis": {
+          "classification": {
+            "projectId": "unknown-brand",
+            "tags": [],
+            "missingDimensions": [
+              "cuisine_product",
+              "business_format",
+              "location_context",
+              "customers",
+              "service_model",
+              "brand_positioning",
+              "experiential_mood",
+              "cultural_context",
+              "spatial_mechanism",
+              "visual_style",
+              "material"
+            ],
+            "archetypes": [],
+            "primaryArchetype": null,
+            "status": "unknown",
+            "auxiliaryMechanisms": []
+          },
+          "proposals": [],
+          "conflicts": [],
+          "ruleMatches": [],
+          "alignments": [],
+          "inspectedPaths": [],
+          "coverage": "Only bound fields reviewed; all unbound Packet prose is outside semantic audit"
+        },
+        "knowledgeAudit": [
+          {
+            "knowledgeId": "rks-observation-1",
+            "scope": "industry",
+            "status": "withheld",
+            "reason": "cross_project_candidate_requires_review",
+            "lifecycle": "candidate",
+            "prerequisitesState": "review_required",
+            "automaticallyApplied": false
+          },
+          {
+            "knowledgeId": "rks-observation-2",
+            "scope": "business_format",
+            "status": "withheld",
+            "reason": "applicable_tags_not_supported",
+            "lifecycle": "candidate",
+            "prerequisitesState": "review_required",
+            "automaticallyApplied": false
+          },
+          {
+            "knowledgeId": "rks-observation-3",
+            "scope": "project",
+            "status": "withheld",
+            "reason": "project_scope_mismatch",
+            "lifecycle": "candidate",
+            "prerequisitesState": "review_required",
+            "automaticallyApplied": false
+          },
+          {
+            "knowledgeId": "rks-observation-4",
+            "scope": "industry",
+            "status": "withheld",
+            "reason": "cross_project_candidate_requires_review",
+            "lifecycle": "candidate",
+            "prerequisitesState": "review_required",
+            "automaticallyApplied": false
+          },
+          {
+            "knowledgeId": "rks-observation-5",
+            "scope": "project",
+            "status": "withheld",
+            "reason": "project_scope_mismatch",
+            "lifecycle": "project_observation",
+            "prerequisitesState": "review_required",
+            "automaticallyApplied": false
+          }
+        ],
+        "candidateSuggestions": [],
+        "suggestions": [],
+        "unknowns": [],
+        "b1Draft": {
+          "projectId": "unknown-brand",
+          "status": "proposed_offline",
+          "sourceType": "rks_shadow_suggestion",
+          "fields": {},
+          "fieldSources": {},
+          "analysisFingerprint": null,
+          "fingerprintAuthority": "caller_supplied_not_authenticated",
+          "requiresExplicitUserConfirmation": true,
+          "replacesExistingDirection": false,
+          "analysisPacketModified": false,
+          "candidateSuggestions": [],
+          "unknownFacts": [
+            "customers",
+            "location_context"
+          ]
+        },
+        "safeguards": {
+          "productionEnabled": false,
+          "modelCalls": 0,
+          "projectWrites": 0,
+          "knowledgePromoted": false,
+          "styleOrMaterialInferredFromCuisinePriceLocation": false,
+          "image1RunAssociation": "undetermined"
+        }
+      }
+    }
+  ],
+  "knowledgeStatesUnchanged": true,
+  "expectedArchetypes": [
+    "AR01_neighborhood_local_eatery",
+    "AR02_standardized_fast_casual",
+    "AR04_streetfront_takeaway",
+    null,
+    "AR03_experience_oriented_restaurant",
+    null
+  ]
+}

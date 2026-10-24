@@ -1,0 +1,470 @@
+{
+  "phase": "RKS-02A",
+  "baselineCommit": "3bcac082dbf4371a0938bb20db9b1bb52f13fd01",
+  "implementation": {
+    "owner": "visual-workflow",
+    "extractionStatus": "independent-current-implementation",
+    "qualityAcceptance": "pending-separate-quality-repair",
+    "implementationDigest": "d535517c22084b07d92eabc7a14b134ef0f272008d26b1cc52e0fed410fafea0"
+  },
+  "legacyClassifier": {
+    "path": "packages/visual-workflow/offline/restaurant-knowledge/index.js",
+    "originalSectionSha256": "ceb100c7aedd3db4a0400bf79218af3e4a0f87fc8213153ae3d5f5c6299cc92c",
+    "unchangedPrefix": true,
+    "change": "new pure exports appended; original classifier implementation unchanged"
+  },
+  "historicalPacket": {
+    "path": "space-generator/quality-baselines/current-verification/source-packets/_packets/feng-tang-tang/visual-decision-packet.json",
+    "sha256": "e3564d51888661989eeb16de8923992a4e1148268e7f55e7427c4c70e6fb613c",
+    "role": "historical_fixture_only"
+  },
+  "protection": [
+    {
+      "path": "packages/visual-workflow/implementation-integrity.json",
+      "sha256": "23aec1826589ead04295a8aa144ef8a7ce7dad7977912e8010d9f9478986d8cd",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/src/analysis-direction-suggestion.js",
+      "sha256": "6cca49c384f0601675c2700efb447577f4929428b7f49d36c351e69110f3a18d",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/src/project-design-direction.js",
+      "sha256": "cccd26e77c37a542a86598f7a9a8b612afbdf5c0c08c73aebb9c9d7d1b605a7d",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/source-adapter.js",
+      "sha256": "ea9334a585f65b2af63b5da91cb9236ba2be475e00ce7da5421617596928d19e",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/compiler.js",
+      "sha256": "9d701f3578816fe3ceb825e2ea7bc0723143fe8b62bbac8651292621765aacee",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/semantic/separate-space-semantics.js",
+      "sha256": "9867c041bd560bd968575deb9261f25494603b116e9a7e7ea39c15daeaf799a2",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/generation/seedream-adapter.js",
+      "sha256": "1a150deb5b1e495ca6bf8cb01de8566bca87012be4f36bbcfa7abf922b8926ec",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/src/image-adapter/multi-model.js",
+      "sha256": "7cabe7adf1cc79a315b4ae757940ab482c515e40e22ca33a3fb86cada51003d1",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/offline/restaurant-knowledge/rks-tag-dictionary.json",
+      "sha256": "0f2e9abc3319df279d1a88d77d14538f542c65ffa505ad8b1c0d285a35335ad6",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/offline/restaurant-knowledge/rks-archetypes.json",
+      "sha256": "4ae216a44925db334d35cbe17f59055adcb3a875050ce389a7161fc64b6a890d",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/offline/restaurant-knowledge/rks-conflict-rules.json",
+      "sha256": "1a3854e7dde31664daa35fbad6b925b600811f8554edf0f854d803f82d68b54c",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/rks-candidate-knowledge.json",
+      "sha256": "4517b041fd373babd6ce223f247ad32ea8089865b2fb5edf496691d81351d735",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/ftt-direction-proposal.json",
+      "sha256": "b53d9b27f0bcec2f1010171aaa3c2580a8fa11a44ec790cda510229cfb20ca1e",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/ftt-root-cause-matrix.json",
+      "sha256": "065c815793292ddc93eb9e6dba66244ef6a4344c9ede58d2fd8a3c83afb1cacf",
+      "unchanged": true
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "01ce182e9a86b12b88ca1c0b1dc8122c32e29a5640e2170621be4bcabff5e784",
+      "unchanged": true
+    }
+  ],
+  "protectedRoots": [
+    "packages/visual-workflow/src",
+    "packages/visual-workflow/prompts",
+    "apps/web/src/features/visual-workflow",
+    "packages/visual-workflow/reports/p7b-single-generation",
+    "golden",
+    "evaluation",
+    "space-generator",
+    "config/repository-contract"
+  ],
+  "protectedDiff": [],
+  "sourceLanes": {
+    "originalVerifiedFacts": [],
+    "fixedUserGoals": [
+      {
+        "id": "goal:brand_positioning:0",
+        "projectId": "feng-tang-tang",
+        "dimension": "brand_positioning",
+        "tag": "approachable_value",
+        "rawValue": "亲民实惠",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "user:RKS-02A.fixed-positioning#tags.brand_positioning[0]"
+        ],
+        "sourcePath": "documents.goals.tags.brand_positioning[0]",
+        "recognized": true
+      },
+      {
+        "id": "goal:brand_positioning:1",
+        "projectId": "feng-tang-tang",
+        "dimension": "brand_positioning",
+        "tag": "regional_specialty",
+        "rawValue": "地方特色",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "user:RKS-02A.fixed-positioning#tags.brand_positioning[1]"
+        ],
+        "sourcePath": "documents.goals.tags.brand_positioning[1]",
+        "recognized": true
+      },
+      {
+        "id": "goal:business_format:0",
+        "projectId": "feng-tang-tang",
+        "dimension": "business_format",
+        "tag": "neighborhood_casual_dining",
+        "rawValue": "社区特色小馆",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "user:RKS-02A.fixed-positioning#tags.business_format[0]"
+        ],
+        "sourcePath": "documents.goals.tags.business_format[0]",
+        "recognized": true
+      },
+      {
+        "id": "goal:cuisine_product:0",
+        "projectId": "feng-tang-tang",
+        "dimension": "cuisine_product",
+        "tag": "sichuan_snacks",
+        "rawValue": "四川小吃",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "user:RKS-02A.fixed-positioning#tags.cuisine_product[0]"
+        ],
+        "sourcePath": "documents.goals.tags.cuisine_product[0]",
+        "recognized": true
+      },
+      {
+        "id": "goal:cuisine_product:1",
+        "projectId": "feng-tang-tang",
+        "dimension": "cuisine_product",
+        "tag": "qiaojiao_beef",
+        "rawValue": "跷脚牛肉",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "user:RKS-02A.fixed-positioning#tags.cuisine_product[1]"
+        ],
+        "sourcePath": "documents.goals.tags.cuisine_product[1]",
+        "recognized": true
+      },
+      {
+        "id": "goal:cultural_context:0",
+        "projectId": "feng-tang-tang",
+        "dimension": "cultural_context",
+        "tag": "sichuan_local",
+        "rawValue": "四川地域",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "user:RKS-02A.fixed-positioning#tags.cultural_context[0]"
+        ],
+        "sourcePath": "documents.goals.tags.cultural_context[0]",
+        "recognized": true
+      },
+      {
+        "id": "goal:experiential_mood:0",
+        "projectId": "feng-tang-tang",
+        "dimension": "experiential_mood",
+        "tag": "street_food_energy",
+        "rawValue": "市井烟火",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "user:RKS-02A.fixed-positioning#tags.experiential_mood[0]"
+        ],
+        "sourcePath": "documents.goals.tags.experiential_mood[0]",
+        "recognized": true
+      },
+      {
+        "id": "goal:location_context:0",
+        "projectId": "feng-tang-tang",
+        "dimension": "location_context",
+        "tag": "streetfront",
+        "rawValue": "临街",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "user:RKS-02A.fixed-positioning#tags.location_context[0]"
+        ],
+        "sourcePath": "documents.goals.tags.location_context[0]",
+        "recognized": true
+      },
+      {
+        "id": "goal:service_model:0",
+        "projectId": "feng-tang-tang",
+        "dimension": "service_model",
+        "tag": "dine_in_primary",
+        "rawValue": "堂食为主",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "user:RKS-02A.fixed-positioning#tags.service_model[0]"
+        ],
+        "sourcePath": "documents.goals.tags.service_model[0]",
+        "recognized": true
+      },
+      {
+        "id": "goal:service_model:1",
+        "projectId": "feng-tang-tang",
+        "dimension": "service_model",
+        "tag": "takeaway_supported",
+        "rawValue": "兼顾外带",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "user:RKS-02A.fixed-positioning#tags.service_model[1]"
+        ],
+        "sourcePath": "documents.goals.tags.service_model[1]",
+        "recognized": true
+      }
+    ],
+    "aiProposals": [
+      {
+        "id": "analysis:upgrade",
+        "projectId": "feng-tang-tang",
+        "dimension": "business_format",
+        "tag": "fast_casual_upgrade_proposal",
+        "rawValue": "从“传统川菜馆”升级为“现代川味小吃快餐”。保留“冯”字标和红色基因，但通过放大“小碗”、“巧搭配”、“热气”等元素，削弱“非遗/老字号”带来的厚重感。避免过度使用脸谱等刻板符号，聚焦于食物本身的诱惑力和品牌的亲和力。",
+        "normalization": "explicit_reviewed_exact_value_mapping",
+        "sourceType": "analysis_proposal",
+        "status": "probable",
+        "assertion": "proposal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "historical_packet_fixture:e3564d51888661989eeb16de8923992a4e1148268e7f55e7427c4c70e6fb613c#creativeDecision.uniqueUpgradeThesis",
+          "offline-review:RKS02A.positioning-shift"
+        ],
+        "sourcePath": "packet.creativeDecision.uniqueUpgradeThesis"
+      },
+      {
+        "id": "analysis:dine-in",
+        "projectId": "feng-tang-tang",
+        "dimension": "service_model",
+        "tag": "dine_in_available",
+        "rawValue": "堂食",
+        "normalization": "exact_dictionary_alias",
+        "sourceType": "analysis_proposal",
+        "status": "probable",
+        "assertion": "proposal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "historical_packet_fixture:e3564d51888661989eeb16de8923992a4e1148268e7f55e7427c4c70e6fb613c#mediaTranslations.spatial.sceneProgram[2]"
+        ],
+        "sourcePath": "packet.mediaTranslations.spatial.sceneProgram[2]"
+      },
+      {
+        "id": "analysis:takeaway",
+        "projectId": "feng-tang-tang",
+        "dimension": "service_model",
+        "tag": "takeaway_available",
+        "rawValue": "外带",
+        "normalization": "exact_dictionary_alias",
+        "sourceType": "analysis_proposal",
+        "status": "probable",
+        "assertion": "proposal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "historical_packet_fixture:e3564d51888661989eeb16de8923992a4e1148268e7f55e7427c4c70e6fb613c#mediaTranslations.spatial.sceneProgram[3]"
+        ],
+        "sourcePath": "packet.mediaTranslations.spatial.sceneProgram[3]"
+      },
+      {
+        "id": "analysis:value-position",
+        "projectId": "feng-tang-tang",
+        "dimension": "brand_positioning",
+        "tag": "approachable_value",
+        "rawValue": "实惠",
+        "normalization": "explicit_reviewed_exact_value_mapping",
+        "sourceType": "analysis_proposal",
+        "status": "probable",
+        "assertion": "proposal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "historical_packet_fixture:e3564d51888661989eeb16de8923992a4e1148268e7f55e7427c4c70e6fb613c#creativeDecision.targetWorldview[1]",
+          "offline-review:RKS02A.value-position"
+        ],
+        "sourcePath": "packet.creativeDecision.targetWorldview[1]"
+      }
+    ],
+    "historicalAndCandidateSuggestions": [
+      {
+        "field": "materialLanguage",
+        "value": "项目级候选：红砖、暖木、赤陶与暖光；不是四川餐饮通用模板。",
+        "knowledgeId": "rks-observation-3",
+        "lifecycle": "candidate",
+        "sourceType": "rks_candidate",
+        "sourcePath": "documents.materials.note",
+        "evidenceRefs": [
+          "ftt-direction-brief:6",
+          "ftt-direction-proposal.fields.materials#note"
+        ],
+        "scope": "project",
+        "requiresHumanReview": true,
+        "automaticallyApplied": false,
+        "prerequisites": [
+          "项目目标明确且镜头范围可呈现"
+        ],
+        "exceptions": [
+          "若物业、卫生或镜头约束不支持，保留冲突并人工审查"
+        ]
+      },
+      {
+        "field": "visibleRequirements",
+        "value": "chef preparing food\nsteam above dishes\ncustomers dining at tables",
+        "knowledgeId": "rks-observation-5",
+        "lifecycle": "project_observation",
+        "sourceType": "historical_human_acceptance",
+        "sourcePath": "documents.operations.visible",
+        "evidenceRefs": [
+          "human_evaluation",
+          "human_selection",
+          "human_selection:golds[0].reason:offline-authored-observable-translation#visible"
+        ],
+        "scope": "project",
+        "requiresHumanReview": true,
+        "automaticallyApplied": false,
+        "prerequisites": [
+          "项目目标明确且镜头范围可呈现"
+        ],
+        "exceptions": [
+          "若物业、卫生或镜头约束不支持，保留冲突并人工审查"
+        ]
+      },
+      {
+        "field": "functionalRelationships",
+        "value": "Kitchen preparation connects to service counter; dining tables remain accessible; takeaway handoff keeps a clear route",
+        "knowledgeId": "rks-observation-5",
+        "lifecycle": "project_observation",
+        "sourceType": "historical_human_acceptance",
+        "sourcePath": "documents.operations.relationships",
+        "evidenceRefs": [
+          "human_evaluation",
+          "human_selection",
+          "human_selection:golds[0].reason:offline-authored-observable-translation#relationships"
+        ],
+        "scope": "project",
+        "requiresHumanReview": true,
+        "automaticallyApplied": false,
+        "prerequisites": [
+          "项目目标明确且镜头范围可呈现"
+        ],
+        "exceptions": [
+          "若物业、卫生或镜头约束不支持，保留冲突并人工审查"
+        ]
+      }
+    ]
+  },
+  "generatedReports": [
+    "ftt-shadow-result.json",
+    "direction-conflict-matrix.json",
+    "offline-comparison.json",
+    "six-case-results.json"
+  ],
+  "counters": {
+    "realAnalysis": 0,
+    "realGeneration": 0,
+    "realValidation": 0,
+    "automaticRetries": 0,
+    "networkAttempts": 0
+  },
+  "productionEnabled": false,
+  "userProjectsAccessed": false,
+  "userProjectsWritten": false,
+  "credentialsRead": false,
+  "knowledgePromoted": false,
+  "image1ActualRunAssociation": "undetermined"
+}

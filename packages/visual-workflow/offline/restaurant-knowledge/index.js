@@ -116,3 +116,196 @@ export function compareDirections(baseline, proposed) {
     JSON.stringify(baseline.fields[field]) === JSON.stringify(proposed.fields[field]) ? [] :
       [{field, before: structuredClone(baseline.fields[field] ?? null), after: structuredClone(proposed.fields[field] ?? null)}]);
 }
+
+// Pure offline orchestration. No production adapter, store, transport or model.
+
+const authoritative = new Set(['source_fact', 'user_confirmed_design_goal']);
+const draftFields = new Set(['spatialConcept', 'structureLanguage', 'functionalProgram', 'functionalNetwork',
+  'functionalRelationships', 'visibleRequirements', 'compositionRequirements', 'lightingLanguage', 'materialLanguage']);
+const copy = value => structuredClone(value);
+const text = value => typeof value === 'string' && value.trim().length > 0;
+const requireShadowValue = (condition, message) => {if (!condition) throw new Error(`RKS_SHADOW_INVALID: ${message}`);};
+const unique = values => [...new Set(values)].sort();
+const pathText = path => path.map((part,index) => Number.isInteger(part) ? `[${part}]` : `${index ? '.' : ''}${part}`).join('');
+function at(data, path) {
+  requireShadowValue(Array.isArray(path) && path.length > 0 && path.every(part =>
+    Number.isInteger(part) && part >= 0 || text(part) && !['__proto__','prototype','constructor'].includes(part)), 'safe source path');
+  return path.reduce((value, part) => value && Object.hasOwn(value, part) ? value[part] : undefined, data);
+}
+function documentsFor(projectId, documents) {
+  requireShadowValue(text(projectId) && Array.isArray(documents), 'project/documents');
+  const registry = new Map();
+  for (const document of documents) {
+    requireShadowValue(text(document.id) && !registry.has(document.id), 'document identity');
+    requireShadowValue(document.projectId === projectId, 'DOCUMENT_PROJECT_MISMATCH');
+    requireShadowValue(text(document.evidenceRef) && document.data && typeof document.data === 'object', 'document evidence/data');
+    requireShadowValue(['source_fact','user_confirmed_design_goal','historical_human_acceptance','rks_candidate'].includes(document.sourceType), 'document source type');
+    registry.set(document.id, document);
+  }
+  return registry;
+}
+function bound(registry, binding) {
+  const document = registry.get(binding.documentId);
+  requireShadowValue(document, 'unknown document');
+  const value = at(document.data,binding.path);
+  return {document, value, sourcePath:`documents.${document.id}.${pathText(binding.path)}`,
+    evidenceRefs:[`${document.evidenceRef}#${pathText(binding.path)}`]};
+}
+const verified = document => document.sourceType === 'source_fact' ? document.verification === 'verified_source'
+  : document.sourceType === 'user_confirmed_design_goal' && document.verification === 'confirmed_by_user';
+function claim(projectId, binding, source) {
+  requireShadowValue(text(binding.id) && DIMENSIONS.includes(binding.dimension), 'binding id/dimension');
+  return {id:binding.id,projectId,dimension:binding.dimension,tag:source.value,rawValue:source.value,
+    sourceType:source.document.sourceType,status:verified(source.document) ? 'confirmed' : 'unknown',
+    assertion:source.document.sourceType === 'source_fact' ? 'fact' : 'goal',scope:'project',appliesTo:[projectId],
+    evidenceRefs:source.evidenceRefs,sourcePath:source.sourcePath};
+}
+function dictionaryFor(resources) {
+  const dictionary = copy(resources.dictionary);
+  for (const [dimension, terms] of Object.entries(resources.tagExtensions || {})) {
+    requireShadowValue(DIMENSIONS.includes(dimension), 'extension dimension');
+    dictionary[dimension] ||= {};
+    for (const [tag,aliases] of Object.entries(terms)) {
+      requireShadowValue(!Object.hasOwn(dictionary[dimension],tag) && Array.isArray(aliases) && aliases.every(text), 'extension cannot replace existing tags');
+      dictionary[dimension][tag] = copy(aliases);
+    }
+  }
+  return dictionary;
+}
+
+// This function receives no Packet. Only intake/goal bindings can grant an
+// initial classification, regardless of later analysis or historical knowledge.
+export function buildRestaurantBoundary({projectId, documents, initialBindings = []}, resources) {
+  const registry = documentsFor(projectId,documents);
+  const claims = [], unknowns = [], bindingIds = new Set();
+  for (const binding of initialBindings) {
+    requireShadowValue(text(binding.id) && DIMENSIONS.includes(binding.dimension) && !bindingIds.has(binding.id), 'binding id/dimension/duplicate');
+    bindingIds.add(binding.id);
+    const source = bound(registry,binding);
+    requireShadowValue(authoritative.has(source.document.sourceType), 'PRE_ANALYSIS_SOURCE_FORBIDDEN');
+    if (!text(source.value)) {unknowns.push({id:binding.id,sourcePath:source.sourcePath,status:'unknown',reason:'missing_or_non_scalar_tag'}); continue;}
+    claims.push(claim(projectId,binding,source));
+  }
+  const classification = classify({projectId,claims},dictionaryFor(resources),resources.archetypes);
+  for (const tag of classification.tags) if (!tag.recognized || tag.status === 'unknown') unknowns.push({id:tag.id,sourcePath:tag.sourcePath,
+    status:'review_required',reason:tag.recognized ? 'source_verification_missing' : 'no_exact_tag_alias',rawValue:tag.rawValue});
+  return {contractVersion:'1.0',projectId,stage:'pre_analysis',classification,unknowns,
+    authority:'Only caller-attested original sources and user-confirmed goals; references are not external authentication',
+    missingFacts:['customers','location_context'].filter(dimension=>!classification.tags.some(tag=>tag.dimension===dimension && tag.sourceType==='source_fact' && tag.status==='confirmed'))};
+}
+
+export function runRestaurantShadowPipeline(input, resources) {
+  const {projectId, documents, initialBindings = []} = input;
+  const boundary = buildRestaurantBoundary({projectId,documents,initialBindings},resources);
+  const dictionary = dictionaryFor(resources);
+  const registry = documentsFor(projectId,documents);
+  const packet = input.packet;
+  requireShadowValue(!packet || packet.projectId === projectId, 'PACKET_PROJECT_MISMATCH');
+  requireShadowValue(!packet || text(input.packetEvidenceRef), 'Packet evidence reference');
+  const proposals = [], unknowns = [...boundary.unknowns];
+  const annotationIds = new Set(initialBindings.map(binding=>binding.id));
+  for (const binding of input.analysisBindings || []) {
+    requireShadowValue(text(binding.id) && DIMENSIONS.includes(binding.dimension) && !annotationIds.has(binding.id), 'analysis binding identity/dimension');
+    annotationIds.add(binding.id);
+    const value = at(packet || {},binding.path);
+    const sourcePath = `packet.${pathText(binding.path)}`;
+    if (!text(value)) {unknowns.push({id:binding.id,sourcePath,status:'unknown',reason:'missing_packet_field'}); continue;}
+    let tag = normalizeTag(binding.dimension,value,dictionary);
+    let normalization = 'exact_dictionary_alias';
+    const evidenceRefs = [`${input.packetEvidenceRef || 'provided_packet'}#${pathText(binding.path)}`];
+    if (!tag && binding.reviewedMapping) {
+      const mapping = binding.reviewedMapping;
+      requireShadowValue(mapping.projectId === projectId && mapping.status === 'reviewed_offline' && text(mapping.evidenceRef), 'mapping review/ownership');
+      if (mapping.expectedValue === value) {
+        tag = normalizeTag(binding.dimension,mapping.tag,dictionary);
+        normalization = 'explicit_reviewed_exact_value_mapping';
+        evidenceRefs.push(mapping.evidenceRef);
+      }
+    }
+    if (!tag) {unknowns.push({id:binding.id,sourcePath,status:'review_required',reason:'unmapped_natural_language',rawValue:value}); continue;}
+    proposals.push({id:binding.id,projectId,dimension:binding.dimension,tag,rawValue:value,normalization,
+      sourceType:'analysis_proposal',status:'probable',assertion:'proposal',scope:'project',appliesTo:[projectId],evidenceRefs,sourcePath});
+  }
+  const classification = classify({projectId,claims:[...boundary.classification.tags,...proposals]},dictionary,resources.archetypes);
+  const automaticPairs = [], matches = [];
+  for (const rule of resources.conflictPairs || []) {
+    requireShadowValue(text(rule.id) && rule.goal && rule.proposal, 'conflict pair rule');
+    const goals = boundary.classification.tags.filter(tag=>tag.status==='confirmed' && tag.sourceType==='user_confirmed_design_goal' && tag.dimension===rule.goal.dimension && tag.tag===rule.goal.tag);
+    const analysis = proposals.filter(tag=>tag.dimension===rule.proposal.dimension && tag.tag===rule.proposal.tag);
+    for (const goal of goals) for (const proposal of analysis) {
+      automaticPairs.push([goal.id,proposal.id]);
+      matches.push({ruleId:rule.id,claimIds:[goal.id,proposal.id],status:'review_required',meaning:'Proposed positioning shift requires human review; not an inferred universal style incompatibility'});
+    }
+  }
+  const audit = input.audit || {};
+  const conflicts = auditConflicts(classification,{...audit,incompatibilities:[...automaticPairs,...audit.incompatibilities || []]});
+  const alignments = [];
+  for (const goal of boundary.classification.tags.filter(tag=>tag.status==='confirmed')) for (const proposal of proposals) {
+    if (goal.dimension===proposal.dimension && goal.tag===proposal.tag) alignments.push({claimIds:[goal.id,proposal.id],status:'consistent_with_bound_goal',
+      evidenceRefs:unique([...goal.evidenceRefs,...proposal.evidenceRefs]),limitation:'Matching annotation only; proposal is not promoted to fact'});
+    for (const rule of resources.compatiblePairs || []) if (goal.dimension===rule.goal.dimension && goal.tag===rule.goal.tag && proposal.dimension===rule.proposal.dimension && proposal.tag===rule.proposal.tag)
+      alignments.push({ruleId:rule.id,claimIds:[goal.id,proposal.id],status:'compatible_within_rule_scope',
+        evidenceRefs:unique([...goal.evidenceRefs,...proposal.evidenceRefs]),limitation:rule.limitation});
+  }
+  const supported = new Set(boundary.classification.tags.filter(tag=>tag.recognized && tag.status==='confirmed').map(tag=>tag.tag));
+  const knowledgeAudit = [], candidates = new Map();
+  for (const record of resources.knowledge || []) {
+    validateKnowledge(record);
+    requireShadowValue(!candidates.has(record.knowledgeId) && !knowledgeAudit.some(item=>item.knowledgeId===record.knowledgeId), 'duplicate knowledge id');
+    let reason = null;
+    if (!['candidate','project_observation'].includes(record.status)) reason='knowledge_lifecycle_not_candidate';
+    else if (record.scope==='project' && !record.sourceProjects.includes(projectId)) reason='project_scope_mismatch';
+    else if (record.excludedTags.some(tag=>supported.has(tag))) reason='excluded_tag';
+    else if (record.applicableTags.some(tag=>!supported.has(tag))) reason='applicable_tags_not_supported';
+    else if (!record.sourceProjects.includes(projectId)) reason='cross_project_candidate_requires_review';
+    knowledgeAudit.push({knowledgeId:record.knowledgeId,scope:record.scope,status:reason ? 'withheld' : 'eligible_for_review',reason,
+      lifecycle:record.status,prerequisitesState:'review_required',automaticallyApplied:false});
+    if (!reason) candidates.set(record.knowledgeId,record);
+  }
+  const fields = {}, fieldSources = {}, choices = new Map();
+  const recordChoice = (binding, source) => {
+    requireShadowValue(draftFields.has(binding.field), 'unsupported draft field');
+    const value = typeof source.value === 'string' ? source.value.trim() : Array.isArray(source.value) && source.value.every(text) ? source.value.join('\n') : null;
+    if (!value) {unknowns.push({field:binding.field,sourcePath:source.sourcePath,status:'unknown',reason:'structured_direction_value_missing'});return;}
+    const list = choices.get(binding.field) || [];
+    list.push({value,sourcePath:source.sourcePath,evidenceRefs:source.evidenceRefs,sourceType:source.document.sourceType});
+    choices.set(binding.field,list);
+  };
+  for (const binding of input.directionBindings || []) {
+    const source = bound(registry,binding);
+    requireShadowValue(source.document.sourceType==='user_confirmed_design_goal', 'DIRECTION_GOAL_SOURCE_REQUIRED');
+    if (!verified(source.document)) {unknowns.push({field:binding.field,status:'review_required',reason:'goal_not_confirmed'});continue;}
+    recordChoice(binding,source);
+  }
+  for (const [field,list] of choices) {
+    if (new Set(list.map(item=>item.value)).size > 1) unknowns.push({field,status:'review_required',reason:'conflicting_confirmed_goal_values',choices:copy(list)});
+    else {fields[field]=list[0].value;fieldSources[field]=copy(list);}
+  }
+  const candidateSuggestions = [];
+  for (const binding of input.knowledgeBindings || []) {
+    const knowledge = candidates.get(binding.knowledgeId);
+    if (!knowledge) continue;
+    const source = bound(registry,binding);
+    requireShadowValue(['historical_human_acceptance','rks_candidate'].includes(source.document.sourceType), 'CANDIDATE_SOURCE_REQUIRED');
+    requireShadowValue(Array.isArray(source.document.knowledgeIds) && source.document.knowledgeIds.includes(knowledge.knowledgeId), 'knowledge evidence binding');
+    requireShadowValue(draftFields.has(binding.field), 'unsupported candidate field');
+    const value = text(source.value) ? source.value : Array.isArray(source.value) && source.value.length && source.value.every(text) ? source.value.join('\n') : null;
+    if (!value) {unknowns.push({field:binding.field,status:'unknown',reason:'candidate_value_missing'});continue;}
+    candidateSuggestions.push({field:binding.field,value,knowledgeId:knowledge.knowledgeId,lifecycle:knowledge.status,
+      sourceType:source.document.sourceType,sourcePath:source.sourcePath,evidenceRefs:unique([...source.evidenceRefs,...knowledge.evidenceRefs]),
+      scope:knowledge.scope,requiresHumanReview:true,automaticallyApplied:false,prerequisites:copy(knowledge.prerequisites),exceptions:copy(knowledge.exceptions)});
+  }
+  const suggestions = conflicts.map(finding=>({action:'retain_confirmed_goal_and_review_proposal',code:finding.code,
+    claimIds:copy(finding.claimIds),evidenceRefs:copy(finding.evidenceRefs),requiresHumanReview:true}));
+  return {contractVersion:'1.0',projectId,status:'shadow_offline_only',boundary,
+    postAnalysis:{classification,proposals,conflicts,ruleMatches:matches,alignments,
+      inspectedPaths:(input.analysisBindings || []).map(binding=>`packet.${pathText(binding.path)}`),
+      coverage:'Only bound fields reviewed; all unbound Packet prose is outside semantic audit'},
+    knowledgeAudit,candidateSuggestions,suggestions,unknowns,
+    b1Draft:{projectId,status:'proposed_offline',sourceType:'rks_shadow_suggestion',fields,fieldSources,
+      analysisFingerprint:text(input.analysisFingerprint) ? input.analysisFingerprint : null,fingerprintAuthority:'caller_supplied_not_authenticated',
+      requiresExplicitUserConfirmation:true,replacesExistingDirection:false,analysisPacketModified:false,
+      candidateSuggestions:copy(candidateSuggestions),unknownFacts:copy(boundary.missingFacts)},
+    safeguards:{productionEnabled:false,modelCalls:0,projectWrites:0,knowledgePromoted:false,
+      styleOrMaterialInferredFromCuisinePriceLocation:false,image1RunAssociation:'undetermined'}};
+}

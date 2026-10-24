@@ -44,3 +44,16 @@ experiment reports `blocked_field_loss`; compiler repair is outside this task.
 The FTT data stays in reports, never in the classifier. Six reproducible cases
 live in `tests/restaurant-knowledge/cases.json`. No original Packet, Golden,
 confirmed direction, integrity manifest or runtime entry is edited.
+
+## RKS-02A shadow experiment
+
+The older `blocked_field_loss` report above is historical RKS-01 evidence; it is
+not regenerated here. The approved compiler repair is already in the frozen
+starting commit. New pure exports in `index.js` compose two-stage
+evidence binding, the existing classifier/conflict audit, candidate applicability
+and a proposed B1 envelope. They have no imports, production registration or I/O. Read
+[SHADOW_CONTRACT.md](./SHADOW_CONTRACT.md) for inputs, exact-value mapping limits,
+source authority, candidate separation and test/report commands.
+
+New experiment results live separately in `reports/restaurant-shadow/`. Existing
+knowledge cards, RKS-01 reports, actual user projects, B1 and P7B remain unchanged.
