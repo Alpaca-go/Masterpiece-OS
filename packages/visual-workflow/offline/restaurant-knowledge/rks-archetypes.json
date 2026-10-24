@@ -1,0 +1,46 @@
+[
+  {
+    "id": "AR01_neighborhood_local_eatery",
+    "required": [
+      {
+        "dimension": "business_format",
+        "tag": "neighborhood_casual_dining"
+      }
+    ],
+    "boundary": "仅根据显式且有证据的经营目标匹配；不派生风格、材质、物业事实或客户事实。"
+  },
+  {
+    "id": "AR02_standardized_fast_casual",
+    "required": [
+      {
+        "dimension": "business_format",
+        "tag": "standardized_fast_casual"
+      }
+    ],
+    "boundary": "仅根据显式且有证据的经营目标匹配；不派生风格、材质、物业事实或客户事实。"
+  },
+  {
+    "id": "AR03_experience_oriented_restaurant",
+    "required": [
+      {
+        "dimension": "business_format",
+        "tag": "experience_dining"
+      }
+    ],
+    "boundary": "仅根据显式且有证据的经营目标匹配；不派生风格、材质、物业事实或客户事实。"
+  },
+  {
+    "id": "AR04_streetfront_takeaway",
+    "required": [
+      {
+        "dimension": "service_model",
+        "tag": "takeaway_primary"
+      },
+      {
+        "dimension": "location_context",
+        "tag": "streetfront"
+      }
+    ],
+    "boundary": "仅根据显式且有证据的经营目标匹配；不派生风格、材质、物业事实或客户事实。"
+  }
+]

@@ -1,0 +1,52 @@
+{
+  "baselineCommit": "3da7d1bab58e58dc091a20a3c55b1e6cc4f65d48",
+  "plan": {
+    "ref": "ftt-direction-brief",
+    "sha256": "1caa2b2ddd6ea24e2f97f4437b17a9552f29b011ccf112997187bec6dc313265",
+    "ownership": "用户要求按此方案开发；1.1 作为方案内确认目标，非原项目确认记录"
+  },
+  "sources": [
+    {
+      "id": "historical_packet",
+      "path": "space-generator/quality-baselines/current-verification/source-packets/_packets/feng-tang-tang/visual-decision-packet.json",
+      "sha256": "e3564d51888661989eeb16de8923992a4e1148268e7f55e7427c4c70e6fb613c",
+      "role": "historical_only"
+    },
+    {
+      "id": "human_selection",
+      "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/golden-selection.json",
+      "sha256": "65daac53a8eaf6fb132d92e563f2aca17b21d19983c7321e9e3cab8c98818539",
+      "role": "historical_human_acceptance"
+    },
+    {
+      "id": "human_evaluation",
+      "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/final-dining-1/evaluation.json",
+      "sha256": "ff1c5f11f27dcdf435eb5fff90b2c3e948a820ce5f6b493422bc550234f8a66c",
+      "role": "historical_human_acceptance"
+    },
+    {
+      "id": "historical_prompt",
+      "path": "space-generator/quality-baselines/current-verification/production-acceptance/feng-tang-tang/standard/compiled-prompt.md",
+      "sha256": "b9e4e612b5f2ff383a9e4e412bb90219e5ff43d632b441b344d625ff8e2e85a3",
+      "role": "historical_only"
+    },
+    {
+      "id": "historical_run",
+      "path": "space-generator/quality-baselines/current-verification/production-acceptance/feng-tang-tang/standard/run.json",
+      "sha256": "fbe53f2c92790fe0bc50fb6e3eb137bad08dd209fe55a71aa70acc339a11a587",
+      "role": "historical_only"
+    },
+    {
+      "id": "b1_projection",
+      "path": "packages/visual-workflow/src/analysis-direction-suggestion.js",
+      "sha256": "6cca49c384f0601675c2700efb447577f4929428b7f49d36c351e69110f3a18d",
+      "role": "code_evidence"
+    },
+    {
+      "id": "confirmation_store",
+      "path": "packages/visual-workflow/src/project-design-direction.js",
+      "sha256": "cccd26e77c37a542a86598f7a9a8b612afbdf5c0c08c73aebb9c9d7d1b605a7d",
+      "role": "code_evidence"
+    }
+  ]
+}

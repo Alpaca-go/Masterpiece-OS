@@ -1,0 +1,132 @@
+{
+  "cuisine_product": {
+    "sichuan_snacks": [
+      "四川小吃",
+      "川味小吃"
+    ],
+    "qiaojiao_beef": [
+      "跷脚牛肉"
+    ],
+    "coffee": [
+      "咖啡"
+    ],
+    "chinese_food": [
+      "中餐"
+    ]
+  },
+  "business_format": {
+    "neighborhood_casual_dining": [
+      "社区特色小馆"
+    ],
+    "standardized_fast_casual": [
+      "标准化快餐"
+    ],
+    "takeaway_shop": [
+      "外带小吃店"
+    ],
+    "experience_dining": [
+      "体验型餐厅"
+    ],
+    "cafe": [
+      "咖啡馆"
+    ]
+  },
+  "location_context": {
+    "streetfront": [
+      "临街"
+    ],
+    "community_retail": [
+      "社区底商"
+    ],
+    "mall": [
+      "商场"
+    ],
+    "office_building": [
+      "写字楼"
+    ]
+  },
+  "customers": {
+    "neighborhood_daily": [
+      "邻里日常"
+    ],
+    "office_workers": [
+      "办公客群"
+    ]
+  },
+  "service_model": {
+    "dine_in_primary": [
+      "堂食为主"
+    ],
+    "takeaway_supported": [
+      "兼顾外带"
+    ],
+    "efficient_service": [
+      "高效出餐",
+      "高效点餐"
+    ],
+    "takeaway_primary": [
+      "外带为主"
+    ]
+  },
+  "brand_positioning": {
+    "approachable_value": [
+      "亲民实惠"
+    ],
+    "regional_specialty": [
+      "地方特色"
+    ]
+  },
+  "experiential_mood": {
+    "lively": [
+      "热闹"
+    ],
+    "human_warmth": [
+      "亲切",
+      "人情味"
+    ],
+    "street_food_energy": [
+      "市井烟火"
+    ]
+  },
+  "cultural_context": {
+    "sichuan_local": [
+      "四川地域"
+    ]
+  },
+  "spatial_mechanism": {
+    "open_kitchen": [
+      "明档厨房"
+    ],
+    "visible_cooking": [
+      "可见烹饪"
+    ],
+    "active_dining": [
+      "顾客堂食"
+    ]
+  },
+  "visual_style": {
+    "warm_rustic": [
+      "市井复古"
+    ],
+    "modern_bright": [
+      "现代明亮"
+    ],
+    "minimalist": [
+      "极简"
+    ],
+    "retro": [
+      "复古"
+    ]
+  },
+  "material": {
+    "red_brick": [
+      "红砖"
+    ],
+    "warm_wood": [
+      "暖木"
+    ],
+    "terracotta": [
+      "赤陶"
+    ]
+  }
+}

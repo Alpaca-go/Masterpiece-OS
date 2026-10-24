@@ -1,0 +1,38 @@
+[
+  {
+    "code": "RKS-CF-001",
+    "priority": "P1",
+    "description": "经营属性无依据推导视觉风格",
+    "action": "diagnostic_only"
+  },
+  {
+    "code": "RKS-CF-002",
+    "priority": "P0",
+    "description": "AI 提案与确认目标冲突；非确认权属冲突为 P2",
+    "action": "diagnostic_only"
+  },
+  {
+    "code": "RKS-CF-003",
+    "priority": "P1",
+    "description": "设计目标或推断冒充物业/客群事实",
+    "action": "diagnostic_only"
+  },
+  {
+    "code": "RKS-CF-004",
+    "priority": "P1",
+    "description": "菜系或地域强制推导材料与风格",
+    "action": "diagnostic_only"
+  },
+  {
+    "code": "RKS-CF-005",
+    "priority": "P1",
+    "description": "项目专属经验跨项目应用",
+    "action": "diagnostic_only"
+  },
+  {
+    "code": "RKS-CF-006",
+    "priority": "P0",
+    "description": "确认方向被建议或旧状态覆盖",
+    "action": "diagnostic_only"
+  }
+]

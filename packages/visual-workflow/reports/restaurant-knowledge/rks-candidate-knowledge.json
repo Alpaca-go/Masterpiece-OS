@@ -1,0 +1,150 @@
+[
+  {
+    "knowledgeId": "rks-observation-1",
+    "title": "镜头内料理、服务、就餐的可读关系",
+    "judgment": "镜头内料理、服务、就餐的可读关系",
+    "scope": "industry",
+    "status": "candidate",
+    "applicableTags": [],
+    "excludedTags": [],
+    "prerequisites": [
+      "项目目标明确且镜头范围可呈现"
+    ],
+    "exceptions": [
+      "若物业、卫生或镜头约束不支持，保留冲突并人工审查"
+    ],
+    "sourceProjects": [
+      "feng-tang-tang"
+    ],
+    "evidenceRefs": [
+      "ftt-direction-brief:6"
+    ],
+    "reviewSources": [
+      "plan:candidate-only"
+    ],
+    "beforeAfter": "离线修正草案尚未产生新图；无成功 A/B 对照。",
+    "uncertainty": "未验证跨项目泛化；不宣称修正后质量通过。",
+    "validatedCases": [],
+    "failedCases": [],
+    "antiHomogenization": "不强制菜系对应固定风格或材料；仅项目验收不得晋升行业规则。"
+  },
+  {
+    "knowledgeId": "rks-observation-2",
+    "title": "社区小馆的人尺度与可见经营行为",
+    "judgment": "社区小馆的人尺度与可见经营行为",
+    "scope": "business_format",
+    "status": "candidate",
+    "applicableTags": [
+      "neighborhood_casual_dining"
+    ],
+    "excludedTags": [],
+    "prerequisites": [
+      "项目目标明确且镜头范围可呈现"
+    ],
+    "exceptions": [
+      "若物业、卫生或镜头约束不支持，保留冲突并人工审查"
+    ],
+    "sourceProjects": [
+      "feng-tang-tang"
+    ],
+    "evidenceRefs": [
+      "ftt-direction-brief:6"
+    ],
+    "reviewSources": [
+      "plan:candidate-only"
+    ],
+    "beforeAfter": "离线修正草案尚未产生新图；无成功 A/B 对照。",
+    "uncertainty": "未验证跨项目泛化；不宣称修正后质量通过。",
+    "validatedCases": [],
+    "failedCases": [],
+    "antiHomogenization": "不强制菜系对应固定风格或材料；仅项目验收不得晋升行业规则。"
+  },
+  {
+    "knowledgeId": "rks-observation-3",
+    "title": "本项目砖木赤陶与暖光的组合",
+    "judgment": "本项目砖木赤陶与暖光的组合",
+    "scope": "project",
+    "status": "candidate",
+    "applicableTags": [],
+    "excludedTags": [],
+    "prerequisites": [
+      "项目目标明确且镜头范围可呈现"
+    ],
+    "exceptions": [
+      "若物业、卫生或镜头约束不支持，保留冲突并人工审查"
+    ],
+    "sourceProjects": [
+      "feng-tang-tang"
+    ],
+    "evidenceRefs": [
+      "ftt-direction-brief:6"
+    ],
+    "reviewSources": [
+      "plan:candidate-only"
+    ],
+    "beforeAfter": "离线修正草案尚未产生新图；无成功 A/B 对照。",
+    "uncertainty": "未验证跨项目泛化；不宣称修正后质量通过。",
+    "validatedCases": [],
+    "failedCases": [],
+    "antiHomogenization": "不强制菜系对应固定风格或材料；仅项目验收不得晋升行业规则。"
+  },
+  {
+    "knowledgeId": "rks-observation-4",
+    "title": "服务效率不必然导向极简快餐视觉",
+    "judgment": "服务效率不必然导向极简快餐视觉",
+    "scope": "industry",
+    "status": "candidate",
+    "applicableTags": [],
+    "excludedTags": [],
+    "prerequisites": [
+      "项目目标明确且镜头范围可呈现"
+    ],
+    "exceptions": [
+      "若物业、卫生或镜头约束不支持，保留冲突并人工审查"
+    ],
+    "sourceProjects": [
+      "feng-tang-tang"
+    ],
+    "evidenceRefs": [
+      "ftt-direction-brief:6"
+    ],
+    "reviewSources": [
+      "plan:candidate-only"
+    ],
+    "beforeAfter": "离线修正草案尚未产生新图；无成功 A/B 对照。",
+    "uncertainty": "未验证跨项目泛化；不宣称修正后质量通过。",
+    "validatedCases": [],
+    "failedCases": [],
+    "antiHomogenization": "不强制菜系对应固定风格或材料；仅项目验收不得晋升行业规则。"
+  },
+  {
+    "knowledgeId": "rks-observation-5",
+    "title": "项目历史认可的真实经营密度",
+    "judgment": "项目历史认可的真实经营密度",
+    "scope": "project",
+    "status": "project_observation",
+    "applicableTags": [],
+    "excludedTags": [],
+    "prerequisites": [
+      "项目目标明确且镜头范围可呈现"
+    ],
+    "exceptions": [
+      "若物业、卫生或镜头约束不支持，保留冲突并人工审查"
+    ],
+    "sourceProjects": [
+      "feng-tang-tang"
+    ],
+    "evidenceRefs": [
+      "human_selection",
+      "human_evaluation"
+    ],
+    "reviewSources": [
+      "human:historical-r8.6-record"
+    ],
+    "beforeAfter": "离线修正草案尚未产生新图；无成功 A/B 对照。",
+    "uncertainty": "未验证跨项目泛化；不宣称修正后质量通过。",
+    "validatedCases": [],
+    "failedCases": [],
+    "antiHomogenization": "不强制菜系对应固定风格或材料；仅项目验收不得晋升行业规则。"
+  }
+]

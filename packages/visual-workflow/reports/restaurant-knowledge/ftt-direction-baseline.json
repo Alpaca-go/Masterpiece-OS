@@ -1,0 +1,20 @@
+{
+  "projectId": "feng-tang-tang",
+  "status": "historical_comparison_only",
+  "controls": {
+    "generationBasis": "standard",
+    "referenceAssetIds": [],
+    "model": "seedream-5.0-pro",
+    "aspectRatio": "16:9",
+    "subtype": null,
+    "shot": null,
+    "origin": "offline_comparison_plan_not_actual_request"
+  },
+  "fields": {
+    "positioning": "从传统川菜馆升级为现代川味小吃快餐",
+    "service": "点餐、取餐、堂食、外带、明档展示",
+    "mood": null,
+    "materials": null,
+    "relationships": null
+  }
+}

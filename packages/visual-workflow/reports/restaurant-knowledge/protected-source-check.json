@@ -1,0 +1,39 @@
+{
+  "baselineCommit": "3da7d1bab58e58dc091a20a3c55b1e6cc4f65d48",
+  "existingTrackedFilesChanged": [],
+  "historicalSourceChecks": [
+    {
+      "path": "space-generator/quality-baselines/current-verification/source-packets/_packets/feng-tang-tang/visual-decision-packet.json",
+      "unchanged": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/golden-selection.json",
+      "unchanged": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/final-dining-1/evaluation.json",
+      "unchanged": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/production-acceptance/feng-tang-tang/standard/compiled-prompt.md",
+      "unchanged": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/production-acceptance/feng-tang-tang/standard/run.json",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/src/analysis-direction-suggestion.js",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/src/project-design-direction.js",
+      "unchanged": true
+    }
+  ],
+  "productionCodeChanged": false,
+  "promptChanged": false,
+  "goldenChanged": false,
+  "integrityRecordChanged": false,
+  "actualUserProjectWritten": false
+}

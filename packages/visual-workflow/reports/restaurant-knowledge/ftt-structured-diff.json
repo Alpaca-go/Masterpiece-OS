@@ -1,0 +1,27 @@
+[
+  {
+    "field": "materials",
+    "before": null,
+    "after": "项目级候选：红砖、暖木、赤陶与暖光；不是四川餐饮通用模板。"
+  },
+  {
+    "field": "mood",
+    "before": null,
+    "after": "四川地域气质、市井烟火、热闹、温暖、亲切。"
+  },
+  {
+    "field": "positioning",
+    "before": "从传统川菜馆升级为现代川味小吃快餐",
+    "after": "四川特色小吃、跷脚牛肉；社区临街特色小馆，亲民实惠。"
+  },
+  {
+    "field": "relationships",
+    "before": null,
+    "after": "明档厨房—厨师实际处理食材—可见热气与菜品—服务柜台—顾客桌边就餐；主通道可进入。"
+  },
+  {
+    "field": "service",
+    "before": "点餐、取餐、堂食、外带、明档展示",
+    "after": "堂食为主，兼顾外带；保留高效点餐、现代设备、卫生与合理动线。"
+  }
+]

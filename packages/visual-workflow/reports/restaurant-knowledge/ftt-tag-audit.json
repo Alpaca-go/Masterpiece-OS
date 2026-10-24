@@ -1,0 +1,453 @@
+{
+  "scope": "plan goals versus historical proposal; not actual run diagnosis",
+  "classification": {
+    "projectId": "feng-tang-tang",
+    "tags": [
+      {
+        "id": "brand_positioning:approachable_value",
+        "projectId": "feng-tang-tang",
+        "dimension": "brand_positioning",
+        "tag": "approachable_value",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "ftt-direction-brief:1.1"
+        ],
+        "notes": "仅为开发方案中声明的目标；不是实际物业调查或原项目确认记录。",
+        "recognized": true
+      },
+      {
+        "id": "brand_positioning:regional_specialty",
+        "projectId": "feng-tang-tang",
+        "dimension": "brand_positioning",
+        "tag": "regional_specialty",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "ftt-direction-brief:1.1"
+        ],
+        "notes": "仅为开发方案中声明的目标；不是实际物业调查或原项目确认记录。",
+        "recognized": true
+      },
+      {
+        "id": "business_format:neighborhood_casual_dining",
+        "projectId": "feng-tang-tang",
+        "dimension": "business_format",
+        "tag": "neighborhood_casual_dining",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "ftt-direction-brief:1.1"
+        ],
+        "notes": "仅为开发方案中声明的目标；不是实际物业调查或原项目确认记录。",
+        "recognized": true
+      },
+      {
+        "id": "cuisine_product:qiaojiao_beef",
+        "projectId": "feng-tang-tang",
+        "dimension": "cuisine_product",
+        "tag": "qiaojiao_beef",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "ftt-direction-brief:1.1"
+        ],
+        "notes": "仅为开发方案中声明的目标；不是实际物业调查或原项目确认记录。",
+        "recognized": true
+      },
+      {
+        "id": "cuisine_product:sichuan_snacks",
+        "projectId": "feng-tang-tang",
+        "dimension": "cuisine_product",
+        "tag": "sichuan_snacks",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "ftt-direction-brief:1.1"
+        ],
+        "notes": "仅为开发方案中声明的目标；不是实际物业调查或原项目确认记录。",
+        "recognized": true
+      },
+      {
+        "id": "cultural_context:sichuan_local",
+        "projectId": "feng-tang-tang",
+        "dimension": "cultural_context",
+        "tag": "sichuan_local",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "ftt-direction-brief:1.1"
+        ],
+        "notes": "仅为开发方案中声明的目标；不是实际物业调查或原项目确认记录。",
+        "recognized": true
+      },
+      {
+        "id": "customers:neighborhood_daily",
+        "projectId": "feng-tang-tang",
+        "dimension": "customers",
+        "tag": "neighborhood_daily",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "ftt-direction-brief:1.1"
+        ],
+        "notes": "仅为开发方案中声明的目标；不是实际物业调查或原项目确认记录。",
+        "recognized": true
+      },
+      {
+        "id": "experiential_mood:human_warmth",
+        "projectId": "feng-tang-tang",
+        "dimension": "experiential_mood",
+        "tag": "human_warmth",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "ftt-direction-brief:1.1"
+        ],
+        "notes": "仅为开发方案中声明的目标；不是实际物业调查或原项目确认记录。",
+        "recognized": true
+      },
+      {
+        "id": "experiential_mood:lively",
+        "projectId": "feng-tang-tang",
+        "dimension": "experiential_mood",
+        "tag": "lively",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "ftt-direction-brief:1.1"
+        ],
+        "notes": "仅为开发方案中声明的目标；不是实际物业调查或原项目确认记录。",
+        "recognized": true
+      },
+      {
+        "id": "experiential_mood:street_food_energy",
+        "projectId": "feng-tang-tang",
+        "dimension": "experiential_mood",
+        "tag": "street_food_energy",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "ftt-direction-brief:1.1"
+        ],
+        "notes": "仅为开发方案中声明的目标；不是实际物业调查或原项目确认记录。",
+        "recognized": true
+      },
+      {
+        "id": "historical-upgrade",
+        "projectId": "feng-tang-tang",
+        "dimension": "business_format",
+        "tag": "standardized_fast_casual",
+        "sourceType": "analysis_proposal",
+        "status": "probable",
+        "assertion": "proposal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "historical_packet:creativeDecision.uniqueUpgradeThesis"
+        ],
+        "notes": "离线审查归类：原文为现代川味小吃快餐；并不证明商场区位或极简风格。",
+        "recognized": true
+      },
+      {
+        "id": "location_context:community_retail",
+        "projectId": "feng-tang-tang",
+        "dimension": "location_context",
+        "tag": "community_retail",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "ftt-direction-brief:1.1"
+        ],
+        "notes": "仅为开发方案中声明的目标；不是实际物业调查或原项目确认记录。",
+        "recognized": true
+      },
+      {
+        "id": "location_context:streetfront",
+        "projectId": "feng-tang-tang",
+        "dimension": "location_context",
+        "tag": "streetfront",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "ftt-direction-brief:1.1"
+        ],
+        "notes": "仅为开发方案中声明的目标；不是实际物业调查或原项目确认记录。",
+        "recognized": true
+      },
+      {
+        "id": "material:red_brick",
+        "projectId": "feng-tang-tang",
+        "dimension": "material",
+        "tag": "red_brick",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "ftt-direction-brief:1.1"
+        ],
+        "notes": "仅为开发方案中声明的目标；不是实际物业调查或原项目确认记录。",
+        "recognized": true
+      },
+      {
+        "id": "material:terracotta",
+        "projectId": "feng-tang-tang",
+        "dimension": "material",
+        "tag": "terracotta",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "ftt-direction-brief:1.1"
+        ],
+        "notes": "仅为开发方案中声明的目标；不是实际物业调查或原项目确认记录。",
+        "recognized": true
+      },
+      {
+        "id": "material:warm_wood",
+        "projectId": "feng-tang-tang",
+        "dimension": "material",
+        "tag": "warm_wood",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "ftt-direction-brief:1.1"
+        ],
+        "notes": "仅为开发方案中声明的目标；不是实际物业调查或原项目确认记录。",
+        "recognized": true
+      },
+      {
+        "id": "service_model:dine_in_primary",
+        "projectId": "feng-tang-tang",
+        "dimension": "service_model",
+        "tag": "dine_in_primary",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "ftt-direction-brief:1.1"
+        ],
+        "notes": "仅为开发方案中声明的目标；不是实际物业调查或原项目确认记录。",
+        "recognized": true
+      },
+      {
+        "id": "service_model:efficient_service",
+        "projectId": "feng-tang-tang",
+        "dimension": "service_model",
+        "tag": "efficient_service",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "ftt-direction-brief:1.1"
+        ],
+        "notes": "仅为开发方案中声明的目标；不是实际物业调查或原项目确认记录。",
+        "recognized": true
+      },
+      {
+        "id": "service_model:takeaway_supported",
+        "projectId": "feng-tang-tang",
+        "dimension": "service_model",
+        "tag": "takeaway_supported",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "ftt-direction-brief:1.1"
+        ],
+        "notes": "仅为开发方案中声明的目标；不是实际物业调查或原项目确认记录。",
+        "recognized": true
+      },
+      {
+        "id": "spatial_mechanism:active_dining",
+        "projectId": "feng-tang-tang",
+        "dimension": "spatial_mechanism",
+        "tag": "active_dining",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "ftt-direction-brief:1.1"
+        ],
+        "notes": "仅为开发方案中声明的目标；不是实际物业调查或原项目确认记录。",
+        "recognized": true
+      },
+      {
+        "id": "spatial_mechanism:open_kitchen",
+        "projectId": "feng-tang-tang",
+        "dimension": "spatial_mechanism",
+        "tag": "open_kitchen",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "ftt-direction-brief:1.1"
+        ],
+        "notes": "仅为开发方案中声明的目标；不是实际物业调查或原项目确认记录。",
+        "recognized": true
+      },
+      {
+        "id": "spatial_mechanism:visible_cooking",
+        "projectId": "feng-tang-tang",
+        "dimension": "spatial_mechanism",
+        "tag": "visible_cooking",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "assertion": "goal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "ftt-direction-brief:1.1"
+        ],
+        "notes": "仅为开发方案中声明的目标；不是实际物业调查或原项目确认记录。",
+        "recognized": true
+      },
+      {
+        "id": "visual_style:warm_rustic",
+        "projectId": "feng-tang-tang",
+        "dimension": "visual_style",
+        "tag": "warm_rustic",
+        "sourceType": "rks_candidate",
+        "status": "probable",
+        "assertion": "proposal",
+        "scope": "project",
+        "appliesTo": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "ftt-direction-brief:3.1"
+        ],
+        "notes": "warm_rustic 是离线分类候选；方案确认的情绪目标不等于已确认此风格标签。",
+        "recognized": true
+      }
+    ],
+    "missingDimensions": [],
+    "archetypes": [
+      {
+        "id": "AR01_neighborhood_local_eatery",
+        "evidenceRefs": [
+          "ftt-direction-brief:1.1"
+        ]
+      }
+    ],
+    "primaryArchetype": "AR01_neighborhood_local_eatery",
+    "status": "supported",
+    "auxiliaryMechanisms": [
+      "dine_in_primary",
+      "efficient_service",
+      "takeaway_supported"
+    ]
+  },
+  "conflicts": [
+    {
+      "code": "RKS-CF-002",
+      "priority": "P0",
+      "claimIds": [
+        "business_format:neighborhood_casual_dining",
+        "historical-upgrade"
+      ],
+      "evidenceRefs": [
+        "ftt-direction-brief:1.1",
+        "historical_packet:creativeDecision.uniqueUpgradeThesis"
+      ],
+      "reason": "保留双方证据；用户目标优先于冲突提案。"
+    }
+  ]
+}

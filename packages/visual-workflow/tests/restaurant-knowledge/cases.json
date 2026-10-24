@@ -1,0 +1,490 @@
+[
+  {
+    "projectId": "seed-eatery",
+    "label": "FTT 合成目标（并非图 1 实际输入）",
+    "claims": [
+      {
+        "id": "c0",
+        "projectId": "seed-eatery",
+        "dimension": "business_format",
+        "tag": "社区特色小馆",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "scope": "project",
+        "appliesTo": [
+          "seed-eatery"
+        ],
+        "evidenceRefs": [
+          "synthetic:seed-eatery:c0"
+        ],
+        "assertion": "goal"
+      },
+      {
+        "id": "c1",
+        "projectId": "seed-eatery",
+        "dimension": "location_context",
+        "tag": "临街",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "scope": "project",
+        "appliesTo": [
+          "seed-eatery"
+        ],
+        "evidenceRefs": [
+          "synthetic:seed-eatery:c1"
+        ],
+        "assertion": "goal"
+      },
+      {
+        "id": "c2",
+        "projectId": "seed-eatery",
+        "dimension": "location_context",
+        "tag": "社区底商",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "scope": "project",
+        "appliesTo": [
+          "seed-eatery"
+        ],
+        "evidenceRefs": [
+          "synthetic:seed-eatery:c2"
+        ],
+        "assertion": "goal"
+      },
+      {
+        "id": "c3",
+        "projectId": "seed-eatery",
+        "dimension": "service_model",
+        "tag": "高效出餐",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "scope": "project",
+        "appliesTo": [
+          "seed-eatery"
+        ],
+        "evidenceRefs": [
+          "synthetic:seed-eatery:c3"
+        ],
+        "assertion": "goal"
+      },
+      {
+        "id": "c4",
+        "projectId": "seed-eatery",
+        "dimension": "service_model",
+        "tag": "堂食为主",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "scope": "project",
+        "appliesTo": [
+          "seed-eatery"
+        ],
+        "evidenceRefs": [
+          "synthetic:seed-eatery:c4"
+        ],
+        "assertion": "goal"
+      },
+      {
+        "id": "c5",
+        "projectId": "seed-eatery",
+        "dimension": "visual_style",
+        "tag": "市井复古",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "scope": "project",
+        "appliesTo": [
+          "seed-eatery"
+        ],
+        "evidenceRefs": [
+          "synthetic:seed-eatery:c5"
+        ],
+        "assertion": "goal"
+      },
+      {
+        "id": "c6",
+        "projectId": "seed-eatery",
+        "dimension": "visual_style",
+        "tag": "极简",
+        "sourceType": "analysis_proposal",
+        "status": "probable",
+        "scope": "project",
+        "appliesTo": [
+          "seed-eatery"
+        ],
+        "evidenceRefs": [
+          "synthetic:seed-eatery:c6"
+        ],
+        "assertion": "proposal"
+      },
+      {
+        "id": "c7",
+        "projectId": "seed-eatery",
+        "dimension": "cuisine_product",
+        "tag": "四川小吃",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "scope": "project",
+        "appliesTo": [
+          "seed-eatery"
+        ],
+        "evidenceRefs": [
+          "synthetic:seed-eatery:c7"
+        ],
+        "assertion": "goal"
+      },
+      {
+        "id": "c8",
+        "projectId": "seed-eatery",
+        "dimension": "cuisine_product",
+        "tag": "跷脚牛肉",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "scope": "project",
+        "appliesTo": [
+          "seed-eatery"
+        ],
+        "evidenceRefs": [
+          "synthetic:seed-eatery:c8"
+        ],
+        "assertion": "goal"
+      },
+      {
+        "id": "c9",
+        "projectId": "seed-eatery",
+        "dimension": "spatial_mechanism",
+        "tag": "明档厨房",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "scope": "project",
+        "appliesTo": [
+          "seed-eatery"
+        ],
+        "evidenceRefs": [
+          "synthetic:seed-eatery:c9"
+        ],
+        "assertion": "goal"
+      }
+    ],
+    "audit": {
+      "inferences": [
+        {
+          "from": "c3",
+          "to": "c6"
+        }
+      ],
+      "incompatibilities": [
+        [
+          "c5",
+          "c6"
+        ]
+      ],
+      "replacements": [
+        {
+          "previous": "c5",
+          "next": "c6",
+          "explicitReview": false
+        }
+      ]
+    }
+  },
+  {
+    "projectId": "mall-casual",
+    "label": "商场标准化川味快餐",
+    "claims": [
+      {
+        "id": "c0",
+        "projectId": "mall-casual",
+        "dimension": "business_format",
+        "tag": "标准化快餐",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "scope": "project",
+        "appliesTo": [
+          "mall-casual"
+        ],
+        "evidenceRefs": [
+          "synthetic:mall-casual:c0"
+        ],
+        "assertion": "goal"
+      },
+      {
+        "id": "c1",
+        "projectId": "mall-casual",
+        "dimension": "location_context",
+        "tag": "商场",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "scope": "project",
+        "appliesTo": [
+          "mall-casual"
+        ],
+        "evidenceRefs": [
+          "synthetic:mall-casual:c1"
+        ],
+        "assertion": "goal"
+      },
+      {
+        "id": "c2",
+        "projectId": "mall-casual",
+        "dimension": "service_model",
+        "tag": "高效出餐",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "scope": "project",
+        "appliesTo": [
+          "mall-casual"
+        ],
+        "evidenceRefs": [
+          "synthetic:mall-casual:c2"
+        ],
+        "assertion": "goal"
+      },
+      {
+        "id": "c3",
+        "projectId": "mall-casual",
+        "dimension": "visual_style",
+        "tag": "现代明亮",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "scope": "project",
+        "appliesTo": [
+          "mall-casual"
+        ],
+        "evidenceRefs": [
+          "synthetic:mall-casual:c3"
+        ],
+        "assertion": "goal"
+      },
+      {
+        "id": "c4",
+        "projectId": "mall-casual",
+        "dimension": "cuisine_product",
+        "tag": "川味小吃",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "scope": "project",
+        "appliesTo": [
+          "mall-casual"
+        ],
+        "evidenceRefs": [
+          "synthetic:mall-casual:c4"
+        ],
+        "assertion": "goal"
+      }
+    ]
+  },
+  {
+    "projectId": "street-takeaway",
+    "label": "临街现代外带小吃店",
+    "claims": [
+      {
+        "id": "c0",
+        "projectId": "street-takeaway",
+        "dimension": "business_format",
+        "tag": "外带小吃店",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "scope": "project",
+        "appliesTo": [
+          "street-takeaway"
+        ],
+        "evidenceRefs": [
+          "synthetic:street-takeaway:c0"
+        ],
+        "assertion": "goal"
+      },
+      {
+        "id": "c1",
+        "projectId": "street-takeaway",
+        "dimension": "location_context",
+        "tag": "临街",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "scope": "project",
+        "appliesTo": [
+          "street-takeaway"
+        ],
+        "evidenceRefs": [
+          "synthetic:street-takeaway:c1"
+        ],
+        "assertion": "goal"
+      },
+      {
+        "id": "c2",
+        "projectId": "street-takeaway",
+        "dimension": "service_model",
+        "tag": "外带为主",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "scope": "project",
+        "appliesTo": [
+          "street-takeaway"
+        ],
+        "evidenceRefs": [
+          "synthetic:street-takeaway:c2"
+        ],
+        "assertion": "goal"
+      },
+      {
+        "id": "c3",
+        "projectId": "street-takeaway",
+        "dimension": "visual_style",
+        "tag": "现代明亮",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "scope": "project",
+        "appliesTo": [
+          "street-takeaway"
+        ],
+        "evidenceRefs": [
+          "synthetic:street-takeaway:c3"
+        ],
+        "assertion": "goal"
+      }
+    ]
+  },
+  {
+    "projectId": "community-cafe",
+    "label": "社区复古咖啡馆",
+    "claims": [
+      {
+        "id": "c0",
+        "projectId": "community-cafe",
+        "dimension": "business_format",
+        "tag": "咖啡馆",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "scope": "project",
+        "appliesTo": [
+          "community-cafe"
+        ],
+        "evidenceRefs": [
+          "synthetic:community-cafe:c0"
+        ],
+        "assertion": "goal"
+      },
+      {
+        "id": "c1",
+        "projectId": "community-cafe",
+        "dimension": "location_context",
+        "tag": "社区底商",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "scope": "project",
+        "appliesTo": [
+          "community-cafe"
+        ],
+        "evidenceRefs": [
+          "synthetic:community-cafe:c1"
+        ],
+        "assertion": "goal"
+      },
+      {
+        "id": "c2",
+        "projectId": "community-cafe",
+        "dimension": "cuisine_product",
+        "tag": "咖啡",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "scope": "project",
+        "appliesTo": [
+          "community-cafe"
+        ],
+        "evidenceRefs": [
+          "synthetic:community-cafe:c2"
+        ],
+        "assertion": "goal"
+      },
+      {
+        "id": "c3",
+        "projectId": "community-cafe",
+        "dimension": "visual_style",
+        "tag": "复古",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "scope": "project",
+        "appliesTo": [
+          "community-cafe"
+        ],
+        "evidenceRefs": [
+          "synthetic:community-cafe:c3"
+        ],
+        "assertion": "goal"
+      }
+    ]
+  },
+  {
+    "projectId": "office-restaurant",
+    "label": "写字楼复古中餐厅",
+    "claims": [
+      {
+        "id": "c0",
+        "projectId": "office-restaurant",
+        "dimension": "business_format",
+        "tag": "体验型餐厅",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "scope": "project",
+        "appliesTo": [
+          "office-restaurant"
+        ],
+        "evidenceRefs": [
+          "synthetic:office-restaurant:c0"
+        ],
+        "assertion": "goal"
+      },
+      {
+        "id": "c1",
+        "projectId": "office-restaurant",
+        "dimension": "location_context",
+        "tag": "写字楼",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "scope": "project",
+        "appliesTo": [
+          "office-restaurant"
+        ],
+        "evidenceRefs": [
+          "synthetic:office-restaurant:c1"
+        ],
+        "assertion": "goal"
+      },
+      {
+        "id": "c2",
+        "projectId": "office-restaurant",
+        "dimension": "cuisine_product",
+        "tag": "中餐",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "scope": "project",
+        "appliesTo": [
+          "office-restaurant"
+        ],
+        "evidenceRefs": [
+          "synthetic:office-restaurant:c2"
+        ],
+        "assertion": "goal"
+      },
+      {
+        "id": "c3",
+        "projectId": "office-restaurant",
+        "dimension": "visual_style",
+        "tag": "复古",
+        "sourceType": "user_confirmed_design_goal",
+        "status": "confirmed",
+        "scope": "project",
+        "appliesTo": [
+          "office-restaurant"
+        ],
+        "evidenceRefs": [
+          "synthetic:office-restaurant:c3"
+        ],
+        "assertion": "goal"
+      }
+    ]
+  },
+  {
+    "projectId": "unknown-brand",
+    "label": "材料不足的餐饮品牌",
+    "claims": []
+  }
+]

@@ -1,0 +1,129 @@
+{
+  "projectId": "feng-tang-tang",
+  "status": "proposed_offline",
+  "sourceType": "user_confirmed_design_goal",
+  "evidenceRefs": [
+    "ftt-direction-brief:1.1"
+  ],
+  "controls": {
+    "generationBasis": "standard",
+    "referenceAssetIds": [],
+    "model": "seedream-5.0-pro",
+    "aspectRatio": "16:9",
+    "subtype": null,
+    "shot": null,
+    "origin": "offline_comparison_plan_not_actual_request"
+  },
+  "fields": {
+    "positioning": "四川特色小吃、跷脚牛肉；社区临街特色小馆，亲民实惠。",
+    "service": "堂食为主，兼顾外带；保留高效点餐、现代设备、卫生与合理动线。",
+    "mood": "四川地域气质、市井烟火、热闹、温暖、亲切。",
+    "materials": "项目级候选：红砖、暖木、赤陶与暖光；不是四川餐饮通用模板。",
+    "relationships": "明档厨房—厨师实际处理食材—可见热气与菜品—服务柜台—顾客桌边就餐；主通道可进入。"
+  },
+  "changes": [
+    {
+      "action": "retain",
+      "field": "service",
+      "originalSource": "historical_packet:mediaTranslations.spatial.sceneProgram",
+      "before": "点餐、取餐、堂食、外带、明档展示",
+      "after": "堂食为主，兼顾外带；保留高效点餐、现代设备、卫生与合理动线。",
+      "reason": "效率机制可保留，不推导整体极简快餐风格。",
+      "evidenceRefs": [
+        "ftt-direction-brief:1.1",
+        "historical_packet:mediaTranslations.spatial.sceneProgram"
+      ],
+      "futureValidation": "实际项目运营需求及厨房服务关系复核"
+    },
+    {
+      "action": "correct",
+      "field": "positioning",
+      "originalSource": "historical_packet:creativeDecision.uniqueUpgradeThesis",
+      "before": "从传统川菜馆升级为现代川味小吃快餐",
+      "after": "四川特色小吃、跷脚牛肉；社区临街特色小馆，亲民实惠。",
+      "reason": "以方案确认目标为准；历史提案不得覆盖设计目标。",
+      "evidenceRefs": [
+        "ftt-direction-brief:1.1",
+        "historical_packet:creativeDecision.uniqueUpgradeThesis"
+      ],
+      "futureValidation": "人审社区小馆定位与品牌识别"
+    },
+    {
+      "action": "correct",
+      "field": "materials",
+      "originalSource": "human_evaluation:dimensions.materialAndLighting",
+      "before": "历史验收认可暖木、赤陶及厨房暖光",
+      "after": "项目级候选：红砖、暖木、赤陶与暖光；不是四川餐饮通用模板。",
+      "reason": "恢复项目级经验；红砖来自方案及历史 Prompt，并非新图验收。",
+      "evidenceRefs": [
+        "ftt-direction-brief:1.1",
+        "human_evaluation:dimensions.materialAndLighting"
+      ],
+      "futureValidation": "同镜头材质、光照及经营密度人工审查"
+    },
+    {
+      "action": "remove",
+      "field": "mandatoryCulturalSymbols",
+      "originalSource": "historical_prompt:Human Experience",
+      "before": "悬挂灯笼等历史 Prompt 条目",
+      "after": "不继承为必备装饰，不生成全局禁用条款",
+      "reason": "地域性不等于必需特定符号。",
+      "evidenceRefs": [
+        "ftt-direction-brief:1.1",
+        "historical_prompt:Human Experience"
+      ],
+      "futureValidation": "审查符号是否有项目证据且未喧宾夺主"
+    },
+    {
+      "action": "correct",
+      "field": "relationships",
+      "originalSource": "human_selection:golds[0].reason",
+      "before": "历史验收认可开放厨房、服务、顾客等关系",
+      "after": "明档厨房—厨师实际处理食材—可见热气与菜品—服务柜台—顾客桌边就餐；主通道可进入。",
+      "reason": "将经营真实性转换成可观察条件，仍需镜头验证。",
+      "evidenceRefs": [
+        "ftt-direction-brief:1.1",
+        "human_selection:golds[0].reason"
+      ],
+      "futureValidation": "检查厨师、食物、餐桌、顾客与可进入主通道"
+    },
+    {
+      "action": "unknown",
+      "field": "shot",
+      "originalSource": "actual_run:shot",
+      "before": null,
+      "after": null,
+      "reason": "图 1 实际镜头不可确认。",
+      "evidenceRefs": [
+        "ftt-direction-brief:1.1",
+        "actual_run:shot"
+      ],
+      "futureValidation": "补足实际 subtype、shot 与画面身份"
+    },
+    {
+      "action": "unknown",
+      "field": "propertyDimensions",
+      "originalSource": "actual_run:property",
+      "before": null,
+      "after": null,
+      "reason": "目标店型不是实测物业；不编造面积尺寸。",
+      "evidenceRefs": [
+        "ftt-direction-brief:1.1",
+        "actual_run:property"
+      ],
+      "futureValidation": "取得真实物业条件"
+    }
+  ],
+  "shotAlternatives": [
+    {
+      "shot": "entrance_view",
+      "status": "conditional_not_selected",
+      "goal": "街面识别、可见营业活动、纵深用餐空间；不强求同时完整展示厨房内部。"
+    },
+    {
+      "shot": "dining_view",
+      "status": "conditional_not_selected",
+      "goal": "厨房—顾客—餐桌关系及服务位置；不强求展示外立面。"
+    }
+  ]
+}
