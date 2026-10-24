@@ -1,0 +1,441 @@
+{
+  "phase": "RKS-01G",
+  "baselineCommit": "73b953c7fe92eacafa051cfb93c64dd1a6267d08",
+  "branch": "codex/rks-visible-integrity-review",
+  "authorization": "Explicit human authorization in RKS-01G for exactly the three listed SHA256 entries",
+  "preflight": {
+    "baselineCommit": "73b953c7fe92eacafa051cfb93c64dd1a6267d08",
+    "initialWorktreeClean": true,
+    "reviewedBranch": "codex/rks-visible-integrity-review",
+    "candidateDigestsMatch": true,
+    "protectedFileCount": 133,
+    "frontendFileCount": 4,
+    "additionalProtectedChanges": [],
+    "changes": [
+      {
+        "path": "src/generation-runtime/space/compiler.js",
+        "before": "0b90295b72f3926da8de474e7d2c8bf1ce40961003eeede4fa1fbe461f6957d8",
+        "after": "9d701f3578816fe3ceb825e2ea7bc0723143fe8b62bbac8651292621765aacee"
+      },
+      {
+        "path": "src/generation-runtime/space/semantic/separate-space-semantics.js",
+        "before": "714dca781a2d6e9de72a303da36a85b53818febada6b854029c0670b50ac3fb3",
+        "after": "9867c041bd560bd968575deb9261f25494603b116e9a7e7ea39c15daeaf799a2"
+      },
+      {
+        "path": "src/generation-runtime/space/source-adapter.js",
+        "before": "ab726f3af21c98ed6fca26d2971b0ed8bd5772e18060bff1ef169817e0da92a5",
+        "after": "ea9334a585f65b2af63b5da91cb9236ba2be475e00ce7da5421617596928d19e"
+      }
+    ],
+    "qualityAcceptance": "pending-separate-quality-repair",
+    "extractionStatus": "independent-current-implementation",
+    "sourceDiffReview": {
+      "compiler": "Only actual sourceMap ownership and per-field rendered-block audit changed.",
+      "sourceAdapter": "Only visible-requirement routing, executable-owner de-duplication, rejection and trace changed; scene-scope function unchanged.",
+      "semanticSeparation": "Bounded mustBeVisible activity/effect evidence and review fallback; existing category priority retained.",
+      "conclusion": "Within authorized RKS-01F visible-operation ownership repair; no provider, settings, retry, shared-planning or migration changes."
+    },
+    "manifestSha256Before": "8646f6664d40f0c2de3b6428c98edaf862600ce57b6be29cf16fc95266c2c952",
+    "realAnalysis": 0,
+    "realGeneration": 0,
+    "realValidation": 0,
+    "automaticRetries": 0,
+    "manifestSha256After": "23aec1826589ead04295a8aa144ef8a7ce7dad7977912e8010d9f9478986d8cd",
+    "manifestUpdated": true
+  },
+  "sources": [
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/compiler.js",
+      "sourceSha256BeforeReview": "9d701f3578816fe3ceb825e2ea7bc0723143fe8b62bbac8651292621765aacee",
+      "sourceSha256AfterReview": "9d701f3578816fe3ceb825e2ea7bc0723143fe8b62bbac8651292621765aacee",
+      "integrityRecordBefore": "0b90295b72f3926da8de474e7d2c8bf1ce40961003eeede4fa1fbe461f6957d8",
+      "integrityRecordAfter": "9d701f3578816fe3ceb825e2ea7bc0723143fe8b62bbac8651292621765aacee",
+      "matchesApprovedCandidate": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/semantic/separate-space-semantics.js",
+      "sourceSha256BeforeReview": "9867c041bd560bd968575deb9261f25494603b116e9a7e7ea39c15daeaf799a2",
+      "sourceSha256AfterReview": "9867c041bd560bd968575deb9261f25494603b116e9a7e7ea39c15daeaf799a2",
+      "integrityRecordBefore": "714dca781a2d6e9de72a303da36a85b53818febada6b854029c0670b50ac3fb3",
+      "integrityRecordAfter": "9867c041bd560bd968575deb9261f25494603b116e9a7e7ea39c15daeaf799a2",
+      "matchesApprovedCandidate": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/source-adapter.js",
+      "sourceSha256BeforeReview": "ea9334a585f65b2af63b5da91cb9236ba2be475e00ce7da5421617596928d19e",
+      "sourceSha256AfterReview": "ea9334a585f65b2af63b5da91cb9236ba2be475e00ce7da5421617596928d19e",
+      "integrityRecordBefore": "ab726f3af21c98ed6fca26d2971b0ed8bd5772e18060bff1ef169817e0da92a5",
+      "integrityRecordAfter": "ea9334a585f65b2af63b5da91cb9236ba2be475e00ce7da5421617596928d19e",
+      "matchesApprovedCandidate": true
+    }
+  ],
+  "manifest": {
+    "sha256Before": "8646f6664d40f0c2de3b6428c98edaf862600ce57b6be29cf16fc95266c2c952",
+    "sha256After": "23aec1826589ead04295a8aa144ef8a7ce7dad7977912e8010d9f9478986d8cd",
+    "exactlyThreeSha256ValuesChanged": true,
+    "otherPropertiesAndEntriesUnchanged": true,
+    "qualityAcceptanceBefore": "pending-separate-quality-repair",
+    "qualityAcceptanceAfter": "pending-separate-quality-repair",
+    "extractionStatusBefore": "independent-current-implementation",
+    "extractionStatusAfter": "independent-current-implementation"
+  },
+  "runtimeVerification": {
+    "owner": "visual-workflow",
+    "extractionStatus": "independent-current-implementation",
+    "qualityAcceptance": "pending-separate-quality-repair",
+    "implementationDigest": "d535517c22084b07d92eabc7a14b134ef0f272008d26b1cc52e0fed410fafea0"
+  },
+  "previousImplementationDigest": "5c0bff3d786251041de6ed2119bb5d9d750f96b053a121b7313fa2a80244f8e1",
+  "protectedTreeDiff": [],
+  "protectedRoots": [
+    "golden",
+    "evaluation",
+    "space-generator",
+    "config/repository-contract",
+    "packages/visual-workflow/src",
+    "packages/visual-workflow/prompts",
+    "apps/web/src/features/visual-workflow",
+    "packages/visual-workflow/offline/restaurant-knowledge",
+    "packages/visual-workflow/reports/restaurant-knowledge",
+    "packages/visual-workflow/reports/p7b-single-generation",
+    "packages/visual-workflow/reports/analysis-direction-autofill"
+  ],
+  "unchangedFiles": [
+    {
+      "path": "packages/visual-workflow/src/analysis-direction-suggestion.js",
+      "sha256": "6cca49c384f0601675c2700efb447577f4929428b7f49d36c351e69110f3a18d",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/src/project-design-direction.js",
+      "sha256": "cccd26e77c37a542a86598f7a9a8b612afbdf5c0c08c73aebb9c9d7d1b605a7d",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-baseline-lock.js",
+      "sha256": "dd13f84fa39cefd9941f242428abe0418d6537b1cb3ddaa25552deb3e82d6111",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/src/integrity.js",
+      "sha256": "e5d8df50684eaa9786fadb94da4c574eaa784cc199e4163324434bcf93687423",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/generation/seedream-adapter.js",
+      "sha256": "1a150deb5b1e495ca6bf8cb01de8566bca87012be4f36bbcfa7abf922b8926ec",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/src/image-adapter/multi-model.js",
+      "sha256": "7cabe7adf1cc79a315b4ae757940ab482c515e40e22ca33a3fb86cada51003d1",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "01ce182e9a86b12b88ca1c0b1dc8122c32e29a5640e2170621be4bcabff5e784",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/offline/restaurant-knowledge/README.md",
+      "sha256": "d2da3f6abfe3dd10caf73175da436e61237f4013567571a42bb534421e26fe5a",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/offline/restaurant-knowledge/index.js",
+      "sha256": "ceb100c7aedd3db4a0400bf79218af3e4a0f87fc8213153ae3d5f5c6299cc92c",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/offline/restaurant-knowledge/rks-archetypes.json",
+      "sha256": "4ae216a44925db334d35cbe17f59055adcb3a875050ce389a7161fc64b6a890d",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/offline/restaurant-knowledge/rks-conflict-rules.json",
+      "sha256": "1a3854e7dde31664daa35fbad6b925b600811f8554edf0f854d803f82d68b54c",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/offline/restaurant-knowledge/rks-tag-dictionary.json",
+      "sha256": "0f2e9abc3319df279d1a88d77d14538f542c65ffa505ad8b1c0d285a35335ad6",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-artifact-manifest.json",
+      "sha256": "522876fea1b16cd06d501f46edea3ab96ac9cd966cd8c48dc1e85c2ef4cc7cb0",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-authorization.json",
+      "sha256": "a78557e3fbaf86a882a8260757f4b4e8bf56999801beada717d6f9daf3eb1193",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-call-ledger.json",
+      "sha256": "146bd90064326d282087f110b64bee93fc60cf86ba512f30d94b6b2118b67211",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-comparison-inputs.json",
+      "sha256": "376400f88a87429b6c3bf4e07da0e5224c5024aeb62d459c84616e80f2c0b82b",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-comparison.md",
+      "sha256": "7d1b9f6288b87b25c98bbdfc241271cdf47286505aa12254eb90278c1988507b",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-execution-summary.json",
+      "sha256": "7f321c5ab5fe2c790f99c3eb0cac24ed35707dc162df35b574ae950ae6b1c12b",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-fee-record.json",
+      "sha256": "bf45afb1fc92f9372d22afec4cfb99ad841099c2cc2d002448086a910bf2626b",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-final-preflight-proof.json",
+      "sha256": "4690bee1f3ca6936faf6ba733753d11277ae851ccd69f3fc75fce6920cec3de4",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-gate-results.json",
+      "sha256": "924b96e9fa0c35015e408206ba90110dce3d33245cfde70fb8e42cf80ec5859e",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-image-evidence.json",
+      "sha256": "02bf48c3402bd159ce9ae84bd7b3b49f4d93919402f16a819bdc1ae4fd72c731",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-image-response-summary.json",
+      "sha256": "20ec9faa502e1c150b030b30f87b9478612c4e99c404a1137162aef8430c88d3",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-local-artifact-index.json",
+      "sha256": "44a690cabb34f9b88083f238119e34962f93ff66cdf2a3ff521735f65091ebbb",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-original-image-metadata.json",
+      "sha256": "623f550fc6fcbdd5c8f261afa29ead4875e467aad59fc7a46248a14154e9eec2",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-preflight-and-hash-proof.json",
+      "sha256": "eba0a7df731c4c99d349efbe85fde0afa08f2b61eaa1a81517ba370cdf3de2cc",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-protection-proof.json",
+      "sha256": "0f73c6b84abf80874a6d864b427d82d7574f14d62bde50982bb78b1540682b83",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-provider-request.json",
+      "sha256": "06bb129abc5a931e691243d7d70f16fa156cab3d180dd1c519118819b7fa5853",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-repo-verify-log.txt",
+      "sha256": "ab3809eb88757545fbd364cb51aabd7644ff2e0bd3e14d791958993ec36218ba",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-report-link-check.json",
+      "sha256": "868d570b0d3bbd7dbf8a3b9cc0141832358d05733aeb6a9207f89f191f00003d",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-review.md",
+      "sha256": "b75b103608b06e1c7684e079ae97232ed8a859ce9da8aadff48ecdc75e294efb",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-scope-proof.json",
+      "sha256": "7c7e31e5e50227d0eadeb43e28519db1da594dd1c2dde73167d5b5dfa6fb1e31",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-secret-scan.json",
+      "sha256": "5175b05a7058b331f672da5e3e21b3588f9912a9417c31a0aa2c98427ccaca1e",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-visual-review.md",
+      "sha256": "1928c54bbf095fdf00e48547717e93064e5bc2bafa132274173d05b0f04bc1ba",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/RKS-01-development-report.md",
+      "sha256": "06feb0d9ab6fa3d3c2af44c95302aae392a984975b49c871335adc986572fcb9",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/RKS-01E-evidence-index.json",
+      "sha256": "38ef0338c1c582c9d2dbf09b8d73330c144983e84b3165940d4f1b79b412a643",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/RKS-01E-field-lineage.json",
+      "sha256": "ac1a4f186e243a51b5e78958169f56ae0561f67e8d1d8120ad78c9cd48b23f7f",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/RKS-01E-field-loss-diagnosis.md",
+      "sha256": "d87f69a3a8bf3a468874f4a3736fe2202a1c26244440951d571d58803afd22e8",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/RKS-01E-next-stage-proposal.md",
+      "sha256": "af8da6fac55dc9a6e74e0be71afd621468ffe6a2b6800ced6d34398d8f83cd29",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/RKS-01E-run-evidence.md",
+      "sha256": "dcf80ed2a56f1f326e161176cda18a47d1195dfb333bd5029ea56620c4c3a4b3",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/evidence-manifest.json",
+      "sha256": "67945830bcfa871c6f82fdc4c321cc01e086da3f847eba495aabd994d9a9a5ec",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/ftt-direction-baseline.json",
+      "sha256": "d637700517a02269823f2a3e6c44ec868ba614711e457dc8560ae61e9d425912",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/ftt-direction-diff.md",
+      "sha256": "28a963132083f28224a86264e636f867d68989d593859cb7e3bf7cfbf57f6a42",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/ftt-direction-proposal.json",
+      "sha256": "b53d9b27f0bcec2f1010171aaa3c2580a8fa11a44ec790cda510229cfb20ca1e",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/ftt-evidence-trace.md",
+      "sha256": "0619ed66afc898092b0a449f3b60f74266ddfa915930d16821f699979e049ef9",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/ftt-root-cause-matrix.json",
+      "sha256": "065c815793292ddc93eb9e6dba66244ef6a4344c9ede58d2fd8a3c83afb1cacf",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/ftt-structured-diff.json",
+      "sha256": "acc992418df79986662d1604f5189087bb29a0e3fe104b8aa0e93bf2ec74960d",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/ftt-tag-audit.json",
+      "sha256": "01c14c92cca3d3b381b6a4119cb6c80e81fd1cf3f563c42ecc5966c9f9ae7e6d",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/offline-compile-comparison.json",
+      "sha256": "e17e85f77b54ac434d4b8bc4e7d2b891f7443058ef1c97a2b9c3496982fdeb1f",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/protected-source-check.json",
+      "sha256": "fe7ddbe33e6f21aaec308415b1c1c68e8cf2a536f253fc58c7dd5222264b10dd",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/rks-candidate-knowledge.json",
+      "sha256": "4517b041fd373babd6ce223f247ad32ea8089865b2fb5edf496691d81351d735",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/rks-integration-proposal.md",
+      "sha256": "81a0995176c7365791a8194681f213c79857c3509e53e8ac40b9e80a8be942a3",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/rks-offline-test-report.md",
+      "sha256": "f1fb7f0b51c3ce04f74a453479ab2e86d322b97e9427db3c1e916d0d318c445b",
+      "unchanged": true,
+      "comparison": "same SHA256 as RKS-01F recorded baseline"
+    }
+  ],
+  "userProjectAndCredentials": {
+    "accessed": false,
+    "written": false,
+    "policyRecordsModified": false
+  },
+  "modelConfigurationModified": false,
+  "goldenModified": false,
+  "promptIntegrityModified": false,
+  "knowledgeStateModified": false,
+  "visualQualityAcceptance": "not performed; remains pending-separate-quality-repair",
+  "image1ActualRunAssociation": "undetermined",
+  "counters": {
+    "realAnalysis": 0,
+    "realGeneration": 0,
+    "realValidation": 0,
+    "automaticRetries": 0
+  }
+}

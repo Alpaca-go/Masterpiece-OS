@@ -1,0 +1,344 @@
+{
+  "phase": "RKS-01G",
+  "baselineCommit": "73b953c7fe92eacafa051cfb93c64dd1a6267d08",
+  "status": "All requested implementation checks pass; only independently reproduced historical repository-policy failures remain",
+  "suites": [
+    {
+      "command": "node --import tsx --test packages/visual-workflow/tests/visible-requirement-ownership.test.ts",
+      "exitCode": 0,
+      "countGroups": {
+        "tests": [
+          26
+        ],
+        "pass": [
+          26
+        ],
+        "fail": [
+          0
+        ],
+        "skipped": [
+          0
+        ]
+      },
+      "totals": {
+        "tests": 26,
+        "pass": 26,
+        "fail": 0,
+        "skipped": 0
+      },
+      "failures": [],
+      "log": ".codex-smoke/rks-01g/special-tests.log",
+      "logSha256": "9f2c6c54e423f4e2eca971b3a032ece8661b4c65d58455890b9ff5c0566a0c1d"
+    },
+    {
+      "command": "node --import tsx --test <all independent-workflow test files; exact paths in workflowTestFiles>",
+      "exitCode": 0,
+      "countGroups": {
+        "tests": [
+          176
+        ],
+        "pass": [
+          176
+        ],
+        "fail": [
+          0
+        ],
+        "skipped": [
+          0
+        ]
+      },
+      "totals": {
+        "tests": 176,
+        "pass": 176,
+        "fail": 0,
+        "skipped": 0
+      },
+      "failures": [],
+      "log": ".codex-smoke/rks-01g/workflow-tests.log",
+      "logSha256": "a1e20e921430d0ea9b9424f3ab1c83e9b75e03d1a71f52a138fe7bf1a1fcbc57"
+    },
+    {
+      "command": "npm run verify:current-flows",
+      "exitCode": 0,
+      "countGroups": {
+        "tests": [
+          2,
+          1294
+        ],
+        "pass": [
+          2,
+          1294
+        ],
+        "fail": [
+          0,
+          0
+        ],
+        "skipped": [
+          0,
+          0
+        ]
+      },
+      "totals": {
+        "tests": 1296,
+        "pass": 1296,
+        "fail": 0,
+        "skipped": 0
+      },
+      "failures": [],
+      "log": ".codex-smoke/rks-01g/current-flows.log",
+      "logSha256": "4876d76049ed4f5efa637d87e31da790ca0dfad044f2ebd258142d51f5e4d1a9"
+    },
+    {
+      "command": "npm run repo:verify",
+      "exitCode": 0,
+      "countGroups": {
+        "tests": [
+          2,
+          1294,
+          56
+        ],
+        "pass": [
+          2,
+          1294,
+          56
+        ],
+        "fail": [
+          0,
+          0,
+          0
+        ],
+        "skipped": [
+          0,
+          0,
+          0
+        ]
+      },
+      "totals": {
+        "tests": 1352,
+        "pass": 1352,
+        "fail": 0,
+        "skipped": 0
+      },
+      "failures": [],
+      "log": ".codex-smoke/rks-01g/repo-verify-recheck.log",
+      "logSha256": "f4bca99c1131d89334a8c475e26390b332d32ee308ec5f34c445e36f2c875d6c"
+    },
+    {
+      "command": "npm run golden:test",
+      "exitCode": 0,
+      "totals": {
+        "tests": 5,
+        "pass": 5,
+        "fail": 0
+      },
+      "log": ".codex-smoke/rks-01g/golden-tests.log",
+      "logSha256": "78a4f5734232760dcf2bc1d582a66a5a73e1b296580fa769923fc6b2e2f537c5",
+      "providerCalls": 0,
+      "autoUpdated": false,
+      "scope": "Existing offline Golden, not new human image acceptance"
+    },
+    {
+      "command": "npm test",
+      "exitCode": 1,
+      "countGroups": {
+        "tests": [
+          1701
+        ],
+        "pass": [
+          1699
+        ],
+        "fail": [
+          2
+        ],
+        "skipped": [
+          0
+        ]
+      },
+      "totals": {
+        "tests": 1701,
+        "pass": 1699,
+        "fail": 2,
+        "skipped": 0
+      },
+      "failures": [
+        "仓库不包含项目源文件或项目交付物",
+        "仓库内栅格图片只能用于脱敏示例、测试、模板或已声明运行时资产"
+      ],
+      "log": ".codex-smoke/rks-01g/root-tests.log",
+      "logSha256": "d497ac29c7d6e2626d39b81d372d5bede2f265f85e62c2e08cfdfa8e91b52654"
+    }
+  ],
+  "formerlyBlockedWorkflow": [
+    {
+      "name": "read-only existing report RPC supplies suggestions for missing directions without creating any decision files",
+      "result": "pass"
+    },
+    {
+      "name": "public operations verify the approved implementation before registration, compilation, generation and Logo composition",
+      "result": "pass"
+    },
+    {
+      "name": "baseline lock prevents input/model/code drift and old tasks; other projects remain independent, zero network",
+      "result": "pass"
+    },
+    {
+      "name": "guarded public web operations save, confirm, compile, generate, reopen and invalidate on an analysis request",
+      "result": "pass"
+    },
+    {
+      "name": "explicit details save persists identity, retains artifacts and requires new analysis/confirmation without calling models",
+      "result": "pass"
+    }
+  ],
+  "formerlyBlockedPublic": [
+    {
+      "name": "completed analysis supplies migrated Logo roles without overriding a new intake selection",
+      "result": "pass"
+    },
+    {
+      "name": "offline E2E: owned import, analysis, report and image request complete without shared settings or real providers",
+      "result": "pass"
+    }
+  ],
+  "baselinePolicyReproduction": {
+    "commit": "73b953c7fe92eacafa051cfb93c64dd1a6267d08",
+    "cleanBefore": true,
+    "cleanAfter": true,
+    "method": "independent detached Git worktree at exact starting commit",
+    "command": "node --test tests/repository-policy.test.js at exact detached starting commit",
+    "exitCode": 1,
+    "tests": 2,
+    "pass": 0,
+    "fail": 2,
+    "log": ".codex-smoke/rks-01g/baseline-policy.log",
+    "files": [
+      {
+        "path": "tests/repository-policy.test.js",
+        "baselineSha256": "e0b4a12325ad7124857b3839af264cb77bbdd28cf1085b275be72b379307b6a7",
+        "currentSha256": "e0b4a12325ad7124857b3839af264cb77bbdd28cf1085b275be72b379307b6a7",
+        "unchanged": true
+      },
+      {
+        "path": "packages/visual-workflow/reports/art-medical-identity/review.md",
+        "baselineSha256": "b12d5c04c19cf46afe9ba5d9487f1bb703727df8b730bf03b48f5dad0963ced3",
+        "currentSha256": "b12d5c04c19cf46afe9ba5d9487f1bb703727df8b730bf03b48f5dad0963ced3",
+        "unchanged": true
+      },
+      {
+        "path": "packages/visual-workflow/reports/local-spatial-boundaries/review.md",
+        "baselineSha256": "b4c92dd1b7b79f1cb9a64f006763bed4a5033ba01da129b2bfaa85accb46801d",
+        "currentSha256": "b4c92dd1b7b79f1cb9a64f006763bed4a5033ba01da129b2bfaa85accb46801d",
+        "unchanged": true
+      },
+      {
+        "path": "packages/visual-workflow/reports/art-medical-identity/web-confirmed.png",
+        "baselineSha256": "397fcb16b6f7cd1914984a0037492c519d4aee25ccd575139978275b0b25367d",
+        "currentSha256": "397fcb16b6f7cd1914984a0037492c519d4aee25ccd575139978275b0b25367d",
+        "unchanged": true
+      },
+      {
+        "path": "packages/visual-workflow/reports/local-spatial-boundaries/web-confirmed.png",
+        "baselineSha256": "b321d766caca74ac1b37bb9961249c43a6057532829f5a44af1fc461b442de1e",
+        "currentSha256": "b321d766caca74ac1b37bb9961249c43a6057532829f5a44af1fc461b442de1e",
+        "unchanged": true
+      },
+      {
+        "path": "packages/visual-workflow/reports/p7-spatial-layout-contract/P7-web-confirmed.png",
+        "baselineSha256": "b321d766caca74ac1b37bb9961249c43a6057532829f5a44af1fc461b442de1e",
+        "currentSha256": "b321d766caca74ac1b37bb9961249c43a6057532829f5a44af1fc461b442de1e",
+        "unchanged": true
+      },
+      {
+        "path": "packages/visual-workflow/reports/p7a-prompt-budget/P7a-web-confirmed.png",
+        "baselineSha256": "82bce98cd13474c16d176a1ea838db942514284c1a28bb236224d475ee3a2889",
+        "currentSha256": "82bce98cd13474c16d176a1ea838db942514284c1a28bb236224d475ee3a2889",
+        "unchanged": true
+      },
+      {
+        "path": "packages/visual-workflow/reports/spatial-balance/web-confirmed.png",
+        "baselineSha256": "397fcb16b6f7cd1914984a0037492c519d4aee25ccd575139978275b0b25367d",
+        "currentSha256": "397fcb16b6f7cd1914984a0037492c519d4aee25ccd575139978275b0b25367d",
+        "unchanged": true
+      }
+    ],
+    "cleanup": "clean detached fixture removed before retrying repository version gate",
+    "countGroups": {
+      "tests": [
+        2
+      ],
+      "pass": [
+        0
+      ],
+      "fail": [
+        2
+      ],
+      "skipped": [
+        0
+      ]
+    },
+    "totals": {
+      "tests": 2,
+      "pass": 0,
+      "fail": 2,
+      "skipped": 0
+    },
+    "failures": [
+      "仓库不包含项目源文件或项目交付物",
+      "仓库内栅格图片只能用于脱敏示例、测试、模板或已声明运行时资产"
+    ],
+    "logSha256": "85aa8ebeb33be8ab8a37f322fb60b3177a55ebe4618400dd66236b4934db7e44",
+    "sameFailureNamesAsCurrent": true
+  },
+  "attempts": [
+    {
+      "command": "npm run repo:verify",
+      "log": ".codex-smoke/rks-01g/repo-verify.log",
+      "exitCode": 1,
+      "reason": "Temporary independent baseline checkout inside .codex-smoke contained its own root package-lock.json, triggering the recursive no-subdirectory-lockfile version check.",
+      "resolution": "Verified baseline checkout clean and at starting commit; preserved its policy test evidence and hashes; removed only that temporary detached worktree; complete repo:verify rerun passed.",
+      "behaviorOrIntegrityRegression": false,
+      "testsOrGuardsChanged": false
+    }
+  ],
+  "workflowTestFiles": [
+    "packages/visual-workflow/tests/analysis-direction-suggestion.test.ts",
+    "packages/visual-workflow/tests/architectural-integration.test.ts",
+    "packages/visual-workflow/tests/architectural-language.test.ts",
+    "packages/visual-workflow/tests/architectural-refinement.test.ts",
+    "packages/visual-workflow/tests/architecture-commercial-layer.test.ts",
+    "packages/visual-workflow/tests/art-direction-authority.test.ts",
+    "packages/visual-workflow/tests/art-direction-route.test.ts",
+    "packages/visual-workflow/tests/automatic-design-proposal.test.ts",
+    "packages/visual-workflow/tests/commercial-attribute.test.ts",
+    "packages/visual-workflow/tests/cross-zone-operation-scope.test.ts",
+    "packages/visual-workflow/tests/design-decision-fidelity.test.js",
+    "packages/visual-workflow/tests/design-direction-editor.test.ts",
+    "packages/visual-workflow/tests/explicit-spatial-layout.test.ts",
+    "packages/visual-workflow/tests/fig2-fig3-spatial-direction.test.ts",
+    "packages/visual-workflow/tests/generation-baseline-lock.test.ts",
+    "packages/visual-workflow/tests/methodology/acceptance.test.mjs",
+    "packages/visual-workflow/tests/project-design-direction.test.ts",
+    "packages/visual-workflow/tests/project-details-editing.test.ts",
+    "packages/visual-workflow/tests/restaurant-knowledge/compile.test.ts",
+    "packages/visual-workflow/tests/restaurant-knowledge/field-lineage.test.ts",
+    "packages/visual-workflow/tests/restaurant-knowledge/knowledge.test.js",
+    "packages/visual-workflow/tests/scene-decision-fidelity.test.ts",
+    "packages/visual-workflow/tests/spatial-quality.test.ts",
+    "packages/visual-workflow/tests/validation-policy.test.js",
+    "packages/visual-workflow/tests/visible-requirement-ownership.test.ts"
+  ],
+  "logsPolicy": "Raw execution logs remain in the ignored local .codex-smoke/rks-01g directory with SHA256 recorded here; no user project or provider-response artifacts committed.",
+  "counters": {
+    "realAnalysis": 0,
+    "realGeneration": 0,
+    "realValidation": 0,
+    "automaticRetries": 0
+  },
+  "publication": {
+    "merged": false,
+    "deployed": false,
+    "published": false
+  },
+  "newBehaviorRegressions": [],
+  "newIntegrityAnomalies": []
+}

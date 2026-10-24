@@ -1,0 +1,31 @@
+diff --git a/packages/visual-workflow/implementation-integrity.json b/packages/visual-workflow/implementation-integrity.json
+index 9eee53c3..efd12838 100644
+--- a/packages/visual-workflow/implementation-integrity.json
++++ b/packages/visual-workflow/implementation-integrity.json
+@@ -245,7 +245,7 @@
+     },
+     {
+       "path": "src/generation-runtime/space/compiler.js",
+-      "sha256": "0b90295b72f3926da8de474e7d2c8bf1ce40961003eeede4fa1fbe461f6957d8"
++      "sha256": "9d701f3578816fe3ceb825e2ea7bc0723143fe8b62bbac8651292621765aacee"
+     },
+     {
+       "path": "src/generation-runtime/space/continuation/apply-continuation-program-override.js",
+@@ -365,7 +365,7 @@
+     },
+     {
+       "path": "src/generation-runtime/space/semantic/separate-space-semantics.js",
+-      "sha256": "714dca781a2d6e9de72a303da36a85b53818febada6b854029c0670b50ac3fb3"
++      "sha256": "9867c041bd560bd968575deb9261f25494603b116e9a7e7ea39c15daeaf799a2"
+     },
+     {
+       "path": "src/generation-runtime/space/semantic/validate-spatial-semantics.js",
+@@ -373,7 +373,7 @@
+     },
+     {
+       "path": "src/generation-runtime/space/source-adapter.js",
+-      "sha256": "ab726f3af21c98ed6fca26d2971b0ed8bd5772e18060bff1ef169817e0da92a5"
++      "sha256": "ea9334a585f65b2af63b5da91cb9236ba2be475e00ce7da5421617596928d19e"
+     },
+     {
+       "path": "src/generation-runtime/space/space-quality-gate.js",
