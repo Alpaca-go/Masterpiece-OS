@@ -1,0 +1,1526 @@
+{
+  "baseline": "874efc07f56610a67c0c1842ecce60191f987375",
+  "implementation": {
+    "owner": "visual-workflow",
+    "extractionStatus": "independent-current-implementation",
+    "qualityAcceptance": "pending-separate-quality-repair",
+    "implementationDigest": "4b8ea1fa7c759bc05a42cf1ffd95e8b321f91aa9dfa63c283256250a4a8c5410"
+  },
+  "manifestFieldsChanged": 4,
+  "productionSourcesChanged": 0,
+  "invariants": [
+    {
+      "name": "P7B",
+      "roots": [
+        "packages/visual-workflow/src/generation-baseline-lock.js",
+        "packages/visual-workflow/src/generation-runtime/generation/seedream-adapter.js",
+        "packages/visual-workflow/src/generation-runtime/space/product-policy.js",
+        "packages/visual-workflow/tests/generation-baseline-lock.test.ts",
+        "packages/visual-workflow/reports/p7b-single-generation"
+      ],
+      "unchangedFrom": "874efc07f56610a67c0c1842ecce60191f987375",
+      "trackedFileCount": 26,
+      "baselineGitTreeSha256": "557c718b0dde292c2598c7c1330e710885aaa17a1e9cb6cc787bbe1c74d4e224",
+      "files": [
+        {
+          "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-artifact-manifest.json",
+          "sha256": "522876fea1b16cd06d501f46edea3ab96ac9cd966cd8c48dc1e85c2ef4cc7cb0"
+        },
+        {
+          "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-authorization.json",
+          "sha256": "a78557e3fbaf86a882a8260757f4b4e8bf56999801beada717d6f9daf3eb1193"
+        },
+        {
+          "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-call-ledger.json",
+          "sha256": "146bd90064326d282087f110b64bee93fc60cf86ba512f30d94b6b2118b67211"
+        },
+        {
+          "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-comparison-inputs.json",
+          "sha256": "376400f88a87429b6c3bf4e07da0e5224c5024aeb62d459c84616e80f2c0b82b"
+        },
+        {
+          "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-comparison.md",
+          "sha256": "7d1b9f6288b87b25c98bbdfc241271cdf47286505aa12254eb90278c1988507b"
+        },
+        {
+          "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-execution-summary.json",
+          "sha256": "7f321c5ab5fe2c790f99c3eb0cac24ed35707dc162df35b574ae950ae6b1c12b"
+        },
+        {
+          "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-fee-record.json",
+          "sha256": "bf45afb1fc92f9372d22afec4cfb99ad841099c2cc2d002448086a910bf2626b"
+        },
+        {
+          "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-final-preflight-proof.json",
+          "sha256": "4690bee1f3ca6936faf6ba733753d11277ae851ccd69f3fc75fce6920cec3de4"
+        },
+        {
+          "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-gate-results.json",
+          "sha256": "924b96e9fa0c35015e408206ba90110dce3d33245cfde70fb8e42cf80ec5859e"
+        },
+        {
+          "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-image-evidence.json",
+          "sha256": "02bf48c3402bd159ce9ae84bd7b3b49f4d93919402f16a819bdc1ae4fd72c731"
+        },
+        {
+          "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-image-response-summary.json",
+          "sha256": "20ec9faa502e1c150b030b30f87b9478612c4e99c404a1137162aef8430c88d3"
+        },
+        {
+          "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-local-artifact-index.json",
+          "sha256": "44a690cabb34f9b88083f238119e34962f93ff66cdf2a3ff521735f65091ebbb"
+        },
+        {
+          "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-original-image-metadata.json",
+          "sha256": "623f550fc6fcbdd5c8f261afa29ead4875e467aad59fc7a46248a14154e9eec2"
+        },
+        {
+          "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-preflight-and-hash-proof.json",
+          "sha256": "eba0a7df731c4c99d349efbe85fde0afa08f2b61eaa1a81517ba370cdf3de2cc"
+        },
+        {
+          "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-protection-proof.json",
+          "sha256": "0f73c6b84abf80874a6d864b427d82d7574f14d62bde50982bb78b1540682b83"
+        },
+        {
+          "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-provider-request.json",
+          "sha256": "06bb129abc5a931e691243d7d70f16fa156cab3d180dd1c519118819b7fa5853"
+        },
+        {
+          "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-repo-verify-log.txt",
+          "sha256": "ab3809eb88757545fbd364cb51aabd7644ff2e0bd3e14d791958993ec36218ba"
+        },
+        {
+          "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-report-link-check.json",
+          "sha256": "868d570b0d3bbd7dbf8a3b9cc0141832358d05733aeb6a9207f89f191f00003d"
+        },
+        {
+          "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-review.md",
+          "sha256": "b75b103608b06e1c7684e079ae97232ed8a859ce9da8aadff48ecdc75e294efb"
+        },
+        {
+          "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-scope-proof.json",
+          "sha256": "7c7e31e5e50227d0eadeb43e28519db1da594dd1c2dde73167d5b5dfa6fb1e31"
+        },
+        {
+          "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-secret-scan.json",
+          "sha256": "5175b05a7058b331f672da5e3e21b3588f9912a9417c31a0aa2c98427ccaca1e"
+        },
+        {
+          "path": "packages/visual-workflow/reports/p7b-single-generation/P7b-visual-review.md",
+          "sha256": "1928c54bbf095fdf00e48547717e93064e5bc2bafa132274173d05b0f04bc1ba"
+        },
+        {
+          "path": "packages/visual-workflow/src/generation-baseline-lock.js",
+          "sha256": "dd13f84fa39cefd9941f242428abe0418d6537b1cb3ddaa25552deb3e82d6111"
+        },
+        {
+          "path": "packages/visual-workflow/src/generation-runtime/generation/seedream-adapter.js",
+          "sha256": "1a150deb5b1e495ca6bf8cb01de8566bca87012be4f36bbcfa7abf922b8926ec"
+        },
+        {
+          "path": "packages/visual-workflow/src/generation-runtime/space/product-policy.js",
+          "sha256": "224aaf01f63e30d4d1f7189134ea1eb59505636d6038d77f97808c8a2f0399d8"
+        },
+        {
+          "path": "packages/visual-workflow/tests/generation-baseline-lock.test.ts",
+          "sha256": "f7eb96c1d9d087ccbc448486f052597324e3ff04188b1c25ad322f2818379d79"
+        }
+      ],
+      "unrelatedAssetsModified": false
+    },
+    {
+      "name": "B1",
+      "roots": [
+        "packages/visual-workflow/src/project-design-direction.js",
+        "packages/visual-workflow/src/analysis-direction-suggestion.js",
+        "packages/visual-workflow/src/generation-runtime/generation/user-confirmed-visual-decision.js",
+        "apps/web/src/features/visual-workflow/ProjectDesignDirectionPanel.tsx",
+        "packages/visual-workflow/tests/project-design-direction.test.ts",
+        "packages/visual-workflow/tests/analysis-direction-suggestion.test.ts"
+      ],
+      "unchangedFrom": "874efc07f56610a67c0c1842ecce60191f987375",
+      "trackedFileCount": 6,
+      "baselineGitTreeSha256": "03a3ce11a269045798b44d66c5cd09ed6690cc1401519411aa3ec2f4abddb096",
+      "files": [
+        {
+          "path": "apps/web/src/features/visual-workflow/ProjectDesignDirectionPanel.tsx",
+          "sha256": "f18a3cecdad3e0c888be6212540af05ec2735711c847a6178ddeabc7f1e61f5f"
+        },
+        {
+          "path": "packages/visual-workflow/src/analysis-direction-suggestion.js",
+          "sha256": "6cca49c384f0601675c2700efb447577f4929428b7f49d36c351e69110f3a18d"
+        },
+        {
+          "path": "packages/visual-workflow/src/generation-runtime/generation/user-confirmed-visual-decision.js",
+          "sha256": "3d6ec8e9fc701de0967d226c2f323c34861456d6b0137c762fa580dfc0ec0ad4"
+        },
+        {
+          "path": "packages/visual-workflow/src/project-design-direction.js",
+          "sha256": "cccd26e77c37a542a86598f7a9a8b612afbdf5c0c08c73aebb9c9d7d1b605a7d"
+        },
+        {
+          "path": "packages/visual-workflow/tests/analysis-direction-suggestion.test.ts",
+          "sha256": "0b33e0d43db14b86668de8b38ea2c6b35b1f7b0c0ac86eb748462a86ddf8d844"
+        },
+        {
+          "path": "packages/visual-workflow/tests/project-design-direction.test.ts",
+          "sha256": "54d5d392069fd6536f90dacee4eb725e4e58c282f263b27a40dea87da4b11934"
+        }
+      ],
+      "unrelatedAssetsModified": false
+    },
+    {
+      "name": "Golden",
+      "roots": [
+        "evaluation",
+        "space-generator/quality-baselines",
+        "scripts/golden"
+      ],
+      "unchangedFrom": "874efc07f56610a67c0c1842ecce60191f987375",
+      "trackedFileCount": 270,
+      "baselineGitTreeSha256": "b0336cf719af18050640ffb2faa6e71d88ff45e390434b29806f7df20ac6853a",
+      "files": [
+        {
+          "path": "evaluation/anti-cases/cross-project-cases.json",
+          "sha256": "39311af7bcbf401cd2375326653a43611a52a1e71bb041aa00c42b8a9eab51c8"
+        },
+        {
+          "path": "evaluation/contracts/golden-case.schema.json",
+          "sha256": "679bbb529be2cc5a5d6360481878cbf2425c7cf913f5f53e40d6eaeaf3f8a858"
+        },
+        {
+          "path": "evaluation/golden-cases/.gitkeep",
+          "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+        },
+        {
+          "path": "evaluation/hidden-cases/hidden-case-001.json",
+          "sha256": "389d9d48d934a343b95484ac97f2785d26815adc4a51b8bbfe2668cf6fd7d371"
+        },
+        {
+          "path": "evaluation/reports/.gitkeep",
+          "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+        },
+        {
+          "path": "evaluation/reports/creative-director-v18.1-real-provider.md",
+          "sha256": "f01a6e3cbf45401fae2b68c9c10c2d44c9d4342f22e1264dfc0bb0e65ac1d458"
+        },
+        {
+          "path": "evaluation/reports/creative-session-v18-offline-ab.md",
+          "sha256": "3946939d739308211ee1d1f05078e9ced288b7e6951c8ef69faaaa1abbcb97af"
+        },
+        {
+          "path": "evaluation/reports/hidden-case-latest.json",
+          "sha256": "02354999a70f973b706b8d952ac701399cac1584d0efe4245866045e61dfd647"
+        },
+        {
+          "path": "evaluation/reports/image-generation-deliverables-v17.md",
+          "sha256": "c6d0ff596a59bc0a6f606813a695bb1bda04794df4324ed31f61c479410ce5c1"
+        },
+        {
+          "path": "evaluation/reports/jiuzhou-golden-audit/README.md",
+          "sha256": "9bcc622dd9000839cf6046ec9ae3f8587740e83575944dac6b8b930069753d17"
+        },
+        {
+          "path": "evaluation/reports/jiuzhou-golden-audit/audit-matrix.json",
+          "sha256": "804ec528ae98b4b276a450607b058a2b6745a1df5e566775ed3519bcae09dee8"
+        },
+        {
+          "path": "evaluation/reports/jiuzhou-golden-audit/current-analysis-report.md",
+          "sha256": "370a9f503d4ec1a32cd9f7f3bb4c14d528ef676ea43bf77ea2b2bfa6d21c6c10"
+        },
+        {
+          "path": "evaluation/reports/jiuzhou-golden-audit/current-masterpiece-prompt.txt",
+          "sha256": "da217808d037353362142ded21c75289b9de1e78af0c4b5c141fad83ba0e2e55"
+        },
+        {
+          "path": "evaluation/reports/jiuzhou-golden-audit/golden-prompt.md",
+          "sha256": "040d11a9acc782e642cf047a707e64b1f983bda8ad84e47bfd64c6f3631799e0"
+        },
+        {
+          "path": "evaluation/reports/jiuzhou-golden-audit/phase-2-core-results.md",
+          "sha256": "c35dad34258df43d9fb1deb9c7a2d9e3f5d30035f4fcda48f9f8550e261b352f"
+        },
+        {
+          "path": "evaluation/reports/jiuzhou-golden-audit/phase-3-packet-results.md",
+          "sha256": "32b445a63c627b6227f605417bcefb15f1c61e4bc1ad3a26be31d4bbf1ac643a"
+        },
+        {
+          "path": "evaluation/reports/jiuzhou-golden-audit/phase-4-pipeline-report-results.md",
+          "sha256": "6705cb119e7bf0a315197b6960ab253931c9bae4e20fb1139aafd5c9952e2017"
+        },
+        {
+          "path": "evaluation/reports/jiuzhou-golden-audit/phase-5-compiler-results.md",
+          "sha256": "9788b64fa2d56245653f11ddacd59450417145a33b7372f26bb15d63c3cbbffe"
+        },
+        {
+          "path": "evaluation/reports/jiuzhou-golden-audit/visual-fixture-manifest.json",
+          "sha256": "7e7404cf95fb605371db95e7820afd78e8c45b74f8ceb2928d5edc6e37e76e3a"
+        },
+        {
+          "path": "evaluation/reports/jiuzhou-space-feedback-v1.1/baseline-b-pass-with-residual-risk.json",
+          "sha256": "10817c4fb26ea8d6804b515d0adcc5c750fd6522ee0759434c6478eca539a6a8"
+        },
+        {
+          "path": "evaluation/reports/jiuzhou-space-feedback-v1.1/production-baseline.json",
+          "sha256": "18561413794dba66b07ea9a55c93de3f980af960f69785d8145401e1ba16c81a"
+        },
+        {
+          "path": "evaluation/reports/jiuzhou-space-feedback-v1.1/production-pass.md",
+          "sha256": "18927b6845cf03de57a521cef5893273ca415578a2e349f3e6bbd22fa9af15ec"
+        },
+        {
+          "path": "evaluation/reports/jiuzhou-space-feedback-v1/abc-comparison.md",
+          "sha256": "27cdaba7ed0cd5deb2fcb487635698a666a66b264bbab02cbfebb06adff3cbe0"
+        },
+        {
+          "path": "evaluation/reports/jiuzhou-space-feedback-v1/baseline-a-partial-pass.json",
+          "sha256": "f9822b26c8c7575fd40c3bcd84bd71b9eaa8db6808d5083c184a99f2d9686b91"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/after/packaging/final-prompt.md",
+          "sha256": "e4a872e52cd26c8b556d69d7e3842641ad85a4ba1b0de2296a0f587e3a2f3048"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/after/packaging/generation-blueprint.json",
+          "sha256": "38c393f727e475f46394522bb69896bd206032bf25ebd27f1ec7b262b324acdf"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/after/packaging/packaging-translation.json",
+          "sha256": "2dfd9d69ea7d5af5d107e6ec095ffd7f4b06c7332846aeb4e67da959310b9feb"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/after/packaging/preflight-report.json",
+          "sha256": "ee2a81d9b4c09521f0cd6a1e36bc9e94e2e87a9b6f265d561a9bb03da7ab85d1"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/after/packaging/project-specific-generation-contract.json",
+          "sha256": "322f8f4d7786d6e7d78a80ea793c1ead21130bfddfdb81c77aa2b129d45978e5"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/after/packaging/prompt-source-map.json",
+          "sha256": "24ca9439367ce885afc36457c7cab4d992b9c10c528d6fd5058a765653ee6afd"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/after/packaging/provider-payload-preview.json",
+          "sha256": "112e77709d6c493834abdc95621099d55c4a059c90a8baf0ead6c8a60ae7d2ce"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/after/packaging/spatial-translation.json",
+          "sha256": "a3f6f2719c50771cb8bbc3045ea294bcb32b57e978bf3f8b0a7cc6d8a3e3336e"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/after/packaging/visual-decision-packet.json",
+          "sha256": "119f14f5c9d2503380218d751e7a8c5857eb5e4554313659ab08037b512dd1dc"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/after/packaging/visual-understanding-core.json",
+          "sha256": "9161dbe8e74cc94fc9eb0f748ceea5f0a619369435a65c6c3fe366795b3df3f3"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/after/space/final-prompt.md",
+          "sha256": "c82634355b354e68a1618c11e554068339e39bbfa1822ee6f45d542165c913fa"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/after/space/generation-blueprint.json",
+          "sha256": "38c393f727e475f46394522bb69896bd206032bf25ebd27f1ec7b262b324acdf"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/after/space/packaging-translation.json",
+          "sha256": "415ceb6a8cce558795ad21dc53d8581cbad75ae2abe6700d15bb2a40ea00851b"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/after/space/preflight-report.json",
+          "sha256": "3a5438a2c57a2471a640186dae19a08a6356e5724ccc6afccc61d6fb62e1473c"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/after/space/project-specific-generation-contract.json",
+          "sha256": "d01c865f1bae3bd7bdbe49167e275a244ab648a06cf6dea718a60d4e0ce32e51"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/after/space/prompt-source-map.json",
+          "sha256": "76387aaff22c0d6ad546ffeaa82b7dc7910682e68e82fa802eac82f58a634afc"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/after/space/provider-payload-preview.json",
+          "sha256": "f9499055faaca043c699d1cfd598655b596ae49dd8b33f7f50e9e219f2d7ba73"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/after/space/spatial-translation.json",
+          "sha256": "1523a64254923a843eedc0a1aaa81f03c4de134723f9675441fbedac57aabbb0"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/after/space/visual-decision-packet.json",
+          "sha256": "5e76f4369576d4c9e2611333bdf9cc6999c9ed9c2ef6d2fbcd75f8210de5bd50"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/after/space/visual-understanding-core.json",
+          "sha256": "9161dbe8e74cc94fc9eb0f748ceea5f0a619369435a65c6c3fe366795b3df3f3"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/artifact-diff.json",
+          "sha256": "c3acccbe1687974bf610c2ca3f150b409f395647839c5f861fa9ceb0b31d4eb6"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/atomic-decision-backtrace.json",
+          "sha256": "fd15f596291ff8a20922ea70fc67f617e9efd6bafd9a80030a7c82563cb97dab"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/audit-config.json",
+          "sha256": "e70145a2a73c4e4f802f1f786af917f7a42f0b590e41bbe8e375926a472fe521"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/audit-report.md",
+          "sha256": "9adec9baff4100e699cf9e30903031658ad089a86abab2a02d8e75e12ba2e946"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/before/packaging/final-prompt.md",
+          "sha256": "1a503e79bae0e8248e20a632542c6783d509a2c43d4dcec0b2c50f0918a8b838"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/before/packaging/generation-blueprint.json",
+          "sha256": "38c393f727e475f46394522bb69896bd206032bf25ebd27f1ec7b262b324acdf"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/before/packaging/packaging-translation.json",
+          "sha256": "415ceb6a8cce558795ad21dc53d8581cbad75ae2abe6700d15bb2a40ea00851b"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/before/packaging/preflight-report.json",
+          "sha256": "f4c6ada4819ab1a21a8caf2fb623595a6306d0f244aef007feff03c2bc54cdac"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/before/packaging/project-specific-generation-contract.json",
+          "sha256": "40bcf67b835aedcf157f24881faf9c22ec4b4cb59fe5d5a23a2d716328027548"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/before/packaging/prompt-source-map.json",
+          "sha256": "2a99d9cf528f1158db3f9d6ab6fe17fd8a884481db6d26c6af9e19aa4476af7f"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/before/packaging/provider-payload-preview.json",
+          "sha256": "1a502116be28f949e516150d6704df31b96cdbd85e3c2bd97012cf241237d6e6"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/before/packaging/spatial-translation.json",
+          "sha256": "a3f6f2719c50771cb8bbc3045ea294bcb32b57e978bf3f8b0a7cc6d8a3e3336e"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/before/packaging/visual-decision-packet.json",
+          "sha256": "119f14f5c9d2503380218d751e7a8c5857eb5e4554313659ab08037b512dd1dc"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/before/packaging/visual-understanding-core.json",
+          "sha256": "9161dbe8e74cc94fc9eb0f748ceea5f0a619369435a65c6c3fe366795b3df3f3"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/before/space/final-prompt.md",
+          "sha256": "8b40bdc2d696db7190714853221e4ed112f489a1a4639a4a207dbd6e5a3e31cc"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/before/space/generation-blueprint.json",
+          "sha256": "38c393f727e475f46394522bb69896bd206032bf25ebd27f1ec7b262b324acdf"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/before/space/packaging-translation.json",
+          "sha256": "415ceb6a8cce558795ad21dc53d8581cbad75ae2abe6700d15bb2a40ea00851b"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/before/space/preflight-report.json",
+          "sha256": "6991d16419882701f3eabfa5b17afbbbd92e9751a959a88459a6e20d25d5f9ff"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/before/space/project-specific-generation-contract.json",
+          "sha256": "159b9718c66094971b60fc2f197595091f8f0be0748f5874f8e0d95d9957af59"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/before/space/prompt-source-map.json",
+          "sha256": "a8662f4beda2920d41a07b7228c1a914f4acdbc1e5c837057f5e310b8916f59b"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/before/space/provider-payload-preview.json",
+          "sha256": "b73d830774b5047384fef794e926ffa5fcd111e928a79602529cd5206a35afe0"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/before/space/spatial-translation.json",
+          "sha256": "a3f6f2719c50771cb8bbc3045ea294bcb32b57e978bf3f8b0a7cc6d8a3e3336e"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/before/space/visual-decision-packet.json",
+          "sha256": "119f14f5c9d2503380218d751e7a8c5857eb5e4554313659ab08037b512dd1dc"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/before/space/visual-understanding-core.json",
+          "sha256": "9161dbe8e74cc94fc9eb0f748ceea5f0a619369435a65c6c3fe366795b3df3f3"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/packaging-prompt.diff",
+          "sha256": "77ca91d611a96331cec4ee1935ffaf1a1371c7cb15cd7f702d70c8a236b25029"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/regression-fail-cases.json",
+          "sha256": "2e24e77e64fe1d8187739f15a22d2187e8a32860606c2be8000f5afcc2053618"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/regression-results.json",
+          "sha256": "b3183c7e54d1506413fdd744bad5aa4e5a757b660764f8d2c80d3f4a8a54a2be"
+        },
+        {
+          "path": "evaluation/reports/phase1-project-specificity-regression/space-prompt.diff",
+          "sha256": "e0b1db2bf3303979dbf5d22804ee001d187bb160cea987b22893e45893cfc60b"
+        },
+        {
+          "path": "evaluation/reports/positive-spatial-mechanism/after/final-prompt.md",
+          "sha256": "c82634355b354e68a1618c11e554068339e39bbfa1822ee6f45d542165c913fa"
+        },
+        {
+          "path": "evaluation/reports/positive-spatial-mechanism/after/preflight-report.json",
+          "sha256": "9da4a2b499f0f2707e893592a16c5c23a92196529b19972673d92ff4e9098d58"
+        },
+        {
+          "path": "evaluation/reports/positive-spatial-mechanism/after/project-specific-generation-contract.json",
+          "sha256": "e3754f393dfc93750ddc86eb5a7cf0f09fdd3e217931ee19af12992f6d6e2e4b"
+        },
+        {
+          "path": "evaluation/reports/positive-spatial-mechanism/after/prompt-source-map.json",
+          "sha256": "76387aaff22c0d6ad546ffeaa82b7dc7910682e68e82fa802eac82f58a634afc"
+        },
+        {
+          "path": "evaluation/reports/positive-spatial-mechanism/after/provider-payload-preview.json",
+          "sha256": "6e93e15589a858416cd507de9bfc5fa58833da7e368b4cd551f6fe2186e66a02"
+        },
+        {
+          "path": "evaluation/reports/positive-spatial-mechanism/after/spatial-translation.json",
+          "sha256": "1523a64254923a843eedc0a1aaa81f03c4de134723f9675441fbedac57aabbb0"
+        },
+        {
+          "path": "evaluation/reports/positive-spatial-mechanism/audit-config.json",
+          "sha256": "90acf0d34f34ac669614105b46a90f4fe1c8c4463acd02ded763eb18325e0cd0"
+        },
+        {
+          "path": "evaluation/reports/positive-spatial-mechanism/audit-report.md",
+          "sha256": "0bfa880db4ca0e227805cc34043e4e54e312153440fd2abc90ace77bd44c61a0"
+        },
+        {
+          "path": "evaluation/reports/positive-spatial-mechanism/before/final-prompt.md",
+          "sha256": "15917cc2aeb067a7b5fcea48d7bd6b8104ac05ec9f33cf49360ff668c0b0aec4"
+        },
+        {
+          "path": "evaluation/reports/positive-spatial-mechanism/before/preflight-report.json",
+          "sha256": "33791e13d05a27d7ba95eb56e698f71468db1e39a7166486ec99fcb97840f2e4"
+        },
+        {
+          "path": "evaluation/reports/positive-spatial-mechanism/before/project-specific-generation-contract.json",
+          "sha256": "1becd7d33ef3f819cdd191bfb0cc996ea62b539ea7dc480d6e1c1a6783af6fa3"
+        },
+        {
+          "path": "evaluation/reports/positive-spatial-mechanism/before/prompt-source-map.json",
+          "sha256": "3910a3420b31c47c48c05b0c1030de31f05bee659abe43b40162c60e2a246025"
+        },
+        {
+          "path": "evaluation/reports/positive-spatial-mechanism/before/provider-payload-preview.json",
+          "sha256": "3f63bedc288c4ea276fb9b45ab34056b8d3aa6a175a1f1e788d4d5abdcb93479"
+        },
+        {
+          "path": "evaluation/reports/positive-spatial-mechanism/before/spatial-translation.json",
+          "sha256": "1e3fc144e50ac379dba726e4863c27e400dbd2c304e39657be153cb61672edc0"
+        },
+        {
+          "path": "evaluation/reports/positive-spatial-mechanism/final-prompt.diff",
+          "sha256": "6d22291df97b78b271c2fdb929709143afcf860b2fb39befd6a29750bf318137"
+        },
+        {
+          "path": "evaluation/reports/positive-spatial-mechanism/smoke-test.json",
+          "sha256": "4df99e1e67dfc407ea6917147b8d0be71167f678143aba403f7b05000bd9d6ac"
+        },
+        {
+          "path": "evaluation/reports/positive-spatial-mechanism/spatial-mechanism-diff.json",
+          "sha256": "00d9a7d3ca7f64e8007ebce84dbaf01f721d9b530e4f9583d7811617e42b43d2"
+        },
+        {
+          "path": "evaluation/reports/prompt-compiler-decoupling-v1/jiuzhou-real-provider-impact.md",
+          "sha256": "a82f4d3d0f567774742c567921b6b65a85edf623dacf58bd9c40e3a8ef82cbb8"
+        },
+        {
+          "path": "evaluation/reports/prompt-compiler-decoupling-v1/verification.md",
+          "sha256": "8b2d7b1adb8761621b00683552e0c6584e1c2cf8c8f931752b2ca7efa2331d63"
+        },
+        {
+          "path": "evaluation/reports/v6-v18-development-completion-audit.md",
+          "sha256": "a580d71d9781b5fa463987bcebc29c99c56d9ddf842428950b5b23cf6714b3c6"
+        },
+        {
+          "path": "evaluation/reports/visual-decision-v1-real-provider.md",
+          "sha256": "641c318bbe06ef488c0af651e07cabee4005932b33bc6b96aa4853aff77acd68"
+        },
+        {
+          "path": "evaluation/reports/visual-memory-engine-v1-real-provider.md",
+          "sha256": "025d4b8e55696c345a36c1120cb9b73975661d426cff6d932232a4500f6914d9"
+        },
+        {
+          "path": "evaluation/reports/visual-upgrade-engine-v1-real-provider.md",
+          "sha256": "26035b7a29c11c8bc0b0a14e47c6d7e5246aceceadfaed2a75a1c937c5a51ed5"
+        },
+        {
+          "path": "scripts/golden/run-golden.mjs",
+          "sha256": "835478b5ab122ef94d1b42caa630ad5e4261638575a13fe23cfddcc5cf8c77f5"
+        },
+        {
+          "path": "space-generator/quality-baselines/.gitignore",
+          "sha256": "5fb1d20769e7193e23192f00c64e05feb8a6579d687ef4d428e01996c260647c"
+        },
+        {
+          "path": "space-generator/quality-baselines/active-space-route-baseline.json",
+          "sha256": "9074527df9ba4be66ce55f2b207705a35ad4966f199af64629f8690a40eb8b8d"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/anti-regression/README.md",
+          "sha256": "f35ca8b39d3d8582b21e2181895c9fd76d88c33203cb4184a18b0ffeba980cf6"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/continuation-smoke/GATE-REPORT.md",
+          "sha256": "0a5f60bdaa2df84bd595270d00cf54cf1b6944782be11ae19626743bc4f5d6d6"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/continuation-smoke/jiuzhou-aesthetics/reception-to-consultation/continuation-contract.json",
+          "sha256": "781023b8ec5409cf9f8e8b3d17d31db903cec3e5d917c7c3df9120e1132a82e4"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/continuation-smoke/jiuzhou-aesthetics/reception-to-consultation/evaluation.json",
+          "sha256": "33a2aa02c1078c8b7dcfce12f3c235fe15b92767e7690a73c49a20d8be72ce07"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/continuation-smoke/jiuzhou-aesthetics/reception-to-consultation/manifest.json",
+          "sha256": "91ba7f2673cb5cc58b5c8c74c67384e07eb271e785eda459d788882fd8902831"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/continuation-smoke/jiuzhou-aesthetics/reception-to-consultation/prompt.md",
+          "sha256": "7953a9b2179ac4181bd923839dea215f697e09e691b8413197d17bb532b533c0"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/continuation-smoke/jiuzhou-aesthetics/reception-to-consultation/provider-payload.redacted.json",
+          "sha256": "119f134dec0a25d1fb9e97ec793d0a1e28165cf30ebe097e536e7f37880f20ee"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/continuation-smoke/jiuzhou-aesthetics/reception-to-consultation/reference-trace.json",
+          "sha256": "53dd6fd32edee4950053b9389559d0d1856ea04525a0cfd7a3bbf9397f59597b"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/continuation-smoke/jiuzhou-aesthetics/reception-to-consultation/run.json",
+          "sha256": "7c7d0d6f877007ab56ba9d3d11e204b164823fbd35b303c1a36e1141a1c4b6ff"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/continuation-smoke/jiuzhou-aesthetics/reception-to-consultation/target-functional-program.json",
+          "sha256": "ea7d3f769516b2a96651e4734a7aebc336811f9e8f0bb51dcfc1b7fc7c96e22a"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/continuation-smoke/jiuzhou-aesthetics/reception-to-consultation/trace.json",
+          "sha256": "fcd5276b116523c52b6ebb3366533187005f318c0deabcfac71e607ba1458699"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/post-repair-evidence/feng-tang-tang/ftt-standard-1/artifact-integrity-report.json",
+          "sha256": "765aa53b61fc7a5b104564ada0bc20d12798a953decde8f399ec55184e078a62"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/post-repair-evidence/feng-tang-tang/ftt-standard-1/evaluation.json",
+          "sha256": "93ddacefe67f6e1ca8d297882f19ae7f48df4c7ee3c99dfb5e23adf421d1eeed"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/post-repair-evidence/feng-tang-tang/ftt-standard-1/manifest.json",
+          "sha256": "3fb83a92c1cf5ad7dc6f4b7cb968f8ea9ae275efde6e2566a938655ada6fe11d"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/post-repair-evidence/feng-tang-tang/ftt-standard-1/prompt.md",
+          "sha256": "e9a82a42ee277d6c953316034458828df6ee9cd6e91bbc4c7fca2b5f0783fbdf"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/post-repair-evidence/feng-tang-tang/ftt-standard-1/provider-payload.redacted.json",
+          "sha256": "78554413fea379fc4af7158b44eafa9bd9b96f36f11e78f17fd2fd0e151d50e8"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/post-repair-evidence/feng-tang-tang/ftt-standard-1/reference-trace.json",
+          "sha256": "ac2729db551f2f9fcc93688caca6343117f475f89249f26c5d91551007fe0254"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/post-repair-evidence/feng-tang-tang/ftt-standard-1/run.json",
+          "sha256": "edd9d2dee95df86f5d6105bbd2b77c5823d856983dbf368de506c14ae71289be"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/post-repair-evidence/jiuzhou-aesthetics/jzmx-standard-1/artifact-integrity-report.json",
+          "sha256": "cc51168f17577b7660a36a5bab9dd7f97bf3c399b59b0c5fbd093621bf588768"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/post-repair-evidence/jiuzhou-aesthetics/jzmx-standard-1/evaluation.json",
+          "sha256": "9a84733beaed9e9ec89e44d74b8a51ad4715b300756b03b12981f6a07f1a6c08"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/post-repair-evidence/jiuzhou-aesthetics/jzmx-standard-1/manifest.json",
+          "sha256": "3f6622336d4e68ab3bf982b72ccbb0260bbef7ee521adc6ecba0225eb303196c"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/post-repair-evidence/jiuzhou-aesthetics/jzmx-standard-1/prompt.md",
+          "sha256": "6b6b4e69e312915285078eda0c9571d7b2aa0247ab010b71fdd213471d79a78b"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/post-repair-evidence/jiuzhou-aesthetics/jzmx-standard-1/provider-payload.redacted.json",
+          "sha256": "568488a390fa6339fa0553f427dd907e7c429997ed0564aabc7ca03b55294de0"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/post-repair-evidence/jiuzhou-aesthetics/jzmx-standard-1/reference-trace.json",
+          "sha256": "ac2729db551f2f9fcc93688caca6343117f475f89249f26c5d91551007fe0254"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/post-repair-evidence/jiuzhou-aesthetics/jzmx-standard-1/run.json",
+          "sha256": "62ce69efefcc853150b0764f19ecb46994d19065b5be2948685afaba38058788"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/post-repair-evidence/yi-ji-liang-fang/yjlf-standard-1/artifact-integrity-report.json",
+          "sha256": "922dd72e8d65126f4f2632ee18df763c304a8777cc0d3ac928e446e1ab864d40"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/post-repair-evidence/yi-ji-liang-fang/yjlf-standard-1/evaluation.json",
+          "sha256": "d808ad5b578a804fb4105338b6a839ec9b17db9dd5eb25244ba9f6941226244c"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/post-repair-evidence/yi-ji-liang-fang/yjlf-standard-1/manifest.json",
+          "sha256": "5bb9bff37d0c4a678023ee659ff224feff716a731a9a9b7f9fc024c41d4b0c86"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/post-repair-evidence/yi-ji-liang-fang/yjlf-standard-1/prompt.md",
+          "sha256": "fabeb5bac6807f28a4ea837d1e6d6ca3032b55d4485375938546422e77b6d26a"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/post-repair-evidence/yi-ji-liang-fang/yjlf-standard-1/provider-payload.redacted.json",
+          "sha256": "048df47bd937b0507cd31a93f781260ed48418bf7fb5b0215a1f6fa9fb088be1"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/post-repair-evidence/yi-ji-liang-fang/yjlf-standard-1/reference-trace.json",
+          "sha256": "ac2729db551f2f9fcc93688caca6343117f475f89249f26c5d91551007fe0254"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/post-repair-evidence/yi-ji-liang-fang/yjlf-standard-1/run.json",
+          "sha256": "9269559f27265e1416d0dd0bf100d44025c78940002fffc81e902c7eda33f56a"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/acceptance-report.md",
+          "sha256": "d3a83ffe8fa1be2786bc9f1592aebadefd935f9bc49ddbeb420b8bdefc86a990"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/feng-tang-tang/standard/compiled-prompt.json",
+          "sha256": "140ce49a3ad12ace4a3da8f1ff2f8abafa01c440c79ddfbf09f391216bfabb55"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/feng-tang-tang/standard/compiled-prompt.md",
+          "sha256": "b9e4e612b5f2ff383a9e4e412bb90219e5ff43d632b441b344d625ff8e2e85a3"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/feng-tang-tang/standard/evaluation.json",
+          "sha256": "76836efac8ff27ff6724a2499149abd189594bfc487d78c93e7dbaf9ad37b862"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/feng-tang-tang/standard/provider-payload.redacted.json",
+          "sha256": "886134b457eb870d3f5f5e2108750c9d2b56fb23ec352163dbc74d9e02e757cf"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/feng-tang-tang/standard/reference-trace.json",
+          "sha256": "ac2729db551f2f9fcc93688caca6343117f475f89249f26c5d91551007fe0254"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/feng-tang-tang/standard/run.json",
+          "sha256": "fbe53f2c92790fe0bc50fb6e3eb137bad08dd209fe55a71aa70acc339a11a587"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/feng-tang-tang/standard/task-contract.json",
+          "sha256": "e899e9781d1ba50fbde2ad1c5853e6f4cf3cf2dc958c665df78bf901019b0f74"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/feng-tang-tang/standard/trace.json",
+          "sha256": "adfe6de09d5b4946668b2d766b2a31e5a9c3286199ded81a457976b88631417b"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/final-acceptance-manifest.json",
+          "sha256": "959e9d5d19b26439fc8cf4cd3cec73a6ef006603256465f7b8cc5b4e5dda44b4"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/jiuzhou-aesthetics/reference-first/compiled-prompt.json",
+          "sha256": "359c98c5d250b105d45ed669b035790fb49207307dbb7aec9f9d12523588337e"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/jiuzhou-aesthetics/reference-first/compiled-prompt.md",
+          "sha256": "c69928e69d8315fc206b558207a1e653b896ad4db1de3e10133403220161949b"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/jiuzhou-aesthetics/reference-first/evaluation.json",
+          "sha256": "debfac202e968c418b5ddb66d1c7461df25f3f1a6217e0fd13700e90342d63e8"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/jiuzhou-aesthetics/reference-first/provider-payload.redacted.json",
+          "sha256": "56055a44b216619222cae46a0bbaa4f2cac32295b9a5c09d1690c911e63e3920"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/jiuzhou-aesthetics/reference-first/reference-trace.json",
+          "sha256": "287f13cc0e7b40579a0a69a6e2ec82415a1dbdb2a21d17b3697d8f6e465002db"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/jiuzhou-aesthetics/reference-first/run.json",
+          "sha256": "c23acf886ab495af33030424f476b29654c09160339dfae7d5d5df755d78510b"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/jiuzhou-aesthetics/reference-first/task-contract.json",
+          "sha256": "cdead6fc9f0f53db64b354a1512444c01e53fb365104a1b4d67b484ba5dab73f"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/jiuzhou-aesthetics/reference-first/trace.json",
+          "sha256": "cbf19eef1db07b2d6ec6f116776d272ccf802f4096f867803572b74811bbb85b"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/jiuzhou-aesthetics/standard/compiled-prompt.json",
+          "sha256": "c37dd1dcd1f479578c654af7c7a40d6d40116c9143c2f5b7305893d341dddaac"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/jiuzhou-aesthetics/standard/compiled-prompt.md",
+          "sha256": "c69928e69d8315fc206b558207a1e653b896ad4db1de3e10133403220161949b"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/jiuzhou-aesthetics/standard/evaluation.json",
+          "sha256": "ca98cdaa1e7d2a5b35c16e34a28d05ac7585d157bb7001982fb5f07d0b168f25"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/jiuzhou-aesthetics/standard/provider-payload.redacted.json",
+          "sha256": "25fb02986c0c7d3d345f5806dc4fc5594faecdc10fead8759071901daeacae73"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/jiuzhou-aesthetics/standard/reference-trace.json",
+          "sha256": "ac2729db551f2f9fcc93688caca6343117f475f89249f26c5d91551007fe0254"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/jiuzhou-aesthetics/standard/run.json",
+          "sha256": "33dcb47f470359edfc3b23db605f58b9be8b23b685c3a70e03990ffc8e777436"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/jiuzhou-aesthetics/standard/task-contract.json",
+          "sha256": "e52efea42c73aeabcf852c52c7a54890e5583e2203aa78e2dba68e2eb28e678b"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/jiuzhou-aesthetics/standard/trace.json",
+          "sha256": "2e1277ea56b5efd06c8e9f82fbad83ac5725fea507e1e0884e750cc08f30acff"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/production-status.json",
+          "sha256": "7f4081dabfef85763d37a468eb0847f3d33520e1b45985f3e8f5f6451cd8b29b"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/route-baseline.json",
+          "sha256": "ca071517eb13ebd66783f0eaa81858bd2654eaf0c18c85256485257c195bf485"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/yi-ji-liang-fang/standard/compiled-prompt.json",
+          "sha256": "c076bfa3e2fcdec69b7d60bfebe91b058b524f3371c838b2537b28ce7310bc19"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/yi-ji-liang-fang/standard/compiled-prompt.md",
+          "sha256": "7495865eeef20ef3d63f4d402b4c6bf34b3ac78c88ab52339f5600c1b6801026"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/yi-ji-liang-fang/standard/evaluation.json",
+          "sha256": "e24a66bd9bd4c9f9a82334c8b7841b7376bee06a70d3dd9e83885c3dc0730142"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/yi-ji-liang-fang/standard/provider-payload.redacted.json",
+          "sha256": "657c8ceed9c957c79207a12ed4cebe147193b4a6b8d2863fcbc779728eb594ee"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/yi-ji-liang-fang/standard/reference-trace.json",
+          "sha256": "ac2729db551f2f9fcc93688caca6343117f475f89249f26c5d91551007fe0254"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/yi-ji-liang-fang/standard/run.json",
+          "sha256": "d46b08bb135626479ead9f1f2740a45229fb1e858e6f81ce58792120e0aa4a3a"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/yi-ji-liang-fang/standard/task-contract.json",
+          "sha256": "ff75fdd85cd70615f427bdbf9dfeb62a8843bfa84377c200ff47e3d9e9a2ca38"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-acceptance/yi-ji-liang-fang/standard/trace.json",
+          "sha256": "2cf31983984b04a35396caafcdc4792fd88600cbda201796e9d2dac8ae60b8c2"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-route/README.md",
+          "sha256": "4784fd1c6e95735d04270c8a23f4e575525be920766dc71e7c3d5a567637851e"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/production-route/manifest.json",
+          "sha256": "771e8cbe58f534944a9ddd24187b88d7b9a452ede7fe287078c677179f3aabba"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/reference-first-smoke/_packets/jiuzhou-aesthetics/visual-decision-packet.json",
+          "sha256": "cb57d6edabffdd026cbb34859b649f795e7d85ecd6f72d4f77d1d9c2a3269d35"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/reference-first-smoke/jiuzhou-aesthetics/jzrx-reception-to-consultation-b4-1-final/prompt.md",
+          "sha256": "458c585048768571f133565885ea325511fb3137244eb544c985d64e7fa37ddc"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/reference-first-smoke/jiuzhou-aesthetics/jzrx-reception-to-consultation-b4-1-final/provider-payload.redacted.json",
+          "sha256": "97f109ebbe719545085956848d7bd965f48b176b252880ea90d892a14cd642c5"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/reference-first-smoke/jiuzhou-aesthetics/jzrx-reception-to-consultation-b4-1-final/reference-trace.json",
+          "sha256": "149bed0da6e2698ded388f7be2d9e68d0ece260028fbff784d0724fe81b781fe"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/reference-first-smoke/jiuzhou-aesthetics/jzrx-reception-to-consultation-b4-1-final/run.json",
+          "sha256": "c652a964b01f6a0d724683ee4f9bf5beca124750f0fd8702b7ff25b9fb23fc9b"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/reference-first-smoke/jiuzhou-aesthetics/jzrx-reception-to-consultation-b4-1-final/target-scene-projection.json",
+          "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/reference-first-smoke/jiuzhou-aesthetics/jzrx-reception-to-consultation-b4-1-final/task-contract.json",
+          "sha256": "20e26c2aa7f0f38605c2d789b24418a5fae890cff2256a90f1052179c9255a3c"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/reference-first-smoke/jiuzhou-aesthetics/jzrx-reception-to-consultation-b4-1-final/trace.json",
+          "sha256": "31a2f6ec2e28c21328d6ffd7b328351d61ca470ede94b7d824630a8e66b330af"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/.gitignore",
+          "sha256": "270555c3c2322f38d1f0109c1a3a3a6be307ba2f0fcd97d4b7688a97743f437b"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/README.md",
+          "sha256": "86f695db9f8c77cf0b8949c0886ffbebdbeb86b09058eb8602a0d8b190eeb3e8"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/_audit/prompt-baseline-audit.json",
+          "sha256": "9f8ae4ef31d1c90a67436e7b0402864095c1085297fd0a7c468bf8b05888fe3d"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/_packets/feng-tang-tang/visual-decision-packet.json",
+          "sha256": "e3564d51888661989eeb16de8923992a4e1148268e7f55e7427c4c70e6fb613c"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/_packets/jiuzhou-aesthetics/visual-decision-packet.json",
+          "sha256": "053477f409d4518258d9f9df20428844e8cb58b851e50343b8fac674b0ec95ed"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/_packets/yi-ji-liang-fang/visual-decision-packet.json",
+          "sha256": "b905120c16ba6c18b78b39cb13d7541d881a6ce4b0ce4c8757809c17b128430f"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/evaluation.schema.json",
+          "sha256": "5d6814f5b074cc9e1e43e77537242ccbbba85a62f06e7d6e585d3f44629bbd8d"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/feng-tang-tang/dining/evaluation.json",
+          "sha256": "79e4002b1848b6071fdee7573974f8a8947da399deea8ee1432b793cf6b57193"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/feng-tang-tang/dining/manifest.json",
+          "sha256": "c4d3068f35f6b186deca19b63531f40ce36f847e770edddd5c1b9b7a47a9e91b"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/feng-tang-tang/dining/prompt.md",
+          "sha256": "1b9b8c362625b4cd02f0f1bb23d0c9f799cec88bb863c13fbbd26286a7db0f2a"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/feng-tang-tang/dining/provider-payload.redacted.json",
+          "sha256": "9dcaa23d3b6efa57a2b093392b2155631bf04a9b508329fa1ea77cfa5ca91d74"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/feng-tang-tang/dining/reference-trace.json",
+          "sha256": "a7c2e0607115bcf42d8863e8b91fa124e61e30ebb565a4136bdbc2a17d35dbfb"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/feng-tang-tang/dining/run.json",
+          "sha256": "8612aa8b897b9dd095fb4233f789440c5326685397cc911487c854f16537c2f4"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/feng-tang-tang/entrance/evaluation.json",
+          "sha256": "1b7bb0f5d22d86c30c1a5c99a3d1ac9504b3b46620386bd4dbde2886eb9e4dae"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/feng-tang-tang/entrance/manifest.json",
+          "sha256": "8a5c98918e123267c4a682d74fcfffde8b4306778c5c4f573784aa3ff9f4054f"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/feng-tang-tang/entrance/prompt.md",
+          "sha256": "9fa48427356cf22d72d0940d447028b7a999378e51a43a25be2fc8efe14207be"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/feng-tang-tang/entrance/provider-payload.redacted.json",
+          "sha256": "2f6dcbb9f77f36f7b5cd7d9c6681e25dd433b905de1578d14d176a55a0bc49c8"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/feng-tang-tang/entrance/reference-trace.json",
+          "sha256": "a7c2e0607115bcf42d8863e8b91fa124e61e30ebb565a4136bdbc2a17d35dbfb"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/feng-tang-tang/entrance/run.json",
+          "sha256": "b896129f888b6ecbd2faa48b07db1319a65d435818ebcdd3cdf31c730bed84e2"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/feng-tang-tang/open-kitchen/evaluation.json",
+          "sha256": "2eafaf364bf0a81a0a20586996447b7753729151eb918c502da7bc049c21558b"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/feng-tang-tang/open-kitchen/manifest.json",
+          "sha256": "f0adcac6862bb93dd9278366407bff9fbbf93334968013b620e51ea81ff067a1"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/feng-tang-tang/open-kitchen/prompt.md",
+          "sha256": "ba62fc44e4c7eb1d6f11606327a4f8cd652fd77bff8ef2ad8c8c2f94bcf158e3"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/feng-tang-tang/open-kitchen/provider-payload.redacted.json",
+          "sha256": "e34141dfced3d6f5604187f0d9f07a5925ce299b6df99ecba0898c6504af3efe"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/feng-tang-tang/open-kitchen/reference-trace.json",
+          "sha256": "a7c2e0607115bcf42d8863e8b91fa124e61e30ebb565a4136bdbc2a17d35dbfb"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/feng-tang-tang/open-kitchen/run.json",
+          "sha256": "caa6656bf105d09cecf4a227c4ea8399a9f6f9a3810ff627b0eb217a10f59a03"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/jiuzhou-aesthetics/consultation/evaluation.json",
+          "sha256": "567b3043029c465dfe92600e8d63cac4989de78109eb5671d1c09c7b8026d3d5"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/jiuzhou-aesthetics/consultation/manifest.json",
+          "sha256": "f4eda54841a3072fcf6e5184da95163ced1129c6108ecd702142a3a38bba3b40"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/jiuzhou-aesthetics/consultation/prompt.md",
+          "sha256": "d23707709329d37db5a921d25fbc6dd14adcf1c5e197d46be087988788045b2b"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/jiuzhou-aesthetics/consultation/provider-payload.redacted.json",
+          "sha256": "4437e2829131784b411f71d2da675121ead3e2e3a2af247c07c78c7da5631549"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/jiuzhou-aesthetics/consultation/reference-trace.json",
+          "sha256": "f5b742eb40e20adecb0abace59d385e77dcc78dcfdbba2945cd6b35a154aaf8e"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/jiuzhou-aesthetics/consultation/run.json",
+          "sha256": "5b8ff758cf4773585047c9a0ba78b20046ebc4ced074785d06edc2b0206f5ff4"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/jiuzhou-aesthetics/entrance/evaluation.json",
+          "sha256": "a02a1764905d3cb64b113dc1868d3161c1758c410bd7352f4ad142a0ce1e0a5d"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/jiuzhou-aesthetics/entrance/manifest.json",
+          "sha256": "eb9c57e32deab308abed75e2dc768de5ea48eea82e113da28bf7acecd901b105"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/jiuzhou-aesthetics/entrance/prompt.md",
+          "sha256": "c811e6f09f2d38bc9c4f7524e84a9be299ae2b1b812c3bc1e3a3b5bc12cf06e8"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/jiuzhou-aesthetics/entrance/provider-payload.redacted.json",
+          "sha256": "b520cab0c36b1c0d750acd3523647a388a5092c7d655dd51a299d7c6b11da9c6"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/jiuzhou-aesthetics/entrance/reference-trace.json",
+          "sha256": "4bf6147c5cf68fe78dbfbcc272d323b7d89302c59ddeed8937a7006dfdec5905"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/jiuzhou-aesthetics/entrance/run.json",
+          "sha256": "708c624bc0c9f86eaba73cf9d5a055fdc4a745fe88b7a10c162da8388bdbb121"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/jiuzhou-aesthetics/reception/evaluation.json",
+          "sha256": "103f1b5c7558b9befd79c3f5f4b88aef5ae04eeeaa41da4659ce0a199a3885fa"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/jiuzhou-aesthetics/reception/manifest.json",
+          "sha256": "4035e61161f08cc33fe49f77e7bba69465a68d8b330036ff8c982d7b32c9fb81"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/jiuzhou-aesthetics/reception/prompt.md",
+          "sha256": "422bf79787010a7b12eff485a6c1d0d2904390dbe84191eed2d7b710ee370f7b"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/jiuzhou-aesthetics/reception/provider-payload.redacted.json",
+          "sha256": "62d5613d0bebbaa93ee8c987b89d73f44c9aa1f6991b9cffe9bf6ca944cee8b7"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/jiuzhou-aesthetics/reception/reference-trace.json",
+          "sha256": "4bf6147c5cf68fe78dbfbcc272d323b7d89302c59ddeed8937a7006dfdec5905"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/jiuzhou-aesthetics/reception/run-no-ref.json",
+          "sha256": "86017ed7fd14b3ccee5d6fcf2e244582c5dca7ac97b02d4e45170d9fc695a7f4"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/jiuzhou-aesthetics/reception/run.json",
+          "sha256": "e93318f3637ec0043aeb1001baaeecac6f8517e64e90c7428ecd33b4c00dcac8"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/manifest.schema.json",
+          "sha256": "be3d5717f70e2c78051d520ee0f42bafc2f6367fc0313b366e134d53c3aef0e5"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/yi-ji-liang-fang/consultation/evaluation.json",
+          "sha256": "d033bc7015e0462620a9f5f4fd1e65d952d129a9423b2391f75b8066322ec144"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/yi-ji-liang-fang/consultation/manifest.json",
+          "sha256": "d2681ee69b242fbb0f0c89c19932678b8d727d574368296de4204d860f62dd6a"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/yi-ji-liang-fang/consultation/prompt.md",
+          "sha256": "764d3f8b5376fa681798a3906fd8e9e7cc96ecb2447487def359e60e7bcc71fc"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/yi-ji-liang-fang/consultation/provider-payload.redacted.json",
+          "sha256": "0b07606d4bb6d89f1d27be118fd4c76ebb069079e25878a4f3f66e32c630ba0c"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/yi-ji-liang-fang/consultation/reference-trace.json",
+          "sha256": "c455e1bae54cc81586021470ea9b0929d0198bdaafb6e9aa540b594cbf35af83"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/yi-ji-liang-fang/consultation/run.json",
+          "sha256": "3ea800abc5236c4689aac9df7146fa5a3e431c895e41b023bf8507404c53d410"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/yi-ji-liang-fang/reception/evaluation.json",
+          "sha256": "95cbdef39ee8e67b0ccc0831133fb76b919c5b1dec97a2058abc57954133cb16"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/yi-ji-liang-fang/reception/manifest.json",
+          "sha256": "9f659c7e5ca41f679292396b9dc52bab1a21d432d4056f4ed110710991c53465"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/yi-ji-liang-fang/reception/prompt.md",
+          "sha256": "d9bcf85d94b387f43a8a315c9915d7835acd7080cddcfce58f7a35569eccca02"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/yi-ji-liang-fang/reception/provider-payload.redacted.json",
+          "sha256": "7257bd2a6f0d0205591d8bcf9808f450529b4ed8e51debb858f00f00b868b30a"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/yi-ji-liang-fang/reception/reference-trace.json",
+          "sha256": "c455e1bae54cc81586021470ea9b0929d0198bdaafb6e9aa540b594cbf35af83"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/yi-ji-liang-fang/reception/run.json",
+          "sha256": "2f72b78c0bd964ada2c55d9e2dcd54e7df3b1dd40a577fc9d0baa70e4badc325"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/yi-ji-liang-fang/waiting/evaluation.json",
+          "sha256": "3f4e0b33e03a6604a975ab075ce4e83890aa50fdb342680f73119776689f0036"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/yi-ji-liang-fang/waiting/manifest.json",
+          "sha256": "31b7f92f27acea281e4efe5f281717ea7e7842a656263dd5b5477509f2ea4381"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/yi-ji-liang-fang/waiting/prompt.md",
+          "sha256": "d0ba7c4177c1265dc1a9e8803e5a1a27d723850c5f5a03a241786920f3be7a69"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/yi-ji-liang-fang/waiting/provider-payload.redacted.json",
+          "sha256": "8cc7b592dc2ad0a4a360d1dd5b06cfe2919162c6279449bd425c5503214c4ccf"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/yi-ji-liang-fang/waiting/reference-trace.json",
+          "sha256": "7869e0059884a31fff825d05d5a9efe5213384631b00d9be2eac5a043e0c7f1d"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/source-packets/yi-ji-liang-fang/waiting/run.json",
+          "sha256": "e9f0d453d60dae950baaba1b2017c360a39c17f117f5e0f8c526c39a29635ecc"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/GATE-REPORT.md",
+          "sha256": "049e34d1fe0ac1b1961bb16deb70702052a5cef41bf94dbb4e7181b086a09077"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/README.md",
+          "sha256": "68774310b87b8101f28a4e141cc2bf83208198883a4d9326287922803121e515"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/final-dining-1/evaluation.json",
+          "sha256": "ff1c5f11f27dcdf435eb5fff90b2c3e948a820ce5f6b493422bc550234f8a66c"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/final-dining-1/manifest.json",
+          "sha256": "16b683f8d37c70daded8decded15b96fe8373586d656ba3953b9d32890b3ad3a"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/final-dining-1/prompt.md",
+          "sha256": "d1877d17fc6dcdfcc6cb9f736c7e384b3b0a8a459a43e9ff3542d9eed71bfd9f"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/final-dining-1/provider-payload.redacted.json",
+          "sha256": "980d93561532e5ed0672af065fcd63f61473fbed631162e77b3737590a5dab60"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/final-dining-1/reference-trace.json",
+          "sha256": "ac2729db551f2f9fcc93688caca6343117f475f89249f26c5d91551007fe0254"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/final-dining-1/run.json",
+          "sha256": "fade2354b29ac9103f62ed734edc4a7b750f08f6f16fca0f64724a0d99fbd848"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/golden-selection.json",
+          "sha256": "65daac53a8eaf6fb132d92e563f2aca17b21d19983c7321e9e3cab8c98818539"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-entrance-1/evaluation.json",
+          "sha256": "ce2c547d48b9fc70f15cf3f50039f50b07c5948a1d254568963d072e52e9f0fb"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-entrance-1/manifest.json",
+          "sha256": "81e899a211d3d0d6261ebba5c6b43b94f1655beaa054ee0d198bae53579a1ca1"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-entrance-1/prompt.md",
+          "sha256": "b0bf57ca1eb12649bc8e37ad5fef2e53d385110d1f924953c75ec67098f0e31e"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-entrance-1/provider-payload.redacted.json",
+          "sha256": "814e861cb5a3e5f49a45f39bd498e82e003e65f0f3c93a702c5bb76acabd29bf"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-entrance-1/reference-trace.json",
+          "sha256": "ac2729db551f2f9fcc93688caca6343117f475f89249f26c5d91551007fe0254"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-entrance-1/run.json",
+          "sha256": "2a4cb4a73265e22d02342adb105acc25868cd83921e498cdbc1e5f945e2431ab"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-reception-1/evaluation.json",
+          "sha256": "723a9730179be7d489e04b347ec76823a900a13a4d5db70bec4244ec6d7f09d7"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-reception-1/manifest.json",
+          "sha256": "29cc1f81ea03eb06bb76dc177de7c49090ee1e7b1ba8c11db91be53be3ef9ffa"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-reception-1/prompt.md",
+          "sha256": "6b93a42f6b6b76fe180db99730d63a965a983cf9ec1e5bbb2112a2f3b16810ac"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-reception-1/provider-payload.redacted.json",
+          "sha256": "0704eacb351ebd2efbb4d87f4f673a723b58130fa86a263b803d346cb278529e"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-reception-1/reference-trace.json",
+          "sha256": "ac2729db551f2f9fcc93688caca6343117f475f89249f26c5d91551007fe0254"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-reception-1/run.json",
+          "sha256": "b941b87befe9633acdb60d723fb41c5d52d32968b144db670d6b0298c30a8811"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/golden-selection.json",
+          "sha256": "8ebc598e1ba8d8a50db02f424f5bef4cd5439b26fdf4fdd5fbad0e72d4f164f2"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/manifest.json",
+          "sha256": "bd9b14fe46a0e5c2db27db33615929985ac6260d4ade1a2f2bb07611d56ebcc6"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/production-unlock.json",
+          "sha256": "875b2c78c02652e7a3c3a2f15290b03ea10e772d572528f3c1605ab2a1ca0793"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/yi-ji-liang-fang/final-reception-1/evaluation.json",
+          "sha256": "f6a694d49f46049eac9f5213b91ce75d2c32bce1cf0c5d94af3376bfc0499732"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/yi-ji-liang-fang/final-reception-1/manifest.json",
+          "sha256": "181aa6ec8d70181ed53ba105f5b90defa8fd45191b6c1fb6f1cb65219b637e66"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/yi-ji-liang-fang/final-reception-1/prompt.md",
+          "sha256": "6f5fc75bc47d7c2bac20174a291ea334dd48ce2119535319985dda62e618eeb6"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/yi-ji-liang-fang/final-reception-1/provider-payload.redacted.json",
+          "sha256": "ee8e5ea97c8ce85f328ac726fd4bb50181359e06c834cddfc765b033c55e701e"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/yi-ji-liang-fang/final-reception-1/reference-trace.json",
+          "sha256": "ac2729db551f2f9fcc93688caca6343117f475f89249f26c5d91551007fe0254"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/yi-ji-liang-fang/final-reception-1/run.json",
+          "sha256": "df5567bcb12c470709857bacf652d10a3e51cec5a1ce3540cd552b8ec4d56c47"
+        },
+        {
+          "path": "space-generator/quality-baselines/current-verification/space-golden/yi-ji-liang-fang/golden-selection.json",
+          "sha256": "4f34b286d9a13de778266e9719612f148f5766a3b19961d1a8c7a3f6b3809846"
+        }
+      ],
+      "unrelatedAssetsModified": false
+    },
+    {
+      "name": "Provider-and-Prompt-policy",
+      "roots": [
+        "packages/visual-workflow/src/configuration.js",
+        "packages/visual-workflow/src/image-adapter",
+        "packages/visual-workflow/src/model-runtime",
+        "packages/visual-workflow/prompts",
+        "packages/visual-workflow/offline",
+        "packages/visual-workflow/reports/restaurant-knowledge",
+        "config/repository-contract",
+        "package-lock.json"
+      ],
+      "unchangedFrom": "874efc07f56610a67c0c1842ecce60191f987375",
+      "trackedFileCount": 46,
+      "baselineGitTreeSha256": "238c710605f9bdf1c323faf0ddc49594b8830c9116a11b2f1d103743025eb21c",
+      "files": [
+        {
+          "path": "config/repository-contract/compatibility-registry.json",
+          "sha256": "d17ca7780f2cce1bc18e50286b5e92c1b8ee2c93ba7a17073cc454384b13ef75"
+        },
+        {
+          "path": "config/repository-contract/current-authorities.json",
+          "sha256": "947e2d85ee5e0a22ef8915cfff8ea79fa99c0371656bb26e9a4d7a1dcf257ab8"
+        },
+        {
+          "path": "config/repository-contract/prompt-integrity.json",
+          "sha256": "be3148abc17dfaddfd33dea944db6638b21a2036d4ba7210e07082c1e0f80c61"
+        },
+        {
+          "path": "config/repository-contract/runtime-static-assets.json",
+          "sha256": "976cd58ff8da095a9d7c4d07bdc2cd1da8efdd05af9b3ef255c6b4cb33b9cb81"
+        },
+        {
+          "path": "config/repository-contract/version-namespace-allowlist.json",
+          "sha256": "a1889c41037158c04d48ab332df7b4d0272e3745f2a2249e9d3093d19580b1fd"
+        },
+        {
+          "path": "package-lock.json",
+          "sha256": "01ce182e9a86b12b88ca1c0b1dc8122c32e29a5640e2170621be4bcabff5e784"
+        },
+        {
+          "path": "packages/visual-workflow/offline/restaurant-knowledge/README.md",
+          "sha256": "024f20d7f00325b8b3242f4cde0bfdffb4a3ba73a0e5a0e96f813d70fae25535"
+        },
+        {
+          "path": "packages/visual-workflow/offline/restaurant-knowledge/SHADOW_CONTRACT.md",
+          "sha256": "a2923489c9bfcd2b9d589e227d8c8249f51c3874301b13b69d66e9e241af2c6c"
+        },
+        {
+          "path": "packages/visual-workflow/offline/restaurant-knowledge/index.js",
+          "sha256": "67ef0333bfeaa5b74a7e8f29903b2e23ea332e911f1360859eed0b1e1f78d606"
+        },
+        {
+          "path": "packages/visual-workflow/offline/restaurant-knowledge/rks-archetypes.json",
+          "sha256": "4ae216a44925db334d35cbe17f59055adcb3a875050ce389a7161fc64b6a890d"
+        },
+        {
+          "path": "packages/visual-workflow/offline/restaurant-knowledge/rks-conflict-rules.json",
+          "sha256": "1a3854e7dde31664daa35fbad6b925b600811f8554edf0f854d803f82d68b54c"
+        },
+        {
+          "path": "packages/visual-workflow/offline/restaurant-knowledge/rks-tag-dictionary.json",
+          "sha256": "0f2e9abc3319df279d1a88d77d14538f542c65ffa505ad8b1c0d285a35335ad6"
+        },
+        {
+          "path": "packages/visual-workflow/offline/restaurant-knowledge/shadow-rules.json",
+          "sha256": "e3f26118f7482eeddac273df6ce2e39c3815322f6f1f383a14fce0263427ac7e"
+        },
+        {
+          "path": "packages/visual-workflow/prompts/analysis/benchmark-instructions.md",
+          "sha256": "df937bbc81bf1c7335933952eef5db654c73b485bff52a67abed2618ecee71cb"
+        },
+        {
+          "path": "packages/visual-workflow/prompts/analysis/deep-creative-director.md",
+          "sha256": "4d258cce657f023d054c86ee54c661fab9382387847904a4b386e5a674b46142"
+        },
+        {
+          "path": "packages/visual-workflow/prompts/analysis/execution-core-template.md",
+          "sha256": "d20def82f1d881a276007fb408fe62c92634f80bb346da0a52aa2fdfb8c3d54c"
+        },
+        {
+          "path": "packages/visual-workflow/prompts/analysis/report-schema.md",
+          "sha256": "cae74a0ab49ca33827e09194005df0d35bc979ad0e8f7165bd80524a20d637af"
+        },
+        {
+          "path": "packages/visual-workflow/reports/restaurant-knowledge/RKS-01-development-report.md",
+          "sha256": "06feb0d9ab6fa3d3c2af44c95302aae392a984975b49c871335adc986572fcb9"
+        },
+        {
+          "path": "packages/visual-workflow/reports/restaurant-knowledge/RKS-01E-evidence-index.json",
+          "sha256": "38ef0338c1c582c9d2dbf09b8d73330c144983e84b3165940d4f1b79b412a643"
+        },
+        {
+          "path": "packages/visual-workflow/reports/restaurant-knowledge/RKS-01E-field-lineage.json",
+          "sha256": "ac1a4f186e243a51b5e78958169f56ae0561f67e8d1d8120ad78c9cd48b23f7f"
+        },
+        {
+          "path": "packages/visual-workflow/reports/restaurant-knowledge/RKS-01E-field-loss-diagnosis.md",
+          "sha256": "d87f69a3a8bf3a468874f4a3736fe2202a1c26244440951d571d58803afd22e8"
+        },
+        {
+          "path": "packages/visual-workflow/reports/restaurant-knowledge/RKS-01E-next-stage-proposal.md",
+          "sha256": "af8da6fac55dc9a6e74e0be71afd621468ffe6a2b6800ced6d34398d8f83cd29"
+        },
+        {
+          "path": "packages/visual-workflow/reports/restaurant-knowledge/RKS-01E-run-evidence.md",
+          "sha256": "dcf80ed2a56f1f326e161176cda18a47d1195dfb333bd5029ea56620c4c3a4b3"
+        },
+        {
+          "path": "packages/visual-workflow/reports/restaurant-knowledge/evidence-manifest.json",
+          "sha256": "67945830bcfa871c6f82fdc4c321cc01e086da3f847eba495aabd994d9a9a5ec"
+        },
+        {
+          "path": "packages/visual-workflow/reports/restaurant-knowledge/ftt-direction-baseline.json",
+          "sha256": "d637700517a02269823f2a3e6c44ec868ba614711e457dc8560ae61e9d425912"
+        },
+        {
+          "path": "packages/visual-workflow/reports/restaurant-knowledge/ftt-direction-diff.md",
+          "sha256": "28a963132083f28224a86264e636f867d68989d593859cb7e3bf7cfbf57f6a42"
+        },
+        {
+          "path": "packages/visual-workflow/reports/restaurant-knowledge/ftt-direction-proposal.json",
+          "sha256": "b53d9b27f0bcec2f1010171aaa3c2580a8fa11a44ec790cda510229cfb20ca1e"
+        },
+        {
+          "path": "packages/visual-workflow/reports/restaurant-knowledge/ftt-evidence-trace.md",
+          "sha256": "0619ed66afc898092b0a449f3b60f74266ddfa915930d16821f699979e049ef9"
+        },
+        {
+          "path": "packages/visual-workflow/reports/restaurant-knowledge/ftt-root-cause-matrix.json",
+          "sha256": "065c815793292ddc93eb9e6dba66244ef6a4344c9ede58d2fd8a3c83afb1cacf"
+        },
+        {
+          "path": "packages/visual-workflow/reports/restaurant-knowledge/ftt-structured-diff.json",
+          "sha256": "acc992418df79986662d1604f5189087bb29a0e3fe104b8aa0e93bf2ec74960d"
+        },
+        {
+          "path": "packages/visual-workflow/reports/restaurant-knowledge/ftt-tag-audit.json",
+          "sha256": "01c14c92cca3d3b381b6a4119cb6c80e81fd1cf3f563c42ecc5966c9f9ae7e6d"
+        },
+        {
+          "path": "packages/visual-workflow/reports/restaurant-knowledge/offline-compile-comparison.json",
+          "sha256": "e17e85f77b54ac434d4b8bc4e7d2b891f7443058ef1c97a2b9c3496982fdeb1f"
+        },
+        {
+          "path": "packages/visual-workflow/reports/restaurant-knowledge/protected-source-check.json",
+          "sha256": "fe7ddbe33e6f21aaec308415b1c1c68e8cf2a536f253fc58c7dd5222264b10dd"
+        },
+        {
+          "path": "packages/visual-workflow/reports/restaurant-knowledge/rks-candidate-knowledge.json",
+          "sha256": "4517b041fd373babd6ce223f247ad32ea8089865b2fb5edf496691d81351d735"
+        },
+        {
+          "path": "packages/visual-workflow/reports/restaurant-knowledge/rks-integration-proposal.md",
+          "sha256": "81a0995176c7365791a8194681f213c79857c3509e53e8ac40b9e80a8be942a3"
+        },
+        {
+          "path": "packages/visual-workflow/reports/restaurant-knowledge/rks-offline-test-report.md",
+          "sha256": "f1fb7f0b51c3ce04f74a453479ab2e86d322b97e9427db3c1e916d0d318c445b"
+        },
+        {
+          "path": "packages/visual-workflow/src/configuration.js",
+          "sha256": "393e245c25fb9a33c44995718d05e04073caf6d1a5f492bdf42d6a6f7fdbb762"
+        },
+        {
+          "path": "packages/visual-workflow/src/image-adapter/multi-model.js",
+          "sha256": "7cabe7adf1cc79a315b4ae757940ab482c515e40e22ca33a3fb86cada51003d1"
+        },
+        {
+          "path": "packages/visual-workflow/src/image-adapter/reference-capability.js",
+          "sha256": "f218bf9ce066f71ab8514ea30d3e6f6577be8f68d5fc5517f370342448a56e56"
+        },
+        {
+          "path": "packages/visual-workflow/src/model-runtime/analysis-provider-registry.js",
+          "sha256": "a5599c06d3f1e3557cddb0885caa86b20180bca4a059612d5651ccd63c3273dc"
+        },
+        {
+          "path": "packages/visual-workflow/src/model-runtime/analysis-provider.js",
+          "sha256": "dad1e5dbbb346768aac36aa28c9c1773a3ea9f96f1b81d6e9532981d8d2a5171"
+        },
+        {
+          "path": "packages/visual-workflow/src/model-runtime/qwen-analysis-provider.js",
+          "sha256": "9a27aa74ffc7cc8c3fc1cc1426a59b4f924702661cc86adadc6394a5ae13962a"
+        },
+        {
+          "path": "packages/visual-workflow/src/model-runtime/qwen-reasoner.js",
+          "sha256": "80df5a0f61d444676bdf83d0424c352f1fcfbcd32154aeba994df3742c072262"
+        },
+        {
+          "path": "packages/visual-workflow/src/model-runtime/response-parser.js",
+          "sha256": "75137286e559b27756d00f0b0939abc4a1b363a25e87ac3e6c9a7d5489e775a9"
+        },
+        {
+          "path": "packages/visual-workflow/src/model-runtime/volcengine-analysis-provider.js",
+          "sha256": "a72234ff8e67a786c8b7ac62884cd743a6c1636d337e0ec62da84dee4f1269fa"
+        },
+        {
+          "path": "packages/visual-workflow/src/model-runtime/volcengine-reasoner.js",
+          "sha256": "c49c88a2fca87cd1826f57cf6e68fb2b48798af4dae4b3b42cf74cb6cf70ce58"
+        }
+      ],
+      "unrelatedAssetsModified": false
+    },
+    {
+      "name": "Guards-and-public-routing",
+      "roots": [
+        "packages/visual-workflow/src/integrity.js",
+        "packages/visual-workflow/src/service.js",
+        "packages/visual-workflow/src/generation-runtime/generation/task-contract.js",
+        "packages/visual-workflow/src/generation-runtime/generation/template-router.js",
+        "scripts/verify-visual-workflow-isolation.mjs",
+        "apps/web/src/features/visual-workflow"
+      ],
+      "unchangedFrom": "874efc07f56610a67c0c1842ecce60191f987375",
+      "trackedFileCount": 9,
+      "baselineGitTreeSha256": "ff7aace32b993e12cc43c4fc360bd9f52306772724cbd2375f24f89507aa72d0",
+      "files": [
+        {
+          "path": "apps/web/src/features/visual-workflow/ProjectDesignDirectionPanel.tsx",
+          "sha256": "f18a3cecdad3e0c888be6212540af05ec2735711c847a6178ddeabc7f1e61f5f"
+        },
+        {
+          "path": "apps/web/src/features/visual-workflow/VisualWorkflowWorkspace.tsx",
+          "sha256": "27e9fb3beb087463c08e190530c6693cd36b18aa64a25add839023d798ce835d"
+        },
+        {
+          "path": "apps/web/src/features/visual-workflow/api.ts",
+          "sha256": "204d7f19eceeb1dd299c934c45762c36be344dc1466fd8377ec4d242c015ab4c"
+        },
+        {
+          "path": "apps/web/src/features/visual-workflow/visual-workflow.css",
+          "sha256": "73284c1f91edfa73e7213f58e057c15d625d5302f0ae3808f79b69015d637309"
+        },
+        {
+          "path": "packages/visual-workflow/src/generation-runtime/generation/task-contract.js",
+          "sha256": "1feea579a9bc015f9a3c53f3e9c75c4506e97b4ed94883a3f939dc1ea53cc8e4"
+        },
+        {
+          "path": "packages/visual-workflow/src/generation-runtime/generation/template-router.js",
+          "sha256": "9be5004d42292cc02376cde841ec9ed9d9b884bf27e0866b26c2791e892bef20"
+        },
+        {
+          "path": "packages/visual-workflow/src/integrity.js",
+          "sha256": "e5d8df50684eaa9786fadb94da4c574eaa784cc199e4163324434bcf93687423"
+        },
+        {
+          "path": "packages/visual-workflow/src/service.js",
+          "sha256": "9b2f7ab0d11f2135459a6b5ec40629effb11656a76a0dc7009f872566fc80544"
+        },
+        {
+          "path": "scripts/verify-visual-workflow-isolation.mjs",
+          "sha256": "645041023d8719fce8815a7e0614018f5194b14cda3fe15c65e68c224a448e45"
+        }
+      ],
+      "unrelatedAssetsModified": false
+    }
+  ],
+  "qualityAcceptanceUnchanged": true,
+  "extractionStatusUnchanged": true
+}

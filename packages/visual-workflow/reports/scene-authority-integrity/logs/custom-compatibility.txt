@@ -1,0 +1,24 @@
+✔ bakery-methodology: current-project relations and scope reach suggestion and compiler without mutation (45.8997ms)
+✔ outdoor-methodology: current-project relations and scope reach suggestion and compiler without mutation (10.5601ms)
+✔ insufficient evidence remains absent rather than acquiring another project decision (0.8799ms)
+✔ brand or industry renaming alone does not change functional decisions or invent artwork (6.9599ms)
+✔ relationship mutation is preserved as a change, not accepted on object counts (13.5107ms)
+✔ historical P7a formal and provider prompts retain their recorded text hashes (21.349ms)
+✔ custom preview binds a complete source program to its project without granting a camera (50.5641ms)
+✔ custom previews retain project geometry, materials, color scope and light without inventing parameters (6.7976ms)
+✔ custom source binding rejects absent or foreign project ownership (30.8615ms)
+✔ a standard custom preview cannot accept a camera, scene alias, instruction, references or a fake target program (67.1125ms)
+✔ incomplete custom evidence is not replaced by an invented program or visibility list (27.7575ms)
+✔ unknown subtypes and other generation modes cannot opt into custom compatibility (50.5705ms)
+✔ custom remains outside public template generation (5.5068ms)
+✔ glass text in a custom preview cannot become an executable visible owner (11.7957ms)
+✔ RKS-02C mapped scene formal and Provider prompt hashes, source maps and controls remain identical (214.6775ms)
+✔ existing methodology test expectations are unchanged from the frozen input (0.5563ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 883.0515

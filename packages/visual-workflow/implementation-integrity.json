@@ -245,7 +245,7 @@
     },
     {
       "path": "src/generation-runtime/space/compiler.js",
-      "sha256": "9d701f3578816fe3ceb825e2ea7bc0723143fe8b62bbac8651292621765aacee"
+      "sha256": "a6614dce173d79c159854c19fe649d71204037a52183d1d0467242afad4cf352"
     },
     {
       "path": "src/generation-runtime/space/continuation/apply-continuation-program-override.js",
@@ -277,7 +277,7 @@
     },
     {
       "path": "src/generation-runtime/space/continuation/target-functional-programs.js",
-      "sha256": "ccbf2ec7dba656fdaf8672801ab43c7130eccf7efe267d681674f0fc8f6a1b1b"
+      "sha256": "11636ed4f30bbb4dd4c6530318062c189bd3928a74b48a1c214c13fe85350725"
     },
     {
       "path": "src/generation-runtime/space/continuation/validate-continuation-source.js",
@@ -325,7 +325,7 @@
     },
     {
       "path": "src/generation-runtime/space/scene-projection/target-scene-projection.js",
-      "sha256": "5a773b1403ab232d90be0c8d665bd2b5f119d17b05fee7a446b86fc485c0f78d"
+      "sha256": "78be27d7523ee10561005f553e51e9a90c801791ae52842f575d51ce63267598"
     },
     {
       "path": "src/generation-runtime/space/semantic/action-verbs.js",
@@ -373,7 +373,7 @@
     },
     {
       "path": "src/generation-runtime/space/source-adapter.js",
-      "sha256": "ea9334a585f65b2af63b5da91cb9236ba2be475e00ce7da5421617596928d19e"
+      "sha256": "b4fe223f16c1cf4e0bde5a83e936e598ed6eb63fb7ccb6fe94fd61af0e649299"
     },
     {
       "path": "src/generation-runtime/space/space-quality-gate.js",

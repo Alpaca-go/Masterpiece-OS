@@ -1,0 +1,311 @@
+diff --git a/packages/visual-workflow/src/generation-runtime/space/compiler.js b/packages/visual-workflow/src/generation-runtime/space/compiler.js
+index d3a7cdeb..540e5af9 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/compiler.js
++++ b/packages/visual-workflow/src/generation-runtime/space/compiler.js
+@@ -52,7 +52,9 @@ function renderTask(layers) {
+   const t = layers.task;
+   const p = layers.projectIdentity;
+   const lines = [
+-    `Generate a single premium-grade space image for **${p.brandName}** (${p.industry}).`
++    layers.targetSceneProjection?.executionBoundary === 'pure_compile_preview_only'
++      ? `Compile a source-defined custom space proposal for **${p.brandName}** (${p.industry}). This is a project-program preview, not an authorized image request. No camera or window visibility is granted.`
++      : `Generate a single premium-grade space image for **${p.brandName}** (${p.industry}).`
+   ];
+   if (t.subtype) {
+     const view = layers.viewStrategy || layers.continuationOverride?.targetViewStrategy || t.shot;
+@@ -145,11 +147,12 @@ function renderBrandTranslation(layers) {
+ }
+ function renderFunctionalRequirement(layers) {
+   const raw = layers._raw;
++  const customPreview = layers.targetSceneProjection?.executionBoundary === 'pure_compile_preview_only';
+   const body = [
+-    "**Current-shot Program Nodes (source-scoped; other areas remain off frame)**:",
++    customPreview ? "**Source-defined Project Program (not current-shot visibility)**:" : "**Current-shot Program Nodes (source-scoped; other areas remain off frame)**:",
+     bullet(raw.sceneProgram),
+     "",
+-    "**Functional Network**:",
++    customPreview ? "**Project-level Functional Dependencies (not a visibility list)**:" : "**Functional Network**:",
+     bullet(raw.functionalNetwork),
+     "",
+     "**Visible hierarchy**: see Composition; an artistic focus does not replace operational facilities.",
+@@ -215,7 +218,9 @@ function renderComposition(layers) {
+     ...c.artisticFocus?.length ? c.artisticFocus.map(entry=>`- [${entry.evidenceClass}; ${entry.priority}] ${entry.text}`) : ["- No artistic installation is required by the supplied sources."],
+     "Do not demote a supplied core artwork to background texture. Its mounting, dimensions and optical construction remain unspecified unless supplied; do not invent them.",
+     "",
+-    "**Operational Elements (remain usable alongside the artistic focus)**:",
++    layers.targetSceneProjection?.executionBoundary === 'pure_compile_preview_only'
++      ? "**Source-declared Visible Requirements (project proposals; camera visibility remains unapproved)**:"
++      : "**Operational Elements (remain usable alongside the artistic focus)**:",
+     bullet(c.mustBeVisible),
+     ...c.userRequirements?.length ? ['**User-confirmed composition relationships**:',bullet(c.userRequirements)] : [],
+     "",
+@@ -397,11 +402,12 @@ ${referenceBoundaryText}` : baseFinalPrompt;
+         ...layers.targetSceneProjection,
+         viewStrategy: layers.viewStrategy ?? null,
+         shotSource: layers.shotSource ?? "legacy_project_default",
+-        gate: authorityGate.status,
++        gate: layers.targetSceneProjection.executionBoundary === 'pure_compile_preview_only' ? 'review_required' : authorityGate.status,
++        ...layers.targetSceneProjection.executionBoundary === 'pure_compile_preview_only' ? {sourceProgramValidation:'pass'} : {},
+         gateVersion: TARGET_SCENE_AUTHORITY_GATE_VERSION,
+         authorityGate: {
+-          status: authorityGate.status,
+-          checkedBlocks: TARGET_SCENE_AUTHORITY_CHECKED_BLOCKS
++          status: layers.targetSceneProjection.executionBoundary === 'pure_compile_preview_only' ? 'review_required' : authorityGate.status,
++          checkedBlocks: layers.targetSceneProjection.executionBoundary === 'pure_compile_preview_only' ? [] : TARGET_SCENE_AUTHORITY_CHECKED_BLOCKS
+         }
+       } : null
+     }
+diff --git a/packages/visual-workflow/src/generation-runtime/space/continuation/target-functional-programs.js b/packages/visual-workflow/src/generation-runtime/space/continuation/target-functional-programs.js
+index 7115ae72..b300b838 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/continuation/target-functional-programs.js
++++ b/packages/visual-workflow/src/generation-runtime/space/continuation/target-functional-programs.js
+@@ -1,5 +1,19 @@
+ const TARGET_FUNCTIONAL_PROGRAM_VERSION = "space-target-functional-program@1.0.0";
+ const TARGET_FUNCTIONAL_PROGRAMS = Object.freeze({
++  // Exterior authority describes the camera's domain, never an inferred
++  // interior program or permission to see through a window.
++  storefront: Object.freeze({
++    sceneId: "storefront",
++    sceneLabel: "门店外立面",
++    viewStrategy: "exterior_front_view",
++    requiredFunctions: ["Exterior arrival and identification"],
++    requiredSpatialElements: ["Facade boundary", "Threshold and street relationship"],
++    circulationRequirements: ["Street-to-threshold access"],
++    privacyRequirements: [],
++    scaleRequirements: [],
++    operationalRequirements: [],
++    sourceProgramElementsToDrop: []
++  }),
+   consultation: Object.freeze({
+     sceneId: "consultation",
+     sceneLabel: "\u54A8\u8BE2\u5BA4",
+@@ -331,6 +345,7 @@ function resolveTargetFunctionalProgram(scene, customSceneDescription) {
+   });
+ }
+ const TARGET_VIEW_STRATEGIES = Object.freeze({
++  storefront: "exterior_front_view",
+   entrance: "threshold_arrival_view",
+   lobby: "public_overview_view",
+   reception: "reception_arrival_view",
+diff --git a/packages/visual-workflow/src/generation-runtime/space/scene-projection/target-scene-projection.js b/packages/visual-workflow/src/generation-runtime/space/scene-projection/target-scene-projection.js
+index 992f74e2..72e14a59 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/scene-projection/target-scene-projection.js
++++ b/packages/visual-workflow/src/generation-runtime/space/scene-projection/target-scene-projection.js
+@@ -6,40 +6,67 @@ import {
+ const SCENE_SCOPE_TERMS = {
+   reception: /reception|front desk|check.?in|waiting|接待|前台|候客|等候/iu,
+   entrance: /entrance|threshold|entry|入口|门槛/iu,
++  storefront: /storefront|facade|façade|exterior|street[- ]side|外立面|门头|室外|临街外侧/iu,
+   consultation: /consultation|咨询/iu,
+   treatment: /treatment|procedure|clinical|sterile|medical equipment|治疗|诊疗|手术/iu,
+   recovery: /recovery|post.service|rest area|恢复|术后|休息/iu,
+-  dining: /dining|kitchen|餐厅|厨房|堂食/iu,
++  dining: /dining|kitchen|(?:order(?:ing)?|pickup|pick-up|food preparation|takeaway packaging)\s+(?:area|zone)|餐厅|厨房|后厨|堂食|餐桌|点餐区|明档(?:制作)?区|取餐区|就餐区|用餐区|外带包装区/iu,
++  display: /exhibition|exhibit|display\s+(?:area|zone)|展陈|展览|展品|展示区/iu,
++  retail: /retail|merchandise|shopping|货架|零售|选购/iu,
++  private_room: /private\s+room|私密房间/iu,
+   guestroom: /guest.?room|bedroom|客房|卧室/iu
+ };
+ function scopeSourceEntries(entries, targetScene) {
+-  const aliases = {lobby:["reception","entrance"],reception:["reception","entrance"],entrance:["entrance","reception"],dining:["dining"],restaurant:["dining"]};
++  const aliases = {lobby:["reception","entrance"],reception:["reception","entrance"],entrance:["entrance","reception"],dining:["dining"],restaurant:["dining"],treatment_room:["treatment"]};
+   const allowed = aliases[targetScene] ?? [targetScene];
+   const known = allowed.some(scene => SCENE_SCOPE_TERMS[scene]);
+   return entries.map(entry => {
+-    const scenes = Object.entries(SCENE_SCOPE_TERMS).filter(([,pattern])=>pattern.test(entry.text)).map(([scene])=>scene);
++    const entitiesFor = text => Object.entries(SCENE_SCOPE_TERMS).flatMap(([scene,pattern])=> {
++      const match = pattern.exec(text);
++      return match ? [{scene,value:match[0],offset:match.index}] : [];
++    });
++    const scenes = entitiesFor(entry.text).map(entity=>entity.scene);
+     const localContext = scenes.some(scene=>allowed.includes(scene));
+     const relationalSource = /functionalRelationships|operationConstraints|humanExperience/iu.test(entry.sourcePath ?? "");
+-    const relation = /connect|circulation|access|route|transition|guid|separat|screen|privacy|confidential|sightline|queue|handoff|buffer|isolat|cross|adjacen|next to|not\s+expose|动线|流线|通达|分流|衔接|连接|引导|分隔|遮挡|隐私|交叉|缓冲|转接|服务流程|人员通道|洁污|视线|隔离|邻接|毗邻|不得.*看到|不应.*看到/iu;
++    const privacyBoundary = /privacy|confidential|screen|acoustic|off frame|not\s+expose|隔声|隐私|遮挡|屏蔽|画外/iu;
++    const relation = /connect|circulation|access|route|transition|guid|separat|screen|privacy|confidential|off frame|sightline|queue|handoff|buffer|isolat|cross|adjacen|next to|not\s+expose|动线|流线|通达|分流|衔接|连接|引导|分隔|隔声|遮挡|隐私|交叉|缓冲|转接|服务流程|人员通道|洁污|视线|隔离|邻接|毗邻|不得.*看到|不应.*看到/iu;
+     // Preserve original text and classify its clauses separately. A foreign
+     // interior description cannot acquire visibility through an adjacent
+     // reception constraint, nor can a boundary constraint disappear with it.
++    let clauseCursor = 0;
+     const clauses = String(entry.text).split(/[;；，,。]|\.(?=\s|$)/u).map(text=>text.trim()).filter(Boolean).map(text=> {
+-      const clauseScenes = Object.entries(SCENE_SCOPE_TERMS).filter(([,pattern])=>pattern.test(text)).map(([scene])=>scene);
++      const sourceStart = String(entry.text).indexOf(text,clauseCursor);
++      clauseCursor = sourceStart + text.length;
++      const entities = entitiesFor(text);
++      const clauseScenes = entities.map(entity=>entity.scene);
+       const foreign = clauseScenes.some(scene=>!allowed.includes(scene));
+       const local = clauseScenes.some(scene=>allowed.includes(scene));
+       const foreignInterior = foreign && !local && /contain|equipped|furnish|配备|装有|内有|室内陈设/iu.test(text);
+-      const sourceDeclaredRelation = relationalSource && (local || localContext);
+-      const boundary = (foreign || !local && scenes.some(scene=>!allowed.includes(scene))) && !foreignInterior && (relation.test(text) || sourceDeclaredRelation) && (local || localContext || relationalSource);
+-      return {text,sceneScope:!known ? "unresolved" : boundary ? "cross_scene_constraint" : foreign ? "off_frame_dependency" : "current_shot",
+-        visibilityAuthority:boundary ? "current_boundary_only" : foreign ? "off_frame_interior" : "current_shot"};
++      const prohibited = /do not|must not|not visible|no interior|cannot see|不得|不应|不可|禁止|看不到|无室内视线/iu.test(text);
++      const boundary = (foreign || !local && scenes.some(scene=>!allowed.includes(scene))) && !foreignInterior && relation.test(text)
++        && (local || localContext && (prohibited || privacyBoundary.test(text)) || relationalSource && privacyBoundary.test(text));
++      // A sequence expresses logical dependencies, not camera visibility. Keep
++      // the entire source and each node as evidence, without guessing locations.
++      const network = /(?:->|→|=>|依次|全店|全项目|whole[- ](?:store|project)|project[- ]wide)|点餐.{0,12}制作.{0,12}取餐.{0,12}就餐/iu.test(text);
++      const nodes = network ? text.split(/\s*(?:->|→|=>)\s*/u).map(value=>({value,entities:entitiesFor(value)})) : [];
++      const unsafeNetwork = network && (nodes.length < 2 || nodes.some(node=>!node.entities.length));
++      const sightline = /through.{0,24}(?:glass|glazing|window)|(?:glass|glazing|window).{0,24}(?:reveal|visible|see)|透过.{0,12}(?:玻璃|橱窗)|隔窗|隔着.{0,8}玻璃/iu.test(text)
++        || local && /sightline|visible|reveal|see|视线|可见|看到/iu.test(text);
++      // No structured source/occlusion permission exists for interior window
++      // visibility. Preserve such requests for review; never grant it by default.
++      const review = unsafeNetwork || sightline && foreign && !prohibited || targetScene === 'storefront' && !entities.length;
++      const sceneScope = !known ? "unresolved" : review ? "review_required" : network ? "off_frame_dependency" : boundary ? "cross_scene_constraint" : foreign ? "off_frame_dependency" : "current_shot";
++      return {text,sourceStart,sourceEnd:clauseCursor,entities,nodes,sceneScope,
++        scopeReason:review ? 'visibility_or_network_authority_requires_review' : network ? 'logical_network_without_visibility_authority' : undefined,
++        visibilityAuthority:sceneScope === 'current_shot' ? 'current_shot' : sceneScope === 'cross_scene_constraint' ? 'current_boundary_only' : 'none'};
+     });
+-    const sceneScope = !known ? "unresolved" : clauses.some(clause=>clause.sceneScope === "cross_scene_constraint") ? "cross_scene_constraint" : clauses.some(clause=>clause.sceneScope === "current_shot") ? "current_shot" : "off_frame_dependency";
++    const sceneScope = !known ? "unresolved" : clauses.some(clause=>clause.sceneScope === "cross_scene_constraint") ? "cross_scene_constraint" : clauses.some(clause=>clause.sceneScope === "current_shot") ? "current_shot" : clauses.some(clause=>clause.sceneScope === "review_required") ? "review_required" : "off_frame_dependency";
+     return {...entry,sceneScope,clauses,detectedScenes:scenes,
+       currentShotText:clauses.every(clause=>clause.sceneScope === "current_shot") ? entry.text : clauses.filter(clause=>clause.sceneScope === "current_shot").map(clause=>clause.text).join("; "),
+       boundaryConstraints:clauses.filter(clause=>clause.sceneScope === "cross_scene_constraint"),
+       offFrameEntities:clauses.filter(clause=>clause.sceneScope === "off_frame_dependency"),
+-      evidenceClass:"system_inference",scopeReason:!known ? "unknown_target_scene" : sceneScope === "cross_scene_constraint" ? "operational_relation_without_foreign_interior_visibility" : sceneScope === "off_frame_dependency" ? "foreign_scene_entity" : "source_compatible_with_shot"};
++      reviewRequiredClauses:clauses.filter(clause=>clause.sceneScope === "review_required"),
++      evidenceClass:"system_inference",scopeReason:!known ? "unknown_target_scene" : sceneScope === "review_required" ? "visibility_or_network_authority_requires_review" : sceneScope === "cross_scene_constraint" ? "operational_relation_without_foreign_interior_visibility" : sceneScope === "off_frame_dependency" ? clauses.some(clause=>clause.nodes.length) ? "logical_network_without_visibility_authority" : "foreign_scene_entity" : "source_compatible_with_shot"};
+   });
+ }
+ const TARGET_SCENE_PROJECTION_VERSION = "space-target-scene-projection@1.1.0";
+diff --git a/packages/visual-workflow/src/generation-runtime/space/source-adapter.js b/packages/visual-workflow/src/generation-runtime/space/source-adapter.js
+index d2d46907..3736e04b 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/source-adapter.js
++++ b/packages/visual-workflow/src/generation-runtime/space/source-adapter.js
+@@ -257,7 +257,42 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
+   const continuationIntent = taskContract?.continuation;
+   const targetProgram = continuationIntent?.targetFunctionalProgram;
+   const knownTarget = isKnownTargetScene(taskContract?.subtype);
+-  if (taskContract?.generationBasis === "continuation" && targetProgram) {
++  // Historical low-level custom compilation describes a project-authored
++  // program, not an unresolved camera. Keep this narrow compatibility surface
++  // separate from public generation tasks and from all other unknown subtypes.
++  const customProgramPreview = taskContract?.subtype === 'custom' && taskContract.generationBasis === 'standard'
++    && typeof packet.projectId === 'string' && packet.projectId.trim() && packet.projectId === taskContract.projectId
++    && (!projectContext?.visualDecisionPacket || projectContext.visualDecisionPacket.projectId === packet.projectId)
++    && (!taskContract.deliverableFamily || taskContract.deliverableFamily === 'space')
++    && [taskContract.shot,taskContract.scene,taskContract.currentInstruction].every(value=>value == null || typeof value === 'string' && !value.trim())
++    && (taskContract.shotSource == null || taskContract.shotSource === 'legacy_project_default')
++    && (taskContract.referenceAssetIds == null || Array.isArray(taskContract.referenceAssetIds) && !taskContract.referenceAssetIds.length)
++    && !continuationIntent && !taskContract.artDirection
++    && functionalRaw.sceneProgram.length > 0 && compositionMustBeVisible.length > 0;
++  // Never compile an unresolved target with a passing authority trace. Public
++  // subtype choices without a functional contract need an explicit review.
++  if (taskContract?.subtype && !knownTarget && !customProgramPreview && !(taskContract.generationBasis === 'continuation' && targetProgram)) {
++    throw Object.assign(new Error(`SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED: ${taskContract?.subtype}`), {
++      code: "SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED", targetScene: taskContract?.subtype, disposition: "review_required"
++    });
++  }
++  if (customProgramPreview) {
++    targetSceneProjection = {
++      targetScene: 'custom', targetProgramId: 'custom',
++      functionalBlockSource: 'source_defined_custom_program', architectureBridgeSource: 'source_defined_custom_program',
++      operationConstraintsSource: 'source_defined_custom_program', viewStrategySource: 'not_applicable_without_camera',
++      sourceProjectId: packet.projectId, executionBoundary: 'pure_compile_preview_only', cameraVisibilityAuthority: 'none',
++      sourcePaths: ['sceneProgram','functionalNetwork','functionalRelationships','mustBeVisible','structureLanguage','signatureSpatialMechanism']
++        .map(field=>`mediaTranslations.spatial.${field}`)
++    };
++    decisionTrace.customProgram = {
++      sourceProjectId: packet.projectId, evidenceClass: evidenceClass('mediaTranslations.spatial'),
++      executionBoundary: 'pure_compile_preview_only', cameraVisibilityAuthority: 'none',
++      entries: ['sceneProgram','functionalNetwork','functionalRelationships','mustBeVisible','structureLanguage','signatureSpatialMechanism']
++        .flatMap(field=>(Array.isArray(spatial[field]) ? spatial[field] : []).flatMap((text,index)=>typeof text === 'string' && text.trim()
++          ? [{sourcePath:`mediaTranslations.spatial.${field}[${index}]`,text,sceneScope:'source_defined_program',evidenceClass:evidenceClass('mediaTranslations.spatial')}] : []))
++    };
++  } else if (taskContract?.generationBasis === "continuation" && targetProgram) {
+     const override = applyContinuationProgramOverride({
+       targetProgram,
+       sourceBridge: {
+@@ -369,7 +404,9 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
+     };
+   }
+   let projectedBrandManifestation = brandSanitized.lines;
+-  const standardShot = taskContract?.generationBasis === "standard" || taskContract?.generationBasis === 'art_direction_reference';
++  // Low-level semantic inspection also accepts incomplete inputs. Public tasks
++  // always require a subtype; only those complete requests own a shot scope.
++  const standardShot = Boolean(taskContract?.subtype) && !customProgramPreview && (taskContract?.generationBasis === "standard" || taskContract?.generationBasis === 'art_direction_reference');
+   // Only lists read by renderers confer execution ownership. Source/audit
+   // containers, spatialTranslation and commercialReality are not owners.
+   const executionLists = () => [
+@@ -385,7 +422,9 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
+   const sourceEntries = (items, sourcePath) => cleanList(items).map((text,index)=> {
+     const original = sourcePath.split(".").reduce((value,key)=>value?.[key],packet);
+     const sourceIndex = Array.isArray(original) ? original.findIndex(value=>cleanList(value)[0]===text) : -1;
+-    return {text,sourcePath:sourceIndex >= 0 ? `${sourcePath}[${sourceIndex}]` : `derived.${sourcePath}[${index}]`,sourceContainer:sourcePath};
++    const sourceOrigins = ["sceneProgram","functionalNetwork","functionalRelationships","peopleBehavior","mustBeVisible","brandRoleManifestation","positiveDifferentiators"]
++      .flatMap(field=>(Array.isArray(spatial[field]) ? spatial[field] : []).flatMap((value,sourceIndex)=>cleanList(value)[0] === text ? [`mediaTranslations.spatial.${field}[${sourceIndex}]`] : []));
++    return {text,sourcePath:sourceIndex >= 0 ? `${sourcePath}[${sourceIndex}]` : `derived.${sourcePath}[${index}]`,sourceContainer:sourcePath,sourceOrigins};
+   });
+   const artisticEntries = ["signatureSpatialMechanism","brandRoleManifestation","mustBeVisible"].flatMap(field => sourceEntries(spatial[field],`mediaTranslations.spatial.${field}`))
+     .filter(entry=>classifyPhrase(entry.text,"signatureSpatialMechanism").classification === SEMANTIC_CLASS.DECORATIVE_OBJECT)
+@@ -393,10 +432,10 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
+   const scopedArt = standardShot ? scopeSourceEntries(artisticEntries,taskContract.subtype) : artisticEntries;
+   const artSeen = new Set();
+   compositionLayers.artisticFocus = scopedArt.filter(entry=> {
+-    if (entry.sceneScope === "off_frame_dependency" || artSeen.has(entry.text)) return false;
++    if (standardShot && !entry.currentShotText || entry.sceneScope === "off_frame_dependency" || artSeen.has(entry.text)) return false;
+     artSeen.add(entry.text);
+     return true;
+-  }).map(entry=>({...entry,evidenceClass:evidenceClass("mediaTranslations.spatial"),priority:/optional|可选|可考虑/iu.test(entry.text) ? "optional" : "project_artistic_focus",installationDetails:"unspecified unless supplied in source wording"}));
++  }).map(entry=>({...entry,text:standardShot ? entry.currentShotText : entry.text,evidenceClass:evidenceClass("mediaTranslations.spatial"),priority:/optional|可选|可考虑/iu.test(entry.text) ? "optional" : "project_artistic_focus",installationDetails:"unspecified unless supplied in source wording"}));
+   decisionTrace.artisticFocus = compositionLayers.artisticFocus;
+   decisionTrace.artisticCandidates = scopedArt.map(entry=>({...entry,sourceEvidenceClass:evidenceClass("mediaTranslations.spatial")}));
+   const architectureEntries = semantic.architectureRewrite.items.filter(item=>!item.dropped && !["spatialConcept","mustBeVisible"].includes(item.sourceField));
+@@ -414,7 +453,7 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
+       const records = scopeSourceEntries(sourceEntries(items,sourcePath),taskContract.subtype);
+       decisionTrace.sceneScope.push(...records);
+       collectBoundaryConstraints(records);
+-      return records.filter(entry=>entry.sceneScope !== "off_frame_dependency").map(entry=>entry.sceneScope === "unresolved" ? entry.text : entry.currentShotText).filter(Boolean);
++      return records.map(entry=>entry.currentShotText).filter(Boolean);
+     };
+     functionalRaw = {
+       sceneProgram:projectList(rawSceneProgram,"mediaTranslations.spatial.sceneProgram"),
+@@ -423,7 +462,9 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
+     };
+     compositionLayers.mustBeVisible = projectList(compositionLayers.mustBeVisible,"mediaTranslations.spatial.mustBeVisible");
+     compositionLayers.positiveDifferentiators = functionalRaw.positiveDifferentiators;
+-    bridgeLayers = Object.fromEntries(Object.entries(bridgeLayers).map(([key,value])=>[key,Array.isArray(value) ? projectList(value,`architectureFunctionBridge.${key}`) : value]));
++    // Prohibitions retain project-wide authority; mentioning a foreign scene
++    // in a negative guard never asks the camera to render that scene.
++    bridgeLayers = Object.fromEntries(Object.entries(bridgeLayers).map(([key,value])=>[key,Array.isArray(value) && key !== 'conceptDriftGuards' ? projectList(value,`architectureFunctionBridge.${key}`) : value]));
+     bridgeLayers.crossSceneConstraints = decisionTrace.crossSceneConstraints.map(entry=>entry.text);
+     // Resolve repeated visible requirements against projected, executable
+     // lists. Raw presence never proves that another branch will render it.
+@@ -491,26 +532,29 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
+     const sanitizer = brandSanitized.records.find(entry=>entry.raw === text);
+     const projectionInput = ['functional','architectural'].includes(analysis.classification) ? text : sanitizer?.text || text;
+     const scope = standardShot ? scopeSourceEntries([{text:projectionInput,sourcePath}],taskContract.subtype)[0] : null;
+-    const projectedText = scope ? scope.sceneScope === 'unresolved' ? projectionInput : scope.currentShotText : projectionInput;
++    const projectedText = scope ? scope.currentShotText : projectionInput;
+     const outputText = projectedText;
+     const execution = executionLists().find(([container,key]) => cleanList(container[key]).includes(outputText));
+     const art = compositionLayers.artisticFocus.find(entry=>entry.text === outputText);
+     const architectureOwns = decisionTrace.architectureDecisions.some(entry=>entry.text === text && entry.sceneScope !== 'off_frame_dependency');
+     const brandOwns = projectedBrandManifestation.includes(outputText) && !art && !architectureOwns && !functionalRaw.positiveDifferentiators.includes(outputText);
+-    const review = analysis.classificationReason === 'unresolved_visible_requirement';
+-    const owner = review ? null : execution?.[2] || (art ? 'composition' : brandOwns ? 'brand_translation' : null);
++    const review = analysis.classificationReason === 'unresolved_visible_requirement' || scope && !scope.currentShotText && ['unresolved','review_required'].includes(scope.sceneScope);
++    const candidateOwner = review ? null : execution?.[2] || (art ? 'composition' : brandOwns ? 'brand_translation' : null);
++    const owner = customProgramPreview ? null : candidateOwner;
+     const ownerPath = owner ? execution?.[3] || (art ? 'composition.artisticFocus' : '_raw.brandRoleManifestation') : null;
+     const disposition = review ? 'review_required' : analysis.classification === SEMANTIC_CLASS.DECORATIVE_IDENTITY ? 'post_composite_only'
+-      : owner ? 'retained' : !standardShot && targetSceneProjection ? 'target_program_replaced'
++      : customProgramPreview && candidateOwner ? 'preview_only' : owner ? 'retained' : !standardShot && targetSceneProjection ? 'target_program_replaced'
+       : scope?.sceneScope === 'off_frame_dependency' ? 'off_frame_dependency'
+       : scope?.sceneScope === 'cross_scene_constraint' ? 'boundary_only' : 'rejected_semantics';
+     return [{sourcePath,text,classification:analysis.classification,classificationReason:analysis.classificationReason,
+       route:review ? 'review' : ['functional','architectural'].includes(analysis.classification) ? 'composition' : 'brand_or_artistic',
+-      sceneProjection:{inputText:projectionInput,sceneScope:scope?.sceneScope ?? 'target_program',reason:scope?.scopeReason ?? 'target_program_authority',projectedText,
+-        clauses:scope?.clauses ?? [],boundaryConstraints:scope?.boundaryConstraints ?? [],offFrameEntities:scope?.offFrameEntities ?? []},
++      sceneProjection:{inputText:projectionInput,sceneScope:scope?.sceneScope ?? (customProgramPreview ? 'source_defined_program' : 'target_program'),reason:scope?.scopeReason ?? (customProgramPreview ? 'project_source_preview_without_camera_authority' : 'target_program_authority'),projectedText,
++        clauses:scope?.clauses ?? [],boundaryConstraints:scope?.boundaryConstraints ?? [],offFrameEntities:scope?.offFrameEntities ?? [],reviewRequiredClauses:scope?.reviewRequiredClauses ?? []},
+       owner,ownerPath,outputText:owner ? outputText : null,
++      ...customProgramPreview ? {previewOwner:candidateOwner,previewOutputText:candidateOwner ? projectedText : null,executionAuthority:'none_without_camera_binding'} : {},
+       deduplication:{removedFrom:visibleDeduplication.get(outputText) || [],duplicateSource:spatial.mustBeVisible.findIndex(value=>cleanList(value)[0] === text) !== index},
+       disposition,reason:disposition === 'retained' ? 'current_executable_owner' : disposition === 'review_required' ? 'unresolved_visible_requirement'
++        : disposition === 'preview_only' ? 'project_source_preview_without_camera_authority'
+         : disposition === 'post_composite_only' ? 'in_scene_identity_post_composite' : disposition === 'off_frame_dependency' ? 'foreign_scene_entity'
+         : sanitizer?.reason || disposition}];
+   });

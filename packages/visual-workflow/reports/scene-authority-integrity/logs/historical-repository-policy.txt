@@ -1,0 +1,72 @@
+✖ 仓库不包含项目源文件或项目交付物 (224.4878ms)
+✖ 仓库内栅格图片只能用于脱敏示例、测试、模板或已声明运行时资产 (181.1354ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 675.5771
+
+✖ failing tests:
+
+test at tests\repository-policy.test.js:22:1
+✖ 仓库不包含项目源文件或项目交付物 (224.4878ms)
+  AssertionError [ERR_ASSERTION]: 发现 GitHub 文件管理规范违规：
+  packages/visual-workflow/reports/art-medical-identity/review.md：禁止的项目交付文件
+  packages/visual-workflow/reports/local-spatial-boundaries/review.md：禁止的项目交付文件
+  + actual - expected
+
+  + [
+  +   'packages/visual-workflow/reports/art-medical-identity/review.md：禁止的项目交付文件',
+  +   'packages/visual-workflow/reports/local-spatial-boundaries/review.md：禁止的项目交付文件'
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/tests/repository-policy.test.js:35:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.start (node:internal/test_runner/test:1257:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [ 'packages/visual-workflow/reports/art-medical-identity/review.md：禁止的项目交付文件', 'packages/visual-workflow/reports/local-spatial-boundaries/review.md：禁止的项目交付文件' ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests\repository-policy.test.js:38:1
+✖ 仓库内栅格图片只能用于脱敏示例、测试、模板或已声明运行时资产 (181.1354ms)
+  AssertionError [ERR_ASSERTION]: 栅格图片位置不合规：
+  packages/visual-workflow/reports/art-medical-identity/web-confirmed.png
+  packages/visual-workflow/reports/local-spatial-boundaries/web-confirmed.png
+  packages/visual-workflow/reports/p7-spatial-layout-contract/P7-web-confirmed.png
+  packages/visual-workflow/reports/p7a-prompt-budget/P7a-web-confirmed.png
+  packages/visual-workflow/reports/spatial-balance/web-confirmed.png
+  + actual - expected
+
+  + [
+  +   'packages/visual-workflow/reports/art-medical-identity/web-confirmed.png',
+  +   'packages/visual-workflow/reports/local-spatial-boundaries/web-confirmed.png',
+  +   'packages/visual-workflow/reports/p7-spatial-layout-contract/P7-web-confirmed.png',
+  +   'packages/visual-workflow/reports/p7a-prompt-budget/P7a-web-confirmed.png',
+  +   'packages/visual-workflow/reports/spatial-balance/web-confirmed.png'
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/tests/repository-policy.test.js:42:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [ 'packages/visual-workflow/reports/art-medical-identity/web-confirmed.png', 'packages/visual-workflow/reports/local-spatial-boundaries/web-confirmed.png', 'packages/visual-workflow/reports/p7-spatial-layout-contract/P7-web-confirmed.png', 'packages/visual-workflow/reports/p7a-prompt-budget/P7a-web-confirmed.png', 'packages/visual-workflow/reports/spatial-balance/web-confirmed.png' ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
