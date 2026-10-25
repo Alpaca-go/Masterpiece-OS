@@ -1,0 +1,254 @@
+{
+  "phase": "RKS-02B",
+  "baseline": "3b02af4859eecb189b593b11bc81ab27cf6c3228",
+  "results": [
+    {
+      "name": "fidelity-tests",
+      "command": "node --import tsx --test packages/visual-workflow/tests/restaurant-knowledge/ftt-fidelity.test.ts",
+      "exitCode": 0,
+      "countGroups": {
+        "tests": [
+          18
+        ],
+        "pass": [
+          18
+        ],
+        "fail": [
+          0
+        ],
+        "skipped": [
+          0
+        ]
+      },
+      "log": "logs/fidelity-tests.txt",
+      "sha256": "ead5627b8d36fc243ddb3d0929b7ddb109dcc3108790e85281270a663b06aa14",
+      "rawLogSha256": "78ad3f8e7d4ac6954f61c81a67eb090f1dd88b194a425ca00d7ee579543d8d5d",
+      "normalization": "CRLF to LF; whitespace-only lines made empty; all diagnostic content retained",
+      "rawLog": ".codex-smoke/rks-02b/fidelity-tests.log"
+    },
+    {
+      "name": "restaurant-tests",
+      "command": "node --import tsx --test <all restaurant-knowledge *.test.js/ts/mjs>",
+      "exitCode": 0,
+      "countGroups": {
+        "tests": [
+          50
+        ],
+        "pass": [
+          50
+        ],
+        "fail": [
+          0
+        ],
+        "skipped": [
+          0
+        ]
+      },
+      "log": "logs/restaurant-tests.txt",
+      "sha256": "6ac461cde5ac06c95ab9bcbf851b257e1074491ec4f2755895fb5be2e0350570",
+      "rawLogSha256": "778adf906c697cd66243120a2808cf20fd02282bc65c7e7a406ea070be48c514",
+      "normalization": "CRLF to LF; whitespace-only lines made empty; all diagnostic content retained",
+      "rawLog": ".codex-smoke/rks-02b/restaurant-tests.log"
+    },
+    {
+      "name": "workflow-tests",
+      "command": "node --import tsx --test <all packages/visual-workflow/tests *.test.js/ts/mjs>",
+      "exitCode": 0,
+      "countGroups": {
+        "tests": [
+          211
+        ],
+        "pass": [
+          211
+        ],
+        "fail": [
+          0
+        ],
+        "skipped": [
+          0
+        ]
+      },
+      "log": "logs/workflow-tests.txt",
+      "sha256": "23348d740bcfb6c54beeb95239d93a8d1ad96f014a5fd01bb8373dad6d2871e6",
+      "rawLogSha256": "8e4dc9ed0b942104ebafca8006da56ccd30c6701cc4ac6bbd9ebad999cec1b0e",
+      "normalization": "CRLF to LF; whitespace-only lines made empty; all diagnostic content retained",
+      "rawLog": ".codex-smoke/rks-02b/workflow-tests.log"
+    },
+    {
+      "name": "repo-verify",
+      "command": "npm run repo:verify",
+      "exitCode": 0,
+      "countGroups": {
+        "tests": [
+          2,
+          1294,
+          56
+        ],
+        "pass": [
+          2,
+          1294,
+          56
+        ],
+        "fail": [
+          0,
+          0,
+          0
+        ],
+        "skipped": [
+          0,
+          0,
+          0
+        ]
+      },
+      "log": "logs/repo-verify.txt",
+      "sha256": "7351f63e4668aa0a9e562d274c3bfa7571f5644ce9829f98d2d389aa1d83c7d7",
+      "rawLogSha256": "b02907c74f87ffbbf231f63af842071b805ca586c8a0a893f2b3922bc376ceb6",
+      "normalization": "CRLF to LF; whitespace-only lines made empty; all diagnostic content retained",
+      "rawLog": ".codex-smoke/rks-02b/repo-verify.log"
+    },
+    {
+      "name": "golden-test",
+      "command": "npm run golden:test",
+      "exitCode": 0,
+      "countGroups": {
+        "tests": [],
+        "pass": [],
+        "fail": [],
+        "skipped": []
+      },
+      "log": "logs/golden-test.txt",
+      "sha256": "effbe1522354f6b3e1a4a3053a6bbfd15c600d2de7be614ae7a5123cceac16ed",
+      "rawLogSha256": "78a4f5734232760dcf2bc1d582a66a5a73e1b296580fa769923fc6b2e2f537c5",
+      "normalization": "CRLF to LF; whitespace-only lines made empty; all diagnostic content retained",
+      "rawLog": ".codex-smoke/rks-02b/golden-test.log"
+    },
+    {
+      "name": "repo-verify-initial",
+      "command": "npm run repo:verify (initial attempt)",
+      "exitCode": 1,
+      "countGroups": {
+        "tests": [],
+        "pass": [],
+        "fail": [],
+        "skipped": []
+      },
+      "log": "logs/repo-verify-initial.txt",
+      "sha256": "24e9b9595c400a9c1531ba2565dba592bb920b23172631c8c319e57091f79058",
+      "rawLogSha256": "e08a9be4550859cb2a0daf45a1384447da1f6581580d1cadddd7d885dbe3e49c",
+      "normalization": "CRLF to LF; whitespace-only lines made empty; all diagnostic content retained",
+      "rawLog": ".codex-smoke/rks-02b/repo-verify-initial.log"
+    },
+    {
+      "name": "repo-verify-report-metadata",
+      "command": "npm run repo:verify (report metadata boundary attempt)",
+      "exitCode": 1,
+      "countGroups": {
+        "tests": [],
+        "pass": [],
+        "fail": [],
+        "skipped": []
+      },
+      "log": "logs/repo-verify-report-metadata.txt",
+      "sha256": "b8224226e0af0c63861ae90320ecc6b91156cee52d6b58d7143673fde2de49d2",
+      "rawLogSha256": "97f7eff21e957ad5d7360f34edcae499011bb893b13aac971283a94b03aca20d",
+      "normalization": "CRLF to LF; whitespace-only lines made empty; all diagnostic content retained",
+      "rawLog": ".codex-smoke/rks-02b/repo-verify-report-metadata.log"
+    },
+    {
+      "name": "repository-policy",
+      "command": "node --test tests/repository-policy.test.js",
+      "exitCode": 1,
+      "countGroups": {
+        "tests": [
+          2
+        ],
+        "pass": [
+          0
+        ],
+        "fail": [
+          2
+        ],
+        "skipped": [
+          0
+        ]
+      },
+      "log": "logs/repository-policy.txt",
+      "sha256": "a1186fbb5cff60828e3d3b26585cdb6bf56ffbccfa5848bcf65b4cabaccc4d33",
+      "rawLogSha256": "571590963b9d966f65bf55416720618894836594a74890d3f40e9f6ee9f28e85",
+      "normalization": "CRLF to LF; whitespace-only lines made empty; all diagnostic content retained",
+      "rawLog": ".codex-smoke/rks-02b/repository-policy.log"
+    }
+  ],
+  "newCases": 18,
+  "originalSixCasesPreserved": true,
+  "supplementalNonSichuanCases": 1,
+  "resultsOverlap": "18 new tests are included in restaurant 50 and workflow 211; repo has distinct count groups, do not add overlapping totals",
+  "golden": {
+    "cases": 5,
+    "pass": 5,
+    "providerCalls": 0,
+    "autoUpdated": false
+  },
+  "initialFailure": {
+    "type": "test_source_introspection_boundary_violation",
+    "remedy": "Removed unnecessary source-code read and introspection assertion; byte-identical full historical input checks retained; no guard, production or expected semantic output changed"
+  },
+  "reportMetadataAttempt": {
+    "type": "diagnostic_prose_matched_the_existing_boundary_regex",
+    "remedy": "Moved detailed prose to Markdown and used a concise structured reason identifier; diagnostic log retained; no policy logic changed"
+  },
+  "historicalPolicyEvidence": [
+    {
+      "path": "tests/repository-policy.test.js",
+      "sha256": "e0b4a12325ad7124857b3839af264cb77bbdd28cf1085b275be72b379307b6a7",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/art-medical-identity/review.md",
+      "sha256": "b12d5c04c19cf46afe9ba5d9487f1bb703727df8b730bf03b48f5dad0963ced3",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/local-spatial-boundaries/review.md",
+      "sha256": "b4c92dd1b7b79f1cb9a64f006763bed4a5033ba01da129b2bfaa85accb46801d",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/art-medical-identity/web-confirmed.png",
+      "sha256": "397fcb16b6f7cd1914984a0037492c519d4aee25ccd575139978275b0b25367d",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/local-spatial-boundaries/web-confirmed.png",
+      "sha256": "b321d766caca74ac1b37bb9961249c43a6057532829f5a44af1fc461b442de1e",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/p7-spatial-layout-contract/P7-web-confirmed.png",
+      "sha256": "b321d766caca74ac1b37bb9961249c43a6057532829f5a44af1fc461b442de1e",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/p7a-prompt-budget/P7a-web-confirmed.png",
+      "sha256": "82bce98cd13474c16d176a1ea838db942514284c1a28bb236224d475ee3a2889",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/spatial-balance/web-confirmed.png",
+      "sha256": "397fcb16b6f7cd1914984a0037492c519d4aee25ccd575139978275b0b25367d",
+      "unchangedFromBaseline": true
+    }
+  ],
+  "historicalPolicyFailures": [
+    "仓库不包含项目源文件或项目交付物",
+    "仓库内栅格图片只能用于脱敏示例、测试、模板或已声明运行时资产"
+  ],
+  "fullRootNpmTestRun": false,
+  "currentFlows": "PASS within repo:verify; 2 + 1294 tests and both typechecks",
+  "counters": {
+    "realAnalysis": 0,
+    "realGeneration": 0,
+    "realValidation": 0,
+    "automaticRetries": 0
+  }
+}

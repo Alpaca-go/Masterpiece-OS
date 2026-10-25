@@ -1,0 +1,264 @@
+✔ presentation distinguishes absent Packet, insufficient evidence and usable suggestions with zero model calls (423.5788ms)
+✔ explicit analysis fields map deterministically with leaf provenance and without mutating the Packet (2.3424ms)
+✔ missing spatial evidence stays blank; color rank, global systems and risk observations cannot grant scope or prohibitions (5.4489ms)
+✔ rereading a missing direction uses the current Packet and fingerprint without persisting the previous suggestion (167.0075ms)
+✔ read-only existing report RPC supplies suggestions for missing directions without creating any decision files (541.9273ms)
+✔ draft, confirmed and needs_reconfirmation retain their fields, hashes, source and disk bytes across suggestion reads (529.927ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"d0b4de8a-0d51-4ce1-b162-c70d96c50a2a","taskId":"vnext-task-ee923493-9fdf-4789-8c42-8b36960658b8","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":9942,"compileDurationMs":101.158}
+✔ integrated project direction reaches the standard provider body without a reference input (1075.7409ms)
+✔ architectural revision preserves approved atmosphere, structured palette, material optics and light (5.7799ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"4f2b1220-ccd4-4fab-bf82-f0367235faeb","taskId":"vnext-task-e5b2068b-584e-4eff-903c-013f5a705fb7","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8655,"compileDurationMs":100.36}
+✔ project direction alone reaches formal standard request with height, open transition and usable functions (1050.1301ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"224b8d40-8deb-4ded-b8f9-277a5a0afb9d","taskId":"vnext-task-84f3d228-5ba0-4d7d-8a82-7e51161176ae","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6838,"compileDurationMs":68.281}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"3bc8c09b-1ebc-40b2-b518-9484cc135619","taskId":"vnext-task-e44f13b8-b511-493d-84dc-45cc43f55661","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6822,"compileDurationMs":21.742}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"42fd3c5e-4028-4395-8eef-15408487e874","taskId":"vnext-task-3bb7f70c-3fbf-4f35-aece-cc1750daf728","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6812,"compileDurationMs":13.581}
+✔ three other industries keep their actual standard request bodies byte-identical to the reviewed baseline (1369.1506ms)
+✔ refinement preserves the integrated direction and approved atmosphere without expanding drift guards (4.7971ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"61eeef0d-47b3-4514-ae25-ab78a6299be2","taskId":"vnext-task-2142a2ce-0cb5-416a-9d9c-ef98e00db454","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":10515,"compileDurationMs":94.945}
+✔ P1-P4 survive confirmation, projection, formal compilation and the actual standard provider adapter (993.259ms)
+✔ hall protection changes only four project relation fields and keeps the established art, material and light (2.1382ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"cb753c28-a885-405a-bb72-e33c29f0e11a","taskId":"vnext-task-60a12206-0775-4c3b-99bb-a46e1bc629e2","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":11170,"compileDurationMs":104.882}
+✔ open hall, complete service face, single screened threshold and optional cues survive standard provider dispatch (924.2768ms)
+✔ official space route applies project confirmation before compiler and semantic gates, without mutating history (114.7799ms)
+✔ project, approval and invalid spatial data fail closed in the official route (21.2502ms)
+✔ family scope does not apply a spatial confirmation to another deliverable (1.773ms)
+✔ other medical, restaurant and hotel standard tasks retain their input; no art direction leaks by industry or name (181.6157ms)
+✔ adapter feasibility encodes and verifies actual registered bytes; standard remains zero images (25.2261ms)
+✔ negative, logo, cross-project, missing, duplicate, unapproved, corrupt and path-traversal references fail closed (18.0799ms)
+✔ missing files and parent-directory symlinks cannot leave the authorized review root (5.6938ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"3f3d08df-270d-4d8a-a214-6f92a6afb63e","taskId":"vnext-task-a4335688-2359-4e28-9665-be11c4aa93fd","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8377,"compileDurationMs":82.581}
+✔ application service loads confirmation, preserves gates and sends four ordered original byte inputs through actual image adapter (779.1046ms)
+✔ independent provider and product capacity are consistent and unsupported models fail closed (89.4675ms)
+✔ registration rejects negative/Logo roles, duplicates, foreign authority, corrupt images and invalid MIME before modifying a directive (322.4204ms)
+✔ missing, duplicate, foreign project and unknown reference selections never become text generation (225.9739ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"6326eb30-d11e-48c5-87d2-5f9246acf4bf","taskId":"vnext-task-826b5146-1a78-40b1-9a66-b9b6d2fdcd3e","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8377,"compileDurationMs":29.032}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"62d3cd68-41da-4d1b-9dcf-01f8edb1659c","taskId":"vnext-task-17d2f55f-abf4-4662-b48a-ac50e020e0b4","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8377,"compileDurationMs":24.303}
+✔ post-compilation asset edits and missing files fail before any adapter transport (569.8652ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"f3425293-a3c5-4090-9689-1378a79ee4d6","taskId":"vnext-task-fe35ba67-797a-4ff9-8a24-8a7bd4da1c42","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8377,"compileDurationMs":31.12}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"167f4432-0d07-4d07-a777-7a97eadaae8e","taskId":"vnext-task-36410401-22af-414c-b709-cdbf33c52e04","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8377,"compileDurationMs":19.146}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"0f0927bc-f134-445d-8153-53a571e32d65","taskId":"vnext-task-35f863bc-39d5-444e-bb3c-9272a618232f","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8377,"compileDurationMs":18.932}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"b480026b-8e8d-4ca6-9362-77f7f37f4470","taskId":"vnext-task-f32765a6-8d0e-4d1f-b741-e9ee14fe9bca","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8377,"compileDurationMs":14.736}
+✔ revocation, authorization change, source directive change and registry role tampering invalidate the execution snapshot (962.1215ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"717c24cb-f678-47a1-8310-c18e531c6777","taskId":"vnext-task-859aceff-2af7-4965-9c56-1e68617136c7","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8377,"compileDurationMs":18.278}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"408d7f63-afe8-4495-85af-93f7c1143325","taskId":"vnext-task-7340a6f7-cb53-49f2-b05c-808c3226df7f","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8377,"compileDurationMs":16.014}
+✔ provider profile model or protocol changes cannot silently execute a compiled reference task (505.8973ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"7c27cbe2-2945-4997-b92b-6c5a659cc289","taskId":"vnext-task-12672811-f251-4e6a-9f21-861bd8a98430","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8377,"compileDurationMs":16.444}
+✔ edited prompts and tampered task snapshots cannot bypass compile or Provider prompt gates (202.5888ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"4c851119-b7aa-4e5b-819e-38bb396f75d9","taskId":"vnext-task-b73db1f0-1a2f-4cc7-af5a-24a8983be3fb","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8377,"compileDurationMs":31.055}
+✔ asset parent junctions and registry traversal fail closed (253.6803ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"fcd15d78-bbff-4d42-abb5-389928f7a6e7","taskId":"vnext-task-b32a1928-a356-413f-b0e5-666f95c671f6","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6832,"compileDurationMs":16.773}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"fcd15d78-bbff-4d42-abb5-389928f7a6e7","taskId":"vnext-task-35908af0-6bee-40b3-81f8-d3bd83576eb9","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6832,"compileDurationMs":10.891}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"bb27889b-4edf-4a3a-b62d-286e302d4667","taskId":"vnext-task-5e71e28f-69fa-4c11-ba7d-ad1ffd2c5234","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6816,"compileDurationMs":17.523}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"bb27889b-4edf-4a3a-b62d-286e302d4667","taskId":"vnext-task-111608d3-5e7b-40e3-84ba-75a8db978e26","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6816,"compileDurationMs":14.189}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"692de93e-41ab-4973-81e2-2f213bd5d5ff","taskId":"vnext-task-8c172ee1-08c0-4d21-ba8b-daf01d4dd409","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6806,"compileDurationMs":15.653}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"692de93e-41ab-4973-81e2-2f213bd5d5ff","taskId":"vnext-task-cb641404-7ede-43ea-9359-3f8cdf740dfb","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6806,"compileDurationMs":10.314}
+✔ ordinary standard generation remains byte-for-byte identical across medical, restaurant and hotel projects (798.8246ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"cbebd4c7-9d0d-4388-8a60-8a2fe7b2446b","taskId":"vnext-task-03db0f4f-7a35-4d2c-8115-bc3c9933c43c","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8377,"compileDurationMs":19.834}
+✔ public operations verify the approved implementation before registration, compilation, generation and Logo composition (611.966ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"358083cb-e320-454a-9b1f-d6b469fbaede","taskId":"vnext-task-d1edd9c9-86d9-4453-ad2f-54912c9f5957","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8377,"compileDurationMs":17.666}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"7252a42e-a95e-4ead-865d-2dc0df88a021","taskId":"vnext-task-dba5c693-051c-4496-b750-e6670f6cd1a4","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8377,"compileDurationMs":12.106}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"0b1ea9b1-cded-40ae-a669-d723ee0437da","taskId":"vnext-task-454f7eca-2526-41fb-b796-c64c2f307518","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8377,"compileDurationMs":12.662}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"14d92bb1-fa87-4736-afe3-eb7fbad77d2b","taskId":"vnext-task-ae10179c-44c4-453b-a2d9-3f6b3a7a82d3","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8377,"compileDurationMs":14.013}
+✔ image service independently rejects reordered or relabeled execution references (587.276ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"9083bd5e-bc9d-4e2b-b7e6-1340b783b49a","taskId":"vnext-task-280988ee-faf1-451e-96b5-dfa77ff5acd6","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8790,"compileDurationMs":10.996}
+✔ ten unique authorized files are supported; eleven inputs or an empty set are rejected without truncation (260.7941ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"62b718fc-ec29-4423-a8f0-09065c97fe0f","taskId":"vnext-task-a3f01489-d613-401c-bea6-817f3eccfe98","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8377,"compileDurationMs":11.831}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"9fc829a3-5d17-4c53-a58f-4a40ba59c627","taskId":"vnext-task-baa3eb79-fc7c-443d-a961-813c48d1af18","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8377,"compileDurationMs":11.062}
+✔ a changed analysis context or a malformed current confirmation blocks instead of silently recompiling (209.9749ms)
+✔ multi-megabyte canonical image uploads register and resolve without regex stack exhaustion (115.7402ms)
+✔ default model request asks for automatic proposals while retaining evidence and unknown-fact boundaries (2.3599ms)
+✔ model output keeps scoped colors, composition and proposal provenance through normalization and autofill (31.1575ms)
+✔ invalid scope or claimed confirmation cannot acquire proposal authority (3.9542ms)
+✔ functional relation recognition does not grant authority to identity, motifs or color geometry (26.1343ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"ce787bd9-766c-4f81-9ad0-1c4a6853d283","taskId":"vnext-task-729d3c4c-2c58-4466-a277-a04691f467d7","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7243,"compileDurationMs":67.902}
+✔ automatic suggestion can be confirmed without field rewriting and reaches actual offline image adapter (612.3346ms)
+✔ commercial refinement keeps architecture, art, lateral composition, palette and guardrails unchanged (2.0546ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"a42ffd5d-f3ac-4690-9ecb-52e95b2738bf","taskId":"vnext-task-735e98a9-e9ad-4086-b02f-9ad116576605","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":11173,"compileDurationMs":136.979}
+✔ restrained service cues, unlettered identity carriers, fine edges and diffuse light reach the standard request (649.3514ms)
+✔ cross-zone relationship remains a current boundary constraint: Reception circulation connects to treatment through a screened access route (4.7926ms)
+✔ cross-zone relationship remains a current boundary constraint: Reception waiting must not expose consultation conversations (0.7895ms)
+✔ cross-zone relationship remains a current boundary constraint: Recovery return traffic must avoid the reception queue (0.2025ms)
+✔ cross-zone relationship remains a current boundary constraint: Reception is adjacent to consultation with an acoustic privacy boundary (0.151ms)
+✔ cross-zone relationship remains a current boundary constraint: 接待区到治疗区的患者动线与员工通道分离 (1.0546ms)
+✔ cross-zone relationship remains a current boundary constraint: 接待区与治疗区之间应保持隔声边界 (0.2158ms)
+✔ cross-zone relationship remains a current boundary constraint: 咨询区入口不得从接待座位直接看到，保护隐私 (0.3731ms)
+✔ cross-zone relationship remains a current boundary constraint: 恢复区返回人流不得与接待候客队列交叉 (0.2174ms)
+✔ foreign interior remains off frame: Treatment room contains procedure beds (0.5254ms)
+✔ foreign interior remains off frame: Consultation room furniture and display walls (0.5226ms)
+✔ foreign interior remains off frame: Recovery room equipped with lounge beds (0.3153ms)
+✔ foreign interior remains off frame: 治疗室内有诊疗设备 (0.2232ms)
+✔ mixed clauses preserve the local operational relation without granting interior visibility (1.7478ms)
+✔ a foreign-only privacy statement is retained only in an operational source context (0.2732ms)
+✔ formal compiler retains legitimate relationships once without exposing foreign interiors or mutating input (79.6138ms)
+✔ bilingual background scope works for neutral and chromatic colors (2.0653ms)
+✔ identity rank and color names cannot manufacture spatial scope (0.4279ms)
+✔ role, ratio and carrier mutations reach the final compiler while materials and functions stay fixed (90.502ms)
+✔ conflicting scope is visible, not resolved through matcher order (13.9572ms)
+✔ chromatic and neutral materials preserve carrier, optical behavior and role without adding optics (10.4977ms)
+✔ lighting retains supplied optical interaction and filters identity light (0.4016ms)
+✔ actions retain the supplied object: Circulation flow guides visitors (0.4041ms)
+✔ actions retain the supplied object: 动线流动引导访客 (3.7115ms)
+✔ actions retain the supplied object: Layered light falls on the wall (0.2382ms)
+✔ actions retain the supplied object: 层叠光影照亮接待台 (0.3631ms)
+✔ actions retain the supplied object: Complex curved ceiling and curved walls (0.1735ms)
+✔ actions retain the supplied object: 复杂曲线天花与连续曲墙 (4.4627ms)
+✔ actions retain the supplied object: Translucent glass partitions filter views (3.5877ms)
+✔ nonspatial sources are excluded before action derivation (25.0428ms)
+✔ motif translation does not invent geometry and explicit complex architecture survives (8.8535ms)
+✔ functional movement remains outside geometric actions and material paths retain original indices (7.0348ms)
+✔ full compiler preserves complex architectural intent across industries without adding installations (26.9448ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"6defb3eb-5543-4acf-8476-54e04ec01516","taskId":"vnext-task-b0518110-64f3-4094-b1ef-f40ea71a8d18","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7368,"compileDurationMs":128.945}
+✔ natural-language form values retain independent semantic fields through official standard business compilation (630.6432ms)
+✔ ambiguous color scope, misplaced full color prose, missing optics and duplicated function relations require clarification (434.6029ms)
+✔ explicit ordinary layouts retain source wording and provenance without invented architecture (41.2234ms)
+✔ decorative or functional prose cannot grant ordinary layout authority (27.5159ms)
+✔ ordinary Chinese and English layout terms pass source gates; genuinely absent architecture stays blocked (61.2137ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"dabe50c9-0a82-4d21-b675-1494e7aaeb19","taskId":"vnext-task-9f35cfa8-2cc8-4f67-98d8-f1cc77c7943f","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":10929,"compileDurationMs":85.543}
+✔ direction correction replaces the rejected art mechanism and preserves five functional targets through the standard adapter (456.7024ms)
+✔ simplified hall direction remains project-local and does not replace an unedited project in the same store (135.1184ms)
+✔ baseline lock prevents input/model/code drift and old tasks; other projects remain independent, zero network (177.8525ms)
+✔ bakery-methodology: current-project relations and scope reach suggestion and compiler without mutation (50.3848ms)
+✔ outdoor-methodology: current-project relations and scope reach suggestion and compiler without mutation (14.5883ms)
+✔ insufficient evidence remains absent rather than acquiring another project decision (0.915ms)
+✔ brand or industry renaming alone does not change functional decisions or invent artwork (10.7412ms)
+✔ relationship mutation is preserved as a change, not accepted on object counts (28.4946ms)
+✔ historical P7a formal and provider prompts retain their recorded text hashes (1.1149ms)
+✔ project direction saves and confirms without registering or uploading a single reference (297.1334ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"9e880e8b-e485-4f41-8c05-aac1539a3052","taskId":"vnext-task-8dce05b5-7863-4af6-bd30-d28e932c4cd9","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7098,"compileDurationMs":80.281}
+✔ web standard task, effective Packet, official compiler, actual image request and validator share the confirmed direction (504.3627ms)
+✔ a changed analysis Packet cannot silently overwrite or reuse the confirmed decision (146.5657ms)
+✔ an analysis request preserves direction and requires explicit reconfirmation even if analysis fails or app restarts (169.5603ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"08a3b97b-fad0-4bb9-8ef3-add39ccdffb1","taskId":"vnext-task-9937587b-edb8-4eaa-8b47-a62cc1263e30","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7098,"compileDurationMs":14.319}
+✔ decision changes after compile block dispatch and keep all history (235.823ms)
+✔ cross-project, stale editing, non-confirmation and invalid confirmed decisions are rejected (183.6123ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"8b4b54fd-c5c9-43a5-8465-fe869210262a","taskId":"vnext-task-1a24fe1a-e1bb-47b7-9c24-50ce6cabc7ad","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7094,"compileDurationMs":19.427}
+✔ a newly confirmed decision invalidates a previously compiled ordinary task with no direction (257.5489ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"57555537-0855-4e50-b4b8-f9ba8393a6ab","taskId":"vnext-task-30980365-b789-4607-b47f-ea1b714b4f7c","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7094,"compileDurationMs":13.959}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"c8495b48-f2a9-4ee7-ad1d-77d0e1c20129","taskId":"vnext-task-1113ee5f-cb5e-4895-ae25-ec809d9222d4","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7078,"compileDurationMs":15.562}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"c704344e-9b2e-4103-ae82-496bd2192384","taskId":"vnext-task-22a7cefe-b786-4d84-8127-e938e932797d","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7068,"compileDurationMs":14.958}
+✔ ordinary industries remain byte-identical and contain no direction or image request fields (624.1113ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"9720ea4d-8540-46af-9512-a9eaa55613ab","taskId":"vnext-task-def0ee5c-39ed-4b19-b660-f5c007648901","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8377,"compileDurationMs":21.844}
+✔ existing four-image art direction route remains independent and operational (530.1521ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"42e23987-8f5c-4da2-8936-ff79b2411e45","taskId":"vnext-task-68caf259-ee6d-4164-8e31-c92b4acc2b15","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7093,"compileDurationMs":12.925}
+✔ the plain-language web editor saves and confirms a usable direction without JSON editing (152.4208ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"5cc28f63-2618-4a42-a7d1-fb2c3bd08b6d","taskId":"vnext-task-3d7bd5ed-cab8-4870-9467-6d65726dd7bf","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7098,"compileDurationMs":10.474}
+✔ guarded public web operations save, confirm, compile, generate, reopen and invalidate on an analysis request (381.6652ms)
+✔ explicit details save persists identity, retains artifacts and requires new analysis/confirmation without calling models (238.1674ms)
+✔ details editing rejects invalid values, stale saves, another project and active analysis without changing stored data (83.5636ms)
+✔ synthetic Packet comparison uses existing pure compiler, with no confirmation or transport (93.3514ms)
+✔ RKS-01E synthetic field lineage distinguishes routing from scene filtering without transport (226.8098ms)
+✔ FTT fixture is a frozen byte-identical historical restaurant Packet, never a generic example or image1 Run (5.2155ms)
+✔ raw refusal remains evidence; common post-composite adaptation is exact and shared (2.5679ms)
+✔ every B mutation is replayable from the explicit direction delta ledger; no hidden input or property change (3.1305ms)
+✔ all three paired scenes have identical shot, subtype, model, standard, aspect, count and zero-reference controls (0.4645ms)
+✔ project goal reaches the actual commercial-purpose block; full restaurant program has no generic consultation functions (0.6907ms)
+✔ visible operating hypotheses obey resolved entrance and dining scope; unresolved authority is audited as a blocker (0.3885ms)
+✔ the original ambiguous pot/steam item is not misreported as preserved English operating fields (0.2176ms)
+✔ material physics, light numeric parameters and unreviewed structures retain original proposal authority (0.244ms)
+✔ historical human material evidence is independently pinned and does not authorize red brick or new physical parameters (0.7017ms)
+✔ no compiler pass, keyword count or prompt length authorizes visual quality or generation (0.2569ms)
+✔ pure compilation and report inputs cannot dispatch network calls or mutate historical sources (246.7439ms)
+✔ RKS-02B cross-project attempted FTT adoption: FTT 合成目标（并非图 1 实际输入） (17.1189ms)
+✔ RKS-02B cross-project attempted FTT adoption: 商场标准化川味快餐 (0.8247ms)
+✔ RKS-02B cross-project attempted FTT adoption: 临街现代外带小吃店 (0.6422ms)
+✔ RKS-02B cross-project attempted FTT adoption: 社区复古咖啡馆 (1.3117ms)
+✔ RKS-02B cross-project attempted FTT adoption: 写字楼复古中餐厅 (0.7217ms)
+✔ RKS-02B cross-project attempted FTT adoption: 材料不足的餐饮品牌 (0.7514ms)
+✔ a separately declared non-Sichuan restaurant cannot inherit FTT materials or acquire invented cuisine/style mappings (1.2538ms)
+✔ six-case counterexample: FTT 合成目标（并非图 1 实际输入） (18.3491ms)
+✔ six-case counterexample: 商场标准化川味快餐 (2.7173ms)
+✔ six-case counterexample: 临街现代外带小吃店 (0.4009ms)
+✔ six-case counterexample: 社区复古咖啡馆 (0.4069ms)
+✔ six-case counterexample: 写字楼复古中餐厅 (0.3455ms)
+✔ six-case counterexample: 材料不足的餐饮品牌 (0.1726ms)
+✔ order, synonyms, provenance and project-name independence (4.2198ms)
+✔ all six conflict codes with paired evidence and no efficiency-only false positive (1.5632ms)
+✔ unknown tags, conflicting facts and competing archetypes stay unresolved (2.7931ms)
+✔ invalid ownership and fake authority fail closed (2.7384ms)
+✔ candidate cards cannot be mistaken for promoted cross-project knowledge (1.3408ms)
+✔ direction comparison is read-only, controlled and explicitly unconfirmed (4.7785ms)
+✔ prototype has no transport, production imports, brand rules or mutable global store (2.8768ms)
+✔ A/B uses actual B1 projection and pure compilers with controlled synthetic input, no confirmation or transport (217.9318ms)
+✔ pre-analysis boundary cannot read a Packet and never classifies proposals or history as original facts (26.1239ms)
+✔ FTT reviewed upgrade proposal triggers paired direction conflict without making modernity universally incompatible (3.6314ms)
+✔ candidate materials/operations remain separately reviewable and never become confirmed B1 fields (3.2246ms)
+✔ pure execution preserves all caller inputs, original historical Packet and resources across order changes (14.9474ms)
+✔ shadow six-case isolation: FTT 合成目标（并非图 1 实际输入） (2.0637ms)
+✔ shadow six-case isolation: 商场标准化川味快餐 (0.6113ms)
+✔ shadow six-case isolation: 临街现代外带小吃店 (0.5321ms)
+✔ shadow six-case isolation: 社区复古咖啡馆 (0.7558ms)
+✔ shadow six-case isolation: 写字楼复古中餐厅 (3.1087ms)
+✔ shadow six-case isolation: 材料不足的餐饮品牌 (0.5317ms)
+✔ changing a brand label or trying to reuse FTT material bindings cannot move project-specific knowledge (1.6601ms)
+✔ evidence binding/ownership and exact mapping fail closed instead of inferring prose (10.3631ms)
+✔ unverified intake/goals cannot authorize archetypes, styles or B1 drafts (5.7196ms)
+✔ contradictory confirmed direction values stay unresolved rather than last-write winning (2.4312ms)
+✔ verified structured source facts remain facts; user location/customer goals remain goals (0.6176ms)
+✔ the shadow entry is isolated, has no I/O or production imports, and cannot dispatch a model (0.7712ms)
+✔ artistic focus is composed once and remains distinct from operations (73.4383ms)
+✔ optional artwork stays optional and a source without art does not acquire an installation (30.7256ms)
+✔ single reception shot keeps other program nodes in the trace rather than displaying their interiors (15.5876ms)
+✔ scene projection preserves trace and does not translate a color or transparency keyword into new geometry (12.5235ms)
+✔ gallery character passes sanitization while identity text remains protected (13.9603ms)
+✔ source-scoped decisions occur once instead of being repeated through strategy/form/organization (12.3977ms)
+✔ unconfirmed color scopes and ratios remain proposals without mandatory large-area authority (23.4157ms)
+✔ brand names and stored brand keys cannot auto-select architecture examples (35.4189ms)
+✔ explicit optional examples require scene and mechanism compatibility and cannot outrank the project (18.4821ms)
+✔ Medical aesthetics: formal route retains complex architecture and explicit strong color without manufacturing art (12.396ms)
+✔ Hospitality: formal route retains complex architecture and explicit strong color without manufacturing art (14.391ms)
+✔ Restaurant: formal route retains complex architecture and explicit strong color without manufacturing art (17.7753ms)
+✔ source scopes retain provenance and unknown scenes remain explicitly unresolved (0.1992ms)
+✔ Packet and source adapter reject empty functional data even with a stale ready flag (58.2897ms)
+✔ blank string arrays cannot satisfy spatial decision repair (1.2172ms)
+✔ stale ready packet cannot compile when all functional entries are removed by cleanup (11.6511ms)
+✔ semantic cleanup cannot erase required data and still complete analysis (4.9583ms)
+✔ explicit material installation survives in brand layer, outside the functional and architectural layers (49.0851ms)
+✔ installation preservation retains identity protection without inventing gradient area authority (18.845ms)
+✔ ordinary hospitality space needs no art object and packaging is unaffected (13.8174ms)
+✔ post-composite identity absence never violates locked assets in generation (4.6952ms)
+✔ generated text is checked independently, with visible evidence (0.6527ms)
+✔ uncertainty and subjective quality hints never authorize regeneration (0.4027ms)
+✔ physical blocking findings retain concrete evidence without triggering paid work (0.3496ms)
+✔ non-composite modes keep identity violation evidence (0.271ms)
+✔ text regeneration prompt does not claim pixel preservation or local editing (0.4455ms)
+✔ a second passed validation never ranks its image over the first; uncertainty is not passed (0.2157ms)
+✔ legacy retry recommendation cannot cause a second generation and paid first image remains available (56.0922ms)
+✔ explicit later invocation keeps both runs and validation summaries independently (45.4035ms)
+✔ validator exception retains successful first run and truthful unverified state (25.9088ms)
+✔ validator request declares stage and asks for separately scoped identity evidence (14.5665ms)
+✔ actual offline composite preserves the original and records confirmed logo source digest (31.787ms)
+✔ post-composite service requires confirmation and records stage separately from visual acceptance (28.728ms)
+✔ visible operations have one actual execution owner: lobby/default (83.8063ms)
+✔ visible operations have one actual execution owner: lobby/entrance_view (32.8385ms)
+✔ visible operations have one actual execution owner: lobby/three_quarter_wide (31.7544ms)
+✔ visible operations have one actual execution owner: dining/default (29.733ms)
+✔ visible operations have one actual execution owner: dining/entrance_view (26.503ms)
+✔ visible operations have one actual execution owner: dining/three_quarter_wide (28.3366ms)
+✔ bilingual activity/effect has functional evidence and ownership: 厨师正在备餐 (12.9116ms)
+✔ bilingual activity/effect has functional evidence and ownership: 菜品上方升起热气 (9.3657ms)
+✔ bilingual activity/effect has functional evidence and ownership: 顾客在餐桌用餐 (12.6538ms)
+✔ bilingual activity/effect has functional evidence and ownership: 店员为顾客打包商品 (13.7836ms)
+✔ bilingual activity/effect has functional evidence and ownership: customers browsing products (14.8748ms)
+✔ bilingual activity/effect has functional evidence and ownership: staff handing parcels to visitors (11.1805ms)
+✔ bilingual activity/effect has functional evidence and ownership: guests checking in at reception (13.5319ms)
+✔ bilingual activity/effect has functional evidence and ownership: receptionist greeting visitors (11.5543ms)
+✔ bilingual activity/effect has functional evidence and ownership: water flowing into the basin (10.7046ms)
+✔ de-duplication retains an actual rendered owner, not mere raw membership; original indices survive (10.9634ms)
+✔ foreign operations cannot re-enter through the brand branch after scope rejection (12.6121ms)
+✔ an activity also supplied in a signature source has one rendered visible owner (12.0195ms)
+✔ brand duplicate is removed only after the current visible owner exists (9.3601ms)
+✔ a prohibitive list never receives credit as the positive visible execution owner (12.0211ms)
+✔ unknown or wishful fragments stay reviewable without becoming a hard operating requirement (17.473ms)
+✔ identity, motif, color, decoration and architecture retain distinct semantic routes (25.9284ms)
+✔ mixed clauses retain only the local activity and boundary, with foreign interiors rejected in trace (11.2595ms)
+✔ sourceMap reflects actual renderer ownership, not a broad promise of preservation (13.0689ms)
+✔ reference-first target program still replaces source operations instead of inheriting standard fallback (26.8438ms)
+✔ continuation keeps the target program authoritative and does not expose source dining operations (16.5888ms)
+ℹ tests 211
+ℹ suites 0
+ℹ pass 211
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 8986.8603

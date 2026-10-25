@@ -1,0 +1,117 @@
+
+> masterpiece-os@5.0.0-rc.1 repo:verify
+> npm run verify:repository-contract && npm run verify:visual-workflow-isolation && npm run verify:version-consistency && npm run verify:version-naming && npm run verify:workspace-boundaries && npm run verify:no-obsolete-code && npm run verify:production-boundaries && npm run verify:tracked-runtime-assets && npm run verify:no-project-specific-production-rules && npm run verify:golden-boundary && npm run verify:current-flows && npm run verify:analysis-guards && npm run repo:guard:test
+
+
+> masterpiece-os@5.0.0-rc.1 verify:repository-contract
+> node ./scripts/verify-repository-contract.mjs
+
+Repository Contract Guard: PASS
+namespace exceptions: 0 | CURRENT authorities: 16 | frozen prompts: 4 | compatibility entries: 4
+Golden files changed: NO | compatibility delta: 0
+provider calls: 0 | business writes: 0 | digest auto-update: NO
+
+> masterpiece-os@5.0.0-rc.1 verify:visual-workflow-isolation
+> node ./scripts/verify-visual-workflow-isolation.mjs
+
+[visual-workflow-isolation] PASS — owned code, prompts, UI and ingress boundary verified; no provider calls.
+
+> masterpiece-os@5.0.0-rc.1 verify:version-consistency
+> node ./scripts/verify-version-consistency.mjs
+
+Product version: 5.0.0-rc.1
+
+  [ok]   VERSION file
+  [ok]   package.json version matches VERSION
+  [ok]   package-lock.json root version matches VERSION
+  [ok]   no sub-directory package-lock.json files
+  [ok]   apps/cli/src/runtime-trace.js DEFAULT_APP_VERSION matches VERSION
+  [ok]   removed Desktop workspace is absent from package-lock.json
+
+Internal packages (packages/*):
+  [ok]     packages/analysis-runtime: private + version 0.0.0
+  [ok]     packages/creative-intelligence: private + version 0.0.0
+  [ok]     packages/creative-production-runtime: private + version 0.0.0
+  [ok]     packages/document-ingestion: private + version 0.0.0
+  [ok]     packages/evaluation-loop-contracts: private + version 0.0.0
+  [ok]     packages/image-generation-adapter: private + version 0.0.0
+  [ok]     packages/image-generation-contracts: private + version 0.0.0
+  [ok]     packages/image-generation-runtime: private + version 0.0.0
+  [ok]     packages/image-provider-dashscope: private + version 0.0.0
+  [ok]     packages/model-benchmark: private + version 0.0.0
+  [ok]     packages/model-registry: private + version 0.0.0
+  [ok]     packages/model-runtime: private + version 0.0.0
+  [ok]     packages/project-contracts: private + version 0.0.0
+  [ok]     packages/reference-asset-inspector: private + version 0.0.0
+  [ok]     packages/runtime-core: private + version 0.0.0
+  [ok]     packages/visual-workflow: private + version 0.0.0
+
+Lab packages (labs/*):
+  [ok]     labs/reference-style-conversion: private
+
+PASS  version consistency gate completed without inconsistencies.
+
+> masterpiece-os@5.0.0-rc.1 verify:version-naming
+> node ./scripts/verify-version-naming.mjs
+
+[version-naming] PASS — current product semantics use capability names; compatibility identifiers remain allowed.
+
+> masterpiece-os@5.0.0-rc.1 verify:workspace-boundaries
+> node ./scripts/verify-workspace-boundaries.mjs
+
+
+[1] Checking for @masterpiece-os/ namespace residuals...
+  [ok]   no @masterpiece-os/ package name residuals
+
+[2] Checking that workspace consumers declare internal @masterpiece/* deps...
+  internal packages discovered: @masterpiece/analysis-runtime, @masterpiece/creative-intelligence, @masterpiece/creative-production-runtime, @masterpiece/document-ingestion, @masterpiece/evaluation-loop-contracts, @masterpiece/image-generation-adapter, @masterpiece/image-generation-contracts, @masterpiece/image-generation-runtime, @masterpiece/image-provider-dashscope, @masterpiece/model-benchmark, @masterpiece/model-registry, @masterpiece/model-runtime, @masterpiece/project-contracts, @masterpiece/reference-asset-inspector, @masterpiece/runtime-core, @masterpiece/visual-workflow
+  [ok]   apps/cli declares deps for 3 @masterpiece/* import(s)
+  [ok]   apps/web declares deps for 1 @masterpiece/* import(s)
+  [ok]   apps/web-runtime declares deps for 3 @masterpiece/* import(s)
+
+[3] Scanning for deep relative imports of packages/*/src/* from apps/** and tests/**...
+  [ok]   no deep imports of packages/*/src/* in apps/** or tests/**
+
+[4] Scanning for subpath imports that are not in package.json exports...
+  [ok]   all subpath imports in apps/** and tests/** are valid
+
+Summary: 0 failure(s), 0 warning(s)
+
+PASS — workspace boundary gate clean. No deep imports remain.
+
+> masterpiece-os@5.0.0-rc.1 verify:no-obsolete-code
+> node ./scripts/verify-no-obsolete-code.mjs
+
+[no-obsolete-code] PASS — scanned 1921 files, no forbidden legacy references.
+
+> masterpiece-os@5.0.0-rc.1 verify:production-boundaries
+> node ./scripts/verify-production-boundaries.mjs
+
+[production-boundaries] PASS — checked 823 current production files; Desktop/Electron/lab/archive imports are absent.
+
+> masterpiece-os@5.0.0-rc.1 verify:tracked-runtime-assets
+> node ./scripts/verify-tracked-runtime-assets.mjs
+
+[verify-tracked-runtime-assets] PASS — 8 declared assets, all checks green.
+
+> masterpiece-os@5.0.0-rc.1 verify:no-project-specific-production-rules
+> node ./scripts/verify-no-project-specific-production-rules.mjs
+
+{
+  "status": "pass",
+  "violations": []
+}
+
+> masterpiece-os@5.0.0-rc.1 verify:golden-boundary
+> node ./scripts/verify-golden-production-boundary.mjs
+
+{
+  "status": "fail",
+  "violations": [
+    {
+      "code": "GOLDEN_RUNTIME_READ_FORBIDDEN",
+      "file": "packages/visual-workflow/tests/restaurant-knowledge/ftt-fidelity.test.ts",
+      "line": 16
+    }
+  ]
+}

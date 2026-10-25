@@ -1,0 +1,26 @@
+✔ FTT fixture is a frozen byte-identical historical restaurant Packet, never a generic example or image1 Run (1.9336ms)
+✔ raw refusal remains evidence; common post-composite adaptation is exact and shared (2.1616ms)
+✔ every B mutation is replayable from the explicit direction delta ledger; no hidden input or property change (3.1984ms)
+✔ all three paired scenes have identical shot, subtype, model, standard, aspect, count and zero-reference controls (0.3678ms)
+✔ project goal reaches the actual commercial-purpose block; full restaurant program has no generic consultation functions (0.6738ms)
+✔ visible operating hypotheses obey resolved entrance and dining scope; unresolved authority is audited as a blocker (0.3746ms)
+✔ the original ambiguous pot/steam item is not misreported as preserved English operating fields (0.2436ms)
+✔ material physics, light numeric parameters and unreviewed structures retain original proposal authority (1.2732ms)
+✔ historical human material evidence is independently pinned and does not authorize red brick or new physical parameters (3.7792ms)
+✔ no compiler pass, keyword count or prompt length authorizes visual quality or generation (0.3594ms)
+✔ pure compilation and report inputs cannot dispatch network calls or mutate historical sources (294.3912ms)
+✔ RKS-02B cross-project attempted FTT adoption: FTT 合成目标（并非图 1 实际输入） (33.5358ms)
+✔ RKS-02B cross-project attempted FTT adoption: 商场标准化川味快餐 (2.2759ms)
+✔ RKS-02B cross-project attempted FTT adoption: 临街现代外带小吃店 (1.1159ms)
+✔ RKS-02B cross-project attempted FTT adoption: 社区复古咖啡馆 (0.8488ms)
+✔ RKS-02B cross-project attempted FTT adoption: 写字楼复古中餐厅 (0.73ms)
+✔ RKS-02B cross-project attempted FTT adoption: 材料不足的餐饮品牌 (0.4805ms)
+✔ a separately declared non-Sichuan restaurant cannot inherit FTT materials or acquire invented cuisine/style mappings (4.0101ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1200.7367
