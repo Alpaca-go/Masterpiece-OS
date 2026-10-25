@@ -1,0 +1,30 @@
+{
+  "applied": false,
+  "officialCompilerOutput": false,
+  "protectedSource": "packages/visual-workflow/src/generation-runtime/space/compiler.js",
+  "protectedSourceSha256": "a6614dce173d79c159854c19fe649d71204037a52183d1d0467242afad4cf352",
+  "approval": "Separate template change review and digest authorization would be required; none requested or applied in E0",
+  "patches": [
+    {
+      "id": "project-task-quality-wording",
+      "category": "quality_wording_optional_neutralization",
+      "before": "Generate a single premium-grade space image for",
+      "after": "Generate a single commercial architectural image for",
+      "reason": "仅建议中性化质量措辞，不把 premium 当作消费层级或已证明污染"
+    },
+    {
+      "id": "project-context-operations",
+      "category": "generic_positive_context_project_replacement",
+      "before": "Use project decisions and the current user instruction. Artistic focus may coexist with practical reception, waiting, access and privacy requirements; examples cannot replace either dimension.",
+      "after": "Use this project’s warm, lively neighborhood eatery direction. Food preparation, service and dining remain readable within this authorized dining scene.",
+      "reason": "用项目与镜头职责替换通用接待/等候语境；不新增室内权限"
+    },
+    {
+      "id": "project-optional-gallery-cue",
+      "category": "optional_positive_style_risk",
+      "before": "Keep buildable junctions, readable circulation and human scale. Complex curves, restrained geometry, strong color and gallery-like character remain available when supported by project intent. No industry-wide aesthetic is imposed.",
+      "after": "Keep buildable junctions, readable circulation and human scale. Follow this project’s warm, lively, approachable Sichuan neighborhood eatery direction without importing a gallery, minimalist cafe or upscale dining style.",
+      "reason": "只在实验建议稿中移除未被本项目选择的可选风格先验；不改正式模板或其他项目"
+    }
+  ]
+}

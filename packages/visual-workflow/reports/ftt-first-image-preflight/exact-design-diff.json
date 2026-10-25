@@ -1,0 +1,450 @@
+{
+  "baseline": "3ed8c669dd7002fd3209cb7c51d788c0c041ea47",
+  "comparison": "RKS-02D original formal B dining to E0 candidate",
+  "deltas": [
+    {
+      "path": "packet.projectId",
+      "before": "dca9b7d4-f233-46ff-b4df-44a890f13c4f",
+      "after": "e002e000-2026-4000-8000-000000000001",
+      "kind": "experiment_identity_only",
+      "humanConfirmed": false,
+      "source": "user:RKS-02E0.sections2-4; historical text acceptance supports warm wood/terracotta/kitchen light only"
+    },
+    {
+      "path": "packet.mediaTranslations.spatial.structureLanguage",
+      "before": [
+        "开放式布局"
+      ],
+      "after": [
+        "开放式布局",
+        "红砖与暖色木质构件共同组织空间；具体位置和构造待人工签署，不推定现有建筑条件"
+      ],
+      "kind": "unsigned_project_design_proposal",
+      "humanConfirmed": false,
+      "source": "user:RKS-02E0.sections2-4; historical text acceptance supports warm wood/terracotta/kitchen light only"
+    },
+    {
+      "path": "packet.mediaTranslations.spatial.materialLanguage",
+      "before": [
+        {
+          "material": "暖色木（项目视觉方向）",
+          "behavior": [
+            "呈现暖色木的综合色调；木种、纹理尺度、涂层与光学参数均未指定"
+          ],
+          "brandRole": "项目温暖亲切的材质方向，具体适用表面待设计师确认",
+          "forbidden": []
+        },
+        {
+          "material": "赤陶（项目视觉方向）",
+          "behavior": [
+            "呈现暖赤陶的综合色调；制品形态、釉面与光学参数均未指定"
+          ],
+          "brandRole": "本项目历史视觉经验；不意味着墙地整铺或任何构造已确认",
+          "forbidden": []
+        }
+      ],
+      "after": [
+        {
+          "material": "红砖（待签署视觉候选）",
+          "behavior": [
+            "红砖综合色调与质朴表面；无特殊光学效果要求，砖规格、砌法与工程参数未指定"
+          ],
+          "brandRole": "拟与暖色木质构件共同组织堂食和服务空间；具体分布待人工签署",
+          "forbidden": []
+        },
+        {
+          "material": "暖色木质构件与木质桌椅（待签署视觉候选）",
+          "behavior": [
+            "温暖木色与可读的木质感；无特殊光学效果要求，木种、构件尺寸、涂层及光学参数未指定"
+          ],
+          "brandRole": "拟用于空间组织与人尺度家具，保持服务通行；具体部位待人工签署",
+          "forbidden": []
+        },
+        {
+          "material": "赤陶色地面（待签署视觉候选）",
+          "behavior": [
+            "温暖赤陶综合色调；无特殊光学效果要求，地面制品类型、规格、釉面与工程参数未指定"
+          ],
+          "brandRole": "拟作为堂食地面色调，与浅色抹灰墙面共同建立质朴基调；不是现有地面事实",
+          "forbidden": []
+        },
+        {
+          "material": "浅色抹灰墙面（待签署视觉候选）",
+          "behavior": [
+            "浅色质朴抹灰视觉；无特殊光学效果要求，配方、厚度、性能与光学参数未指定"
+          ],
+          "brandRole": "拟作为墙面背景以保持明亮和亲切；不是现有墙体事实",
+          "forbidden": []
+        }
+      ],
+      "kind": "unsigned_project_design_proposal",
+      "humanConfirmed": false,
+      "source": "user:RKS-02E0.sections2-4; historical text acceptance supports warm wood/terracotta/kitchen light only"
+    },
+    {
+      "path": "packet.mediaTranslations.spatial.lightingLanguage.source",
+      "before": [
+        "温暖的厨房与菜品照明；不指定色温值或灯具型号"
+      ],
+      "after": [
+        "温暖人工照明服务明档、菜品、餐桌及通行；不指定色温数值或灯具型号",
+        "自然光结合为本轮待签署设计假设；当前没有已核实的采光来源，不指定开窗位置、形状、朝向或尺寸"
+      ],
+      "kind": "unsigned_project_design_proposal",
+      "humanConfirmed": false,
+      "source": "user:RKS-02E0.sections2-4; historical text acceptance supports warm wood/terracotta/kitchen light only"
+    },
+    {
+      "path": "packet.mediaTranslations.spatial.lightingLanguage.contrast",
+      "before": "整体明亮可读且温暖，菜品与人物不过曝。",
+      "after": "温暖、明亮可读，菜品和人物不过曝；不刻意昏暗或拥挤。",
+      "kind": "unsigned_project_design_proposal",
+      "humanConfirmed": false,
+      "source": "user:RKS-02E0.sections2-4; historical text acceptance supports warm wood/terracotta/kitchen light only"
+    },
+    {
+      "path": "packet.mediaTranslations.spatial.lightingLanguage.interactionWithMaterials",
+      "before": [
+        "照明呈现暖色木与赤陶的综合色调；反射、透射和光泽参数未指定"
+      ],
+      "after": [
+        "呈现红砖、暖木、赤陶色地面及浅色抹灰墙面的综合色调；反射、透射、光泽等工程参数未指定"
+      ],
+      "kind": "unsigned_project_design_proposal",
+      "humanConfirmed": false,
+      "source": "user:RKS-02E0.sections2-4; historical text acceptance supports warm wood/terracotta/kitchen light only"
+    },
+    {
+      "path": "packet.mediaTranslations.spatial.lightingLanguage.forbidden",
+      "before": [
+        "昏暗压抑",
+        "以彩色霓虹替代基础照明"
+      ],
+      "after": [
+        "昏暗压抑",
+        "以彩色霓虹替代基础照明",
+        "将假设自然光描述成已验证物业事实"
+      ],
+      "kind": "unsigned_project_design_proposal",
+      "humanConfirmed": false,
+      "source": "user:RKS-02E0.sections2-4; historical text acceptance supports warm wood/terracotta/kitchen light only"
+    },
+    {
+      "path": "packet.mediaTranslations.spatial.colorBehavior.primary",
+      "before": [
+        {
+          "name": "品牌红",
+          "role": "品牌识别候选色；表面和面积未指定"
+        }
+      ],
+      "after": [
+        {
+          "name": "品牌红",
+          "role": "品牌识别候选，原始标识及文字后期合成",
+          "surfaceApplicability": "可移动品牌载体的局部；具体载体待签署",
+          "spatialUsage": "local_accent"
+        }
+      ],
+      "kind": "unsigned_project_design_proposal",
+      "humanConfirmed": false,
+      "source": "user:RKS-02E0.sections2-4; historical text acceptance supports warm wood/terracotta/kitchen light only"
+    },
+    {
+      "path": "packet.mediaTranslations.spatial.colorBehavior.secondary",
+      "before": [
+        {
+          "name": "品牌黑",
+          "role": "品牌信息候选色；不预设室内表面范围"
+        }
+      ],
+      "after": [
+        {
+          "name": "品牌黑",
+          "role": "品牌信息的局部细节候选",
+          "surfaceApplicability": "品牌载体细节；文字及 Logo 后期合成",
+          "spatialUsage": "detail_trim"
+        },
+        {
+          "name": "暖木色",
+          "role": "温暖亲切的材质色候选",
+          "surfaceApplicability": "拟用木质构件与桌椅",
+          "spatialUsage": "secondary_surface"
+        },
+        {
+          "name": "砖红色",
+          "role": "质朴空间组织候选",
+          "surfaceApplicability": "拟用红砖的局部表面；具体分布待签署",
+          "spatialUsage": "secondary_surface"
+        },
+        {
+          "name": "赤陶色",
+          "role": "温暖地面色候选",
+          "surfaceApplicability": "拟用堂食地面；不确认实际制品",
+          "spatialUsage": "secondary_surface"
+        },
+        {
+          "name": "浅抹灰色",
+          "role": "明亮质朴的墙面背景候选",
+          "surfaceApplicability": "拟用抹灰墙面；不确认现有墙体",
+          "spatialUsage": "secondary_surface"
+        }
+      ],
+      "kind": "unsigned_project_design_proposal",
+      "humanConfirmed": false,
+      "source": "user:RKS-02E0.sections2-4; historical text acceptance supports warm wood/terracotta/kitchen light only"
+    },
+    {
+      "path": "packet.mediaTranslations.spatial.colorBehavior.accent",
+      "before": [
+        {
+          "name": "木色",
+          "role": "暖色木的材质色候选；表面和面积均未指定"
+        },
+        {
+          "name": "白色",
+          "role": "清洁明亮的辅助色候选；范围待审核"
+        }
+      ],
+      "after": [],
+      "kind": "unsigned_project_design_proposal",
+      "humanConfirmed": false,
+      "source": "user:RKS-02E0.sections2-4; historical text acceptance supports warm wood/terracotta/kitchen light only"
+    },
+    {
+      "path": "packet.colorSystem.primary",
+      "before": [
+        {
+          "name": "品牌红",
+          "role": "品牌识别候选色；表面和面积未指定"
+        }
+      ],
+      "after": [
+        {
+          "name": "品牌红",
+          "role": "品牌识别候选，原始标识及文字后期合成",
+          "surfaceApplicability": "可移动品牌载体的局部；具体载体待签署",
+          "spatialUsage": "local_accent"
+        }
+      ],
+      "kind": "unsigned_project_design_proposal",
+      "humanConfirmed": false,
+      "source": "user:RKS-02E0.sections2-4; historical text acceptance supports warm wood/terracotta/kitchen light only"
+    },
+    {
+      "path": "packet.colorSystem.secondary",
+      "before": [
+        {
+          "name": "品牌黑",
+          "role": "品牌信息候选色；不预设室内表面范围"
+        }
+      ],
+      "after": [
+        {
+          "name": "品牌黑",
+          "role": "品牌信息的局部细节候选",
+          "surfaceApplicability": "品牌载体细节；文字及 Logo 后期合成",
+          "spatialUsage": "detail_trim"
+        },
+        {
+          "name": "暖木色",
+          "role": "温暖亲切的材质色候选",
+          "surfaceApplicability": "拟用木质构件与桌椅",
+          "spatialUsage": "secondary_surface"
+        },
+        {
+          "name": "砖红色",
+          "role": "质朴空间组织候选",
+          "surfaceApplicability": "拟用红砖的局部表面；具体分布待签署",
+          "spatialUsage": "secondary_surface"
+        },
+        {
+          "name": "赤陶色",
+          "role": "温暖地面色候选",
+          "surfaceApplicability": "拟用堂食地面；不确认实际制品",
+          "spatialUsage": "secondary_surface"
+        },
+        {
+          "name": "浅抹灰色",
+          "role": "明亮质朴的墙面背景候选",
+          "surfaceApplicability": "拟用抹灰墙面；不确认现有墙体",
+          "spatialUsage": "secondary_surface"
+        }
+      ],
+      "kind": "unsigned_project_design_proposal",
+      "humanConfirmed": false,
+      "source": "user:RKS-02E0.sections2-4; historical text acceptance supports warm wood/terracotta/kitchen light only"
+    },
+    {
+      "path": "packet.colorSystem.accent",
+      "before": [
+        {
+          "name": "木色",
+          "role": "暖色木的材质色候选；表面和面积均未指定"
+        },
+        {
+          "name": "白色",
+          "role": "清洁明亮的辅助色候选；范围待审核"
+        }
+      ],
+      "after": [],
+      "kind": "unsigned_project_design_proposal",
+      "humanConfirmed": false,
+      "source": "user:RKS-02E0.sections2-4; historical text acceptance supports warm wood/terracotta/kitchen light only"
+    },
+    {
+      "path": "packet.materialSystem",
+      "before": [
+        {
+          "material": "暖色木（项目视觉方向）",
+          "behavior": [
+            "呈现暖色木的综合色调；木种、纹理尺度、涂层与光学参数均未指定"
+          ],
+          "brandRole": "项目温暖亲切的材质方向，具体适用表面待设计师确认",
+          "forbidden": []
+        },
+        {
+          "material": "赤陶（项目视觉方向）",
+          "behavior": [
+            "呈现暖赤陶的综合色调；制品形态、釉面与光学参数均未指定"
+          ],
+          "brandRole": "本项目历史视觉经验；不意味着墙地整铺或任何构造已确认",
+          "forbidden": []
+        }
+      ],
+      "after": [
+        {
+          "material": "红砖（待签署视觉候选）",
+          "behavior": [
+            "红砖综合色调与质朴表面；无特殊光学效果要求，砖规格、砌法与工程参数未指定"
+          ],
+          "brandRole": "拟与暖色木质构件共同组织堂食和服务空间；具体分布待人工签署",
+          "forbidden": []
+        },
+        {
+          "material": "暖色木质构件与木质桌椅（待签署视觉候选）",
+          "behavior": [
+            "温暖木色与可读的木质感；无特殊光学效果要求，木种、构件尺寸、涂层及光学参数未指定"
+          ],
+          "brandRole": "拟用于空间组织与人尺度家具，保持服务通行；具体部位待人工签署",
+          "forbidden": []
+        },
+        {
+          "material": "赤陶色地面（待签署视觉候选）",
+          "behavior": [
+            "温暖赤陶综合色调；无特殊光学效果要求，地面制品类型、规格、釉面与工程参数未指定"
+          ],
+          "brandRole": "拟作为堂食地面色调，与浅色抹灰墙面共同建立质朴基调；不是现有地面事实",
+          "forbidden": []
+        },
+        {
+          "material": "浅色抹灰墙面（待签署视觉候选）",
+          "behavior": [
+            "浅色质朴抹灰视觉；无特殊光学效果要求，配方、厚度、性能与光学参数未指定"
+          ],
+          "brandRole": "拟作为墙面背景以保持明亮和亲切；不是现有墙体事实",
+          "forbidden": []
+        }
+      ],
+      "kind": "unsigned_project_design_proposal",
+      "humanConfirmed": false,
+      "source": "user:RKS-02E0.sections2-4; historical text acceptance supports warm wood/terracotta/kitchen light only"
+    },
+    {
+      "path": "packet.lightingSystem.source",
+      "before": [
+        "温暖的厨房与菜品照明；不指定色温值或灯具型号"
+      ],
+      "after": [
+        "温暖人工照明服务明档、菜品、餐桌及通行；不指定色温数值或灯具型号",
+        "自然光结合为本轮待签署设计假设；当前没有已核实的采光来源，不指定开窗位置、形状、朝向或尺寸"
+      ],
+      "kind": "unsigned_project_design_proposal",
+      "humanConfirmed": false,
+      "source": "user:RKS-02E0.sections2-4; historical text acceptance supports warm wood/terracotta/kitchen light only"
+    },
+    {
+      "path": "packet.lightingSystem.contrast",
+      "before": "整体明亮可读且温暖，菜品与人物不过曝。",
+      "after": "温暖、明亮可读，菜品和人物不过曝；不刻意昏暗或拥挤。",
+      "kind": "unsigned_project_design_proposal",
+      "humanConfirmed": false,
+      "source": "user:RKS-02E0.sections2-4; historical text acceptance supports warm wood/terracotta/kitchen light only"
+    },
+    {
+      "path": "packet.lightingSystem.interactionWithMaterials",
+      "before": [
+        "照明呈现暖色木与赤陶的综合色调；反射、透射和光泽参数未指定"
+      ],
+      "after": [
+        "呈现红砖、暖木、赤陶色地面及浅色抹灰墙面的综合色调；反射、透射、光泽等工程参数未指定"
+      ],
+      "kind": "unsigned_project_design_proposal",
+      "humanConfirmed": false,
+      "source": "user:RKS-02E0.sections2-4; historical text acceptance supports warm wood/terracotta/kitchen light only"
+    },
+    {
+      "path": "packet.lightingSystem.forbidden",
+      "before": [
+        "昏暗压抑",
+        "以彩色霓虹替代基础照明"
+      ],
+      "after": [
+        "昏暗压抑",
+        "以彩色霓虹替代基础照明",
+        "将假设自然光描述成已验证物业事实"
+      ],
+      "kind": "unsigned_project_design_proposal",
+      "humanConfirmed": false,
+      "source": "user:RKS-02E0.sections2-4; historical text acceptance supports warm wood/terracotta/kitchen light only"
+    },
+    {
+      "path": "task.projectId",
+      "before": "dca9b7d4-f233-46ff-b4df-44a890f13c4f",
+      "after": "e002e000-2026-4000-8000-000000000001",
+      "kind": "experiment_identity_only",
+      "humanConfirmed": false,
+      "source": "user:RKS-02E0.sections2-4; historical text acceptance supports warm wood/terracotta/kitchen light only"
+    },
+    {
+      "path": "task.taskId",
+      "before": "rks-02d-offline-design-review",
+      "after": "rks-02e0-first-image-offline-candidate",
+      "kind": "experiment_identity_only",
+      "humanConfirmed": false,
+      "source": "user:RKS-02E0.sections2-4; historical text acceptance supports warm wood/terracotta/kitchen light only"
+    },
+    {
+      "path": "task.currentInstruction",
+      "before": "Restaurant dining interior; inspect preparation, food, service and dining relationships within the authorized scene. Brand lettering and Logo are post-composited.",
+      "after": "四川特色小吃 / 跷脚牛肉；社区临街特色小馆；亲民堂食为主，兼顾外带；市井烟火、温暖、热闹、亲切。\nRKS-02E0 待人工签署的项目设计方案；不是已验证物业事实。红砖与暖色木质构件共同组织空间，赤陶色地面与浅色抹灰墙面形成温暖质朴的基调。\n温暖人工照明结合自然光；自然光仅为待签署方案假设，无已核实采光来源，不创造具体开窗位置或建筑尺寸。\n开放明档、厨师制作、食物热气、服务柜台、顾客和餐桌形成合理经营联系；保留现代厨房设备、清洁条件、高效服务动线与人尺度。\n亲切热闹且有生活气息，不刻意拥挤、昏暗或脏乱；不转向商场标准化快餐、现代极简咖啡馆、高端精致餐饮或画廊式整体视觉。\n只呈现 dining / three_quarter_wide 的授权经营活动；全店外带依赖不强制同框。品牌文字及 Logo 均 post_composite，参考图为零。\n所有新增材料应用部位和采光均待人工签署，不是 confirmed；不创造材料工程参数或未经证实的品牌文化。",
+      "kind": "unsigned_project_design_proposal",
+      "humanConfirmed": false,
+      "source": "user:RKS-02E0.sections2-4; historical text acceptance supports warm wood/terracotta/kitchen light only"
+    },
+    {
+      "path": "task.mustAvoid",
+      "before": null,
+      "after": [
+        "标准化商场快餐的整体视觉",
+        "现代极简咖啡馆、高端精致餐饮或画廊式整体视觉",
+        "刻意拥挤、昏暗或脏乱",
+        "未经证实的精确建筑尺寸、开窗位置、材料工程参数或品牌文化"
+      ],
+      "kind": "unsigned_project_design_proposal",
+      "humanConfirmed": false,
+      "source": "user:RKS-02E0.sections2-4; historical text acceptance supports warm wood/terracotta/kitchen light only"
+    }
+  ],
+  "unchanged": {
+    "operatingNetwork": true,
+    "fiveVisibleRequirements": true,
+    "userExplicitShot": true,
+    "modelAndControls": true,
+    "formalCompilerAndTemplates": true
+  },
+  "originalB": {
+    "packetSha256": "0d867b826c2ee5b4c14409213fa0565f613171f9a3f046359eab3761078b8790",
+    "formalSha256": "ba88b23d7c572220921bb1636583c763a43c4806bde33c8bb45f3a1432d5ad90",
+    "providerSha256": "65b9c1999f196ee85ac1a767f3b748ac27913821a35fcfb300acc9cbd2bc897a"
+  }
+}

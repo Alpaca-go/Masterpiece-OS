@@ -1,0 +1,194 @@
+{
+  "baseline": "3ed8c669dd7002fd3209cb7c51d788c0c041ea47",
+  "branch": "codex/rks-ftt-first-image-preflight",
+  "sources": [
+    {
+      "path": "space-generator/quality-baselines/current-verification/source-packets/_packets/feng-tang-tang/visual-decision-packet.json",
+      "sha256": "e3564d51888661989eeb16de8923992a4e1148268e7f55e7427c4c70e6fb613c",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/golden-selection.json",
+      "sha256": "65daac53a8eaf6fb132d92e563f2aca17b21d19983c7321e9e3cab8c98818539",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/final-dining-1/evaluation.json",
+      "sha256": "ff1c5f11f27dcdf435eb5fff90b2c3e948a820ce5f6b493422bc550234f8a66c",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/final-dining-1/manifest.json",
+      "sha256": "16b683f8d37c70daded8decded15b96fe8373586d656ba3953b9d32890b3ad3a",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/final-dining-1/prompt.md",
+      "sha256": "d1877d17fc6dcdfcc6cb9f736c7e384b3b0a8a459a43e9ff3542d9eed71bfd9f",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/ftt-direction-proposal.json",
+      "sha256": "b53d9b27f0bcec2f1010171aaa3c2580a8fa11a44ec790cda510229cfb20ca1e",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/ftt-evidence-trace.md",
+      "sha256": "0619ed66afc898092b0a449f3b60f74266ddfa915930d16821f699979e049ef9",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/rks-candidate-knowledge.json",
+      "sha256": "4517b041fd373babd6ce223f247ad32ea8089865b2fb5edf496691d81351d735",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-shadow/RKS-02A-report.md",
+      "sha256": "78bdd055d5f71210ef71d4deddcbe5add101736c08f1e838f13c2ca2c32e1c6d",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-shadow/direction-conflict-matrix.json",
+      "sha256": "cf593f2275614eb1c1d565eec325571cb4bdc48c7a2186dd1c8c0c1d79e0aee0",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-shadow/ftt-shadow-result.json",
+      "sha256": "4d7a452367a9c8fa4393e47c36c173978d03acb7cab7910d99f3fee2639a2e2a",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-fidelity/AB-review.md",
+      "sha256": "fc0b4a5a32987795748284af60a91aee2db5a110ab9dddb1af31a3d3ec63e42e",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-fidelity/compiled-evidence.json",
+      "sha256": "2043800a69ab4e0a5a9e1f41f37d321937feddd1824b4491a75c7d085f761c5e",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/scene-authority-repair/README.md",
+      "sha256": "82e72568ed880030a875e0e3b90ad1750accc7af133484bd188716950d4680d3",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/scene-authority-repair/after.json",
+      "sha256": "047b7b5f2331aebd350984daec3b021871c2055534fa0b4f299ec1c76db1749c",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/scene-authority-integrity/README.md",
+      "sha256": "68fdcd57284411b1ae538b499ee794b90a9a0fac0457e0a265521d475171adb0",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/scene-authority-integrity/manifest-change-audit.json",
+      "sha256": "0c60de19387d19cdd92b482b5b43fa6fe7e1e5b09364559bfad9d26d987c5d83",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/scene-authority-integrity/closure-evidence.json",
+      "sha256": "59c70fb024e3eef4c247c011393a113f3e7b8fd709322cf0285cf8f57d2ccc84",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/ftt-final-design/experimental-inputs.json",
+      "sha256": "5589a741141e9794f125a06ef0cecdc93028c34f0e641751ef690a81c0d8e07d",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/ftt-final-design/compiled-evidence.json",
+      "sha256": "d63faac18f42a739a329461e10f2bbb0e8170a3341faf55c8cfe900f2dc978b3",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/ftt-final-design/template-advisory-patches.json",
+      "sha256": "728bd8c62ab18163ec41a518ab69c3c163b3e3b9dc9d6cf3c304531b17552ccc",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/ftt-final-design/source-index.json",
+      "sha256": "8e6dfb6e483e7ef9661dfbeb859557da3d870160285b1f3eaa7b554997a710bb",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/src/project-design-direction.js",
+      "sha256": "cccd26e77c37a542a86598f7a9a8b612afbdf5c0c08c73aebb9c9d7d1b605a7d",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/compiler.js",
+      "sha256": "a6614dce173d79c159854c19fe649d71204037a52183d1d0467242afad4cf352",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/implementation-integrity.json",
+      "sha256": "85947e556d9467837f7583c106f5f7fec10f65207ed9b2c31b410ae7c2f13bec",
+      "unchangedFromBaseline": true
+    }
+  ],
+  "protectedRoots": [
+    "packages/visual-workflow/src",
+    "packages/visual-workflow/prompts",
+    "packages/visual-workflow/implementation-integrity.json",
+    "apps/web/src/features/visual-workflow",
+    "packages/visual-workflow/offline",
+    "packages/visual-workflow/reports/restaurant-knowledge",
+    "packages/visual-workflow/reports/restaurant-shadow",
+    "packages/visual-workflow/reports/restaurant-fidelity",
+    "packages/visual-workflow/reports/scene-authority-integrity",
+    "packages/visual-workflow/reports/p7b-single-generation",
+    "evaluation",
+    "space-generator",
+    "config/repository-contract",
+    "package-lock.json",
+    "packages/visual-workflow/reports/ftt-final-design/",
+    "packages/visual-workflow/tests/restaurant-knowledge/ftt-final-design-fixture.ts",
+    "packages/visual-workflow/src/project-design-direction.js"
+  ],
+  "protectedDiff": [],
+  "implementation": {
+    "owner": "visual-workflow",
+    "extractionStatus": "independent-current-implementation",
+    "qualityAcceptance": "pending-separate-quality-repair",
+    "implementationDigest": "4b8ea1fa7c759bc05a42cf1ffd95e8b321f91aa9dfa63c283256250a4a8c5410"
+  },
+  "manifestSha256": "85947e556d9467837f7583c106f5f7fec10f65207ed9b2c31b410ae7c2f13bec",
+  "historicalAcceptance": {
+    "selection": {
+      "type": "commercial",
+      "goldenName": "FTT_COMMERCIAL_GOLDEN_R8.6",
+      "runId": "r8.6-final-feng-tang-tang-lobby-1-1786203182756",
+      "scene": "final-dining-1",
+      "promptHash": "d1877d17fc6dcdfcc6cb9f736c7e384b3b0a8a459a43e9ff3542d9eed71bfd9f",
+      "imageSha256": "6445aa30a380f6a8d474967c37a2b5df4f5f08c7d461e5bd73c2778f91c97ba6",
+      "total": 86,
+      "reason": "人工验收 PASS（86/100）。真实餐饮运营关系依然存在：open kitchen / staff operation / cooking / food display / dining / customer area / counter；空间第一眼是正在营业的餐饮空间而非静态样板间。Cross-brand isolation PASS（无 JZMX 膜结构/医美玻璃、无 YJLF 药柜、无高级酒店化）。用途：检查未来 shared Space Compiler 是否仍能保留餐饮空间真实运营密度。"
+    },
+    "materialNote": "人工验收：暖色木/赤陶 + 厨房暖光。",
+    "compositionNote": "人工验收：16:9 明档居中构图。",
+    "imagePath": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/final-dining-1/output.png",
+    "imagePresent": false,
+    "imageInspected": false,
+    "recordedImageSha256": "6445aa30a380f6a8d474967c37a2b5df4f5f08c7d461e5bd73c2778f91c97ba6",
+    "newQualityScore": null,
+    "limitation": "Historical text acceptance is reviewed; no new image inspection or acceptance is claimed"
+  },
+  "knowledge": {
+    "mode": "offline_shadow_only",
+    "card3": "candidate/project",
+    "card5": "project_observation/project",
+    "validatedCasesUnchanged": true,
+    "actualImage1RunAssociation": "undetermined"
+  },
+  "authority": {
+    "confirmedDesignGoal": "user:RKS-02D positioning preserved by RKS-02E0",
+    "unsignedDesignProposal": "RKS-02E0 待人工签署的项目设计方案；不是已验证物业事实",
+    "redBrickAndDaylight": "project design proposals, NOT verified facts",
+    "inheritedProvenance": "historical analysis only, NOT new analysis",
+    "newUserConfirmedFields": [],
+    "compilerProposalLabel": "The unchanged compiler labels unconfirmed colors as model_proposal / existing model proposals. E0 colors are author-entered unsigned proposals; this legacy fallback label is NOT evidence of a new model call.",
+    "draftSourceKind": "The existing saveDraft API emits user_design_decision for the source kind, including drafts. The authoritative status is draft and confirmation is null; that enum is NOT a human signature."
+  }
+}

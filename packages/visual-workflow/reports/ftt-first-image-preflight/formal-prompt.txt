@@ -1,0 +1,193 @@
+# Task
+
+Generate a single premium-grade space image for **冯烫烫** (餐饮/川菜小吃/跷脚牛肉专门店).
+Scene: `dining` / three_quarter_wide.
+Task: 四川特色小吃 / 跷脚牛肉；社区临街特色小馆；亲民堂食为主，兼顾外带；市井烟火、温暖、热闹、亲切。
+RKS-02E0 待人工签署的项目设计方案；不是已验证物业事实。红砖与暖色木质构件共同组织空间，赤陶色地面与浅色抹灰墙面形成温暖质朴的基调。
+温暖人工照明结合自然光；自然光仅为待签署方案假设，无已核实采光来源，不创造具体开窗位置或建筑尺寸。
+开放明档、厨师制作、食物热气、服务柜台、顾客和餐桌形成合理经营联系；保留现代厨房设备、清洁条件、高效服务动线与人尺度。
+亲切热闹且有生活气息，不刻意拥挤、昏暗或脏乱；不转向商场标准化快餐、现代极简咖啡馆、高端精致餐饮或画廊式整体视觉。
+只呈现 dining / three_quarter_wide 的授权经营活动；全店外带依赖不强制同框。品牌文字及 Logo 均 post_composite，参考图为零。
+所有新增材料应用部位和采光均待人工签署，不是 confirmed；不创造材料工程参数或未经证实的品牌文化。
+Aspect ratio: 16:9.
+
+# Spatial Intent
+
+> The experience goal and spatial strategy set the tone before any building mechanism.
+
+**Experience Goal**: 四川特色小吃 / 跷脚牛肉；社区临街特色小馆；亲民堂食为主，兼顾外带。 市井烟火、温暖、热闹、亲切；明确的品牌特色和真实餐饮经营活动。
+
+**Spatial Strategy**: source-scoped decisions are stated once in Architecture Language.
+
+# Architecture Language
+
+> Preserve the supplied subjects, carriers and action scopes. These are project proposals; do not add walls, ceilings or lighting hardware from generic action words.
+
+**Source-scoped architectural decisions (each stated once)**:
+- 开放明档与餐桌区域形成可读的制作、服务和就餐关系
+- 开放式布局
+- 现代设备和清晰服务动线兼容亲民堂食
+
+# Architecture Context
+
+No optional architecture examples have been selected for this request. Brand name and industry do not grant example authority.
+Use project decisions and the current user instruction. Artistic focus may coexist with practical reception, waiting, access and privacy requirements; examples cannot replace either dimension.
+Do not infer construction details from historical accepted images or from an industry's customary appearance. Preserve explicitly requested complex architecture without importing unrelated scene mechanisms.
+
+# Architecture-Function Bridge
+
+> Artistic character and commercial operations are simultaneous requirements. Industry constrains use, access and privacy; it does not dictate an architectural style.
+
+**Commercial Purpose**: 四川特色小吃 / 跷脚牛肉；社区临街特色小馆；亲民堂食为主，兼顾外带。
+
+**Spatial Translation (architecture → commercial action)**:
+Current-shot nodes and relationships are stated in Functional & Commercial Requirement.
+
+**Operation Constraints (hard, must hold)**:
+- Kitchen preparation connects to service counter; dining tables remain accessible; takeaway handoff keeps a clear route
+
+**Human Experience (path + rhythm)**:
+- 菜品、日常餐具与包装的项目识别方向待人工审核
+
+**Commercial Reality (compatible with project artistic character)**:
+Preserve the supplied differentiators in Functional & Commercial Requirement together with the artistic focus in Composition.
+
+**Concept Drift Guards (must avoid)**:
+- 不增加未经证实的非遗或老字号背书
+- 不以标准化商场快餐、极简咖啡馆或高端精致餐饮替代本项目定位
+- 不以昏暗压抑或静态样板间取代真实餐饮经营氛围
+
+**Cross-zone operational constraints (current-shot boundary only; other interiors remain off frame)**:
+- No additional cross-zone relationship is established by the supplied sources.
+
+Off-frame program dependencies are retained in the source trace. Preserve access and privacy boundaries without exposing the interiors of other program areas.
+
+# Architectural Concept
+
+Use the experience goal in Spatial Intent and the source-scoped decisions in Architecture Language together with the artistic hierarchy in Composition.
+User instructions take priority over model proposals and optional examples. Do not make a generic building template displace the project's artistic expression.
+
+# Architecture DNA
+
+**Decision relationships**: Architecture Language owns architectural actions; Spatial Color Roles owns color scope; Material System owns optical behavior; Composition owns focal hierarchy.
+Keep buildable junctions, readable circulation and human scale. Complex curves, restrained geometry, strong color and gallery-like character remain available when supported by project intent. No industry-wide aesthetic is imposed.
+
+# Brand Translation
+
+> Preserve project identity and artistic expression together with the functional program. The artistic focus is stated in Composition.
+> Brand identity (logo, wordmark, signage text) is composited AFTER generation; do NOT render it in-scene.
+**Brand**: 冯烫烫 | **Industry**: 餐饮/川菜小吃/跷脚牛肉专门店
+**Brand Role**: see the Commercial Purpose in Architecture-Function Bridge.
+**Brand Role Manifestation in Space**:
+- 跷脚牛肉与四川小吃的菜品特征
+- 制作、出餐和日常餐具的品牌联系
+- 菜品、日常餐具与包装的项目识别方向待人工审核
+- 红砖与暖色木质构件共同组织空间；具体位置和构造待人工签署，不推定现有建筑条件
+- 亲切热闹的社区用餐体验
+
+# Functional & Commercial Requirement
+
+**Current-shot Program Nodes (source-scoped; other areas remain off frame)**:
+- 点餐
+- 取餐
+- 堂食
+- 外带
+- 明档展示
+
+**Functional Network**:
+- 位置与设置方式待确认
+
+**Visible hierarchy**: see Composition; an artistic focus does not replace operational facilities.
+
+**Positive Differentiators**:
+- 四川特色小吃与跷脚牛肉的品类识别
+- 温暖热闹亲切的社区经营氛围
+- 现代设备和清晰服务动线兼容亲民堂食
+
+# Spatial Color Roles
+
+Palette identity rank does not determine interior area. Entries below are existing model proposals, not user-confirmed facts.
+Proposed scopes and ratios retain their source meaning for review. Do not execute an unconfirmed dominant field or area allocation as a mandatory instruction. Area authority remains pending unless explicitly supplied by the current user instruction; that instruction takes priority.
+Unknown ratios stay unknown. Neither a color name, a palette rank, a gradient nor a proposed role independently authorizes geometry or whole-room color coverage.
+- 品牌红 | palette: primary | proposed spatial scope: local_accent | execution authority: proposal_only
+  role: 品牌识别候选，原始标识及文字后期合成
+  surfaceApplicability: 可移动品牌载体的局部；具体载体待签署
+  area ratio: unknown
+- 品牌黑 | palette: secondary | proposed spatial scope: detail_trim | execution authority: proposal_only
+  role: 品牌信息的局部细节候选
+  surfaceApplicability: 品牌载体细节；文字及 Logo 后期合成
+  area ratio: unknown
+- 暖木色 | palette: secondary | proposed spatial scope: secondary_surface | execution authority: proposal_only
+  role: 温暖亲切的材质色候选
+  surfaceApplicability: 拟用木质构件与桌椅
+  area ratio: unknown
+- 砖红色 | palette: secondary | proposed spatial scope: secondary_surface | execution authority: proposal_only
+  role: 质朴空间组织候选
+  surfaceApplicability: 拟用红砖的局部表面；具体分布待签署
+  area ratio: unknown
+- 赤陶色 | palette: secondary | proposed spatial scope: secondary_surface | execution authority: proposal_only
+  role: 温暖地面色候选
+  surfaceApplicability: 拟用堂食地面；不确认实际制品
+  area ratio: unknown
+- 浅抹灰色 | palette: secondary | proposed spatial scope: secondary_surface | execution authority: proposal_only
+  role: 明亮质朴的墙面背景候选
+  surfaceApplicability: 拟用抹灰墙面；不确认现有墙体
+  area ratio: unknown
+
+# Material System
+
+- **红砖（待签署视觉候选）**: 红砖综合色调与质朴表面；无特殊光学效果要求，砖规格、砌法与工程参数未指定
+  brand role: 拟与暖色木质构件共同组织堂食和服务空间；具体分布待人工签署
+- **暖色木质构件与木质桌椅（待签署视觉候选）**: 温暖木色与可读的木质感；无特殊光学效果要求，木种、构件尺寸、涂层及光学参数未指定
+  brand role: 拟用于空间组织与人尺度家具，保持服务通行；具体部位待人工签署
+- **赤陶色地面（待签署视觉候选）**: 温暖赤陶综合色调；无特殊光学效果要求，地面制品类型、规格、釉面与工程参数未指定
+  brand role: 拟作为堂食地面色调，与浅色抹灰墙面共同建立质朴基调；不是现有地面事实
+- **浅色抹灰墙面（待签署视觉候选）**: 浅色质朴抹灰视觉；无特殊光学效果要求，配方、厚度、性能与光学参数未指定
+  brand role: 拟作为墙面背景以保持明亮和亲切；不是现有墙体事实
+
+# Lighting System
+
+**Primary Strategy**: 温暖人工照明服务明档、菜品、餐桌及通行；不指定色温数值或灯具型号、自然光结合为本轮待签署设计假设；当前没有已核实的采光来源，不指定开窗位置、形状、朝向或尺寸
+**Contrast**: 温暖、明亮可读，菜品和人物不过曝；不刻意昏暗或拥挤。
+**Light / Material Behavior**:
+- 呈现红砖、暖木、赤陶色地面及浅色抹灰墙面的综合色调；反射、透射、光泽等工程参数未指定
+**Lighting Prohibitions**:
+- 昏暗压抑
+- 以彩色霓虹替代基础照明
+- 将假设自然光描述成已验证物业事实
+
+# Composition & Photography
+
+**Output Ratio**: 16:9
+**Project Artistic Focus (separate from operational facilities)**:
+- No artistic installation is required by the supplied sources.
+Do not demote a supplied core artwork to background texture. Its mounting, dimensions and optical construction remain unspecified unless supplied; do not invent them.
+**Operational Elements (remain usable alongside the artistic focus)**:
+- chef preparing food in kitchen
+- steam above dishes in kitchen
+- customers dining at tables
+- service counter with an accessible staff side and customer handoff side in dining area
+- wooden dining table and chairs with accessible service aisle on both sides in dining area
+**Positive Differentiators**:
+Use the differentiators in Functional & Commercial Requirement without repeating them as additional demands.
+Use a credible commercial architectural camera: controlled perspective, depth, hierarchy and human scale.
+
+# Rendering Requirements
+
+- High-end architectural visualization, photoreal, physically based materials.
+- Balanced exposure, accurate white balance, readable texture and shadow detail.
+- No blown highlights; clean, resolved, professionally finished.
+
+# Prohibited (fail-closed)
+
+The following MUST NOT appear in the generated image:
+- no rendered brand name, wordmark, logotype, signage text, or illuminated letters in the scene
+- no generic AI clinic look, no stock-photo medical aesthetic template
+- 标准化商场快餐的整体视觉
+- 现代极简咖啡馆、高端精致餐饮或画廊式整体视觉
+- 刻意拥挤、昏暗或脏乱
+- 未经证实的精确建筑尺寸、开窗位置、材料工程参数或品牌文化
+- 昏暗压抑
+- 以彩色霓虹替代基础照明
+- 将假设自然光描述成已验证物业事实
+- 以整体冷淡空间替代已确认的温暖亲切氛围

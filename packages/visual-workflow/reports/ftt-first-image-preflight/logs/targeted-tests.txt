@@ -1,0 +1,38 @@
+✔ project direction saves and confirms without registering or uploading a single reference (165.5616ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"84e67cee-a55e-4eb5-91e9-d28f99771602","taskId":"vnext-task-da67d75b-8a18-4376-860b-6f316c045b52","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7098,"compileDurationMs":58.88}
+✔ web standard task, effective Packet, official compiler, actual image request and validator share the confirmed direction (354.5867ms)
+✔ a changed analysis Packet cannot silently overwrite or reuse the confirmed decision (92.8171ms)
+✔ an analysis request preserves direction and requires explicit reconfirmation even if analysis fails or app restarts (95.2182ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"561dd1d2-576f-44ea-bc6c-abfd4ae0d670","taskId":"vnext-task-b923864d-accd-4d8d-9701-18e0e389c9fa","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7098,"compileDurationMs":16.068}
+✔ decision changes after compile block dispatch and keep all history (123.301ms)
+✔ cross-project, stale editing, non-confirmation and invalid confirmed decisions are rejected (55.7079ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"aba021aa-44a8-46f4-b217-4625151f4228","taskId":"vnext-task-b28340e7-76d0-45eb-bb59-30ce54f41407","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7094,"compileDurationMs":12.622}
+✔ a newly confirmed decision invalidates a previously compiled ordinary task with no direction (99.1548ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"97293b90-324a-4c1b-9f3e-b1d6e731fa36","taskId":"vnext-task-e9530887-0cb0-4905-9aa3-98340c32b368","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7094,"compileDurationMs":13.321}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"db65ce7c-00ec-4c7b-9a91-392af1849e0a","taskId":"vnext-task-fc75d7a5-628e-41de-8288-5f2f44009ded","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7078,"compileDurationMs":12.502}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"b01ace27-7762-4871-9f94-12e7f5616e55","taskId":"vnext-task-352805b0-cb5c-486f-a5e5-3fd54057b4cc","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7068,"compileDurationMs":10.555}
+✔ ordinary industries remain byte-identical and contain no direction or image request fields (409.3973ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"761f14da-9f9f-4217-82a9-7b44ed7e035b","taskId":"vnext-task-a24f7254-2f14-45b6-af51-6ad3f5665f5a","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8377,"compileDurationMs":12.751}
+✔ existing four-image art direction route remains independent and operational (227.4199ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"63468f17-ffeb-4edd-be29-bd4e06e67f49","taskId":"vnext-task-37ee344f-c7ee-49c9-a3b5-1dc14f0f2b12","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7093,"compileDurationMs":13.173}
+✔ the plain-language web editor saves and confirms a usable direction without JSON editing (118.0994ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"491fcde4-7351-48b6-a893-e50b04f52ac3","taskId":"vnext-task-fb9b1a1e-f12f-41bf-8c90-cd9baa3c4f6d","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7098,"compileDurationMs":11.901}
+✔ guarded public web operations save, confirm, compile, generate, reopen and invalidate on an analysis request (351.7717ms)
+✔ historical full packet and source classifications stay distinct from user goals and experiment hypotheses (1.1042ms)
+✔ A is the disclosed shared post-composite adaptation rather than a silent repair of historical input (1.0375ms)
+✔ all scene pairs retain identical camera, request, model, aspect, count and zero-reference controls (0.2782ms)
+✔ dining core input has actual, singular execution owners for cooking, steam, customers, counter and furniture (0.4731ms)
+✔ entrance retains a local activity and dining-access boundary without demanding the full interior network (0.4381ms)
+✔ storefront window objective stays review_required with no owner or automatic indoor visibility (0.5947ms)
+✔ B uses qualitative historical color/material direction without inventing dimensions, Kelvin or optics (0.6623ms)
+✔ advisory copy is explicitly separate, auditable and keeps rendering and negative-identity safeguards (0.443ms)
+✔ knowledge cards retain lifecycle, owner and no validated cases (1.2102ms)
+✔ pure review cannot mutate fixtures, dispatch network or create user confirmations (122.6328ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3412.3952

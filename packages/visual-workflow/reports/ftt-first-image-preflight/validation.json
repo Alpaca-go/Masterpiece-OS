@@ -1,0 +1,116 @@
+{
+  "baseline": "3ed8c669dd7002fd3209cb7c51d788c0c041ea47",
+  "scope": "offline candidate-only validation",
+  "checks": [
+    {
+      "command": "npx tsx packages/visual-workflow/tests/restaurant-knowledge/ftt-first-image-preflight.ts",
+      "exitCode": 0
+    },
+    {
+      "command": "npx tsx --test packages/visual-workflow/tests/restaurant-knowledge/ftt-final-design.test.ts packages/visual-workflow/tests/project-design-direction.test.ts",
+      "exitCode": 0,
+      "passed": 21,
+      "failed": 0
+    },
+    {
+      "command": "npm run repo:verify",
+      "exitCode": 0,
+      "currentFlows": "pass",
+      "webAndHostTypecheck": "pass"
+    },
+    {
+      "command": "node --test tests/repository-policy.test.js",
+      "exitCode": 1,
+      "passed": 0,
+      "failed": 2,
+      "classification": "existing_repository_policy_conflicts_only"
+    },
+    {
+      "command": "git diff --cached --check",
+      "exitCode": 0
+    },
+    {
+      "command": "npm run verify:secret-safety (after staging new files)",
+      "exitCode": 0,
+      "violationCount": 0
+    }
+  ],
+  "historicPolicyAssets": [
+    {
+      "path": "packages/visual-workflow/reports/art-medical-identity/review.md",
+      "sha256": "b12d5c04c19cf46afe9ba5d9487f1bb703727df8b730bf03b48f5dad0963ced3",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/local-spatial-boundaries/review.md",
+      "sha256": "b4c92dd1b7b79f1cb9a64f006763bed4a5033ba01da129b2bfaa85accb46801d",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/art-medical-identity/web-confirmed.png",
+      "sha256": "397fcb16b6f7cd1914984a0037492c519d4aee25ccd575139978275b0b25367d",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/local-spatial-boundaries/web-confirmed.png",
+      "sha256": "b321d766caca74ac1b37bb9961249c43a6057532829f5a44af1fc461b442de1e",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/p7-spatial-layout-contract/P7-web-confirmed.png",
+      "sha256": "b321d766caca74ac1b37bb9961249c43a6057532829f5a44af1fc461b442de1e",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/p7a-prompt-budget/P7a-web-confirmed.png",
+      "sha256": "82bce98cd13474c16d176a1ea838db942514284c1a28bb236224d475ee3a2889",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/spatial-balance/web-confirmed.png",
+      "sha256": "397fcb16b6f7cd1914984a0037492c519d4aee25ccd575139978275b0b25367d",
+      "unchangedFromBaseline": true
+    }
+  ],
+  "logs": [
+    {
+      "path": "logs/targeted-tests.txt",
+      "sha256": "7cd9ae051c2266ad6aa93a2955af58eb93fb80698d686b442f4bb25dad556bb7",
+      "captureSha256BeforeTextNormalization": "4579edecd6aa55e3b6d37c9ebb2c3a358a0cf87523253e679b9424278349ec89",
+      "textNormalization": "CRLF to LF and trailing horizontal whitespace removal only"
+    },
+    {
+      "path": "logs/repo-verify.txt",
+      "sha256": "240a7cf3589912ccca81d388394f16b6e22ea46e8320571453e5546dce72ede8",
+      "captureSha256BeforeTextNormalization": "d238719dd9faad2cebb285924629f733350f13f8d2e28b359ea7f24d898fec5a",
+      "textNormalization": "CRLF to LF and trailing horizontal whitespace removal only"
+    },
+    {
+      "path": "logs/repository-policy.txt",
+      "sha256": "2bfc691fc31be7e55270575393a6b9f338c065085e18fa7d0abd046f181dc8ff",
+      "captureSha256BeforeTextNormalization": "229f62dbe54f4da76fd16d5e8f49fa22480bcefaf619ed95580a0af97d486c8f",
+      "textNormalization": "CRLF to LF and trailing horizontal whitespace removal only"
+    }
+  ],
+  "protectedDiff": [],
+  "artifactInventoryVerified": true,
+  "productionChanges": 0,
+  "implementationManifestUpdates": 0,
+  "counters": {
+    "realAnalysis": 0,
+    "realGeneration": 0,
+    "modelValidation": 0,
+    "automaticRetries": 0,
+    "referenceImageInputs": 0
+  },
+  "visualQuality": "not_evaluated",
+  "frozenInputReplay": {
+    "status": "pass",
+    "formalSha256": "23988122f27c0852d9fe472a6b7ea7bd7c42b6d2593899c171d7ad4bf82639d9",
+    "providerSha256": "7cdd418b0341a691db511dc3ad0d62d42f53eadd7abbe544bd1715507c0e0542",
+    "artifactAndSourceHashes": "pass",
+    "unchangedIntegrity": "pass",
+    "stagedScope": "only E0 report and offline writer",
+    "networkCalls": 0
+  }
+}
