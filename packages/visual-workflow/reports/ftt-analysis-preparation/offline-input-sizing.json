@@ -1,0 +1,155 @@
+{
+  "generatedAt": "2026-10-25T15:47:56.651Z",
+  "kind": "pure_prompt_sizing_not_analysis_run",
+  "pipelineInvoked": false,
+  "reasonerInvoked": false,
+  "modelCalls": 0,
+  "benchmarkResolverCalls": 0,
+  "cacheArtifactsRoot": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\prompt-sizing",
+  "productionProjectPreparedDirectoryChanged": false,
+  "stages": [
+    {
+      "stage": "deep_creative_director",
+      "textCharacters": 9331,
+      "textUtf8Bytes": 14995,
+      "textSha256": "5019d096b09cddebef1618d47e5d029c2138cd2182a90dcc4581aafd6b6d6467",
+      "attachmentCount": 6,
+      "images": [
+        {
+          "assetId": "contact-sheet",
+          "width": 1560,
+          "height": 970,
+          "encodedBytes": 152094,
+          "approximateVisualTokens": 1519
+        },
+        {
+          "assetId": "asset-001",
+          "width": 1000,
+          "height": 1300,
+          "encodedBytes": 168934,
+          "approximateVisualTokens": 1312
+        },
+        {
+          "assetId": "asset-003",
+          "width": 1000,
+          "height": 1300,
+          "encodedBytes": 79992,
+          "approximateVisualTokens": 1312
+        },
+        {
+          "assetId": "asset-006",
+          "width": 1000,
+          "height": 1300,
+          "encodedBytes": 155314,
+          "approximateVisualTokens": 1312
+        },
+        {
+          "assetId": "asset-008",
+          "width": 1000,
+          "height": 1300,
+          "encodedBytes": 82251,
+          "approximateVisualTokens": 1312
+        },
+        {
+          "assetId": "asset-010",
+          "width": 1000,
+          "height": 1300,
+          "encodedBytes": 65164,
+          "approximateVisualTokens": 1312
+        }
+      ],
+      "approximateVisualTokens": 8079,
+      "textTokenPlanningRange": [
+        2333,
+        18662
+      ],
+      "caveat": "Text range is a sizing assumption, not tokenization. Image grid is approximate; provider rounding/special tokens can differ. Attachment labels not included in text count."
+    },
+    {
+      "stage": "unified_visual_understanding",
+      "textCharacters": 8043,
+      "textUtf8Bytes": 11519,
+      "textSha256": "8c7830569ad713496cd181bbf3bda840d0479666f1d7637c646e27d8c20642ea",
+      "attachmentCount": 10,
+      "images": [
+        {
+          "assetId": "3a14edef-9792-4466-b53b-16e1103153d7",
+          "width": 1000,
+          "height": 1300,
+          "encodedBytes": 79992,
+          "approximateVisualTokens": 1312
+        },
+        {
+          "assetId": "491fafb7-f5b7-4e5a-9014-2438c14604f6",
+          "width": 1000,
+          "height": 1300,
+          "encodedBytes": 139867,
+          "approximateVisualTokens": 1312
+        },
+        {
+          "assetId": "c9e1736d-a99d-4eaa-9140-94006643e7e3",
+          "width": 1000,
+          "height": 1300,
+          "encodedBytes": 82251,
+          "approximateVisualTokens": 1312
+        },
+        {
+          "assetId": "5c52ea11-57cb-45fb-86fd-442838884e6e",
+          "width": 1000,
+          "height": 1300,
+          "encodedBytes": 155314,
+          "approximateVisualTokens": 1312
+        },
+        {
+          "assetId": "36d21220-a47a-496c-9db5-8e8eef446c2a",
+          "width": 1000,
+          "height": 1300,
+          "encodedBytes": 330778,
+          "approximateVisualTokens": 1312
+        },
+        {
+          "assetId": "58f2b3a3-7b83-4b93-b53d-f7586d4e27dd",
+          "width": 1000,
+          "height": 1300,
+          "encodedBytes": 181484,
+          "approximateVisualTokens": 1312
+        },
+        {
+          "assetId": "5c810cc6-b6a6-413e-be5d-a9b9d064ba63",
+          "width": 1000,
+          "height": 1300,
+          "encodedBytes": 141016,
+          "approximateVisualTokens": 1312
+        },
+        {
+          "assetId": "ef77f4d6-aa11-4b62-858e-5fa965b6e30a",
+          "width": 1000,
+          "height": 1300,
+          "encodedBytes": 65164,
+          "approximateVisualTokens": 1312
+        },
+        {
+          "assetId": "1957dc56-aaeb-4f81-bc18-8429b5446010",
+          "width": 1000,
+          "height": 1300,
+          "encodedBytes": 168934,
+          "approximateVisualTokens": 1312
+        },
+        {
+          "assetId": "e2d6fa7a-0d7f-4e74-ac56-13a9922d5221",
+          "width": 1000,
+          "height": 1300,
+          "encodedBytes": 134518,
+          "approximateVisualTokens": 1312
+        }
+      ],
+      "approximateVisualTokens": 13120,
+      "textTokenPlanningRange": [
+        2011,
+        16086
+      ],
+      "caveat": "Text range is a sizing assumption, not tokenization. Image grid is approximate; provider rounding/special tokens can differ. Attachment labels not included in text count."
+    }
+  ],
+  "caveat": "DCD context uses UUID basename exactly as current bootstrap does; actual projectName also occurs in userTask/brandFacts. Cache path differs from a future real run; re-freeze real request hashes before dispatch."
+}

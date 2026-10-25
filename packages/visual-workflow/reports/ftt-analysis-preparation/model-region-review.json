@@ -1,0 +1,41 @@
+{
+  "reviewedAt": "2026-10-25T15:47:52.460Z",
+  "selectedSourceProfile": {
+    "id": "5a78ed03-7591-4308-a266-07c8aabcddb6",
+    "provider": "dashscope",
+    "modelId": "qwen3.6-plus",
+    "baseUrl": "https://ws-1miaebhuom22vyxa.cn-beijing.maas.aliyuncs.com/compatible-mode/v1",
+    "protocol": "openai-chat-multimodal",
+    "modelType": "analysis"
+  },
+  "proposedPinnedRequest": {
+    "provider": "dashscope",
+    "resolvedAdapter": "qwen",
+    "model": "qwen3.6-plus",
+    "url": "https://ws-1miaebhuom22vyxa.cn-beijing.maas.aliyuncs.com/compatible-mode/v1/chat/completions",
+    "protocol": "openai-chat-multimodal",
+    "method": "POST",
+    "stream": false
+  },
+  "sourceSettingsSha256": "18fe2ae913de3847fa3009b48d7d3ee54b67df104d1c5dcc0f168004e025a918",
+  "publicProfileSha256": "4b0fa0165ec87af97993b6ade44ec46c053fcab816a99184df9dc9f37a298f04",
+  "beijingEndpointSyntax": true,
+  "credentialRead": false,
+  "credentialVerified": false,
+  "accountModelAccessVerified": false,
+  "isolatedProfileInstalled": false,
+  "isolatedApiProfileId": null,
+  "globalSettingsFallbackAllowed": false,
+  "modelAliasMayChangeServerSide": true,
+  "inferencePhysicalLocationGuaranteed": false,
+  "currentRequestOptions": {
+    "enable_thinking": "omitted for DCD and UVU; provider default applies",
+    "max_tokens": "omitted",
+    "thinking_budget": "omitted"
+  },
+  "references": [
+    "https://help.aliyun.com/zh/model-studio/beijing-access-information",
+    "https://help.aliyun.com/zh/model-studio/qwen3-6-plus"
+  ],
+  "status": "metadata_review_only_not_model_validation"
+}

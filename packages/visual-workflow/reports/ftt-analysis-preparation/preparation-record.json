@@ -1,0 +1,49 @@
+{
+  "task": "RKS-02E1A",
+  "createdAt": "2026-10-25T15:46:40.246Z",
+  "baselineCommit": "0d328dc262356397a0c0fcac09fb6e138ad78dea",
+  "branch": "codex/rks-ftt-confirmed-input-freeze",
+  "workflowRoot": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow",
+  "dataRoot": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data",
+  "projectRoot": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627",
+  "projectId": "d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627",
+  "projectName": "冯烫烫",
+  "industry": "餐饮服务 / 四川特色小吃 / 跷脚牛肉",
+  "operations": [
+    {
+      "channel": "visual-workflow:create-project",
+      "count": 1,
+      "resultStatus": "draft"
+    },
+    {
+      "channel": "visual-workflow:import-files",
+      "count": 1,
+      "fileCount": 10,
+      "resultStatus": "ready"
+    }
+  ],
+  "finalStatus": "ready",
+  "visualContextVNextStatus": "missing",
+  "directionStatus": "missing",
+  "projectRecordSha256": "e9a21e3bfabf1c4a6989a804cecc223fe5701fac7d05247bb65bd1ad74962bfc",
+  "analysisFingerprintFromReadOnlyDirectionView": "45d2670a50457dacff77a465c61a8efe231e183e9aa4b46637ef789a95a8eab7",
+  "fingerprintMeaning": "intake identity only; no completed analysis or confirmed direction",
+  "credentialsCopied": false,
+  "settingsCopied": false,
+  "apiProfileId": null,
+  "analysisRun": null,
+  "packet": null,
+  "report": null,
+  "confirmedExecutableFreeze": null,
+  "counters": {
+    "realAnalysis": 0,
+    "realGeneration": 0,
+    "modelValidation": 0,
+    "automaticRetries": 0,
+    "providerDispatch": 0,
+    "networkAttempts": 0
+  },
+  "sourceReadOnlyUnchanged": true,
+  "dispatchAuthorization": false,
+  "stopReason": "Existing workflow cannot enforce a global two-dispatch/no-retry limit; proposal only, no real analysis"
+}

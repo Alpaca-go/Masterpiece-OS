@@ -1,0 +1,62 @@
+{
+  "algorithm": "SHA256",
+  "excludesSelf": true,
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "1b03169ca790231d0e1e2586cd67b4174c0a77157285eb5997c786271527629d"
+    },
+    {
+      "path": "authorization-and-freeze.md",
+      "sha256": "e8576a4b6837be698508046caba5c15df96aabc9aa98aff2251012a3ffdf0cde"
+    },
+    {
+      "path": "material-sha256.json",
+      "sha256": "829d0b70dfb82fac448a387ede1cb7a343e9c6764d5ac81a9d99f91164e502a3"
+    },
+    {
+      "path": "model-and-cost-review.md",
+      "sha256": "08ba020a8e50974ba07e651efcaa2e7e7541cf0f038ed166d1f6aca6e16548de"
+    },
+    {
+      "path": "model-region-review.json",
+      "sha256": "11b3e810dfdde42c1caf21f65e387727b1e1cc56c4dd33938780b42f64d7c91b"
+    },
+    {
+      "path": "offline-input-sizing.json",
+      "sha256": "7b5f5ac0f045bb705fc6be79f98641073dd4ded33a56adb9ec7ef47132cf319c"
+    },
+    {
+      "path": "preparation-record.json",
+      "sha256": "75600f69bfdc2b49258b7afdab5a3cfb9b5f44a7bc5e37abd39d476a0083e6bf"
+    },
+    {
+      "path": "repo-verification-initial.txt",
+      "sha256": "dcb520473b8a8a98708aa74ac81b8ca30fce505cbcfc8ee4024e036fa3016038"
+    },
+    {
+      "path": "repo-verification.txt",
+      "sha256": "062179c4123b4c26a695b3662db441dba435cfd798cb3643ebf180bd880ade96"
+    },
+    {
+      "path": "request-boundary-review.md",
+      "sha256": "bfe4c966606cc216152d0bc891676d95adfd7f5bbc39a77f2f7f081294ead853"
+    },
+    {
+      "path": "source-readonly-proof.json",
+      "sha256": "5ecca786a99dc5b6e3b0fd28521c4c662d450a55e037d88d76ddcb53be2a5439"
+    },
+    {
+      "path": "validation.json",
+      "sha256": "104b315fad3b5d047d12f31d5e453bf6c3274180a5775d100f6a57a0d8b8fd2a"
+    },
+    {
+      "path": "../../tests/restaurant-knowledge/ftt-analysis-prepare-offline.mjs",
+      "sha256": "e6bd22817b91e3e1b7e1e3a83d3113a1bdfadabbf09e0fc9b2bba915749ecdec"
+    },
+    {
+      "path": "../../tests/restaurant-knowledge/ftt-analysis-inspect-offline.mjs",
+      "sha256": "8d552055daff35000d2eb3e66f364a592875251c5551542984c6e8b55f2f3f51"
+    }
+  ]
+}

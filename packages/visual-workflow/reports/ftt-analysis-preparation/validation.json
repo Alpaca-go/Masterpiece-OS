@@ -1,0 +1,101 @@
+{
+  "checkedAt": "2026-10-25T15:54:25.743Z",
+  "baselineCommit": "0d328dc262356397a0c0fcac09fb6e138ad78dea",
+  "repoVerify": {
+    "exitCode": 0,
+    "log": "repo-verification.txt",
+    "includesCurrentFlows": true,
+    "includesIsolationCounterexamples": true
+  },
+  "initialGateFailure": {
+    "log": "repo-verification-initial.txt",
+    "reason": "offline utilities placed in reports directory",
+    "resolution": "moved to owning module tests directory; no guard or allowlist modification"
+  },
+  "assertions": {
+    "formalCreateAndImport": true,
+    "tenOriginalHashesMatch": true,
+    "originalUserProjectWholeTreeUnchanged": true,
+    "isolatedRecordUnchangedAfterPreparation": true,
+    "repeatPreparationRejectedBeforeWrite": true,
+    "noNewRunsPacketsOrConfirmations": true,
+    "independentDataIgnoredByGit": true,
+    "allPreviouslyTrackedFilesUnchanged": true,
+    "onlyDeclaredNewFiles": true
+  },
+  "protectedDiff": [],
+  "sourceHashes": [
+    {
+      "path": "packages/visual-workflow/src/service.js",
+      "sha256": "9b2f7ab0d11f2135459a6b5ec40629effb11656a76a0dc7009f872566fc80544"
+    },
+    {
+      "path": "packages/visual-workflow/src/project-store.js",
+      "sha256": "da493e7a958ebf356e519c855a89b8d96965597a9ad07cb9b14f3b476da4c376"
+    },
+    {
+      "path": "packages/visual-workflow/src/configuration.js",
+      "sha256": "393e245c25fb9a33c44995718d05e04073caf6d1a5f492bdf42d6a6f7fdbb762"
+    },
+    {
+      "path": "packages/visual-workflow/src/runtime/pipeline-service.js",
+      "sha256": "f8a4fe7344a6c08ce2567277856203cbb88849a264fa5c277051bc6177fb8147"
+    },
+    {
+      "path": "packages/visual-workflow/src/runtime/unified-visual-understanding.js",
+      "sha256": "ef96ba694ba77f3ec125afbe478a9bf9c57c812a177788293e0eff64a5bbacd9"
+    },
+    {
+      "path": "packages/visual-workflow/src/model-runtime/analysis-provider.js",
+      "sha256": "dad1e5dbbb346768aac36aa28c9c1773a3ea9f96f1b81d6e9532981d8d2a5171"
+    },
+    {
+      "path": "packages/visual-workflow/src/model-runtime/analysis-provider-registry.js",
+      "sha256": "a5599c06d3f1e3557cddb0885caa86b20180bca4a059612d5651ccd63c3273dc"
+    },
+    {
+      "path": "packages/visual-workflow/src/model-runtime/qwen-reasoner.js",
+      "sha256": "80df5a0f61d444676bdf83d0424c352f1fcfbcd32154aeba994df3742c072262"
+    },
+    {
+      "path": "packages/visual-workflow/src/model-runtime/volcengine-reasoner.js",
+      "sha256": "c49c88a2fca87cd1826f57cf6e68fb2b48798af4dae4b3b42cf74cb6cf70ce58"
+    },
+    {
+      "path": "packages/visual-workflow/src/analysis-decisions/contracts.js",
+      "sha256": "9263c7c0bd182b5eb8ed6f646c3eca65c09ed87202c41b46950020aa58ebe592"
+    },
+    {
+      "path": "packages/visual-workflow/src/analysis-decisions/repair-planner.js",
+      "sha256": "74f1853b4cdb0827287b064e777227e0efe52960827615e8fb52f8cf09b69c08"
+    },
+    {
+      "path": "packages/visual-workflow/src/analysis-decisions/analysis-completion-orchestrator.js",
+      "sha256": "9577c3d59c4d8869cb11e563163f49ad9bc324dda05855a32664f891cf1338ae"
+    },
+    {
+      "path": "packages/visual-workflow/src/project-design-direction.js",
+      "sha256": "cccd26e77c37a542a86598f7a9a8b612afbdf5c0c08c73aebb9c9d7d1b605a7d"
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/compiler.js",
+      "sha256": "a6614dce173d79c159854c19fe649d71204037a52183d1d0467242afad4cf352"
+    },
+    {
+      "path": "packages/visual-workflow/implementation-integrity.json",
+      "sha256": "85947e556d9467837f7583c106f5f7fec10f65207ed9b2c31b410ae7c2f13bec"
+    }
+  ],
+  "counters": {
+    "realAnalysis": 0,
+    "realGeneration": 0,
+    "modelValidation": 0,
+    "automaticRetries": 0,
+    "providerDispatch": 0,
+    "networkAttempts": 0
+  },
+  "noRealProviderSmoke": "not authorized and not run",
+  "productionBehaviorChanged": false,
+  "hardDispatchGateImplemented": false,
+  "readyForRealAnalysis": false
+}
