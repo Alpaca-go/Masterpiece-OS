@@ -257,14 +257,42 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
   const continuationIntent = taskContract?.continuation;
   const targetProgram = continuationIntent?.targetFunctionalProgram;
   const knownTarget = isKnownTargetScene(taskContract?.subtype);
+  // Historical low-level custom compilation describes a project-authored
+  // program, not an unresolved camera. Keep this narrow compatibility surface
+  // separate from public generation tasks and from all other unknown subtypes.
+  const customProgramPreview = taskContract?.subtype === 'custom' && taskContract.generationBasis === 'standard'
+    && typeof packet.projectId === 'string' && packet.projectId.trim() && packet.projectId === taskContract.projectId
+    && (!projectContext?.visualDecisionPacket || projectContext.visualDecisionPacket.projectId === packet.projectId)
+    && (!taskContract.deliverableFamily || taskContract.deliverableFamily === 'space')
+    && [taskContract.shot,taskContract.scene,taskContract.currentInstruction].every(value=>value == null || typeof value === 'string' && !value.trim())
+    && (taskContract.shotSource == null || taskContract.shotSource === 'legacy_project_default')
+    && (taskContract.referenceAssetIds == null || Array.isArray(taskContract.referenceAssetIds) && !taskContract.referenceAssetIds.length)
+    && !continuationIntent && !taskContract.artDirection
+    && functionalRaw.sceneProgram.length > 0 && compositionMustBeVisible.length > 0;
   // Never compile an unresolved target with a passing authority trace. Public
   // subtype choices without a functional contract need an explicit review.
-  if (taskContract?.subtype && !knownTarget && !targetProgram) {
+  if (taskContract?.subtype && !knownTarget && !customProgramPreview && !(taskContract.generationBasis === 'continuation' && targetProgram)) {
     throw Object.assign(new Error(`SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED: ${taskContract?.subtype}`), {
       code: "SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED", targetScene: taskContract?.subtype, disposition: "review_required"
     });
   }
-  if (taskContract?.generationBasis === "continuation" && targetProgram) {
+  if (customProgramPreview) {
+    targetSceneProjection = {
+      targetScene: 'custom', targetProgramId: 'custom',
+      functionalBlockSource: 'source_defined_custom_program', architectureBridgeSource: 'source_defined_custom_program',
+      operationConstraintsSource: 'source_defined_custom_program', viewStrategySource: 'not_applicable_without_camera',
+      sourceProjectId: packet.projectId, executionBoundary: 'pure_compile_preview_only', cameraVisibilityAuthority: 'none',
+      sourcePaths: ['sceneProgram','functionalNetwork','functionalRelationships','mustBeVisible','structureLanguage','signatureSpatialMechanism']
+        .map(field=>`mediaTranslations.spatial.${field}`)
+    };
+    decisionTrace.customProgram = {
+      sourceProjectId: packet.projectId, evidenceClass: evidenceClass('mediaTranslations.spatial'),
+      executionBoundary: 'pure_compile_preview_only', cameraVisibilityAuthority: 'none',
+      entries: ['sceneProgram','functionalNetwork','functionalRelationships','mustBeVisible','structureLanguage','signatureSpatialMechanism']
+        .flatMap(field=>(Array.isArray(spatial[field]) ? spatial[field] : []).flatMap((text,index)=>typeof text === 'string' && text.trim()
+          ? [{sourcePath:`mediaTranslations.spatial.${field}[${index}]`,text,sceneScope:'source_defined_program',evidenceClass:evidenceClass('mediaTranslations.spatial')}] : []))
+    };
+  } else if (taskContract?.generationBasis === "continuation" && targetProgram) {
     const override = applyContinuationProgramOverride({
       targetProgram,
       sourceBridge: {
@@ -378,7 +406,7 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
   let projectedBrandManifestation = brandSanitized.lines;
   // Low-level semantic inspection also accepts incomplete inputs. Public tasks
   // always require a subtype; only those complete requests own a shot scope.
-  const standardShot = Boolean(taskContract?.subtype) && (taskContract?.generationBasis === "standard" || taskContract?.generationBasis === 'art_direction_reference');
+  const standardShot = Boolean(taskContract?.subtype) && !customProgramPreview && (taskContract?.generationBasis === "standard" || taskContract?.generationBasis === 'art_direction_reference');
   // Only lists read by renderers confer execution ownership. Source/audit
   // containers, spatialTranslation and commercialReality are not owners.
   const executionLists = () => [
@@ -511,19 +539,22 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
     const architectureOwns = decisionTrace.architectureDecisions.some(entry=>entry.text === text && entry.sceneScope !== 'off_frame_dependency');
     const brandOwns = projectedBrandManifestation.includes(outputText) && !art && !architectureOwns && !functionalRaw.positiveDifferentiators.includes(outputText);
     const review = analysis.classificationReason === 'unresolved_visible_requirement' || scope && !scope.currentShotText && ['unresolved','review_required'].includes(scope.sceneScope);
-    const owner = review ? null : execution?.[2] || (art ? 'composition' : brandOwns ? 'brand_translation' : null);
+    const candidateOwner = review ? null : execution?.[2] || (art ? 'composition' : brandOwns ? 'brand_translation' : null);
+    const owner = customProgramPreview ? null : candidateOwner;
     const ownerPath = owner ? execution?.[3] || (art ? 'composition.artisticFocus' : '_raw.brandRoleManifestation') : null;
     const disposition = review ? 'review_required' : analysis.classification === SEMANTIC_CLASS.DECORATIVE_IDENTITY ? 'post_composite_only'
-      : owner ? 'retained' : !standardShot && targetSceneProjection ? 'target_program_replaced'
+      : customProgramPreview && candidateOwner ? 'preview_only' : owner ? 'retained' : !standardShot && targetSceneProjection ? 'target_program_replaced'
       : scope?.sceneScope === 'off_frame_dependency' ? 'off_frame_dependency'
       : scope?.sceneScope === 'cross_scene_constraint' ? 'boundary_only' : 'rejected_semantics';
     return [{sourcePath,text,classification:analysis.classification,classificationReason:analysis.classificationReason,
       route:review ? 'review' : ['functional','architectural'].includes(analysis.classification) ? 'composition' : 'brand_or_artistic',
-      sceneProjection:{inputText:projectionInput,sceneScope:scope?.sceneScope ?? 'target_program',reason:scope?.scopeReason ?? 'target_program_authority',projectedText,
+      sceneProjection:{inputText:projectionInput,sceneScope:scope?.sceneScope ?? (customProgramPreview ? 'source_defined_program' : 'target_program'),reason:scope?.scopeReason ?? (customProgramPreview ? 'project_source_preview_without_camera_authority' : 'target_program_authority'),projectedText,
         clauses:scope?.clauses ?? [],boundaryConstraints:scope?.boundaryConstraints ?? [],offFrameEntities:scope?.offFrameEntities ?? [],reviewRequiredClauses:scope?.reviewRequiredClauses ?? []},
       owner,ownerPath,outputText:owner ? outputText : null,
+      ...customProgramPreview ? {previewOwner:candidateOwner,previewOutputText:candidateOwner ? projectedText : null,executionAuthority:'none_without_camera_binding'} : {},
       deduplication:{removedFrom:visibleDeduplication.get(outputText) || [],duplicateSource:spatial.mustBeVisible.findIndex(value=>cleanList(value)[0] === text) !== index},
       disposition,reason:disposition === 'retained' ? 'current_executable_owner' : disposition === 'review_required' ? 'unresolved_visible_requirement'
+        : disposition === 'preview_only' ? 'project_source_preview_without_camera_authority'
         : disposition === 'post_composite_only' ? 'in_scene_identity_post_composite' : disposition === 'off_frame_dependency' ? 'foreign_scene_entity'
         : sanitizer?.reason || disposition}];
   });

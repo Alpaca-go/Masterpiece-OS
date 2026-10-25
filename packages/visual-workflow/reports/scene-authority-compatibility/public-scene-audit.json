@@ -1,0 +1,272 @@
+{
+  "options": {
+    "subtypes": [
+      "reception",
+      "lobby",
+      "exhibition",
+      "storefront",
+      "interior_panorama",
+      "counter",
+      "consultation",
+      "entrance",
+      "dining",
+      "treatment_room"
+    ],
+    "shots": [
+      "front",
+      "three_quarter_wide",
+      "entrance_view",
+      "detail_closeup",
+      "entrance_three_quarter_wide"
+    ]
+  },
+  "uiChanged": false,
+  "publicOperationIntegrityApproved": false,
+  "scenes": [
+    {
+      "subtype": "reception",
+      "uiOption": true,
+      "hasFunctionalProgram": true,
+      "status": "compiler_resolved",
+      "authority": {
+        "targetScene": "reception",
+        "targetProgramId": "reception",
+        "functionalBlockSource": "source_shot_scope",
+        "architectureBridgeSource": "source_shot_scope",
+        "operationConstraintsSource": "source_shot_scope",
+        "viewStrategySource": "user_explicit",
+        "viewStrategy": "entrance_view",
+        "shotSource": "user_explicit",
+        "gate": "pass",
+        "gateVersion": "space-target-scene-authority@1.1.0",
+        "authorityGate": {
+          "status": "pass",
+          "checkedBlocks": [
+            "functional_requirement",
+            "architecture_function_bridge",
+            "operation_constraints",
+            "must_be_visible",
+            "lighting",
+            "composition",
+            "brand_role_manifestation"
+          ]
+        }
+      }
+    },
+    {
+      "subtype": "lobby",
+      "uiOption": true,
+      "hasFunctionalProgram": true,
+      "status": "compiler_resolved",
+      "authority": {
+        "targetScene": "lobby",
+        "targetProgramId": "lobby",
+        "functionalBlockSource": "source_shot_scope",
+        "architectureBridgeSource": "source_shot_scope",
+        "operationConstraintsSource": "source_shot_scope",
+        "viewStrategySource": "user_explicit",
+        "viewStrategy": "entrance_view",
+        "shotSource": "user_explicit",
+        "gate": "pass",
+        "gateVersion": "space-target-scene-authority@1.1.0",
+        "authorityGate": {
+          "status": "pass",
+          "checkedBlocks": [
+            "functional_requirement",
+            "architecture_function_bridge",
+            "operation_constraints",
+            "must_be_visible",
+            "lighting",
+            "composition",
+            "brand_role_manifestation"
+          ]
+        }
+      }
+    },
+    {
+      "subtype": "exhibition",
+      "uiOption": true,
+      "hasFunctionalProgram": false,
+      "status": "compiler_blocked",
+      "code": "SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED",
+      "message": "SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED: exhibition"
+    },
+    {
+      "subtype": "storefront",
+      "uiOption": true,
+      "hasFunctionalProgram": true,
+      "status": "compiler_resolved",
+      "authority": {
+        "targetScene": "storefront",
+        "targetProgramId": "storefront",
+        "functionalBlockSource": "source_shot_scope",
+        "architectureBridgeSource": "source_shot_scope",
+        "operationConstraintsSource": "source_shot_scope",
+        "viewStrategySource": "user_explicit",
+        "viewStrategy": "front",
+        "shotSource": "user_explicit",
+        "gate": "pass",
+        "gateVersion": "space-target-scene-authority@1.1.0",
+        "authorityGate": {
+          "status": "pass",
+          "checkedBlocks": [
+            "functional_requirement",
+            "architecture_function_bridge",
+            "operation_constraints",
+            "must_be_visible",
+            "lighting",
+            "composition",
+            "brand_role_manifestation"
+          ]
+        }
+      }
+    },
+    {
+      "subtype": "interior_panorama",
+      "uiOption": true,
+      "hasFunctionalProgram": false,
+      "status": "compiler_blocked",
+      "code": "SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED",
+      "message": "SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED: interior_panorama"
+    },
+    {
+      "subtype": "counter",
+      "uiOption": true,
+      "hasFunctionalProgram": false,
+      "status": "compiler_blocked",
+      "code": "SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED",
+      "message": "SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED: counter"
+    },
+    {
+      "subtype": "consultation",
+      "uiOption": true,
+      "hasFunctionalProgram": true,
+      "status": "compiler_resolved",
+      "authority": {
+        "targetScene": "consultation",
+        "targetProgramId": "consultation",
+        "functionalBlockSource": "source_shot_scope",
+        "architectureBridgeSource": "source_shot_scope",
+        "operationConstraintsSource": "source_shot_scope",
+        "viewStrategySource": "user_explicit",
+        "viewStrategy": "entrance_view",
+        "shotSource": "user_explicit",
+        "gate": "pass",
+        "gateVersion": "space-target-scene-authority@1.1.0",
+        "authorityGate": {
+          "status": "pass",
+          "checkedBlocks": [
+            "functional_requirement",
+            "architecture_function_bridge",
+            "operation_constraints",
+            "must_be_visible",
+            "lighting",
+            "composition",
+            "brand_role_manifestation"
+          ]
+        }
+      }
+    },
+    {
+      "subtype": "entrance",
+      "uiOption": true,
+      "hasFunctionalProgram": true,
+      "status": "compiler_resolved",
+      "authority": {
+        "targetScene": "entrance",
+        "targetProgramId": "entrance",
+        "functionalBlockSource": "source_shot_scope",
+        "architectureBridgeSource": "source_shot_scope",
+        "operationConstraintsSource": "source_shot_scope",
+        "viewStrategySource": "user_explicit",
+        "viewStrategy": "entrance_view",
+        "shotSource": "user_explicit",
+        "gate": "pass",
+        "gateVersion": "space-target-scene-authority@1.1.0",
+        "authorityGate": {
+          "status": "pass",
+          "checkedBlocks": [
+            "functional_requirement",
+            "architecture_function_bridge",
+            "operation_constraints",
+            "must_be_visible",
+            "lighting",
+            "composition",
+            "brand_role_manifestation"
+          ]
+        }
+      }
+    },
+    {
+      "subtype": "dining",
+      "uiOption": true,
+      "hasFunctionalProgram": true,
+      "status": "compiler_resolved",
+      "authority": {
+        "targetScene": "dining",
+        "targetProgramId": "dining",
+        "functionalBlockSource": "source_shot_scope",
+        "architectureBridgeSource": "source_shot_scope",
+        "operationConstraintsSource": "source_shot_scope",
+        "viewStrategySource": "user_explicit",
+        "viewStrategy": "three_quarter_wide",
+        "shotSource": "user_explicit",
+        "gate": "pass",
+        "gateVersion": "space-target-scene-authority@1.1.0",
+        "authorityGate": {
+          "status": "pass",
+          "checkedBlocks": [
+            "functional_requirement",
+            "architecture_function_bridge",
+            "operation_constraints",
+            "must_be_visible",
+            "lighting",
+            "composition",
+            "brand_role_manifestation"
+          ]
+        }
+      }
+    },
+    {
+      "subtype": "treatment_room",
+      "uiOption": true,
+      "hasFunctionalProgram": true,
+      "status": "compiler_resolved",
+      "authority": {
+        "targetScene": "treatment_room",
+        "targetProgramId": "treatment_room",
+        "functionalBlockSource": "source_shot_scope",
+        "architectureBridgeSource": "source_shot_scope",
+        "operationConstraintsSource": "source_shot_scope",
+        "viewStrategySource": "user_explicit",
+        "viewStrategy": "entrance_view",
+        "shotSource": "user_explicit",
+        "gate": "pass",
+        "gateVersion": "space-target-scene-authority@1.1.0",
+        "authorityGate": {
+          "status": "pass",
+          "checkedBlocks": [
+            "functional_requirement",
+            "architecture_function_bridge",
+            "operation_constraints",
+            "must_be_visible",
+            "lighting",
+            "composition",
+            "brand_role_manifestation"
+          ]
+        }
+      }
+    }
+  ],
+  "custom": {
+    "uiOption": false,
+    "staticFunctionalProgram": false,
+    "pureCompilePreview": "bounded_compatibility",
+    "cameraRequest": "blocked",
+    "publicTemplate": "not_registered"
+  },
+  "unknownSubtype": {
+    "customFallback": false,
+    "status": "blocked"
+  }
+}

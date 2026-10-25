@@ -1,0 +1,5 @@
+
+> masterpiece-os@5.0.0-rc.1 verify:production-boundaries
+> node ./scripts/verify-production-boundaries.mjs
+
+[production-boundaries] PASS — checked 832 current production files; Desktop/Electron/lab/archive imports are absent.

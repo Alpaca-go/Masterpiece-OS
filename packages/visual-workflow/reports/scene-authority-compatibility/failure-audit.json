@@ -1,0 +1,65 @@
+[
+  {
+    "name": "workflow",
+    "exitCode": 1,
+    "failures": [
+      {
+        "location": "test at packages\\visual-workflow\\tests\\analysis-direction-suggestion.test.ts:1:8343",
+        "test": "✖ read-only existing report RPC supplies suggestions for missing directions without creating any decision files (187.5118ms)",
+        "category": "pending_integrity_approval"
+      },
+      {
+        "location": "test at packages\\visual-workflow\\tests\\art-direction-route.test.ts:1:9779",
+        "test": "✖ public operations verify the approved implementation before registration, compilation, generation and Logo composition (40.1611ms)",
+        "category": "pending_integrity_approval"
+      },
+      {
+        "location": "test at packages\\visual-workflow\\tests\\generation-baseline-lock.test.ts:1:516",
+        "test": "✖ baseline lock prevents input/model/code drift and old tasks; other projects remain independent, zero network (122.1705ms)",
+        "category": "pending_integrity_approval"
+      },
+      {
+        "location": "test at packages\\visual-workflow\\tests\\project-design-direction.test.ts:1:9324",
+        "test": "✖ guarded public web operations save, confirm, compile, generate, reopen and invalidate on an analysis request (40.0982ms)",
+        "category": "pending_integrity_approval"
+      },
+      {
+        "location": "test at packages\\visual-workflow\\tests\\project-details-editing.test.ts:1:442",
+        "test": "✖ explicit details save persists identity, retains artifacts and requires new analysis/confirmation without calling models (249.312ms)",
+        "category": "pending_integrity_approval"
+      }
+    ]
+  },
+  {
+    "name": "current-flows",
+    "exitCode": 1,
+    "failures": [
+      {
+        "location": "test at tests\\runtime-application\\visual-workflow-isolation.test.ts:1:5790",
+        "test": "✖ completed analysis supplies migrated Logo roles without overriding a new intake selection (58.5582ms)",
+        "category": "pending_integrity_approval"
+      },
+      {
+        "location": "test at tests\\runtime-application\\visual-workflow-isolation.test.ts:1:9252",
+        "test": "✖ offline E2E: owned import, analysis, report and image request complete without shared settings or real providers (132.5304ms)",
+        "category": "pending_integrity_approval"
+      }
+    ]
+  },
+  {
+    "name": "repository-policy",
+    "exitCode": 1,
+    "failures": [
+      {
+        "location": "test at tests\\repository-policy.test.js:22:1",
+        "test": "✖ 仓库不包含项目源文件或项目交付物 (167.7149ms)",
+        "category": "existing_repository_policy"
+      },
+      {
+        "location": "test at tests\\repository-policy.test.js:38:1",
+        "test": "✖ 仓库内栅格图片只能用于脱敏示例、测试、模板或已声明运行时资产 (155.5959ms)",
+        "category": "existing_repository_policy"
+      }
+    ]
+  }
+]

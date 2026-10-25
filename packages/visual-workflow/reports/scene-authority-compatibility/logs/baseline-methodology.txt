@@ -1,0 +1,82 @@
+✖ bakery-methodology: current-project relations and scope reach suggestion and compiler without mutation (28.9124ms)
+✖ outdoor-methodology: current-project relations and scope reach suggestion and compiler without mutation (5.7011ms)
+✔ insufficient evidence remains absent rather than acquiring another project decision (0.8352ms)
+✖ brand or industry renaming alone does not change functional decisions or invent artwork (5.6215ms)
+✖ relationship mutation is preserved as a change, not accepted on object counts (5.4379ms)
+✔ historical P7a formal and provider prompts retain their recorded text hashes (14.4346ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 2
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 678.7674
+
+✖ failing tests:
+
+test at packages\visual-workflow\tests\methodology\acceptance.test.mjs:61:3
+✖ bakery-methodology: current-project relations and scope reach suggestion and compiler without mutation (28.9124ms)
+  Error: SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED: custom
+      at adaptSpaceSource (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/source-adapter.js:263:25)
+      at compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:250:18)
+      at TestContext.<anonymous> (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/methodology/acceptance.test.mjs:71:20)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.start (node:internal/test_runner/test:1257:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    code: 'SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED',
+    targetScene: 'custom',
+    disposition: 'review_required'
+  }
+
+test at packages\visual-workflow\tests\methodology\acceptance.test.mjs:61:3
+✖ outdoor-methodology: current-project relations and scope reach suggestion and compiler without mutation (5.7011ms)
+  Error: SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED: custom
+      at adaptSpaceSource (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/source-adapter.js:263:25)
+      at compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:250:18)
+      at TestContext.<anonymous> (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/methodology/acceptance.test.mjs:71:20)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    code: 'SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED',
+    targetScene: 'custom',
+    disposition: 'review_required'
+  }
+
+test at packages\visual-workflow\tests\methodology\acceptance.test.mjs:98:1
+✖ brand or industry renaming alone does not change functional decisions or invent artwork (5.6215ms)
+  Error: SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED: custom
+      at adaptSpaceSource (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/source-adapter.js:263:25)
+      at compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:250:18)
+      at TestContext.<anonymous> (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/methodology/acceptance.test.mjs:105:18)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    code: 'SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED',
+    targetScene: 'custom',
+    disposition: 'review_required'
+  }
+
+test at packages\visual-workflow\tests\methodology\acceptance.test.mjs:110:1
+✖ relationship mutation is preserved as a change, not accepted on object counts (5.4379ms)
+  Error: SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED: custom
+      at adaptSpaceSource (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/source-adapter.js:263:25)
+      at compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:250:18)
+      at TestContext.<anonymous> (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/methodology/acceptance.test.mjs:112:18)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    code: 'SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED',
+    targetScene: 'custom',
+    disposition: 'review_required'
+  }

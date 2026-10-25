@@ -1,0 +1,22 @@
+
+> masterpiece-os@5.0.0-rc.1 repo:verify
+> npm run verify:repository-contract && npm run verify:visual-workflow-isolation && npm run verify:version-consistency && npm run verify:version-naming && npm run verify:workspace-boundaries && npm run verify:no-obsolete-code && npm run verify:production-boundaries && npm run verify:tracked-runtime-assets && npm run verify:no-project-specific-production-rules && npm run verify:golden-boundary && npm run verify:current-flows && npm run verify:analysis-guards && npm run repo:guard:test
+
+
+> masterpiece-os@5.0.0-rc.1 verify:repository-contract
+> node ./scripts/verify-repository-contract.mjs
+
+Repository Contract Guard: PASS
+namespace exceptions: 0 | CURRENT authorities: 16 | frozen prompts: 4 | compatibility entries: 4
+Golden files changed: NO | compatibility delta: 0
+provider calls: 0 | business writes: 0 | digest auto-update: NO
+
+> masterpiece-os@5.0.0-rc.1 verify:visual-workflow-isolation
+> node ./scripts/verify-visual-workflow-isolation.mjs
+
+{
+  "status": "fail",
+  "violations": [
+    "VISUAL_WORKFLOW_IMPLEMENTATION_CHANGED: src/generation-runtime/space/compiler.js"
+  ]
+}

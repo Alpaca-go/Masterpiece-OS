@@ -1,0 +1,18 @@
+✔ custom preview binds a complete source program to its project without granting a camera (34.2527ms)
+✔ custom previews retain project geometry, materials, color scope and light without inventing parameters (7.873ms)
+✔ custom source binding rejects absent or foreign project ownership (22.879ms)
+✔ a standard custom preview cannot accept a camera, scene alias, instruction, references or a fake target program (52.3699ms)
+✔ incomplete custom evidence is not replaced by an invented program or visibility list (21.2098ms)
+✔ unknown subtypes and other generation modes cannot opt into custom compatibility (36.0389ms)
+✔ custom remains outside public template generation (3.3475ms)
+✔ glass text in a custom preview cannot become an executable visible owner (6.0636ms)
+✔ RKS-02C mapped scene formal and Provider prompt hashes, source maps and controls remain identical (176.5697ms)
+✔ existing methodology test expectations are unchanged from the frozen input (0.4443ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 754.9276

@@ -1,0 +1,74 @@
+[
+  {
+    "name": "methodology",
+    "command": "node --import tsx --test packages/visual-workflow/tests/methodology/acceptance.test.mjs",
+    "exitCode": 1,
+    "durationMs": 780,
+    "log": "logs/baseline-methodology.txt",
+    "sha256": "ccd81eb5d530c5412f93033cee6674912df169a3de8dbfc04a61855654dfe975",
+    "rawSha256": "ccd81eb5d530c5412f93033cee6674912df169a3de8dbfc04a61855654dfe975",
+    "normalization": "CRLF to LF; trailing horizontal whitespace removed; one terminal newline",
+    "countGroups": {
+      "tests": [
+        6
+      ],
+      "pass": [
+        2
+      ],
+      "fail": [
+        4
+      ],
+      "skipped": [
+        0
+      ]
+    }
+  },
+  {
+    "name": "scene-core",
+    "command": "node --import tsx --test packages/visual-workflow/tests/scene-authority-repair.test.ts packages/visual-workflow/tests/visible-requirement-ownership.test.ts packages/visual-workflow/tests/scene-decision-fidelity.test.ts packages/visual-workflow/tests/cross-zone-operation-scope.test.ts",
+    "exitCode": 0,
+    "durationMs": 1428,
+    "log": "logs/baseline-scene-core.txt",
+    "sha256": "624b6579dee2e9408eb8af51ef3cf9217d1e98f066424d0e6f0fb601d9c9b8cd",
+    "rawSha256": "624b6579dee2e9408eb8af51ef3cf9217d1e98f066424d0e6f0fb601d9c9b8cd",
+    "normalization": "CRLF to LF; trailing horizontal whitespace removed; one terminal newline",
+    "countGroups": {
+      "tests": [
+        82
+      ],
+      "pass": [
+        82
+      ],
+      "fail": [
+        0
+      ],
+      "skipped": [
+        0
+      ]
+    }
+  },
+  {
+    "name": "repository-policy",
+    "command": "node --test tests/repository-policy.test.js",
+    "exitCode": 1,
+    "durationMs": 683,
+    "log": "logs/baseline-repository-policy.txt",
+    "sha256": "2537e4dbe16219c87fcf2ca2cde7b0c766948ae4438d100a701601fff7b857cc",
+    "rawSha256": "7365f88dc18234d8d63078f9fedca116bf3664edbb6a06c8ada200a5f68e5b0f",
+    "normalization": "CRLF to LF; trailing horizontal whitespace removed; one terminal newline",
+    "countGroups": {
+      "tests": [
+        2
+      ],
+      "pass": [
+        0
+      ],
+      "fail": [
+        2
+      ],
+      "skipped": [
+        0
+      ]
+    }
+  }
+]

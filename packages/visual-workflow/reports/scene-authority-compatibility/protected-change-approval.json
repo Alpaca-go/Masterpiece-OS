@@ -1,0 +1,90 @@
+{
+  "stage": "RKS-02C.1",
+  "baseline": "81c0256a6966c0d1dbe56eb822ad32849172e8c6",
+  "branch": "codex/rks-scene-authority-compatibility",
+  "status": "pending_human_review",
+  "stageChanges": [
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/compiler.js",
+      "registeredSha256": "9d701f3578816fe3ceb825e2ea7bc0723143fe8b62bbac8651292621765aacee",
+      "stageBaseSha256": "9d701f3578816fe3ceb825e2ea7bc0723143fe8b62bbac8651292621765aacee",
+      "candidateSha256": "a6614dce173d79c159854c19fe649d71204037a52183d1d0467242afad4cf352",
+      "changedInThisStage": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/source-adapter.js",
+      "registeredSha256": "ea9334a585f65b2af63b5da91cb9236ba2be475e00ce7da5421617596928d19e",
+      "stageBaseSha256": "867ae635a815a1481ef93c1b1242fb736fcb0d9f5be46b50e8c8fb2daed51b08",
+      "candidateSha256": "b4fe223f16c1cf4e0bde5a83e936e598ed6eb63fb7ccb6fe94fd61af0e649299",
+      "changedInThisStage": true
+    }
+  ],
+  "cumulativePendingFiles": [
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/compiler.js",
+      "registeredSha256": "9d701f3578816fe3ceb825e2ea7bc0723143fe8b62bbac8651292621765aacee",
+      "stageBaseSha256": "9d701f3578816fe3ceb825e2ea7bc0723143fe8b62bbac8651292621765aacee",
+      "candidateSha256": "a6614dce173d79c159854c19fe649d71204037a52183d1d0467242afad4cf352",
+      "changedInThisStage": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/continuation/target-functional-programs.js",
+      "registeredSha256": "ccbf2ec7dba656fdaf8672801ab43c7130eccf7efe267d681674f0fc8f6a1b1b",
+      "stageBaseSha256": "11636ed4f30bbb4dd4c6530318062c189bd3928a74b48a1c214c13fe85350725",
+      "candidateSha256": "11636ed4f30bbb4dd4c6530318062c189bd3928a74b48a1c214c13fe85350725",
+      "changedInThisStage": false
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/scene-projection/target-scene-projection.js",
+      "registeredSha256": "5a773b1403ab232d90be0c8d665bd2b5f119d17b05fee7a446b86fc485c0f78d",
+      "stageBaseSha256": "78be27d7523ee10561005f553e51e9a90c801791ae52842f575d51ce63267598",
+      "candidateSha256": "78be27d7523ee10561005f553e51e9a90c801791ae52842f575d51ce63267598",
+      "changedInThisStage": false
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/source-adapter.js",
+      "registeredSha256": "ea9334a585f65b2af63b5da91cb9236ba2be475e00ce7da5421617596928d19e",
+      "stageBaseSha256": "867ae635a815a1481ef93c1b1242fb736fcb0d9f5be46b50e8c8fb2daed51b08",
+      "candidateSha256": "b4fe223f16c1cf4e0bde5a83e936e598ed6eb63fb7ccb6fe94fd61af0e649299",
+      "changedInThisStage": true
+    }
+  ],
+  "manifest": {
+    "sha256": "23aec1826589ead04295a8aa144ef8a7ce7dad7977912e8010d9f9478986d8cd",
+    "unchanged": true,
+    "qualityAcceptance": "pending-separate-quality-repair",
+    "totalEntries": 133
+  },
+  "integrityError": "VISUAL_WORKFLOW_IMPLEMENTATION_CHANGED: src/generation-runtime/space/compiler.js",
+  "unchangedRoots": [
+    "packages/visual-workflow/prompts",
+    "packages/visual-workflow/implementation-integrity.json",
+    "packages/visual-workflow/src/generation-baseline-lock.js",
+    "packages/visual-workflow/src/project-design-direction.js",
+    "packages/visual-workflow/src/model-config.js",
+    "packages/visual-workflow/offline",
+    "packages/visual-workflow/reports/p7b-single-generation",
+    "packages/visual-workflow/reports/restaurant-knowledge",
+    "apps/web/src/features/visual-workflow",
+    "config/repository-contract",
+    "evaluation",
+    "space-generator",
+    "package-lock.json",
+    "packages/image-generation-runtime",
+    "packages/runtime-core"
+  ],
+  "existingMethodologyTestUnchanged": true,
+  "qualityAcceptanceChanged": false,
+  "goldenChanged": false,
+  "sourcePolicy": "source-defined preview; no camera authority; public gates unchanged",
+  "counters": {
+    "realAnalysis": 0,
+    "realImageGeneration": 0,
+    "realValidation": 0,
+    "automaticRetries": 0,
+    "networkAttempts": 0,
+    "userProjectsRead": 0,
+    "userProjectsWritten": 0,
+    "publish": 0
+  }
+}

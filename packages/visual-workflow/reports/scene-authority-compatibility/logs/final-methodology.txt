@@ -1,0 +1,14 @@
+✔ bakery-methodology: current-project relations and scope reach suggestion and compiler without mutation (29.3562ms)
+✔ outdoor-methodology: current-project relations and scope reach suggestion and compiler without mutation (7.118ms)
+✔ insufficient evidence remains absent rather than acquiring another project decision (0.6874ms)
+✔ brand or industry renaming alone does not change functional decisions or invent artwork (6.3673ms)
+✔ relationship mutation is preserved as a change, not accepted on object counts (10.8681ms)
+✔ historical P7a formal and provider prompts retain their recorded text hashes (0.6892ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 260.8326

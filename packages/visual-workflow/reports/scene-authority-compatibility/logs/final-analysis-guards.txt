@@ -1,0 +1,88 @@
+
+> masterpiece-os@5.0.0-rc.1 verify:analysis-guards
+> npm run verify:analysis-provider-authority && npm run verify:analysis-prompt-integrity && npm run verify:analysis-namespace && npm run verify:runtime-isolation && npm run verify:analysis-golden-integrity && npm run verify:secret-safety
+
+
+> masterpiece-os@5.0.0-rc.1 verify:analysis-provider-authority
+> node ./scripts/verify-analysis-provider-authority.mjs
+
+{
+  "guard": "A4-default-authority+G-A4-09",
+  "scannedFiles": 316,
+  "allowlistedFiles": 18,
+  "violationCount": 0,
+  "violations": []
+}
+[verify-analysis-provider-authority] PASS — scanned 316 files, 0 violations.
+
+> masterpiece-os@5.0.0-rc.1 verify:analysis-prompt-integrity
+> node ./scripts/verify-analysis-prompt-integrity.mjs
+
+{
+  "guard": "A4-frozen-prompt",
+  "observedDigests": {
+    "docs/visual-analysis/current-verification/evaluation-rubric.md": "7220F30FF07226D1920AF085C562DD65BE2A799D816E6524960B9933E84F8C35",
+    "docs/visual-analysis/current-verification/evaluation-corpus.md": "12D1526F6CEB2BE3733532DD43CAAE266403E8E96A3013EEF33711D88D246637"
+  },
+  "expectedDigests": {
+    "docs/visual-analysis/current-verification/evaluation-rubric.md": "7220F30FF07226D1920AF085C562DD65BE2A799D816E6524960B9933E84F8C35",
+    "docs/visual-analysis/current-verification/evaluation-corpus.md": "12D1526F6CEB2BE3733532DD43CAAE266403E8E96A3013EEF33711D88D246637"
+  },
+  "violationCount": 0,
+  "violations": []
+}
+[verify-analysis-prompt-integrity] PASS — 2 frozen digests verified, 0 drift.
+
+> masterpiece-os@5.0.0-rc.1 verify:analysis-namespace
+> node ./scripts/verify-analysis-namespace.mjs
+
+{
+  "guard": "A4-version-namespace",
+  "scannedFiles": 332,
+  "allowlistedFiles": 0,
+  "violationCount": 0,
+  "violations": []
+}
+[verify-analysis-namespace] PASS — scanned 332 files, 0 violations.
+
+> masterpiece-os@5.0.0-rc.1 verify:runtime-isolation
+> node ./scripts/verify-runtime-isolation.mjs
+
+{
+  "guard": "A4-legacy-desktop",
+  "trackedDirScanned": 3,
+  "packageJsonScanned": 2,
+  "violationCount": 0,
+  "violations": []
+}
+[verify-runtime-isolation] PASS — scanned 3 tracked directories + package.jsons + runtime entrypoints, 0 Desktop / Electron returns.
+
+> masterpiece-os@5.0.0-rc.1 verify:analysis-golden-integrity
+> node ./scripts/verify-analysis-golden-integrity.mjs
+
+{
+  "guard": "A4-golden-mutation",
+  "observedDigests": {
+    "tests/provider-contract-fixtures/qwen-baseline.json": "244D83C70E1B06142E4C3138C13730690937EAF2B4F524DCBABD75BB0F3AD6D0",
+    "tests/provider-contract-fixtures/volcengine-baseline.json": "4DBB057930B7263BA8115AB1F8D09495C126CB9BBAE1FEB6C8183DFD62A2936B"
+  },
+  "expectedDigests": {
+    "tests/provider-contract-fixtures/qwen-baseline.json": "244D83C70E1B06142E4C3138C13730690937EAF2B4F524DCBABD75BB0F3AD6D0",
+    "tests/provider-contract-fixtures/volcengine-baseline.json": "4DBB057930B7263BA8115AB1F8D09495C126CB9BBAE1FEB6C8183DFD62A2936B"
+  },
+  "violationCount": 0,
+  "violations": []
+}
+[verify-analysis-golden-integrity] PASS — 2 Golden fixtures verified, 0 drift.
+
+> masterpiece-os@5.0.0-rc.1 verify:secret-safety
+> node ./scripts/verify-secret-safety.mjs
+
+{
+  "guard": "A4-secret-safety",
+  "trackedFilesScanned": 2708,
+  "allowlistedFiles": 2,
+  "violationCount": 0,
+  "violations": []
+}
+[verify-secret-safety] PASS — scanned 2708 tracked files, 0 secret-shape matches.

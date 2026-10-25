@@ -1,0 +1,382 @@
+[
+  {
+    "name": "methodology",
+    "command": "node --import tsx --test packages/visual-workflow/tests/methodology/acceptance.test.mjs",
+    "exitCode": 0,
+    "durationMs": 349,
+    "log": "logs/final-methodology.txt",
+    "sha256": "b9b61c1957afa837c676c6752aa5c2827b939eddc849cfadae2a72c46be0bd24",
+    "rawSha256": "b9b61c1957afa837c676c6752aa5c2827b939eddc849cfadae2a72c46be0bd24",
+    "normalization": "CRLF to LF; trailing horizontal whitespace removed; one terminal newline",
+    "countGroups": {
+      "tests": [
+        6
+      ],
+      "pass": [
+        6
+      ],
+      "fail": [
+        0
+      ],
+      "skipped": [
+        0
+      ]
+    }
+  },
+  {
+    "name": "scene-core",
+    "command": "node --import tsx --test packages/visual-workflow/tests/scene-authority-repair.test.ts packages/visual-workflow/tests/visible-requirement-ownership.test.ts packages/visual-workflow/tests/scene-decision-fidelity.test.ts packages/visual-workflow/tests/cross-zone-operation-scope.test.ts",
+    "exitCode": 0,
+    "durationMs": 1346,
+    "log": "logs/final-scene-core.txt",
+    "sha256": "df74ab1523f636d095fc617edf2267ce8c96a8bedc311af1db77cc1112d65cb6",
+    "rawSha256": "df74ab1523f636d095fc617edf2267ce8c96a8bedc311af1db77cc1112d65cb6",
+    "normalization": "CRLF to LF; trailing horizontal whitespace removed; one terminal newline",
+    "countGroups": {
+      "tests": [
+        82
+      ],
+      "pass": [
+        82
+      ],
+      "fail": [
+        0
+      ],
+      "skipped": [
+        0
+      ]
+    }
+  },
+  {
+    "name": "repository-policy",
+    "command": "node --test tests/repository-policy.test.js",
+    "exitCode": 1,
+    "durationMs": 597,
+    "log": "logs/final-repository-policy.txt",
+    "sha256": "1351050298ef60d6374478df8d2017558aa0e9c5bdda0d5a77f8bbf3a1c51d3a",
+    "rawSha256": "feedadc65be221e4a2e53987184b487fb14799e81ba93e6a9f213060e9d4df5e",
+    "normalization": "CRLF to LF; trailing horizontal whitespace removed; one terminal newline",
+    "countGroups": {
+      "tests": [
+        2
+      ],
+      "pass": [
+        0
+      ],
+      "fail": [
+        2
+      ],
+      "skipped": [
+        0
+      ]
+    }
+  },
+  {
+    "name": "custom-contract",
+    "command": "node --import tsx --test packages/visual-workflow/tests/methodology/custom-compatibility.test.ts",
+    "exitCode": 0,
+    "durationMs": 841,
+    "log": "logs/final-custom-contract.txt",
+    "sha256": "db807e92c403968736ec35ba1a5fbebb7a4f660ee003d4c566488176b540add3",
+    "rawSha256": "db807e92c403968736ec35ba1a5fbebb7a4f660ee003d4c566488176b540add3",
+    "normalization": "CRLF to LF; trailing horizontal whitespace removed; one terminal newline",
+    "countGroups": {
+      "tests": [
+        10
+      ],
+      "pass": [
+        10
+      ],
+      "fail": [
+        0
+      ],
+      "skipped": [
+        0
+      ]
+    }
+  },
+  {
+    "name": "workflow",
+    "command": "node --import tsx --test packages\\visual-workflow\\tests\\analysis-direction-suggestion.test.ts packages\\visual-workflow\\tests\\architectural-integration.test.ts packages\\visual-workflow\\tests\\architectural-language.test.ts packages\\visual-workflow\\tests\\architectural-refinement.test.ts packages\\visual-workflow\\tests\\architecture-commercial-layer.test.ts packages\\visual-workflow\\tests\\art-direction-authority.test.ts packages\\visual-workflow\\tests\\art-direction-route.test.ts packages\\visual-workflow\\tests\\automatic-design-proposal.test.ts packages\\visual-workflow\\tests\\commercial-attribute.test.ts packages\\visual-workflow\\tests\\cross-zone-operation-scope.test.ts packages\\visual-workflow\\tests\\design-decision-fidelity.test.js packages\\visual-workflow\\tests\\design-direction-editor.test.ts packages\\visual-workflow\\tests\\explicit-spatial-layout.test.ts packages\\visual-workflow\\tests\\fig2-fig3-spatial-direction.test.ts packages\\visual-workflow\\tests\\generation-baseline-lock.test.ts packages\\visual-workflow\\tests\\methodology\\acceptance.test.mjs packages\\visual-workflow\\tests\\methodology\\custom-compatibility.test.ts packages\\visual-workflow\\tests\\project-design-direction.test.ts packages\\visual-workflow\\tests\\project-details-editing.test.ts packages\\visual-workflow\\tests\\restaurant-knowledge\\compile.test.ts packages\\visual-workflow\\tests\\restaurant-knowledge\\field-lineage.test.ts packages\\visual-workflow\\tests\\restaurant-knowledge\\ftt-fidelity.test.ts packages\\visual-workflow\\tests\\restaurant-knowledge\\knowledge.test.js packages\\visual-workflow\\tests\\restaurant-knowledge\\shadow-compile.test.ts packages\\visual-workflow\\tests\\restaurant-knowledge\\shadow.test.ts packages\\visual-workflow\\tests\\scene-authority-repair.test.ts packages\\visual-workflow\\tests\\scene-decision-fidelity.test.ts packages\\visual-workflow\\tests\\spatial-quality.test.ts packages\\visual-workflow\\tests\\validation-policy.test.js packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts",
+    "exitCode": 1,
+    "durationMs": 8894,
+    "log": "logs/final-workflow.txt",
+    "sha256": "99c08300f932c0d907720b5684a8edd95508327353450a549f73d5721a66d0c6",
+    "rawSha256": "e576e11d3acb3c319a79d7810ab6817417cf74808920cce6bd83c1a4d250881e",
+    "normalization": "CRLF to LF; trailing horizontal whitespace removed; one terminal newline",
+    "countGroups": {
+      "tests": [
+        249
+      ],
+      "pass": [
+        244
+      ],
+      "fail": [
+        5
+      ],
+      "skipped": [
+        0
+      ]
+    }
+  },
+  {
+    "name": "current-flows",
+    "command": "npm run verify:current-flows",
+    "exitCode": 1,
+    "durationMs": 19684,
+    "log": "logs/final-current-flows.txt",
+    "sha256": "3aafd81188a2a4c8b3bb462e21b1ff5e5edb586bfc20891678131913b418a3c8",
+    "rawSha256": "3aafd81188a2a4c8b3bb462e21b1ff5e5edb586bfc20891678131913b418a3c8",
+    "normalization": "CRLF to LF; trailing horizontal whitespace removed; one terminal newline",
+    "countGroups": {
+      "tests": [
+        2,
+        1294
+      ],
+      "pass": [
+        2,
+        1292
+      ],
+      "fail": [
+        0,
+        2
+      ],
+      "skipped": [
+        0,
+        0
+      ]
+    }
+  },
+  {
+    "name": "golden",
+    "command": "npm run golden:test",
+    "exitCode": 0,
+    "durationMs": 531,
+    "log": "logs/final-golden.txt",
+    "sha256": "effbe1522354f6b3e1a4a3053a6bbfd15c600d2de7be614ae7a5123cceac16ed",
+    "rawSha256": "effbe1522354f6b3e1a4a3053a6bbfd15c600d2de7be614ae7a5123cceac16ed",
+    "normalization": "CRLF to LF; trailing horizontal whitespace removed; one terminal newline",
+    "countGroups": {
+      "tests": [],
+      "pass": [],
+      "fail": [],
+      "skipped": []
+    }
+  },
+  {
+    "name": "repo-verify",
+    "command": "npm run repo:verify",
+    "exitCode": 1,
+    "durationMs": 1795,
+    "log": "logs/final-repo-verify.txt",
+    "sha256": "d9a14008401f4e189fa2b5ff7ae265e8a63957624a33f6e90d97981eb40505bc",
+    "rawSha256": "d9a14008401f4e189fa2b5ff7ae265e8a63957624a33f6e90d97981eb40505bc",
+    "normalization": "CRLF to LF; trailing horizontal whitespace removed; one terminal newline",
+    "countGroups": {
+      "tests": [],
+      "pass": [],
+      "fail": [],
+      "skipped": []
+    }
+  },
+  {
+    "name": "guard",
+    "command": "npm run repo:guard:test",
+    "exitCode": 0,
+    "durationMs": 2132,
+    "log": "logs/final-guard.txt",
+    "sha256": "263143a4a32aae6c3c0cc7816321c9745bced74229897f69f004142b3a4bb551",
+    "rawSha256": "263143a4a32aae6c3c0cc7816321c9745bced74229897f69f004142b3a4bb551",
+    "normalization": "CRLF to LF; trailing horizontal whitespace removed; one terminal newline",
+    "countGroups": {
+      "tests": [
+        56
+      ],
+      "pass": [
+        56
+      ],
+      "fail": [
+        0
+      ],
+      "skipped": [
+        0
+      ]
+    }
+  },
+  {
+    "name": "host-typecheck",
+    "command": "npm run web-runtime:typecheck",
+    "exitCode": 0,
+    "durationMs": 1137,
+    "log": "logs/final-host-typecheck.txt",
+    "sha256": "f51b6616dc2622eb9d681a4e17b72a03b912d1caf609af80add63da84c653f1d",
+    "rawSha256": "26d10dde7c32499d30cee05269b31bad0a139964c6c2f3724b67b9f45f043cac",
+    "normalization": "CRLF to LF; trailing horizontal whitespace removed; one terminal newline",
+    "countGroups": {
+      "tests": [],
+      "pass": [],
+      "fail": [],
+      "skipped": []
+    }
+  },
+  {
+    "name": "web-typecheck",
+    "command": "npm run web:typecheck",
+    "exitCode": 0,
+    "durationMs": 1389,
+    "log": "logs/final-web-typecheck.txt",
+    "sha256": "98ee5f51622e6d12b733e06abdc0f586f3d27d9752e90c32ca7c9b00cf052464",
+    "rawSha256": "a2afb2f25845e4981dc2244f41f996fbdf237d56e5ac08463edb18987c767e6c",
+    "normalization": "CRLF to LF; trailing horizontal whitespace removed; one terminal newline",
+    "countGroups": {
+      "tests": [],
+      "pass": [],
+      "fail": [],
+      "skipped": []
+    }
+  },
+  {
+    "name": "version-consistency",
+    "command": "npm run verify:version-consistency",
+    "exitCode": 0,
+    "durationMs": 1560,
+    "log": "logs/final-version-consistency.txt",
+    "sha256": "fbe6085bb41c0732d1a50e931f3235f41721cce971e069e2d5d1ec3bf485f20e",
+    "rawSha256": "fbe6085bb41c0732d1a50e931f3235f41721cce971e069e2d5d1ec3bf485f20e",
+    "normalization": "CRLF to LF; trailing horizontal whitespace removed; one terminal newline",
+    "countGroups": {
+      "tests": [],
+      "pass": [],
+      "fail": [],
+      "skipped": []
+    }
+  },
+  {
+    "name": "version-naming",
+    "command": "npm run verify:version-naming",
+    "exitCode": 0,
+    "durationMs": 451,
+    "log": "logs/final-version-naming.txt",
+    "sha256": "2474a3199364a73da1c5d4487562c838230a7041c2e95a364004ef000ee88bc6",
+    "rawSha256": "2474a3199364a73da1c5d4487562c838230a7041c2e95a364004ef000ee88bc6",
+    "normalization": "CRLF to LF; trailing horizontal whitespace removed; one terminal newline",
+    "countGroups": {
+      "tests": [],
+      "pass": [],
+      "fail": [],
+      "skipped": []
+    }
+  },
+  {
+    "name": "workspace-boundaries",
+    "command": "npm run verify:workspace-boundaries",
+    "exitCode": 0,
+    "durationMs": 580,
+    "log": "logs/final-workspace-boundaries.txt",
+    "sha256": "87543fd65b312f1939f0cd4fdf957dfd2ac1b0084c0fd9e042f9d90bdd014502",
+    "rawSha256": "87543fd65b312f1939f0cd4fdf957dfd2ac1b0084c0fd9e042f9d90bdd014502",
+    "normalization": "CRLF to LF; trailing horizontal whitespace removed; one terminal newline",
+    "countGroups": {
+      "tests": [],
+      "pass": [],
+      "fail": [],
+      "skipped": []
+    }
+  },
+  {
+    "name": "no-obsolete-code",
+    "command": "npm run verify:no-obsolete-code",
+    "exitCode": 0,
+    "durationMs": 699,
+    "log": "logs/final-no-obsolete-code.txt",
+    "sha256": "a1a7494547d7139585433fc6c1ebc2caaae97ed8b068cd29f5f029b7268030d6",
+    "rawSha256": "a1a7494547d7139585433fc6c1ebc2caaae97ed8b068cd29f5f029b7268030d6",
+    "normalization": "CRLF to LF; trailing horizontal whitespace removed; one terminal newline",
+    "countGroups": {
+      "tests": [],
+      "pass": [],
+      "fail": [],
+      "skipped": []
+    }
+  },
+  {
+    "name": "production-boundaries",
+    "command": "npm run verify:production-boundaries",
+    "exitCode": 0,
+    "durationMs": 609,
+    "log": "logs/final-production-boundaries.txt",
+    "sha256": "993d0fcd64a00e53ff830f92edb378c49cbdc9e6fc9825f392a331cf3c626129",
+    "rawSha256": "993d0fcd64a00e53ff830f92edb378c49cbdc9e6fc9825f392a331cf3c626129",
+    "normalization": "CRLF to LF; trailing horizontal whitespace removed; one terminal newline",
+    "countGroups": {
+      "tests": [],
+      "pass": [],
+      "fail": [],
+      "skipped": []
+    }
+  },
+  {
+    "name": "tracked-runtime-assets",
+    "command": "npm run verify:tracked-runtime-assets",
+    "exitCode": 0,
+    "durationMs": 1896,
+    "log": "logs/final-tracked-runtime-assets.txt",
+    "sha256": "1c56025f6b7350da60b1266abd9fefd2aaccb35478ca81d63ff980f3bd60c2ea",
+    "rawSha256": "1c56025f6b7350da60b1266abd9fefd2aaccb35478ca81d63ff980f3bd60c2ea",
+    "normalization": "CRLF to LF; trailing horizontal whitespace removed; one terminal newline",
+    "countGroups": {
+      "tests": [],
+      "pass": [],
+      "fail": [],
+      "skipped": []
+    }
+  },
+  {
+    "name": "no-project-specific-production-rules",
+    "command": "npm run verify:no-project-specific-production-rules",
+    "exitCode": 0,
+    "durationMs": 506,
+    "log": "logs/final-no-project-specific-production-rules.txt",
+    "sha256": "b89818954531029db7ab315f684cfc19d47b1064718dc3e9b8585ce8c16a300a",
+    "rawSha256": "b89818954531029db7ab315f684cfc19d47b1064718dc3e9b8585ce8c16a300a",
+    "normalization": "CRLF to LF; trailing horizontal whitespace removed; one terminal newline",
+    "countGroups": {
+      "tests": [],
+      "pass": [],
+      "fail": [],
+      "skipped": []
+    }
+  },
+  {
+    "name": "golden-boundary",
+    "command": "npm run verify:golden-boundary",
+    "exitCode": 0,
+    "durationMs": 645,
+    "log": "logs/final-golden-boundary.txt",
+    "sha256": "e1524764a8cc3ac20e38ec2e2e823401e00f39e925bc300d13a24eccefd081f3",
+    "rawSha256": "e1524764a8cc3ac20e38ec2e2e823401e00f39e925bc300d13a24eccefd081f3",
+    "normalization": "CRLF to LF; trailing horizontal whitespace removed; one terminal newline",
+    "countGroups": {
+      "tests": [],
+      "pass": [],
+      "fail": [],
+      "skipped": []
+    }
+  },
+  {
+    "name": "analysis-guards",
+    "command": "npm run verify:analysis-guards",
+    "exitCode": 0,
+    "durationMs": 4147,
+    "log": "logs/final-analysis-guards.txt",
+    "sha256": "654481e9d734a8fa069115dfce4bc54faa87df8ad9af77953267ce5ce9c95c48",
+    "rawSha256": "654481e9d734a8fa069115dfce4bc54faa87df8ad9af77953267ce5ce9c95c48",
+    "normalization": "CRLF to LF; trailing horizontal whitespace removed; one terminal newline",
+    "countGroups": {
+      "tests": [],
+      "pass": [],
+      "fail": [],
+      "skipped": []
+    }
+  }
+]

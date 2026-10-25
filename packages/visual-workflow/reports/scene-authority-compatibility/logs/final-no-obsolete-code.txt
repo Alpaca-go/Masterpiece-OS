@@ -1,0 +1,5 @@
+
+> masterpiece-os@5.0.0-rc.1 verify:no-obsolete-code
+> node ./scripts/verify-no-obsolete-code.mjs
+
+[no-obsolete-code] PASS — scanned 1959 files, no forbidden legacy references.

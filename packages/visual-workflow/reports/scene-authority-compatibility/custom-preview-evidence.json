@@ -1,0 +1,908 @@
+{
+  "input": {
+    "packet": {
+      "schemaVersion": "1.0",
+      "projectId": "source-defined-commercial-project",
+      "projectFacts": {
+        "brandName": {
+          "value": "Offline custom project",
+          "source": "project_record",
+          "evidenceRefs": [
+            "project:brand-name"
+          ],
+          "confidence": 1,
+          "status": "confirmed"
+        },
+        "industry": {
+          "value": "Commercial service",
+          "source": "source_document",
+          "evidenceRefs": [
+            "document:industry"
+          ],
+          "confidence": 0.9,
+          "status": "confirmed"
+        },
+        "brandRole": {
+          "value": "A welcoming service destination",
+          "source": "source_document",
+          "evidenceRefs": [
+            "document:brand-role"
+          ],
+          "confidence": 0.9,
+          "status": "confirmed"
+        }
+      },
+      "lockedAssets": [
+        {
+          "assetId": "logo-1",
+          "type": "logo",
+          "value": "Confirmed logo",
+          "lockSource": "user_confirmed",
+          "evidenceRefs": [
+            "asset:logo-1"
+          ]
+        }
+      ],
+      "assetInventory": {
+        "logoAssets": [],
+        "colorAssets": [],
+        "typographyAssets": [],
+        "graphicMotifs": [],
+        "imageryAssets": [],
+        "layoutPatterns": [],
+        "materialCues": [],
+        "packagingStructures": [],
+        "spatialCues": [],
+        "copyAssets": []
+      },
+      "diagnosis": {
+        "valuableAssets": [
+          {
+            "target": "confirmed identity",
+            "observation": "The source contains a repeatable open-frame motif",
+            "whyItMatters": "It can preserve recognition across media",
+            "evidenceRefs": [
+              "asset:motif-1"
+            ],
+            "confidence": 0.9
+          }
+        ],
+        "overusedExpressions": [],
+        "outdatedExpressions": [],
+        "weakSystemAreas": [],
+        "categoryCliches": [],
+        "brandMisreadRisks": [
+          {
+            "code": "risk-generic",
+            "target": "generic service venue",
+            "description": "May be mistaken for a generic service venue",
+            "observation": "Current hierarchy is not distinctive",
+            "whyItMatters": "The brand role is unclear",
+            "appliesTo": {
+              "taskFamilies": [
+                "space",
+                "packaging"
+              ]
+            },
+            "evidenceRefs": [
+              "diagnosis:risk-1"
+            ],
+            "confidence": 0.85,
+            "status": "probable"
+          }
+        ],
+        "crossMediaGaps": []
+      },
+      "creativeDecision": {
+        "brandRoleStatement": "Make the service promise visible at every touchpoint",
+        "upgradeFrom": [
+          "generic and fragmented"
+        ],
+        "preserveCore": [
+          "confirmed identity"
+        ],
+        "upgradeTo": [
+          "clear and welcoming"
+        ],
+        "uniqueUpgradeThesis": "Turn service clarity into a spatial and material system",
+        "targetWorldview": [
+          "clear",
+          "welcoming"
+        ],
+        "toneBoundaries": [
+          {
+            "target": "confident",
+            "avoid": [
+              "institutional"
+            ]
+          },
+          {
+            "target": "warm",
+            "avoid": [
+              "decorative nostalgia"
+            ]
+          }
+        ],
+        "strategicNegatives": [
+          "generic decoration"
+        ]
+      },
+      "abstractions": [
+        {
+          "sourceAsset": "asset:motif-1",
+          "semanticMeaning": [
+            "welcome"
+          ],
+          "formalProperties": [
+            "open frame"
+          ],
+          "rhythmProperties": [
+            "measured repetition"
+          ],
+          "materialPotential": [
+            "translucent partition"
+          ],
+          "lightingPotential": [
+            "soft edge light"
+          ],
+          "forbiddenLiteralUse": [
+            "literal icon wall"
+          ],
+          "evidenceRefs": [
+            "asset:motif-1"
+          ],
+          "confidence": 0.85
+        }
+      ],
+      "mediaTranslations": {
+        "sharedBrandCore": [
+          "clear service promise"
+        ],
+        "spatial": {
+          "status": "ready",
+          "spatialConcept": "A clear sequence of service zones",
+          "brandRoleManifestation": [],
+          "signatureSpatialMechanism": [
+            "Display bays occupy the perimeter and leave open access around the worktable."
+          ],
+          "functionalNetwork": [
+            "展示界面连接比较工作台，服务通道位于两侧"
+          ],
+          "positiveDifferentiators": [],
+          "mustBeVisible": [
+            "Two accessible chairs face each other across the comparison worktable."
+          ],
+          "structureLanguage": [
+            "Display bays occupy the perimeter and leave open access around the worktable."
+          ],
+          "materialLanguage": [
+            {
+              "material": "matte metal",
+              "behavior": [
+                "precise edge"
+              ],
+              "brandRole": "makes service order legible",
+              "forbidden": [
+                "mirror finish"
+              ]
+            }
+          ],
+          "lightingLanguage": {
+            "source": [
+              "soft area light"
+            ],
+            "contrast": "low contrast",
+            "interactionWithMaterials": [
+              "soft reflection"
+            ],
+            "forbidden": [
+              "colored effect light"
+            ]
+          },
+          "colorBehavior": {
+            "primary": [
+              {
+                "name": "warm white",
+                "role": "clear base"
+              }
+            ],
+            "secondary": [
+              {
+                "name": "natural wood",
+                "role": "human warmth"
+              }
+            ],
+            "accent": [
+              {
+                "name": "identity black",
+                "role": "precise identity emphasis"
+              }
+            ],
+            "forbidden": [
+              "neon gradient"
+            ]
+          },
+          "brandIntegration": [],
+          "functionalRelationships": [
+            "The comparison worktable separates staff and visitor sides with access on both sides."
+          ],
+          "sceneProgram": [
+            "展示界面",
+            "比较工作台",
+            "两侧服务通道"
+          ],
+          "peopleBehavior": [],
+          "functionalExperience": [],
+          "sceneMisreadRisks": []
+        },
+        "packaging": {
+          "status": "ready",
+          "packagingConcept": "A clear opening sequence",
+          "productAndCategoryRole": [
+            "confirmed service kit"
+          ],
+          "structureStrategy": [
+            {
+              "structure": "confirmed folding carton",
+              "purpose": "protect the documented kit",
+              "locked": true,
+              "evidenceRefs": [
+                "source:packaging-structure"
+              ]
+            }
+          ],
+          "openingExperience": [
+            "open in one clear step"
+          ],
+          "productArrangement": [
+            "documented kit remains fixed"
+          ],
+          "graphicTranslation": [],
+          "informationHierarchy": [
+            "brand",
+            "product"
+          ],
+          "substrateLanguage": [
+            "uncoated paper"
+          ],
+          "craftLanguage": [
+            {
+              "craft": "deboss",
+              "purpose": "identity emphasis",
+              "forbiddenUse": [
+                "full-surface texture"
+              ]
+            }
+          ],
+          "colorBehavior": {
+            "base": [
+              "warm white"
+            ],
+            "identity": [
+              "black"
+            ],
+            "accent": [],
+            "forbidden": [
+              "neon gradient"
+            ]
+          },
+          "logoPolicy": [
+            "use confirmed logo only"
+          ],
+          "seriesArchitecture": [],
+          "photographyDirection": [
+            "clear product view"
+          ],
+          "packagingMisreadRisks": [],
+          "missingRequiredFields": []
+        },
+        "poster": {
+          "status": "interface_only",
+          "concept": "",
+          "expressionLanguage": [],
+          "misreadRisks": []
+        },
+        "vi": {
+          "status": "interface_only",
+          "concept": "",
+          "expressionLanguage": [],
+          "misreadRisks": []
+        }
+      },
+      "colorSystem": {
+        "primary": [
+          {
+            "name": "warm white",
+            "role": "clear base"
+          }
+        ],
+        "secondary": [
+          {
+            "name": "natural wood",
+            "role": "human warmth"
+          }
+        ],
+        "accent": [
+          {
+            "name": "identity black",
+            "role": "precise identity emphasis"
+          }
+        ],
+        "forbidden": [
+          "neon gradient"
+        ]
+      },
+      "materialSystem": [
+        {
+          "material": "matte metal",
+          "behavior": [
+            "precise edge"
+          ],
+          "brandRole": "makes service order legible",
+          "forbidden": [
+            "mirror finish"
+          ]
+        }
+      ],
+      "lightingSystem": {
+        "source": [
+          "soft area light"
+        ],
+        "contrast": "low contrast",
+        "interactionWithMaterials": [
+          "soft reflection"
+        ],
+        "forbidden": [
+          "colored effect light"
+        ]
+      },
+      "provenance": {
+        "createdFrom": [
+          "project:generic",
+          "asset:motif-1"
+        ],
+        "generatedAt": "2026-01-01T00:00:00.000Z",
+        "modelId": "test-model",
+        "sourceFingerprint": "fingerprint-generic"
+      },
+      "validation": {
+        "hardFactStatus": "pass",
+        "mode": "formal_upgrade",
+        "missingRequiredFacts": [],
+        "conflicts": [],
+        "executionDataStatus": "ready",
+        "missingExecutionFields": []
+      }
+    },
+    "projectContext": {},
+    "taskContract": {
+      "projectId": "source-defined-commercial-project",
+      "generationBasis": "standard",
+      "subtype": "custom",
+      "aspectRatio": "16:9"
+    }
+  },
+  "formalPrompt": "# Task\n\nCompile a source-defined custom space proposal for **Offline custom project** (Commercial service). This is a project-program preview, not an authorized image request. No camera or window visibility is granted.\nScene: `custom`.\nAspect ratio: 16:9.\n\n# Spatial Intent\n\n> The experience goal and spatial strategy set the tone before any building mechanism.\n\n**Experience Goal**: A clear sequence of service zones\n\n**Spatial Strategy**: source-scoped decisions are stated once in Architecture Language.\n\n# Architecture Language\n\n> Preserve the supplied subjects, carriers and action scopes. These are project proposals; do not add walls, ceilings or lighting hardware from generic action words.\n\n**Source-scoped architectural decisions (each stated once)**:\n- Display bays occupy the perimeter and leave open access around the worktable.\n\n# Architecture Context\n\nNo optional architecture examples have been selected for this request. Brand name and industry do not grant example authority.\nUse project decisions and the current user instruction. Artistic focus may coexist with practical reception, waiting, access and privacy requirements; examples cannot replace either dimension.\nDo not infer construction details from historical accepted images or from an industry's customary appearance. Preserve explicitly requested complex architecture without importing unrelated scene mechanisms.\n\n# Architecture-Function Bridge\n\n> Artistic character and commercial operations are simultaneous requirements. Industry constrains use, access and privacy; it does not dictate an architectural style.\n\n**Commercial Purpose**: A welcoming service destination\n\n**Spatial Translation (architecture → commercial action)**:\nCurrent-shot nodes and relationships are stated in Functional & Commercial Requirement.\n\n**Operation Constraints (hard, must hold)**:\n- The comparison worktable separates staff and visitor sides with access on both sides.\n\n**Human Experience (path + rhythm)**:\n\n\n**Commercial Reality (compatible with project artistic character)**:\nPreserve the supplied differentiators in Functional & Commercial Requirement together with the artistic focus in Composition.\n\n**Concept Drift Guards (must avoid)**:\n- generic decoration\n\n**Cross-zone operational constraints (current-shot boundary only; other interiors remain off frame)**:\n- No additional cross-zone relationship is established by the supplied sources.\n\nOff-frame program dependencies are retained in the source trace. Preserve access and privacy boundaries without exposing the interiors of other program areas.\n\n# Architectural Concept\n\nUse the experience goal in Spatial Intent and the source-scoped decisions in Architecture Language together with the artistic hierarchy in Composition.\nUser instructions take priority over model proposals and optional examples. Do not make a generic building template displace the project's artistic expression.\n\n# Architecture DNA\n\n**Decision relationships**: Architecture Language owns architectural actions; Spatial Color Roles owns color scope; Material System owns optical behavior; Composition owns focal hierarchy.\nKeep buildable junctions, readable circulation and human scale. Complex curves, restrained geometry, strong color and gallery-like character remain available when supported by project intent. No industry-wide aesthetic is imposed.\n\n# Brand Translation\n\n> Preserve project identity and artistic expression together with the functional program. The artistic focus is stated in Composition.\n> Brand identity (logo, wordmark, signage text) is composited AFTER generation; do NOT render it in-scene.\n**Brand**: Offline custom project | **Industry**: Commercial service\n**Brand Role**: see the Commercial Purpose in Architecture-Function Bridge.\n**Brand Role Manifestation in Space**:\n- Turn service clarity into a spatial and material system\n\n# Functional & Commercial Requirement\n\n**Source-defined Project Program (not current-shot visibility)**:\n- 展示界面\n- 比较工作台\n- 两侧服务通道\n\n**Project-level Functional Dependencies (not a visibility list)**:\n- 展示界面连接比较工作台，服务通道位于两侧\n\n**Visible hierarchy**: see Composition; an artistic focus does not replace operational facilities.\n\n**Positive Differentiators**:\n- (none)\n\n# Spatial Color Roles\n\nPalette identity rank does not determine interior area. Entries below are existing model proposals, not user-confirmed facts.\nProposed scopes and ratios retain their source meaning for review. Do not execute an unconfirmed dominant field or area allocation as a mandatory instruction. Area authority remains pending unless explicitly supplied by the current user instruction; that instruction takes priority.\nUnknown ratios stay unknown. Neither a color name, a palette rank, a gradient nor a proposed role independently authorizes geometry or whole-room color coverage.\n- warm white | palette: primary | proposed spatial scope: unspecified | execution authority: proposal_only\n  role: clear base\n  area ratio: unknown\n- natural wood | palette: secondary | proposed spatial scope: unspecified | execution authority: proposal_only\n  role: human warmth\n  area ratio: unknown\n- identity black | palette: accent | proposed spatial scope: unspecified | execution authority: proposal_only\n  role: precise identity emphasis\n  area ratio: unknown\n\n# Material System\n\n- **matte metal**: precise edge\n  brand role: makes service order legible\n  avoid: mirror finish\n\n# Lighting System\n\n**Primary Strategy**: soft area light\n**Contrast**: low contrast\n**Light / Material Behavior**:\n- soft reflection\n**Lighting Prohibitions**:\n- colored effect light\n\n# Composition & Photography\n\n**Output Ratio**: 16:9\n**Project Artistic Focus (separate from operational facilities)**:\n- No artistic installation is required by the supplied sources.\nDo not demote a supplied core artwork to background texture. Its mounting, dimensions and optical construction remain unspecified unless supplied; do not invent them.\n**Source-declared Visible Requirements (project proposals; camera visibility remains unapproved)**:\n- Two accessible chairs face each other across the comparison worktable.\n**Positive Differentiators**:\nUse the differentiators in Functional & Commercial Requirement without repeating them as additional demands.\nUse a credible commercial architectural camera: controlled perspective, depth, hierarchy and human scale.\n\n# Rendering Requirements\n\n- High-end architectural visualization, photoreal, physically based materials.\n- Balanced exposure, accurate white balance, readable texture and shadow detail.\n- No blown highlights; clean, resolved, professionally finished.\n\n# Prohibited (fail-closed)\n\nThe following MUST NOT appear in the generated image:\n- no rendered brand name, wordmark, logotype, signage text, or illuminated letters in the scene\n- no generic AI clinic look, no stock-photo medical aesthetic template\n- mirror finish\n- colored effect light\n- neon gradient",
+  "formalSha256": "48af10d31c5fde390bcb393bdf5e081fe779c137a84849d5bab3893dbf02f13c",
+  "sourceMap": {
+    "task": [
+      "taskContract",
+      "projectFacts.brandName",
+      "projectFacts.industry"
+    ],
+    "spatial_intent": [
+      "spatial.spatialConcept (normalized)",
+      "semantic.architectureStrategy"
+    ],
+    "architecture_language": [
+      "semantic.architectureStrategy",
+      "semantic.architectureForm",
+      "semantic.architectureOrganization",
+      "materialSystem",
+      "lightingSystem"
+    ],
+    "architecture_context": [
+      "architecture-anchors/registry.json"
+    ],
+    "architecture_function_bridge": [
+      "projectFacts.brandRole",
+      "spatial.functionalRelationships",
+      "spatial.sceneProgram",
+      "spatial.brandRoleManifestation",
+      "diagnosis.brandMisreadRisks"
+    ],
+    "architectural_concept": [
+      "spatial.spatialConcept (normalized)",
+      "semantic.architectureForm",
+      "semantic.architectureStrategy"
+    ],
+    "architecture_dna": [
+      "semantic.architectureStrategy",
+      "semantic.architectureForm",
+      "semantic.architectureOrganization"
+    ],
+    "brand_translation": [
+      "projectIdentity",
+      "_raw.brandRoleManifestation (sanitized, scoped, excluding separately owned items)"
+    ],
+    "functional_requirement": [
+      "_raw.sceneProgram",
+      "_raw.functionalNetwork",
+      "_raw.positiveDifferentiators"
+    ],
+    "color": [
+      "colorSystem.primary|secondary|accent (role, spatialUsage, ratio, surfaceApplicability)"
+    ],
+    "material": [
+      "materialSystem[].material|behavior|forbidden"
+    ],
+    "lighting": [
+      "lightingSystem.source|contrast|interactionWithMaterials|forbidden"
+    ],
+    "composition": [
+      "composition.aspectRatio|scene",
+      "composition.artisticFocus",
+      "composition.mustBeVisible (spatial items only)"
+    ],
+    "rendering": [
+      "(deterministic rendering standard)"
+    ],
+    "negative_constraints": [
+      "taskContract.mustAvoid",
+      "diagnosis.brandMisreadRisks",
+      "materialSystem[].forbidden",
+      "lightingSystem.forbidden",
+      "colorSystem.forbidden",
+      "BASE_NEGATIVES (2 universal guards)"
+    ]
+  },
+  "trace": {
+    "compilerId": "phase9b-quality-compiler",
+    "compilerVersion": "1.1.0",
+    "adapterId": null,
+    "adapterVersion": null,
+    "sourceFingerprint": "90b1e8f7ec9c4d8a225dd0be871262c3325a27f5c1ad9b2c950438cb0fa4ecca",
+    "anchorIds": [],
+    "brandKey": null,
+    "anchorCriteria": null,
+    "architectureContextIncluded": false,
+    "blockIds": [
+      "task",
+      "spatial_intent",
+      "architecture_language",
+      "architecture_context",
+      "architecture_function_bridge",
+      "architectural_concept",
+      "architecture_dna",
+      "brand_translation",
+      "functional_requirement",
+      "color",
+      "material",
+      "lighting",
+      "composition",
+      "rendering",
+      "negative_constraints"
+    ],
+    "decisionTrace": {
+      "confirmedFields": [],
+      "color": [
+        {
+          "sourcePath": "colorSystem.primary[0]",
+          "evidenceClass": "model_proposal",
+          "source": {
+            "name": "warm white",
+            "role": "clear base"
+          },
+          "executionAuthority": "proposal_only",
+          "spatialUsage": "unspecified",
+          "unresolved": true
+        },
+        {
+          "sourcePath": "colorSystem.secondary[0]",
+          "evidenceClass": "model_proposal",
+          "source": {
+            "name": "natural wood",
+            "role": "human warmth"
+          },
+          "executionAuthority": "proposal_only",
+          "spatialUsage": "unspecified",
+          "unresolved": true
+        },
+        {
+          "sourcePath": "colorSystem.accent[0]",
+          "evidenceClass": "model_proposal",
+          "source": {
+            "name": "identity black",
+            "role": "precise identity emphasis"
+          },
+          "executionAuthority": "proposal_only",
+          "spatialUsage": "unspecified",
+          "unresolved": true
+        }
+      ],
+      "materials": [
+        {
+          "sourcePath": "materialSystem[0]",
+          "evidenceClass": "model_proposal",
+          "source": {
+            "material": "matte metal",
+            "behavior": [
+              "precise edge"
+            ],
+            "brandRole": "makes service order legible",
+            "forbidden": [
+              "mirror finish"
+            ]
+          },
+          "compiled": {
+            "material": "matte metal",
+            "behavior": [
+              "precise edge"
+            ],
+            "brandRole": "makes service order legible",
+            "forbidden": [
+              "mirror finish"
+            ]
+          }
+        }
+      ],
+      "mechanisms": [
+        {
+          "sourcePath": "mediaTranslations.spatial.signatureSpatialMechanism[0]",
+          "mechanismId": "mech-01",
+          "evidenceClass": "system_inference",
+          "sourceText": "Display bays occupy the perimeter and leave open access around the worktable.",
+          "actions": {
+            "strategy": [
+              "Display bays occupy the perimeter and leave open access around the worktable."
+            ],
+            "form": [
+              "Display bays occupy the perimeter and leave open access around the worktable."
+            ],
+            "organization": [
+              "Display bays occupy the perimeter and leave open access around the worktable."
+            ]
+          },
+          "dropped": false
+        },
+        {
+          "sourcePath": "mediaTranslations.spatial.spatialConcept",
+          "mechanismId": "mech-09",
+          "evidenceClass": "system_inference",
+          "sourceText": "A clear sequence of service zones",
+          "actions": {
+            "strategy": [
+              "A clear sequence of service zones"
+            ],
+            "form": [
+              "A clear sequence of service zones"
+            ],
+            "organization": [
+              "A clear sequence of service zones"
+            ]
+          },
+          "dropped": false
+        }
+      ],
+      "unknown": [
+        "Unprovided color area ratios and material optical parameters remain unspecified; no historical image inference is authorized."
+      ],
+      "conflicts": [],
+      "customProgram": {
+        "sourceProjectId": "source-defined-commercial-project",
+        "evidenceClass": "model_proposal",
+        "executionBoundary": "pure_compile_preview_only",
+        "cameraVisibilityAuthority": "none",
+        "entries": [
+          {
+            "sourcePath": "mediaTranslations.spatial.sceneProgram[0]",
+            "text": "展示界面",
+            "sceneScope": "source_defined_program",
+            "evidenceClass": "model_proposal"
+          },
+          {
+            "sourcePath": "mediaTranslations.spatial.sceneProgram[1]",
+            "text": "比较工作台",
+            "sceneScope": "source_defined_program",
+            "evidenceClass": "model_proposal"
+          },
+          {
+            "sourcePath": "mediaTranslations.spatial.sceneProgram[2]",
+            "text": "两侧服务通道",
+            "sceneScope": "source_defined_program",
+            "evidenceClass": "model_proposal"
+          },
+          {
+            "sourcePath": "mediaTranslations.spatial.functionalNetwork[0]",
+            "text": "展示界面连接比较工作台，服务通道位于两侧",
+            "sceneScope": "source_defined_program",
+            "evidenceClass": "model_proposal"
+          },
+          {
+            "sourcePath": "mediaTranslations.spatial.functionalRelationships[0]",
+            "text": "The comparison worktable separates staff and visitor sides with access on both sides.",
+            "sceneScope": "source_defined_program",
+            "evidenceClass": "model_proposal"
+          },
+          {
+            "sourcePath": "mediaTranslations.spatial.mustBeVisible[0]",
+            "text": "Two accessible chairs face each other across the comparison worktable.",
+            "sceneScope": "source_defined_program",
+            "evidenceClass": "model_proposal"
+          },
+          {
+            "sourcePath": "mediaTranslations.spatial.structureLanguage[0]",
+            "text": "Display bays occupy the perimeter and leave open access around the worktable.",
+            "sceneScope": "source_defined_program",
+            "evidenceClass": "model_proposal"
+          },
+          {
+            "sourcePath": "mediaTranslations.spatial.signatureSpatialMechanism[0]",
+            "text": "Display bays occupy the perimeter and leave open access around the worktable.",
+            "sceneScope": "source_defined_program",
+            "evidenceClass": "model_proposal"
+          }
+        ]
+      },
+      "artisticFocus": [],
+      "artisticCandidates": [],
+      "architectureDecisions": [
+        {
+          "text": "Display bays occupy the perimeter and leave open access around the worktable.",
+          "sourceField": "signatureSpatialMechanism",
+          "sourcePath": "mediaTranslations.spatial.signatureSpatialMechanism[0]",
+          "classification": "architectural",
+          "strip": [],
+          "compiledAction": "Display bays occupy the perimeter and leave open access around the worktable.",
+          "mechanismId": "mech-01",
+          "signals": [
+            "open"
+          ],
+          "strategy": [
+            "Display bays occupy the perimeter and leave open access around the worktable."
+          ],
+          "form": [
+            "Display bays occupy the perimeter and leave open access around the worktable."
+          ],
+          "organization": [
+            "Display bays occupy the perimeter and leave open access around the worktable."
+          ],
+          "rewritten": true,
+          "dropped": false
+        }
+      ],
+      "canonicalOwners": [
+        {
+          "text": "Display bays occupy the perimeter and leave open access around the worktable.",
+          "sourcePath": "mediaTranslations.spatial.signatureSpatialMechanism[0]",
+          "blockId": "architecture_language"
+        },
+        {
+          "text": "Two accessible chairs face each other across the comparison worktable.",
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[0]",
+          "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+          "sourceOrigins": [
+            "mediaTranslations.spatial.mustBeVisible[0]"
+          ],
+          "blockId": "composition"
+        }
+      ],
+      "visibleRequirements": [
+        {
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[0]",
+          "text": "Two accessible chairs face each other across the comparison worktable.",
+          "classification": "functional",
+          "classificationReason": "explicit_object_use_relation",
+          "route": "composition",
+          "sceneProjection": {
+            "inputText": "Two accessible chairs face each other across the comparison worktable.",
+            "sceneScope": "source_defined_program",
+            "reason": "project_source_preview_without_camera_authority",
+            "projectedText": "Two accessible chairs face each other across the comparison worktable.",
+            "clauses": [],
+            "boundaryConstraints": [],
+            "offFrameEntities": [],
+            "reviewRequiredClauses": []
+          },
+          "owner": null,
+          "ownerPath": null,
+          "outputText": null,
+          "previewOwner": "composition",
+          "previewOutputText": "Two accessible chairs face each other across the comparison worktable.",
+          "executionAuthority": "none_without_camera_binding",
+          "deduplication": {
+            "removedFrom": [],
+            "duplicateSource": false
+          },
+          "disposition": "preview_only",
+          "reason": "project_source_preview_without_camera_authority",
+          "renderedBlocks": [],
+          "finalPromptRetained": false,
+          "textPresentInFinalPrompt": true
+        }
+      ]
+    },
+    "blockSources": {
+      "task": [
+        "taskContract",
+        "projectFacts.brandName",
+        "projectFacts.industry"
+      ],
+      "spatial_intent": [
+        "spatial.spatialConcept (normalized)",
+        "semantic.architectureStrategy"
+      ],
+      "architecture_language": [
+        "semantic.architectureStrategy",
+        "semantic.architectureForm",
+        "semantic.architectureOrganization",
+        "materialSystem",
+        "lightingSystem"
+      ],
+      "architecture_context": [
+        "architecture-anchors/registry.json"
+      ],
+      "architecture_function_bridge": [
+        "projectFacts.brandRole",
+        "spatial.functionalRelationships",
+        "spatial.sceneProgram",
+        "spatial.brandRoleManifestation",
+        "diagnosis.brandMisreadRisks"
+      ],
+      "architectural_concept": [
+        "spatial.spatialConcept (normalized)",
+        "semantic.architectureForm",
+        "semantic.architectureStrategy"
+      ],
+      "architecture_dna": [
+        "semantic.architectureStrategy",
+        "semantic.architectureForm",
+        "semantic.architectureOrganization"
+      ],
+      "brand_translation": [
+        "projectIdentity",
+        "_raw.brandRoleManifestation (sanitized, scoped, excluding separately owned items)"
+      ],
+      "functional_requirement": [
+        "_raw.sceneProgram",
+        "_raw.functionalNetwork",
+        "_raw.positiveDifferentiators"
+      ],
+      "color": [
+        "colorSystem.primary|secondary|accent (role, spatialUsage, ratio, surfaceApplicability)"
+      ],
+      "material": [
+        "materialSystem[].material|behavior|forbidden"
+      ],
+      "lighting": [
+        "lightingSystem.source|contrast|interactionWithMaterials|forbidden"
+      ],
+      "composition": [
+        "composition.aspectRatio|scene",
+        "composition.artisticFocus",
+        "composition.mustBeVisible (spatial items only)"
+      ],
+      "rendering": [
+        "(deterministic rendering standard)"
+      ],
+      "negative_constraints": [
+        "taskContract.mustAvoid",
+        "diagnosis.brandMisreadRisks",
+        "materialSystem[].forbidden",
+        "lightingSystem.forbidden",
+        "colorSystem.forbidden",
+        "BASE_NEGATIVES (2 universal guards)"
+      ]
+    },
+    "referenceBoundary": {
+      "applied": false,
+      "version": null,
+      "providerStrengthControl": "unsupported",
+      "promptCharacters": 0
+    },
+    "budget": {
+      "chars": 6910,
+      "positiveRatio": 0.9559721011333915,
+      "negativeRatio": 0.044027898866608545,
+      "providerLimit": 12000,
+      "qualityBudgetExceeded": false
+    },
+    "semantic": {
+      "architectureSemanticsCount": 2,
+      "brandMotifSemanticsCount": 1,
+      "colorAccentSemanticsCount": 0,
+      "functionalSemanticsCount": 6,
+      "decorativeIdentitySemanticsCount": 0,
+      "colorGeometryCouplingRisk": false
+    },
+    "targetSceneAuthority": {
+      "targetScene": "custom",
+      "targetProgramId": "custom",
+      "functionalBlockSource": "source_defined_custom_program",
+      "architectureBridgeSource": "source_defined_custom_program",
+      "operationConstraintsSource": "source_defined_custom_program",
+      "viewStrategySource": "not_applicable_without_camera",
+      "sourceProjectId": "source-defined-commercial-project",
+      "executionBoundary": "pure_compile_preview_only",
+      "cameraVisibilityAuthority": "none",
+      "sourcePaths": [
+        "mediaTranslations.spatial.sceneProgram",
+        "mediaTranslations.spatial.functionalNetwork",
+        "mediaTranslations.spatial.functionalRelationships",
+        "mediaTranslations.spatial.mustBeVisible",
+        "mediaTranslations.spatial.structureLanguage",
+        "mediaTranslations.spatial.signatureSpatialMechanism"
+      ],
+      "viewStrategy": null,
+      "shotSource": "legacy_project_default",
+      "gate": "review_required",
+      "sourceProgramValidation": "pass",
+      "gateVersion": "space-target-scene-authority@1.1.0",
+      "authorityGate": {
+        "status": "review_required",
+        "checkedBlocks": []
+      }
+    }
+  },
+  "fieldMatches": [
+    {
+      "sourcePath": "mediaTranslations.spatial.sceneProgram[0]",
+      "text": "展示界面",
+      "sceneScope": "source_defined_program",
+      "evidenceClass": "model_proposal",
+      "inFormalPrompt": true
+    },
+    {
+      "sourcePath": "mediaTranslations.spatial.sceneProgram[1]",
+      "text": "比较工作台",
+      "sceneScope": "source_defined_program",
+      "evidenceClass": "model_proposal",
+      "inFormalPrompt": true
+    },
+    {
+      "sourcePath": "mediaTranslations.spatial.sceneProgram[2]",
+      "text": "两侧服务通道",
+      "sceneScope": "source_defined_program",
+      "evidenceClass": "model_proposal",
+      "inFormalPrompt": true
+    },
+    {
+      "sourcePath": "mediaTranslations.spatial.functionalNetwork[0]",
+      "text": "展示界面连接比较工作台，服务通道位于两侧",
+      "sceneScope": "source_defined_program",
+      "evidenceClass": "model_proposal",
+      "inFormalPrompt": true
+    },
+    {
+      "sourcePath": "mediaTranslations.spatial.functionalRelationships[0]",
+      "text": "The comparison worktable separates staff and visitor sides with access on both sides.",
+      "sceneScope": "source_defined_program",
+      "evidenceClass": "model_proposal",
+      "inFormalPrompt": true
+    },
+    {
+      "sourcePath": "mediaTranslations.spatial.mustBeVisible[0]",
+      "text": "Two accessible chairs face each other across the comparison worktable.",
+      "sceneScope": "source_defined_program",
+      "evidenceClass": "model_proposal",
+      "inFormalPrompt": true
+    },
+    {
+      "sourcePath": "mediaTranslations.spatial.structureLanguage[0]",
+      "text": "Display bays occupy the perimeter and leave open access around the worktable.",
+      "sceneScope": "source_defined_program",
+      "evidenceClass": "model_proposal",
+      "inFormalPrompt": true
+    },
+    {
+      "sourcePath": "mediaTranslations.spatial.signatureSpatialMechanism[0]",
+      "text": "Display bays occupy the perimeter and leave open access around the worktable.",
+      "sceneScope": "source_defined_program",
+      "evidenceClass": "model_proposal",
+      "inFormalPrompt": true
+    }
+  ],
+  "providerRequest": null,
+  "publicGenerationAuthorized": false,
+  "reason": "pure_compile_preview_only"
+}

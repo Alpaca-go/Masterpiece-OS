@@ -52,7 +52,9 @@ function renderTask(layers) {
   const t = layers.task;
   const p = layers.projectIdentity;
   const lines = [
-    `Generate a single premium-grade space image for **${p.brandName}** (${p.industry}).`
+    layers.targetSceneProjection?.executionBoundary === 'pure_compile_preview_only'
+      ? `Compile a source-defined custom space proposal for **${p.brandName}** (${p.industry}). This is a project-program preview, not an authorized image request. No camera or window visibility is granted.`
+      : `Generate a single premium-grade space image for **${p.brandName}** (${p.industry}).`
   ];
   if (t.subtype) {
     const view = layers.viewStrategy || layers.continuationOverride?.targetViewStrategy || t.shot;
@@ -145,11 +147,12 @@ function renderBrandTranslation(layers) {
 }
 function renderFunctionalRequirement(layers) {
   const raw = layers._raw;
+  const customPreview = layers.targetSceneProjection?.executionBoundary === 'pure_compile_preview_only';
   const body = [
-    "**Current-shot Program Nodes (source-scoped; other areas remain off frame)**:",
+    customPreview ? "**Source-defined Project Program (not current-shot visibility)**:" : "**Current-shot Program Nodes (source-scoped; other areas remain off frame)**:",
     bullet(raw.sceneProgram),
     "",
-    "**Functional Network**:",
+    customPreview ? "**Project-level Functional Dependencies (not a visibility list)**:" : "**Functional Network**:",
     bullet(raw.functionalNetwork),
     "",
     "**Visible hierarchy**: see Composition; an artistic focus does not replace operational facilities.",
@@ -215,7 +218,9 @@ function renderComposition(layers) {
     ...c.artisticFocus?.length ? c.artisticFocus.map(entry=>`- [${entry.evidenceClass}; ${entry.priority}] ${entry.text}`) : ["- No artistic installation is required by the supplied sources."],
     "Do not demote a supplied core artwork to background texture. Its mounting, dimensions and optical construction remain unspecified unless supplied; do not invent them.",
     "",
-    "**Operational Elements (remain usable alongside the artistic focus)**:",
+    layers.targetSceneProjection?.executionBoundary === 'pure_compile_preview_only'
+      ? "**Source-declared Visible Requirements (project proposals; camera visibility remains unapproved)**:"
+      : "**Operational Elements (remain usable alongside the artistic focus)**:",
     bullet(c.mustBeVisible),
     ...c.userRequirements?.length ? ['**User-confirmed composition relationships**:',bullet(c.userRequirements)] : [],
     "",
@@ -397,11 +402,12 @@ ${referenceBoundaryText}` : baseFinalPrompt;
         ...layers.targetSceneProjection,
         viewStrategy: layers.viewStrategy ?? null,
         shotSource: layers.shotSource ?? "legacy_project_default",
-        gate: authorityGate.status,
+        gate: layers.targetSceneProjection.executionBoundary === 'pure_compile_preview_only' ? 'review_required' : authorityGate.status,
+        ...layers.targetSceneProjection.executionBoundary === 'pure_compile_preview_only' ? {sourceProgramValidation:'pass'} : {},
         gateVersion: TARGET_SCENE_AUTHORITY_GATE_VERSION,
         authorityGate: {
-          status: authorityGate.status,
-          checkedBlocks: TARGET_SCENE_AUTHORITY_CHECKED_BLOCKS
+          status: layers.targetSceneProjection.executionBoundary === 'pure_compile_preview_only' ? 'review_required' : authorityGate.status,
+          checkedBlocks: layers.targetSceneProjection.executionBoundary === 'pure_compile_preview_only' ? [] : TARGET_SCENE_AUTHORITY_CHECKED_BLOCKS
         }
       } : null
     }

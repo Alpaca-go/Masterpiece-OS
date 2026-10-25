@@ -1,0 +1,806 @@
+[
+  {
+    "subtype": "entrance",
+    "shot": "entrance_view",
+    "group": "A",
+    "inputSha256": "028387af14d6434ee56465a57c1016e09e4161f3177f42736df38e9304f163b1",
+    "formalSha256": "0b1eb76ca51d5d4855a4d076cca3f9863037e2ba9c423021268667c7160b8a09",
+    "providerSha256": "9d8edf14d8d1abcf05dca8e3b03c531f9be9bce057445ee567f2f2b1d6ccf8f4",
+    "unchanged": true,
+    "authority": {
+      "targetScene": "entrance",
+      "targetProgramId": "entrance",
+      "functionalBlockSource": "source_shot_scope",
+      "architectureBridgeSource": "source_shot_scope",
+      "operationConstraintsSource": "source_shot_scope",
+      "viewStrategySource": "user_explicit",
+      "viewStrategy": "entrance_view",
+      "shotSource": "user_explicit",
+      "gate": "pass",
+      "gateVersion": "space-target-scene-authority@1.1.0",
+      "authorityGate": {
+        "status": "pass",
+        "checkedBlocks": [
+          "functional_requirement",
+          "architecture_function_bridge",
+          "operation_constraints",
+          "must_be_visible",
+          "lighting",
+          "composition",
+          "brand_role_manifestation"
+        ]
+      }
+    },
+    "behaviors": [
+      {
+        "value": "chef preparing food in kitchen",
+        "retained": false,
+        "trace": null
+      },
+      {
+        "value": "steam above dishes in kitchen",
+        "retained": false,
+        "trace": null
+      },
+      {
+        "value": "customers dining at tables",
+        "retained": false,
+        "trace": null
+      }
+    ],
+    "networkScopeConcerns": []
+  },
+  {
+    "subtype": "entrance",
+    "shot": "entrance_view",
+    "group": "B",
+    "inputSha256": "7d0ed65e75f2936ac463a266ffa4abb4e2c0f68bdbd06d73a2d3bf573f80f148",
+    "formalSha256": "95b75d15375cda6e3215f077ecdb87d821bcd9127ba9cfa91210b34a82ac19bf",
+    "providerSha256": "f39b531ddfff17521f6e410dd82e57b5f3dec3c4cc87e82cf0bd6b3f3652aa24",
+    "unchanged": true,
+    "authority": {
+      "targetScene": "entrance",
+      "targetProgramId": "entrance",
+      "functionalBlockSource": "source_shot_scope",
+      "architectureBridgeSource": "source_shot_scope",
+      "operationConstraintsSource": "source_shot_scope",
+      "viewStrategySource": "user_explicit",
+      "viewStrategy": "entrance_view",
+      "shotSource": "user_explicit",
+      "gate": "pass",
+      "gateVersion": "space-target-scene-authority@1.1.0",
+      "authorityGate": {
+        "status": "pass",
+        "checkedBlocks": [
+          "functional_requirement",
+          "architecture_function_bridge",
+          "operation_constraints",
+          "must_be_visible",
+          "lighting",
+          "composition",
+          "brand_role_manifestation"
+        ]
+      }
+    },
+    "behaviors": [
+      {
+        "value": "chef preparing food in kitchen",
+        "retained": false,
+        "trace": {
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[0]",
+          "text": "chef preparing food in kitchen",
+          "classification": "functional",
+          "classificationReason": "visible_actor_activity",
+          "route": "composition",
+          "sceneProjection": {
+            "inputText": "chef preparing food in kitchen",
+            "sceneScope": "off_frame_dependency",
+            "reason": "foreign_scene_entity",
+            "projectedText": "",
+            "clauses": [
+              {
+                "text": "chef preparing food in kitchen",
+                "sourceStart": 0,
+                "sourceEnd": 30,
+                "entities": [
+                  {
+                    "scene": "dining",
+                    "value": "kitchen",
+                    "offset": 23
+                  }
+                ],
+                "nodes": [],
+                "sceneScope": "off_frame_dependency",
+                "visibilityAuthority": "none"
+              }
+            ],
+            "boundaryConstraints": [],
+            "offFrameEntities": [
+              {
+                "text": "chef preparing food in kitchen",
+                "sourceStart": 0,
+                "sourceEnd": 30,
+                "entities": [
+                  {
+                    "scene": "dining",
+                    "value": "kitchen",
+                    "offset": 23
+                  }
+                ],
+                "nodes": [],
+                "sceneScope": "off_frame_dependency",
+                "visibilityAuthority": "none"
+              }
+            ],
+            "reviewRequiredClauses": []
+          },
+          "owner": null,
+          "ownerPath": null,
+          "outputText": null,
+          "deduplication": {
+            "removedFrom": [],
+            "duplicateSource": false
+          },
+          "disposition": "off_frame_dependency",
+          "reason": "foreign_scene_entity",
+          "renderedBlocks": [],
+          "finalPromptRetained": false,
+          "textPresentInFinalPrompt": false
+        }
+      },
+      {
+        "value": "steam above dishes in kitchen",
+        "retained": false,
+        "trace": {
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[1]",
+          "text": "steam above dishes in kitchen",
+          "classification": "functional",
+          "classificationReason": "visible_effect_carrier_relation",
+          "route": "composition",
+          "sceneProjection": {
+            "inputText": "steam above dishes in kitchen",
+            "sceneScope": "off_frame_dependency",
+            "reason": "foreign_scene_entity",
+            "projectedText": "",
+            "clauses": [
+              {
+                "text": "steam above dishes in kitchen",
+                "sourceStart": 0,
+                "sourceEnd": 29,
+                "entities": [
+                  {
+                    "scene": "dining",
+                    "value": "kitchen",
+                    "offset": 22
+                  }
+                ],
+                "nodes": [],
+                "sceneScope": "off_frame_dependency",
+                "visibilityAuthority": "none"
+              }
+            ],
+            "boundaryConstraints": [],
+            "offFrameEntities": [
+              {
+                "text": "steam above dishes in kitchen",
+                "sourceStart": 0,
+                "sourceEnd": 29,
+                "entities": [
+                  {
+                    "scene": "dining",
+                    "value": "kitchen",
+                    "offset": 22
+                  }
+                ],
+                "nodes": [],
+                "sceneScope": "off_frame_dependency",
+                "visibilityAuthority": "none"
+              }
+            ],
+            "reviewRequiredClauses": []
+          },
+          "owner": null,
+          "ownerPath": null,
+          "outputText": null,
+          "deduplication": {
+            "removedFrom": [],
+            "duplicateSource": false
+          },
+          "disposition": "off_frame_dependency",
+          "reason": "foreign_scene_entity",
+          "renderedBlocks": [],
+          "finalPromptRetained": false,
+          "textPresentInFinalPrompt": false
+        }
+      },
+      {
+        "value": "customers dining at tables",
+        "retained": false,
+        "trace": {
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[2]",
+          "text": "customers dining at tables",
+          "classification": "functional",
+          "classificationReason": "visible_actor_activity",
+          "route": "composition",
+          "sceneProjection": {
+            "inputText": "customers dining at tables",
+            "sceneScope": "off_frame_dependency",
+            "reason": "foreign_scene_entity",
+            "projectedText": "",
+            "clauses": [
+              {
+                "text": "customers dining at tables",
+                "sourceStart": 0,
+                "sourceEnd": 26,
+                "entities": [
+                  {
+                    "scene": "dining",
+                    "value": "dining",
+                    "offset": 10
+                  }
+                ],
+                "nodes": [],
+                "sceneScope": "off_frame_dependency",
+                "visibilityAuthority": "none"
+              }
+            ],
+            "boundaryConstraints": [],
+            "offFrameEntities": [
+              {
+                "text": "customers dining at tables",
+                "sourceStart": 0,
+                "sourceEnd": 26,
+                "entities": [
+                  {
+                    "scene": "dining",
+                    "value": "dining",
+                    "offset": 10
+                  }
+                ],
+                "nodes": [],
+                "sceneScope": "off_frame_dependency",
+                "visibilityAuthority": "none"
+              }
+            ],
+            "reviewRequiredClauses": []
+          },
+          "owner": null,
+          "ownerPath": null,
+          "outputText": null,
+          "deduplication": {
+            "removedFrom": [],
+            "duplicateSource": false
+          },
+          "disposition": "off_frame_dependency",
+          "reason": "foreign_scene_entity",
+          "renderedBlocks": [],
+          "finalPromptRetained": false,
+          "textPresentInFinalPrompt": false
+        }
+      }
+    ],
+    "networkScopeConcerns": []
+  },
+  {
+    "subtype": "storefront",
+    "shot": "front",
+    "group": "A",
+    "inputSha256": "028387af14d6434ee56465a57c1016e09e4161f3177f42736df38e9304f163b1",
+    "formalSha256": "d29e435dd4150473bf910fa44e13476f039a8717d9231005370f4c8da046f99c",
+    "providerSha256": "11e5da51f376d3b2470178904820074b9dcb887edf26173ba340e0f0b743c8eb",
+    "unchanged": true,
+    "authority": {
+      "targetScene": "storefront",
+      "targetProgramId": "storefront",
+      "functionalBlockSource": "source_shot_scope",
+      "architectureBridgeSource": "source_shot_scope",
+      "operationConstraintsSource": "source_shot_scope",
+      "viewStrategySource": "user_explicit",
+      "viewStrategy": "front",
+      "shotSource": "user_explicit",
+      "gate": "pass",
+      "gateVersion": "space-target-scene-authority@1.1.0",
+      "authorityGate": {
+        "status": "pass",
+        "checkedBlocks": [
+          "functional_requirement",
+          "architecture_function_bridge",
+          "operation_constraints",
+          "must_be_visible",
+          "lighting",
+          "composition",
+          "brand_role_manifestation"
+        ]
+      }
+    },
+    "behaviors": [
+      {
+        "value": "chef preparing food in kitchen",
+        "retained": false,
+        "trace": null
+      },
+      {
+        "value": "steam above dishes in kitchen",
+        "retained": false,
+        "trace": null
+      },
+      {
+        "value": "customers dining at tables",
+        "retained": false,
+        "trace": null
+      }
+    ],
+    "networkScopeConcerns": []
+  },
+  {
+    "subtype": "storefront",
+    "shot": "front",
+    "group": "B",
+    "inputSha256": "7d0ed65e75f2936ac463a266ffa4abb4e2c0f68bdbd06d73a2d3bf573f80f148",
+    "formalSha256": "adf6e649c342f68c6f09cc3c8fa84c17ec1986eaa89fd23394aa8510736e8557",
+    "providerSha256": "82717dae723d7afbe15a80c99c4ae065fb401364fbfbca11c3089ab26c04b230",
+    "unchanged": true,
+    "authority": {
+      "targetScene": "storefront",
+      "targetProgramId": "storefront",
+      "functionalBlockSource": "source_shot_scope",
+      "architectureBridgeSource": "source_shot_scope",
+      "operationConstraintsSource": "source_shot_scope",
+      "viewStrategySource": "user_explicit",
+      "viewStrategy": "front",
+      "shotSource": "user_explicit",
+      "gate": "pass",
+      "gateVersion": "space-target-scene-authority@1.1.0",
+      "authorityGate": {
+        "status": "pass",
+        "checkedBlocks": [
+          "functional_requirement",
+          "architecture_function_bridge",
+          "operation_constraints",
+          "must_be_visible",
+          "lighting",
+          "composition",
+          "brand_role_manifestation"
+        ]
+      }
+    },
+    "behaviors": [
+      {
+        "value": "chef preparing food in kitchen",
+        "retained": false,
+        "trace": {
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[0]",
+          "text": "chef preparing food in kitchen",
+          "classification": "functional",
+          "classificationReason": "visible_actor_activity",
+          "route": "composition",
+          "sceneProjection": {
+            "inputText": "chef preparing food in kitchen",
+            "sceneScope": "off_frame_dependency",
+            "reason": "foreign_scene_entity",
+            "projectedText": "",
+            "clauses": [
+              {
+                "text": "chef preparing food in kitchen",
+                "sourceStart": 0,
+                "sourceEnd": 30,
+                "entities": [
+                  {
+                    "scene": "dining",
+                    "value": "kitchen",
+                    "offset": 23
+                  }
+                ],
+                "nodes": [],
+                "sceneScope": "off_frame_dependency",
+                "visibilityAuthority": "none"
+              }
+            ],
+            "boundaryConstraints": [],
+            "offFrameEntities": [
+              {
+                "text": "chef preparing food in kitchen",
+                "sourceStart": 0,
+                "sourceEnd": 30,
+                "entities": [
+                  {
+                    "scene": "dining",
+                    "value": "kitchen",
+                    "offset": 23
+                  }
+                ],
+                "nodes": [],
+                "sceneScope": "off_frame_dependency",
+                "visibilityAuthority": "none"
+              }
+            ],
+            "reviewRequiredClauses": []
+          },
+          "owner": null,
+          "ownerPath": null,
+          "outputText": null,
+          "deduplication": {
+            "removedFrom": [],
+            "duplicateSource": false
+          },
+          "disposition": "off_frame_dependency",
+          "reason": "foreign_scene_entity",
+          "renderedBlocks": [],
+          "finalPromptRetained": false,
+          "textPresentInFinalPrompt": false
+        }
+      },
+      {
+        "value": "steam above dishes in kitchen",
+        "retained": false,
+        "trace": {
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[1]",
+          "text": "steam above dishes in kitchen",
+          "classification": "functional",
+          "classificationReason": "visible_effect_carrier_relation",
+          "route": "composition",
+          "sceneProjection": {
+            "inputText": "steam above dishes in kitchen",
+            "sceneScope": "off_frame_dependency",
+            "reason": "foreign_scene_entity",
+            "projectedText": "",
+            "clauses": [
+              {
+                "text": "steam above dishes in kitchen",
+                "sourceStart": 0,
+                "sourceEnd": 29,
+                "entities": [
+                  {
+                    "scene": "dining",
+                    "value": "kitchen",
+                    "offset": 22
+                  }
+                ],
+                "nodes": [],
+                "sceneScope": "off_frame_dependency",
+                "visibilityAuthority": "none"
+              }
+            ],
+            "boundaryConstraints": [],
+            "offFrameEntities": [
+              {
+                "text": "steam above dishes in kitchen",
+                "sourceStart": 0,
+                "sourceEnd": 29,
+                "entities": [
+                  {
+                    "scene": "dining",
+                    "value": "kitchen",
+                    "offset": 22
+                  }
+                ],
+                "nodes": [],
+                "sceneScope": "off_frame_dependency",
+                "visibilityAuthority": "none"
+              }
+            ],
+            "reviewRequiredClauses": []
+          },
+          "owner": null,
+          "ownerPath": null,
+          "outputText": null,
+          "deduplication": {
+            "removedFrom": [],
+            "duplicateSource": false
+          },
+          "disposition": "off_frame_dependency",
+          "reason": "foreign_scene_entity",
+          "renderedBlocks": [],
+          "finalPromptRetained": false,
+          "textPresentInFinalPrompt": false
+        }
+      },
+      {
+        "value": "customers dining at tables",
+        "retained": false,
+        "trace": {
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[2]",
+          "text": "customers dining at tables",
+          "classification": "functional",
+          "classificationReason": "visible_actor_activity",
+          "route": "composition",
+          "sceneProjection": {
+            "inputText": "customers dining at tables",
+            "sceneScope": "off_frame_dependency",
+            "reason": "foreign_scene_entity",
+            "projectedText": "",
+            "clauses": [
+              {
+                "text": "customers dining at tables",
+                "sourceStart": 0,
+                "sourceEnd": 26,
+                "entities": [
+                  {
+                    "scene": "dining",
+                    "value": "dining",
+                    "offset": 10
+                  }
+                ],
+                "nodes": [],
+                "sceneScope": "off_frame_dependency",
+                "visibilityAuthority": "none"
+              }
+            ],
+            "boundaryConstraints": [],
+            "offFrameEntities": [
+              {
+                "text": "customers dining at tables",
+                "sourceStart": 0,
+                "sourceEnd": 26,
+                "entities": [
+                  {
+                    "scene": "dining",
+                    "value": "dining",
+                    "offset": 10
+                  }
+                ],
+                "nodes": [],
+                "sceneScope": "off_frame_dependency",
+                "visibilityAuthority": "none"
+              }
+            ],
+            "reviewRequiredClauses": []
+          },
+          "owner": null,
+          "ownerPath": null,
+          "outputText": null,
+          "deduplication": {
+            "removedFrom": [],
+            "duplicateSource": false
+          },
+          "disposition": "off_frame_dependency",
+          "reason": "foreign_scene_entity",
+          "renderedBlocks": [],
+          "finalPromptRetained": false,
+          "textPresentInFinalPrompt": false
+        }
+      }
+    ],
+    "networkScopeConcerns": []
+  },
+  {
+    "subtype": "dining",
+    "shot": "three_quarter_wide",
+    "group": "A",
+    "inputSha256": "028387af14d6434ee56465a57c1016e09e4161f3177f42736df38e9304f163b1",
+    "formalSha256": "2e5eb6a7065964c929482be92a0349b7343af956da11cdf61a58ddfc9b217452",
+    "providerSha256": "b106dccca275f29e9a778a3c9c5ef0b091adf78adb6dff70fa9f8a8612b0e5ce",
+    "unchanged": true,
+    "authority": {
+      "targetScene": "dining",
+      "targetProgramId": "dining",
+      "functionalBlockSource": "source_shot_scope",
+      "architectureBridgeSource": "source_shot_scope",
+      "operationConstraintsSource": "source_shot_scope",
+      "viewStrategySource": "user_explicit",
+      "viewStrategy": "three_quarter_wide",
+      "shotSource": "user_explicit",
+      "gate": "pass",
+      "gateVersion": "space-target-scene-authority@1.1.0",
+      "authorityGate": {
+        "status": "pass",
+        "checkedBlocks": [
+          "functional_requirement",
+          "architecture_function_bridge",
+          "operation_constraints",
+          "must_be_visible",
+          "lighting",
+          "composition",
+          "brand_role_manifestation"
+        ]
+      }
+    },
+    "behaviors": [
+      {
+        "value": "chef preparing food in kitchen",
+        "retained": false,
+        "trace": null
+      },
+      {
+        "value": "steam above dishes in kitchen",
+        "retained": false,
+        "trace": null
+      },
+      {
+        "value": "customers dining at tables",
+        "retained": false,
+        "trace": null
+      }
+    ],
+    "networkScopeConcerns": []
+  },
+  {
+    "subtype": "dining",
+    "shot": "three_quarter_wide",
+    "group": "B",
+    "inputSha256": "7d0ed65e75f2936ac463a266ffa4abb4e2c0f68bdbd06d73a2d3bf573f80f148",
+    "formalSha256": "1569a2f77ecf0e5f8966e54a087b82d84861a921bf8222dcb1cff03b3af5dd3f",
+    "providerSha256": "c4882394f11bd66807fc193b892a90975cf2fe56bb94bc039f300496fc55a3c1",
+    "unchanged": true,
+    "authority": {
+      "targetScene": "dining",
+      "targetProgramId": "dining",
+      "functionalBlockSource": "source_shot_scope",
+      "architectureBridgeSource": "source_shot_scope",
+      "operationConstraintsSource": "source_shot_scope",
+      "viewStrategySource": "user_explicit",
+      "viewStrategy": "three_quarter_wide",
+      "shotSource": "user_explicit",
+      "gate": "pass",
+      "gateVersion": "space-target-scene-authority@1.1.0",
+      "authorityGate": {
+        "status": "pass",
+        "checkedBlocks": [
+          "functional_requirement",
+          "architecture_function_bridge",
+          "operation_constraints",
+          "must_be_visible",
+          "lighting",
+          "composition",
+          "brand_role_manifestation"
+        ]
+      }
+    },
+    "behaviors": [
+      {
+        "value": "chef preparing food in kitchen",
+        "retained": true,
+        "trace": {
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[0]",
+          "text": "chef preparing food in kitchen",
+          "classification": "functional",
+          "classificationReason": "visible_actor_activity",
+          "route": "composition",
+          "sceneProjection": {
+            "inputText": "chef preparing food in kitchen",
+            "sceneScope": "current_shot",
+            "reason": "source_compatible_with_shot",
+            "projectedText": "chef preparing food in kitchen",
+            "clauses": [
+              {
+                "text": "chef preparing food in kitchen",
+                "sourceStart": 0,
+                "sourceEnd": 30,
+                "entities": [
+                  {
+                    "scene": "dining",
+                    "value": "kitchen",
+                    "offset": 23
+                  }
+                ],
+                "nodes": [],
+                "sceneScope": "current_shot",
+                "visibilityAuthority": "current_shot"
+              }
+            ],
+            "boundaryConstraints": [],
+            "offFrameEntities": [],
+            "reviewRequiredClauses": []
+          },
+          "owner": "composition",
+          "ownerPath": "composition.mustBeVisible",
+          "outputText": "chef preparing food in kitchen",
+          "deduplication": {
+            "removedFrom": [],
+            "duplicateSource": false
+          },
+          "disposition": "retained",
+          "reason": "current_executable_owner",
+          "renderedBlocks": [
+            "composition"
+          ],
+          "finalPromptRetained": true,
+          "textPresentInFinalPrompt": true
+        }
+      },
+      {
+        "value": "steam above dishes in kitchen",
+        "retained": true,
+        "trace": {
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[1]",
+          "text": "steam above dishes in kitchen",
+          "classification": "functional",
+          "classificationReason": "visible_effect_carrier_relation",
+          "route": "composition",
+          "sceneProjection": {
+            "inputText": "steam above dishes in kitchen",
+            "sceneScope": "current_shot",
+            "reason": "source_compatible_with_shot",
+            "projectedText": "steam above dishes in kitchen",
+            "clauses": [
+              {
+                "text": "steam above dishes in kitchen",
+                "sourceStart": 0,
+                "sourceEnd": 29,
+                "entities": [
+                  {
+                    "scene": "dining",
+                    "value": "kitchen",
+                    "offset": 22
+                  }
+                ],
+                "nodes": [],
+                "sceneScope": "current_shot",
+                "visibilityAuthority": "current_shot"
+              }
+            ],
+            "boundaryConstraints": [],
+            "offFrameEntities": [],
+            "reviewRequiredClauses": []
+          },
+          "owner": "composition",
+          "ownerPath": "composition.mustBeVisible",
+          "outputText": "steam above dishes in kitchen",
+          "deduplication": {
+            "removedFrom": [],
+            "duplicateSource": false
+          },
+          "disposition": "retained",
+          "reason": "current_executable_owner",
+          "renderedBlocks": [
+            "composition"
+          ],
+          "finalPromptRetained": true,
+          "textPresentInFinalPrompt": true
+        }
+      },
+      {
+        "value": "customers dining at tables",
+        "retained": true,
+        "trace": {
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[2]",
+          "text": "customers dining at tables",
+          "classification": "functional",
+          "classificationReason": "visible_actor_activity",
+          "route": "composition",
+          "sceneProjection": {
+            "inputText": "customers dining at tables",
+            "sceneScope": "current_shot",
+            "reason": "source_compatible_with_shot",
+            "projectedText": "customers dining at tables",
+            "clauses": [
+              {
+                "text": "customers dining at tables",
+                "sourceStart": 0,
+                "sourceEnd": 26,
+                "entities": [
+                  {
+                    "scene": "dining",
+                    "value": "dining",
+                    "offset": 10
+                  }
+                ],
+                "nodes": [],
+                "sceneScope": "current_shot",
+                "visibilityAuthority": "current_shot"
+              }
+            ],
+            "boundaryConstraints": [],
+            "offFrameEntities": [],
+            "reviewRequiredClauses": []
+          },
+          "owner": "composition",
+          "ownerPath": "composition.mustBeVisible",
+          "outputText": "customers dining at tables",
+          "deduplication": {
+            "removedFrom": [],
+            "duplicateSource": false
+          },
+          "disposition": "retained",
+          "reason": "current_executable_owner",
+          "renderedBlocks": [
+            "composition"
+          ],
+          "finalPromptRetained": true,
+          "textPresentInFinalPrompt": true
+        }
+      }
+    ],
+    "networkScopeConcerns": []
+  }
+]
