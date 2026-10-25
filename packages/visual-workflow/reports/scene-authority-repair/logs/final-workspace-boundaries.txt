@@ -1,0 +1,23 @@
+
+> masterpiece-os@5.0.0-rc.1 verify:workspace-boundaries
+> node ./scripts/verify-workspace-boundaries.mjs
+
+
+[1] Checking for @masterpiece-os/ namespace residuals...
+  [ok]   no @masterpiece-os/ package name residuals
+
+[2] Checking that workspace consumers declare internal @masterpiece/* deps...
+  internal packages discovered: @masterpiece/analysis-runtime, @masterpiece/creative-intelligence, @masterpiece/creative-production-runtime, @masterpiece/document-ingestion, @masterpiece/evaluation-loop-contracts, @masterpiece/image-generation-adapter, @masterpiece/image-generation-contracts, @masterpiece/image-generation-runtime, @masterpiece/image-provider-dashscope, @masterpiece/model-benchmark, @masterpiece/model-registry, @masterpiece/model-runtime, @masterpiece/project-contracts, @masterpiece/reference-asset-inspector, @masterpiece/runtime-core, @masterpiece/visual-workflow
+  [ok]   apps/cli declares deps for 3 @masterpiece/* import(s)
+  [ok]   apps/web declares deps for 1 @masterpiece/* import(s)
+  [ok]   apps/web-runtime declares deps for 3 @masterpiece/* import(s)
+
+[3] Scanning for deep relative imports of packages/*/src/* from apps/** and tests/**...
+  [ok]   no deep imports of packages/*/src/* in apps/** or tests/**
+
+[4] Scanning for subpath imports that are not in package.json exports...
+  [ok]   all subpath imports in apps/** and tests/** are valid
+
+Summary: 0 failure(s), 0 warning(s)
+
+PASS — workspace boundary gate clean. No deep imports remain.

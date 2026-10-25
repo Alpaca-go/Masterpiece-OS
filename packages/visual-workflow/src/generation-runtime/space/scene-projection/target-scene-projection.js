@@ -6,40 +6,67 @@ import {
 const SCENE_SCOPE_TERMS = {
   reception: /reception|front desk|check.?in|waiting|接待|前台|候客|等候/iu,
   entrance: /entrance|threshold|entry|入口|门槛/iu,
+  storefront: /storefront|facade|façade|exterior|street[- ]side|外立面|门头|室外|临街外侧/iu,
   consultation: /consultation|咨询/iu,
   treatment: /treatment|procedure|clinical|sterile|medical equipment|治疗|诊疗|手术/iu,
   recovery: /recovery|post.service|rest area|恢复|术后|休息/iu,
-  dining: /dining|kitchen|餐厅|厨房|堂食/iu,
+  dining: /dining|kitchen|(?:order(?:ing)?|pickup|pick-up|food preparation|takeaway packaging)\s+(?:area|zone)|餐厅|厨房|后厨|堂食|餐桌|点餐区|明档(?:制作)?区|取餐区|就餐区|用餐区|外带包装区/iu,
+  display: /exhibition|exhibit|display\s+(?:area|zone)|展陈|展览|展品|展示区/iu,
+  retail: /retail|merchandise|shopping|货架|零售|选购/iu,
+  private_room: /private\s+room|私密房间/iu,
   guestroom: /guest.?room|bedroom|客房|卧室/iu
 };
 function scopeSourceEntries(entries, targetScene) {
-  const aliases = {lobby:["reception","entrance"],reception:["reception","entrance"],entrance:["entrance","reception"],dining:["dining"],restaurant:["dining"]};
+  const aliases = {lobby:["reception","entrance"],reception:["reception","entrance"],entrance:["entrance","reception"],dining:["dining"],restaurant:["dining"],treatment_room:["treatment"]};
   const allowed = aliases[targetScene] ?? [targetScene];
   const known = allowed.some(scene => SCENE_SCOPE_TERMS[scene]);
   return entries.map(entry => {
-    const scenes = Object.entries(SCENE_SCOPE_TERMS).filter(([,pattern])=>pattern.test(entry.text)).map(([scene])=>scene);
+    const entitiesFor = text => Object.entries(SCENE_SCOPE_TERMS).flatMap(([scene,pattern])=> {
+      const match = pattern.exec(text);
+      return match ? [{scene,value:match[0],offset:match.index}] : [];
+    });
+    const scenes = entitiesFor(entry.text).map(entity=>entity.scene);
     const localContext = scenes.some(scene=>allowed.includes(scene));
     const relationalSource = /functionalRelationships|operationConstraints|humanExperience/iu.test(entry.sourcePath ?? "");
-    const relation = /connect|circulation|access|route|transition|guid|separat|screen|privacy|confidential|sightline|queue|handoff|buffer|isolat|cross|adjacen|next to|not\s+expose|动线|流线|通达|分流|衔接|连接|引导|分隔|遮挡|隐私|交叉|缓冲|转接|服务流程|人员通道|洁污|视线|隔离|邻接|毗邻|不得.*看到|不应.*看到/iu;
+    const privacyBoundary = /privacy|confidential|screen|acoustic|off frame|not\s+expose|隔声|隐私|遮挡|屏蔽|画外/iu;
+    const relation = /connect|circulation|access|route|transition|guid|separat|screen|privacy|confidential|off frame|sightline|queue|handoff|buffer|isolat|cross|adjacen|next to|not\s+expose|动线|流线|通达|分流|衔接|连接|引导|分隔|隔声|遮挡|隐私|交叉|缓冲|转接|服务流程|人员通道|洁污|视线|隔离|邻接|毗邻|不得.*看到|不应.*看到/iu;
     // Preserve original text and classify its clauses separately. A foreign
     // interior description cannot acquire visibility through an adjacent
     // reception constraint, nor can a boundary constraint disappear with it.
+    let clauseCursor = 0;
     const clauses = String(entry.text).split(/[;；，,。]|\.(?=\s|$)/u).map(text=>text.trim()).filter(Boolean).map(text=> {
-      const clauseScenes = Object.entries(SCENE_SCOPE_TERMS).filter(([,pattern])=>pattern.test(text)).map(([scene])=>scene);
+      const sourceStart = String(entry.text).indexOf(text,clauseCursor);
+      clauseCursor = sourceStart + text.length;
+      const entities = entitiesFor(text);
+      const clauseScenes = entities.map(entity=>entity.scene);
       const foreign = clauseScenes.some(scene=>!allowed.includes(scene));
       const local = clauseScenes.some(scene=>allowed.includes(scene));
       const foreignInterior = foreign && !local && /contain|equipped|furnish|配备|装有|内有|室内陈设/iu.test(text);
-      const sourceDeclaredRelation = relationalSource && (local || localContext);
-      const boundary = (foreign || !local && scenes.some(scene=>!allowed.includes(scene))) && !foreignInterior && (relation.test(text) || sourceDeclaredRelation) && (local || localContext || relationalSource);
-      return {text,sceneScope:!known ? "unresolved" : boundary ? "cross_scene_constraint" : foreign ? "off_frame_dependency" : "current_shot",
-        visibilityAuthority:boundary ? "current_boundary_only" : foreign ? "off_frame_interior" : "current_shot"};
+      const prohibited = /do not|must not|not visible|no interior|cannot see|不得|不应|不可|禁止|看不到|无室内视线/iu.test(text);
+      const boundary = (foreign || !local && scenes.some(scene=>!allowed.includes(scene))) && !foreignInterior && relation.test(text)
+        && (local || localContext && (prohibited || privacyBoundary.test(text)) || relationalSource && privacyBoundary.test(text));
+      // A sequence expresses logical dependencies, not camera visibility. Keep
+      // the entire source and each node as evidence, without guessing locations.
+      const network = /(?:->|→|=>|依次|全店|全项目|whole[- ](?:store|project)|project[- ]wide)|点餐.{0,12}制作.{0,12}取餐.{0,12}就餐/iu.test(text);
+      const nodes = network ? text.split(/\s*(?:->|→|=>)\s*/u).map(value=>({value,entities:entitiesFor(value)})) : [];
+      const unsafeNetwork = network && (nodes.length < 2 || nodes.some(node=>!node.entities.length));
+      const sightline = /through.{0,24}(?:glass|glazing|window)|(?:glass|glazing|window).{0,24}(?:reveal|visible|see)|透过.{0,12}(?:玻璃|橱窗)|隔窗|隔着.{0,8}玻璃/iu.test(text)
+        || local && /sightline|visible|reveal|see|视线|可见|看到/iu.test(text);
+      // No structured source/occlusion permission exists for interior window
+      // visibility. Preserve such requests for review; never grant it by default.
+      const review = unsafeNetwork || sightline && foreign && !prohibited || targetScene === 'storefront' && !entities.length;
+      const sceneScope = !known ? "unresolved" : review ? "review_required" : network ? "off_frame_dependency" : boundary ? "cross_scene_constraint" : foreign ? "off_frame_dependency" : "current_shot";
+      return {text,sourceStart,sourceEnd:clauseCursor,entities,nodes,sceneScope,
+        scopeReason:review ? 'visibility_or_network_authority_requires_review' : network ? 'logical_network_without_visibility_authority' : undefined,
+        visibilityAuthority:sceneScope === 'current_shot' ? 'current_shot' : sceneScope === 'cross_scene_constraint' ? 'current_boundary_only' : 'none'};
     });
-    const sceneScope = !known ? "unresolved" : clauses.some(clause=>clause.sceneScope === "cross_scene_constraint") ? "cross_scene_constraint" : clauses.some(clause=>clause.sceneScope === "current_shot") ? "current_shot" : "off_frame_dependency";
+    const sceneScope = !known ? "unresolved" : clauses.some(clause=>clause.sceneScope === "cross_scene_constraint") ? "cross_scene_constraint" : clauses.some(clause=>clause.sceneScope === "current_shot") ? "current_shot" : clauses.some(clause=>clause.sceneScope === "review_required") ? "review_required" : "off_frame_dependency";
     return {...entry,sceneScope,clauses,detectedScenes:scenes,
       currentShotText:clauses.every(clause=>clause.sceneScope === "current_shot") ? entry.text : clauses.filter(clause=>clause.sceneScope === "current_shot").map(clause=>clause.text).join("; "),
       boundaryConstraints:clauses.filter(clause=>clause.sceneScope === "cross_scene_constraint"),
       offFrameEntities:clauses.filter(clause=>clause.sceneScope === "off_frame_dependency"),
-      evidenceClass:"system_inference",scopeReason:!known ? "unknown_target_scene" : sceneScope === "cross_scene_constraint" ? "operational_relation_without_foreign_interior_visibility" : sceneScope === "off_frame_dependency" ? "foreign_scene_entity" : "source_compatible_with_shot"};
+      reviewRequiredClauses:clauses.filter(clause=>clause.sceneScope === "review_required"),
+      evidenceClass:"system_inference",scopeReason:!known ? "unknown_target_scene" : sceneScope === "review_required" ? "visibility_or_network_authority_requires_review" : sceneScope === "cross_scene_constraint" ? "operational_relation_without_foreign_interior_visibility" : sceneScope === "off_frame_dependency" ? clauses.some(clause=>clause.nodes.length) ? "logical_network_without_visibility_authority" : "foreign_scene_entity" : "source_compatible_with_shot"};
   });
 }
 const TARGET_SCENE_PROJECTION_VERSION = "space-target-scene-projection@1.1.0";

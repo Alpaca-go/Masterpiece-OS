@@ -1,0 +1,62 @@
+{
+  "baseline": "949a838d0fbdb70f27d600e6a93c4545f8751e12",
+  "branch": "codex/rks-scene-authority-repair",
+  "status": "candidate_pending_human_review",
+  "productionFiles": [
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/continuation/target-functional-programs.js",
+      "oldSha256": "ccbf2ec7dba656fdaf8672801ab43c7130eccf7efe267d681674f0fc8f6a1b1b",
+      "newSha256": "11636ed4f30bbb4dd4c6530318062c189bd3928a74b48a1c214c13fe85350725",
+      "approval": "pending"
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/scene-projection/target-scene-projection.js",
+      "oldSha256": "5a773b1403ab232d90be0c8d665bd2b5f119d17b05fee7a446b86fc485c0f78d",
+      "newSha256": "78be27d7523ee10561005f553e51e9a90c801791ae52842f575d51ce63267598",
+      "approval": "pending"
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/source-adapter.js",
+      "oldSha256": "ea9334a585f65b2af63b5da91cb9236ba2be475e00ce7da5421617596928d19e",
+      "newSha256": "867ae635a815a1481ef93c1b1242fb736fcb0d9f5be46b50e8c8fb2daed51b08",
+      "approval": "pending"
+    }
+  ],
+  "manifest": {
+    "path": "packages/visual-workflow/implementation-integrity.json",
+    "sha256": "23aec1826589ead04295a8aa144ef8a7ce7dad7977912e8010d9f9478986d8cd",
+    "unchanged": true,
+    "qualityAcceptance": "pending-separate-quality-repair",
+    "checked": 133,
+    "mismatches": [
+      {
+        "path": "src/generation-runtime/space/continuation/target-functional-programs.js",
+        "recordedSha256": "ccbf2ec7dba656fdaf8672801ab43c7130eccf7efe267d681674f0fc8f6a1b1b",
+        "actualSha256": "11636ed4f30bbb4dd4c6530318062c189bd3928a74b48a1c214c13fe85350725"
+      },
+      {
+        "path": "src/generation-runtime/space/scene-projection/target-scene-projection.js",
+        "recordedSha256": "5a773b1403ab232d90be0c8d665bd2b5f119d17b05fee7a446b86fc485c0f78d",
+        "actualSha256": "78be27d7523ee10561005f553e51e9a90c801791ae52842f575d51ce63267598"
+      },
+      {
+        "path": "src/generation-runtime/space/source-adapter.js",
+        "recordedSha256": "ea9334a585f65b2af63b5da91cb9236ba2be475e00ce7da5421617596928d19e",
+        "actualSha256": "867ae635a815a1481ef93c1b1242fb736fcb0d9f5be46b50e8c8fb2daed51b08"
+      }
+    ]
+  },
+  "protectedPromptDigestsUpdated": false,
+  "goldenUpdated": false,
+  "qualityAcceptanceUpdated": false,
+  "publicOperations": "blocked_by_existing_integrity_guard",
+  "userProjectsRead": false,
+  "userProjectsWritten": false,
+  "knowledgePromoted": false,
+  "deployments": 0,
+  "realAnalysis": 0,
+  "realImages": 0,
+  "realValidation": 0,
+  "retries": 0,
+  "references": 0
+}

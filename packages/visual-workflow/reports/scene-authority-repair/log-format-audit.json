@@ -1,0 +1,95 @@
+{
+  "normalization": "CRLF to LF; trailing horizontal whitespace removed; one terminal newline; diagnostic text retained",
+  "files": [
+    {
+      "path": "logs/baseline-policy.txt",
+      "rawSha256": "d24588a93260795e266a58af1d4725b1b3eb614861ad5dfb07178d2ee3b9f842",
+      "normalizedSha256": "1fac14d0ac7bac4e27ed9438cdb861b7d2a4040f7539a010998d4d206b659c6e"
+    },
+    {
+      "path": "logs/baseline-workflow.txt",
+      "rawSha256": "b8e72a0c90862a14ab2877585f734bb71917f35e0ddddc7c2e83c07421a211ac",
+      "normalizedSha256": "77033a62f285a83ec30067bb1ce1fac67bc76d65b728f4f6ffb052d92cbb21ba"
+    },
+    {
+      "path": "logs/current-flows.txt",
+      "rawSha256": "be01e85dea25d9eb767dd372adf72cd1d982bd915258e2e82d3e5a65901044dd",
+      "normalizedSha256": "e252f836ef9186b739e5cc04bf22547ba5123e7d0be097b22a55ac140508cdd2"
+    },
+    {
+      "path": "logs/delivery-repo-verify.txt",
+      "rawSha256": "5b8bf474c77945ad55d6fabf9ffed5252db98ed4a88d41ab60bdb6c08f77f151",
+      "normalizedSha256": "a07cdac9efae62d5cd4079c3bb413686c97241abf8bff168f74be24a7ff3a372"
+    },
+    {
+      "path": "logs/final-workflow.txt",
+      "rawSha256": "ecea1a0db2994e7162a6b79a505e14909da15e66f04f181153f445cdd5617af6",
+      "normalizedSha256": "9975b7ad257f7ef658e9075f10eacf2b4731d467735f857de2495b2a61130f1b"
+    },
+    {
+      "path": "logs/golden-final.txt",
+      "rawSha256": "78a4f5734232760dcf2bc1d582a66a5a73e1b296580fa769923fc6b2e2f537c5",
+      "normalizedSha256": "effbe1522354f6b3e1a4a3053a6bbfd15c600d2de7be614ae7a5123cceac16ed"
+    },
+    {
+      "path": "logs/golden-test.txt",
+      "rawSha256": "78a4f5734232760dcf2bc1d582a66a5a73e1b296580fa769923fc6b2e2f537c5",
+      "normalizedSha256": "effbe1522354f6b3e1a4a3053a6bbfd15c600d2de7be614ae7a5123cceac16ed"
+    },
+    {
+      "path": "logs/guard-tests.txt",
+      "rawSha256": "01ea64da83fb5b75d32391ff027943f31b759ae15245cda8e02b6a9e47982a04",
+      "normalizedSha256": "75649682eda8cfc31c627787fd801306d25b54c4dbbd5941288bd0eca073e609"
+    },
+    {
+      "path": "logs/negative-compatibility.txt",
+      "rawSha256": "8d89b801a6177f7910949a83837df28b8198ab37ded8f58022a78776fd0aea32",
+      "normalizedSha256": "e606babc22c7d9be715b1842db383da3399bbdd0fbc36c6e8455baee42e3aaef"
+    },
+    {
+      "path": "logs/ownership-scene.txt",
+      "rawSha256": "121565a2ef14b7348985258823d030c3b15223029559028ef4bee6e550b6b680",
+      "normalizedSha256": "b47129ae357297c4aac5ecd807830d63a8d71797db0885b62c808a203d0efb33"
+    },
+    {
+      "path": "logs/repo-verify.txt",
+      "rawSha256": "5b8bf474c77945ad55d6fabf9ffed5252db98ed4a88d41ab60bdb6c08f77f151",
+      "normalizedSha256": "a07cdac9efae62d5cd4079c3bb413686c97241abf8bff168f74be24a7ff3a372"
+    },
+    {
+      "path": "logs/scene-authority-initial.txt",
+      "rawSha256": "cb2a156d76569d6c85a4cb8f05fed310152e93c386a72392f0fe704088bb6e97",
+      "normalizedSha256": "86bdc2fa4615808ba46b31f3b9d16b97b78a3f0cd33df1b6f07d4539cb0963f8"
+    },
+    {
+      "path": "logs/targeted-compatibility.txt",
+      "rawSha256": "e5b0ed91acfb7badbaaa4822d9d08f3883d0906b125eb3cabd1ecc13d96e590f",
+      "normalizedSha256": "981335dd02dd12eb1bcabf06b8b71d0bec0925c97dfdbfd31536ef2f2b985568"
+    },
+    {
+      "path": "logs/targeted-tests.txt",
+      "rawSha256": "63aa960acf0671f6e6972b137440953f469e95b71dc2037d54b32ccc715782e3",
+      "normalizedSha256": "813a92f4bd1eacdd80831005e535bb97c65f66d9bb0f47b315e939e071287f5e"
+    },
+    {
+      "path": "logs/workflow-final.txt",
+      "rawSha256": "84034068925c92f06f49d05a6cccb7bc08e0a9bfdc478b9b012558a70a163006",
+      "normalizedSha256": "f827e08d4523b1a472e715e638b59a48ad8f7f56d9d0ad0753fb4ab79b0ac625"
+    },
+    {
+      "path": "logs/workflow-tests.txt",
+      "rawSha256": "0a70b49585200a6193099d533802d04fe6601b123d3d4f33d9edb548951083ed",
+      "normalizedSha256": "4dcee847b6eba107f7a7f4259cc9f99eabea86ea06b402ba5ab66b2e71d16101"
+    },
+    {
+      "path": "logs/final-host-typecheck.txt",
+      "rawSha256": "26d10dde7c32499d30cee05269b31bad0a139964c6c2f3724b67b9f45f043cac",
+      "normalizedSha256": "f51b6616dc2622eb9d681a4e17b72a03b912d1caf609af80add63da84c653f1d"
+    },
+    {
+      "path": "logs/final-web-typecheck.txt",
+      "rawSha256": "a2afb2f25845e4981dc2244f41f996fbdf237d56e5ac08463edb18987c767e6c",
+      "normalizedSha256": "98ee5f51622e6d12b733e06abdc0f586f3d27d9752e90c32ca7c9b00cf052464"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+✔ storefront/front preserves explicit requester, exterior program and exact camera through formal and Provider prompts (49.2508ms)
+✔ all public subtype/shot choices have resolved authority or explicitly fail closed (440.3773ms)
+✔ exterior default camera uses exterior authority: legacy_project_default (9.0021ms)
+✔ exterior default camera uses exterior authority: target_scene_default (11.6084ms)
+✔ unknown targets cannot turn an unresolved visible requirement into executable content (25.1077ms)
+✔ complete functional dependencies are preserved without acquiring shot visibility: 点餐区 → 明档制作区 → 取餐区 → 就餐区 (10.2166ms)
+✔ complete functional dependencies are preserved without acquiring shot visibility: ordering area -> food preparation area -> pickup area -> dining area (6.3757ms)
+✔ source clauses retain exact ranges and mixed local/dependency/review dispositions (7.4093ms)
+✔ unsafe networks stay reviewable: 点餐制作取餐就餐的完整关系 (6.8888ms)
+✔ unsafe networks stay reviewable: 入口 → 无法确定的节点 (10.4236ms)
+✔ unsafe networks stay reviewable: whole project operating network (6.4278ms)
+✔ kitchen relationships cannot inherit a boundary authority merely from their container or another entrance clause (9.55ms)
+✔ dining operations and Chinese actors remain visible with exactly one rendered owner (28.0933ms)
+✔ unlocated storefront activity requires review: chef preparing food (7.6443ms)
+✔ unlocated storefront activity requires review: steam above dishes (6.7059ms)
+✔ interior sightline request awaits a reviewed interface: chef preparing food in kitchen visible through storefront glazing (7.0856ms)
+✔ interior sightline request awaits a reviewed interface: 厨师在厨房制作食品并透过临街橱窗玻璃可见 (5.1355ms)
+✔ interior sightline request awaits a reviewed interface: 入口视线可见厨房制作活动 (6.6027ms)
+✔ an exterior prohibition protects interior privacy as a boundary, never as a rendered interior (6.3239ms)
+✔ cross-project exterior projection follows sources, not industry: 临街外带档口 (8.5209ms)
+✔ cross-project exterior projection follows sources, not industry: 现代连锁快餐 (8.8312ms)
+✔ cross-project exterior projection follows sources, not industry: 社区咖啡馆 (11.0166ms)
+✔ cross-project exterior projection follows sources, not industry: 日本料理餐厅 (9.1898ms)
+✔ cross-project exterior projection follows sources, not industry: 零售商店 (9.3023ms)
+✔ cross-project exterior projection follows sources, not industry: 旅宿服务 (8.0282ms)
+✔ other established commercial scene authorities retain their own local activities (27.7459ms)
+✔ negative project guards are preserved even when they name a foreign exterior (5.9503ms)
+✔ explicit off-frame operational prohibitions remain boundary-only (8.5492ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1161.0982

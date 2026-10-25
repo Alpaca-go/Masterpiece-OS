@@ -257,6 +257,13 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
   const continuationIntent = taskContract?.continuation;
   const targetProgram = continuationIntent?.targetFunctionalProgram;
   const knownTarget = isKnownTargetScene(taskContract?.subtype);
+  // Never compile an unresolved target with a passing authority trace. Public
+  // subtype choices without a functional contract need an explicit review.
+  if (taskContract?.subtype && !knownTarget && !targetProgram) {
+    throw Object.assign(new Error(`SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED: ${taskContract?.subtype}`), {
+      code: "SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED", targetScene: taskContract?.subtype, disposition: "review_required"
+    });
+  }
   if (taskContract?.generationBasis === "continuation" && targetProgram) {
     const override = applyContinuationProgramOverride({
       targetProgram,
@@ -369,7 +376,9 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
     };
   }
   let projectedBrandManifestation = brandSanitized.lines;
-  const standardShot = taskContract?.generationBasis === "standard" || taskContract?.generationBasis === 'art_direction_reference';
+  // Low-level semantic inspection also accepts incomplete inputs. Public tasks
+  // always require a subtype; only those complete requests own a shot scope.
+  const standardShot = Boolean(taskContract?.subtype) && (taskContract?.generationBasis === "standard" || taskContract?.generationBasis === 'art_direction_reference');
   // Only lists read by renderers confer execution ownership. Source/audit
   // containers, spatialTranslation and commercialReality are not owners.
   const executionLists = () => [
@@ -385,7 +394,9 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
   const sourceEntries = (items, sourcePath) => cleanList(items).map((text,index)=> {
     const original = sourcePath.split(".").reduce((value,key)=>value?.[key],packet);
     const sourceIndex = Array.isArray(original) ? original.findIndex(value=>cleanList(value)[0]===text) : -1;
-    return {text,sourcePath:sourceIndex >= 0 ? `${sourcePath}[${sourceIndex}]` : `derived.${sourcePath}[${index}]`,sourceContainer:sourcePath};
+    const sourceOrigins = ["sceneProgram","functionalNetwork","functionalRelationships","peopleBehavior","mustBeVisible","brandRoleManifestation","positiveDifferentiators"]
+      .flatMap(field=>(Array.isArray(spatial[field]) ? spatial[field] : []).flatMap((value,sourceIndex)=>cleanList(value)[0] === text ? [`mediaTranslations.spatial.${field}[${sourceIndex}]`] : []));
+    return {text,sourcePath:sourceIndex >= 0 ? `${sourcePath}[${sourceIndex}]` : `derived.${sourcePath}[${index}]`,sourceContainer:sourcePath,sourceOrigins};
   });
   const artisticEntries = ["signatureSpatialMechanism","brandRoleManifestation","mustBeVisible"].flatMap(field => sourceEntries(spatial[field],`mediaTranslations.spatial.${field}`))
     .filter(entry=>classifyPhrase(entry.text,"signatureSpatialMechanism").classification === SEMANTIC_CLASS.DECORATIVE_OBJECT)
@@ -393,10 +404,10 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
   const scopedArt = standardShot ? scopeSourceEntries(artisticEntries,taskContract.subtype) : artisticEntries;
   const artSeen = new Set();
   compositionLayers.artisticFocus = scopedArt.filter(entry=> {
-    if (entry.sceneScope === "off_frame_dependency" || artSeen.has(entry.text)) return false;
+    if (standardShot && !entry.currentShotText || entry.sceneScope === "off_frame_dependency" || artSeen.has(entry.text)) return false;
     artSeen.add(entry.text);
     return true;
-  }).map(entry=>({...entry,evidenceClass:evidenceClass("mediaTranslations.spatial"),priority:/optional|可选|可考虑/iu.test(entry.text) ? "optional" : "project_artistic_focus",installationDetails:"unspecified unless supplied in source wording"}));
+  }).map(entry=>({...entry,text:standardShot ? entry.currentShotText : entry.text,evidenceClass:evidenceClass("mediaTranslations.spatial"),priority:/optional|可选|可考虑/iu.test(entry.text) ? "optional" : "project_artistic_focus",installationDetails:"unspecified unless supplied in source wording"}));
   decisionTrace.artisticFocus = compositionLayers.artisticFocus;
   decisionTrace.artisticCandidates = scopedArt.map(entry=>({...entry,sourceEvidenceClass:evidenceClass("mediaTranslations.spatial")}));
   const architectureEntries = semantic.architectureRewrite.items.filter(item=>!item.dropped && !["spatialConcept","mustBeVisible"].includes(item.sourceField));
@@ -414,7 +425,7 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
       const records = scopeSourceEntries(sourceEntries(items,sourcePath),taskContract.subtype);
       decisionTrace.sceneScope.push(...records);
       collectBoundaryConstraints(records);
-      return records.filter(entry=>entry.sceneScope !== "off_frame_dependency").map(entry=>entry.sceneScope === "unresolved" ? entry.text : entry.currentShotText).filter(Boolean);
+      return records.map(entry=>entry.currentShotText).filter(Boolean);
     };
     functionalRaw = {
       sceneProgram:projectList(rawSceneProgram,"mediaTranslations.spatial.sceneProgram"),
@@ -423,7 +434,9 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
     };
     compositionLayers.mustBeVisible = projectList(compositionLayers.mustBeVisible,"mediaTranslations.spatial.mustBeVisible");
     compositionLayers.positiveDifferentiators = functionalRaw.positiveDifferentiators;
-    bridgeLayers = Object.fromEntries(Object.entries(bridgeLayers).map(([key,value])=>[key,Array.isArray(value) ? projectList(value,`architectureFunctionBridge.${key}`) : value]));
+    // Prohibitions retain project-wide authority; mentioning a foreign scene
+    // in a negative guard never asks the camera to render that scene.
+    bridgeLayers = Object.fromEntries(Object.entries(bridgeLayers).map(([key,value])=>[key,Array.isArray(value) && key !== 'conceptDriftGuards' ? projectList(value,`architectureFunctionBridge.${key}`) : value]));
     bridgeLayers.crossSceneConstraints = decisionTrace.crossSceneConstraints.map(entry=>entry.text);
     // Resolve repeated visible requirements against projected, executable
     // lists. Raw presence never proves that another branch will render it.
@@ -491,13 +504,13 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
     const sanitizer = brandSanitized.records.find(entry=>entry.raw === text);
     const projectionInput = ['functional','architectural'].includes(analysis.classification) ? text : sanitizer?.text || text;
     const scope = standardShot ? scopeSourceEntries([{text:projectionInput,sourcePath}],taskContract.subtype)[0] : null;
-    const projectedText = scope ? scope.sceneScope === 'unresolved' ? projectionInput : scope.currentShotText : projectionInput;
+    const projectedText = scope ? scope.currentShotText : projectionInput;
     const outputText = projectedText;
     const execution = executionLists().find(([container,key]) => cleanList(container[key]).includes(outputText));
     const art = compositionLayers.artisticFocus.find(entry=>entry.text === outputText);
     const architectureOwns = decisionTrace.architectureDecisions.some(entry=>entry.text === text && entry.sceneScope !== 'off_frame_dependency');
     const brandOwns = projectedBrandManifestation.includes(outputText) && !art && !architectureOwns && !functionalRaw.positiveDifferentiators.includes(outputText);
-    const review = analysis.classificationReason === 'unresolved_visible_requirement';
+    const review = analysis.classificationReason === 'unresolved_visible_requirement' || scope && !scope.currentShotText && ['unresolved','review_required'].includes(scope.sceneScope);
     const owner = review ? null : execution?.[2] || (art ? 'composition' : brandOwns ? 'brand_translation' : null);
     const ownerPath = owner ? execution?.[3] || (art ? 'composition.artisticFocus' : '_raw.brandRoleManifestation') : null;
     const disposition = review ? 'review_required' : analysis.classification === SEMANTIC_CLASS.DECORATIVE_IDENTITY ? 'post_composite_only'
@@ -507,7 +520,7 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
     return [{sourcePath,text,classification:analysis.classification,classificationReason:analysis.classificationReason,
       route:review ? 'review' : ['functional','architectural'].includes(analysis.classification) ? 'composition' : 'brand_or_artistic',
       sceneProjection:{inputText:projectionInput,sceneScope:scope?.sceneScope ?? 'target_program',reason:scope?.scopeReason ?? 'target_program_authority',projectedText,
-        clauses:scope?.clauses ?? [],boundaryConstraints:scope?.boundaryConstraints ?? [],offFrameEntities:scope?.offFrameEntities ?? []},
+        clauses:scope?.clauses ?? [],boundaryConstraints:scope?.boundaryConstraints ?? [],offFrameEntities:scope?.offFrameEntities ?? [],reviewRequiredClauses:scope?.reviewRequiredClauses ?? []},
       owner,ownerPath,outputText:owner ? outputText : null,
       deduplication:{removedFrom:visibleDeduplication.get(outputText) || [],duplicateSource:spatial.mustBeVisible.findIndex(value=>cleanList(value)[0] === text) !== index},
       disposition,reason:disposition === 'retained' ? 'current_executable_owner' : disposition === 'review_required' ? 'unresolved_visible_requirement'

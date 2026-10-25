@@ -1,0 +1,394 @@
+{
+  "options": {
+    "subtypes": [
+      "reception",
+      "lobby",
+      "exhibition",
+      "storefront",
+      "interior_panorama",
+      "counter",
+      "consultation",
+      "entrance",
+      "dining",
+      "treatment_room"
+    ],
+    "shots": [
+      "front",
+      "three_quarter_wide",
+      "entrance_view",
+      "detail_closeup",
+      "entrance_three_quarter_wide"
+    ]
+  },
+  "subtypes": [
+    {
+      "subtype": "reception",
+      "known": true,
+      "disposition": "resolved",
+      "cameras": [
+        {
+          "shot": "front",
+          "viewStrategy": "front",
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "three_quarter_wide",
+          "viewStrategy": "three_quarter_wide",
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "entrance_view",
+          "viewStrategy": "entrance_view",
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "detail_closeup",
+          "viewStrategy": "detail_closeup",
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "entrance_three_quarter_wide",
+          "viewStrategy": "entrance_three_quarter_wide",
+          "shotSource": "user_explicit"
+        }
+      ],
+      "defaultCamera": {
+        "viewStrategy": "reception_arrival_view",
+        "shotSource": "target_scene_default"
+      }
+    },
+    {
+      "subtype": "lobby",
+      "known": true,
+      "disposition": "resolved",
+      "cameras": [
+        {
+          "shot": "front",
+          "viewStrategy": "front",
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "three_quarter_wide",
+          "viewStrategy": "three_quarter_wide",
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "entrance_view",
+          "viewStrategy": "entrance_view",
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "detail_closeup",
+          "viewStrategy": "detail_closeup",
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "entrance_three_quarter_wide",
+          "viewStrategy": "entrance_three_quarter_wide",
+          "shotSource": "user_explicit"
+        }
+      ],
+      "defaultCamera": {
+        "viewStrategy": "public_overview_view",
+        "shotSource": "target_scene_default"
+      }
+    },
+    {
+      "subtype": "exhibition",
+      "known": false,
+      "disposition": "review_required_compile_blocked",
+      "cameras": [
+        {
+          "shot": "front",
+          "viewStrategy": null,
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "three_quarter_wide",
+          "viewStrategy": null,
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "entrance_view",
+          "viewStrategy": null,
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "detail_closeup",
+          "viewStrategy": null,
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "entrance_three_quarter_wide",
+          "viewStrategy": null,
+          "shotSource": "user_explicit"
+        }
+      ],
+      "defaultCamera": {
+        "viewStrategy": null,
+        "shotSource": "legacy_project_default"
+      }
+    },
+    {
+      "subtype": "storefront",
+      "known": true,
+      "disposition": "resolved",
+      "cameras": [
+        {
+          "shot": "front",
+          "viewStrategy": "front",
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "three_quarter_wide",
+          "viewStrategy": "three_quarter_wide",
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "entrance_view",
+          "viewStrategy": "entrance_view",
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "detail_closeup",
+          "viewStrategy": "detail_closeup",
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "entrance_three_quarter_wide",
+          "viewStrategy": "entrance_three_quarter_wide",
+          "shotSource": "user_explicit"
+        }
+      ],
+      "defaultCamera": {
+        "viewStrategy": "exterior_front_view",
+        "shotSource": "target_scene_default"
+      }
+    },
+    {
+      "subtype": "interior_panorama",
+      "known": false,
+      "disposition": "review_required_compile_blocked",
+      "cameras": [
+        {
+          "shot": "front",
+          "viewStrategy": null,
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "three_quarter_wide",
+          "viewStrategy": null,
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "entrance_view",
+          "viewStrategy": null,
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "detail_closeup",
+          "viewStrategy": null,
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "entrance_three_quarter_wide",
+          "viewStrategy": null,
+          "shotSource": "user_explicit"
+        }
+      ],
+      "defaultCamera": {
+        "viewStrategy": null,
+        "shotSource": "legacy_project_default"
+      }
+    },
+    {
+      "subtype": "counter",
+      "known": false,
+      "disposition": "review_required_compile_blocked",
+      "cameras": [
+        {
+          "shot": "front",
+          "viewStrategy": null,
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "three_quarter_wide",
+          "viewStrategy": null,
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "entrance_view",
+          "viewStrategy": null,
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "detail_closeup",
+          "viewStrategy": null,
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "entrance_three_quarter_wide",
+          "viewStrategy": null,
+          "shotSource": "user_explicit"
+        }
+      ],
+      "defaultCamera": {
+        "viewStrategy": null,
+        "shotSource": "legacy_project_default"
+      }
+    },
+    {
+      "subtype": "consultation",
+      "known": true,
+      "disposition": "resolved",
+      "cameras": [
+        {
+          "shot": "front",
+          "viewStrategy": "front",
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "three_quarter_wide",
+          "viewStrategy": "three_quarter_wide",
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "entrance_view",
+          "viewStrategy": "entrance_view",
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "detail_closeup",
+          "viewStrategy": "detail_closeup",
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "entrance_three_quarter_wide",
+          "viewStrategy": "entrance_three_quarter_wide",
+          "shotSource": "user_explicit"
+        }
+      ],
+      "defaultCamera": {
+        "viewStrategy": "human_scale_consultation_view",
+        "shotSource": "target_scene_default"
+      }
+    },
+    {
+      "subtype": "entrance",
+      "known": true,
+      "disposition": "resolved",
+      "cameras": [
+        {
+          "shot": "front",
+          "viewStrategy": "front",
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "three_quarter_wide",
+          "viewStrategy": "three_quarter_wide",
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "entrance_view",
+          "viewStrategy": "entrance_view",
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "detail_closeup",
+          "viewStrategy": "detail_closeup",
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "entrance_three_quarter_wide",
+          "viewStrategy": "entrance_three_quarter_wide",
+          "shotSource": "user_explicit"
+        }
+      ],
+      "defaultCamera": {
+        "viewStrategy": "threshold_arrival_view",
+        "shotSource": "target_scene_default"
+      }
+    },
+    {
+      "subtype": "dining",
+      "known": true,
+      "disposition": "resolved",
+      "cameras": [
+        {
+          "shot": "front",
+          "viewStrategy": "front",
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "three_quarter_wide",
+          "viewStrategy": "three_quarter_wide",
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "entrance_view",
+          "viewStrategy": "entrance_view",
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "detail_closeup",
+          "viewStrategy": "detail_closeup",
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "entrance_three_quarter_wide",
+          "viewStrategy": "entrance_three_quarter_wide",
+          "shotSource": "user_explicit"
+        }
+      ],
+      "defaultCamera": {
+        "viewStrategy": "operational_dining_view",
+        "shotSource": "target_scene_default"
+      }
+    },
+    {
+      "subtype": "treatment_room",
+      "known": true,
+      "disposition": "resolved",
+      "cameras": [
+        {
+          "shot": "front",
+          "viewStrategy": "front",
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "three_quarter_wide",
+          "viewStrategy": "three_quarter_wide",
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "entrance_view",
+          "viewStrategy": "entrance_view",
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "detail_closeup",
+          "viewStrategy": "detail_closeup",
+          "shotSource": "user_explicit"
+        },
+        {
+          "shot": "entrance_three_quarter_wide",
+          "viewStrategy": "entrance_three_quarter_wide",
+          "shotSource": "user_explicit"
+        }
+      ],
+      "defaultCamera": {
+        "viewStrategy": "private_treatment_view",
+        "shotSource": "target_scene_default"
+      }
+    }
+  ],
+  "sources": {
+    "user_explicit": "preserve exact requested shot",
+    "target_scene_default": "scene-owned default",
+    "legacy_project_default": "scene-owned default when mapped"
+  },
+  "cameraDoesNotGrantInteriorVisibility": true,
+  "custom": "unresolved without an existing explicit target functional program; blocked",
+  "noSubtype": "low-level inspection compatibility only; public task contract rejects missing subtype",
+  "windowVisibility": "pending_interface_review_no_new_production_fields"
+}

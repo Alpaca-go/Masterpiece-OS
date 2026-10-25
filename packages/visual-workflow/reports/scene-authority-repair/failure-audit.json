@@ -1,0 +1,69 @@
+[
+  {
+    "name": "workflow",
+    "log": "logs/final-workflow.txt",
+    "failures": [
+      {
+        "location": "test at packages\\visual-workflow\\tests\\analysis-direction-suggestion.test.ts:1:8343",
+        "test": "✖ read-only existing report RPC supplies suggestions for missing directions without creating any decision files (146.2478ms)",
+        "category": "pending_integrity_approval"
+      },
+      {
+        "location": "test at packages\\visual-workflow\\tests\\art-direction-route.test.ts:1:9779",
+        "test": "✖ public operations verify the approved implementation before registration, compilation, generation and Logo composition (62.3787ms)",
+        "category": "pending_integrity_approval"
+      },
+      {
+        "location": "test at packages\\visual-workflow\\tests\\generation-baseline-lock.test.ts:1:516",
+        "test": "✖ baseline lock prevents input/model/code drift and old tasks; other projects remain independent, zero network (97.5727ms)",
+        "category": "pending_integrity_approval"
+      },
+      {
+        "location": "test at packages\\visual-workflow\\tests\\methodology\\acceptance.test.mjs:61:3",
+        "test": "✖ bakery-methodology: current-project relations and scope reach suggestion and compiler without mutation (40.0171ms)",
+        "category": "unmapped_custom_intentionally_closed"
+      },
+      {
+        "location": "test at packages\\visual-workflow\\tests\\methodology\\acceptance.test.mjs:61:3",
+        "test": "✖ outdoor-methodology: current-project relations and scope reach suggestion and compiler without mutation (12.2247ms)",
+        "category": "unmapped_custom_intentionally_closed"
+      },
+      {
+        "location": "test at packages\\visual-workflow\\tests\\methodology\\acceptance.test.mjs:98:1",
+        "test": "✖ brand or industry renaming alone does not change functional decisions or invent artwork (9.2339ms)",
+        "category": "unmapped_custom_intentionally_closed"
+      },
+      {
+        "location": "test at packages\\visual-workflow\\tests\\methodology\\acceptance.test.mjs:110:1",
+        "test": "✖ relationship mutation is preserved as a change, not accepted on object counts (8.7965ms)",
+        "category": "unmapped_custom_intentionally_closed"
+      },
+      {
+        "location": "test at packages\\visual-workflow\\tests\\project-design-direction.test.ts:1:9324",
+        "test": "✖ guarded public web operations save, confirm, compile, generate, reopen and invalidate on an analysis request (63.1049ms)",
+        "category": "pending_integrity_approval"
+      },
+      {
+        "location": "test at packages\\visual-workflow\\tests\\project-details-editing.test.ts:1:442",
+        "test": "✖ explicit details save persists identity, retains artifacts and requires new analysis/confirmation without calling models (193.7326ms)",
+        "category": "pending_integrity_approval"
+      }
+    ]
+  },
+  {
+    "name": "current-flows",
+    "log": "logs/final-current-flows.txt",
+    "failures": [
+      {
+        "location": "test at tests\\runtime-application\\visual-workflow-isolation.test.ts:1:5790",
+        "test": "✖ completed analysis supplies migrated Logo roles without overriding a new intake selection (99.6645ms)",
+        "category": "pending_integrity_approval"
+      },
+      {
+        "location": "test at tests\\runtime-application\\visual-workflow-isolation.test.ts:1:9252",
+        "test": "✖ offline E2E: owned import, analysis, report and image request complete without shared settings or real providers (127.5961ms)",
+        "category": "pending_integrity_approval"
+      }
+    ]
+  }
+]

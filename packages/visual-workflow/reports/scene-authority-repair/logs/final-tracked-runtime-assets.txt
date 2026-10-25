@@ -1,0 +1,5 @@
+
+> masterpiece-os@5.0.0-rc.1 verify:tracked-runtime-assets
+> node ./scripts/verify-tracked-runtime-assets.mjs
+
+[verify-tracked-runtime-assets] PASS — 8 declared assets, all checks green.

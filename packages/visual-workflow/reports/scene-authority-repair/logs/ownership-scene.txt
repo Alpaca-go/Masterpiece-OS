@@ -1,0 +1,47 @@
+✔ artistic focus is composed once and remains distinct from operations (41.775ms)
+✔ optional artwork stays optional and a source without art does not acquire an installation (22.935ms)
+✔ single reception shot keeps other program nodes in the trace rather than displaying their interiors (15.3621ms)
+✔ scene projection preserves trace and does not translate a color or transparency keyword into new geometry (9.365ms)
+✔ gallery character passes sanitization while identity text remains protected (11.5778ms)
+✔ source-scoped decisions occur once instead of being repeated through strategy/form/organization (10.6902ms)
+✔ unconfirmed color scopes and ratios remain proposals without mandatory large-area authority (19.7128ms)
+✔ brand names and stored brand keys cannot auto-select architecture examples (25.9795ms)
+✔ explicit optional examples require scene and mechanism compatibility and cannot outrank the project (11.6719ms)
+✔ Medical aesthetics: formal route retains complex architecture and explicit strong color without manufacturing art (11.0951ms)
+✔ Hospitality: formal route retains complex architecture and explicit strong color without manufacturing art (11.0532ms)
+✔ Restaurant: formal route retains complex architecture and explicit strong color without manufacturing art (10.4598ms)
+✔ source scopes retain provenance and unknown scenes remain explicitly unresolved (0.191ms)
+✔ visible operations have one actual execution owner: lobby/default (62.0216ms)
+✔ visible operations have one actual execution owner: lobby/entrance_view (25.7017ms)
+✔ visible operations have one actual execution owner: lobby/three_quarter_wide (21.7193ms)
+✔ visible operations have one actual execution owner: dining/default (23.095ms)
+✔ visible operations have one actual execution owner: dining/entrance_view (22.9722ms)
+✔ visible operations have one actual execution owner: dining/three_quarter_wide (21.1136ms)
+✔ bilingual activity/effect has functional evidence and ownership: 厨师正在备餐 (10.5261ms)
+✔ bilingual activity/effect has functional evidence and ownership: 菜品上方升起热气 (8.9312ms)
+✔ bilingual activity/effect has functional evidence and ownership: 顾客在餐桌用餐 (10.4432ms)
+✔ bilingual activity/effect has functional evidence and ownership: 店员为顾客打包商品 (8.8961ms)
+✔ bilingual activity/effect has functional evidence and ownership: customers browsing products (10.6613ms)
+✔ bilingual activity/effect has functional evidence and ownership: staff handing parcels to visitors (9.3368ms)
+✔ bilingual activity/effect has functional evidence and ownership: guests checking in at reception (7.9141ms)
+✔ bilingual activity/effect has functional evidence and ownership: receptionist greeting visitors (9.485ms)
+✔ bilingual activity/effect has functional evidence and ownership: water flowing into the basin (8.02ms)
+✔ de-duplication retains an actual rendered owner, not mere raw membership; original indices survive (10.5991ms)
+✔ foreign operations cannot re-enter through the brand branch after scope rejection (8.8956ms)
+✔ an activity also supplied in a signature source has one rendered visible owner (8.6766ms)
+✔ brand duplicate is removed only after the current visible owner exists (8.8003ms)
+✔ a prohibitive list never receives credit as the positive visible execution owner (8.2989ms)
+✔ unknown or wishful fragments stay reviewable without becoming a hard operating requirement (12.8458ms)
+✔ identity, motif, color, decoration and architecture retain distinct semantic routes (13.4382ms)
+✔ mixed clauses retain only the local activity and boundary, with foreign interiors rejected in trace (8.9456ms)
+✔ sourceMap reflects actual renderer ownership, not a broad promise of preservation (11.2329ms)
+✔ reference-first target program still replaces source operations instead of inheriting standard fallback (16.1046ms)
+✔ continuation keeps the target program authoritative and does not expose source dining operations (11.8922ms)
+ℹ tests 39
+ℹ suites 0
+ℹ pass 39
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 662.7239

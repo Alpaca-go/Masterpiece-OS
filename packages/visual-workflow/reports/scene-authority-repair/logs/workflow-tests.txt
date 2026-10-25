@@ -1,0 +1,775 @@
+✔ presentation distinguishes absent Packet, insufficient evidence and usable suggestions with zero model calls (1160.3843ms)
+✔ explicit analysis fields map deterministically with leaf provenance and without mutating the Packet (26.1977ms)
+✔ missing spatial evidence stays blank; color rank, global systems and risk observations cannot grant scope or prohibitions (1.6534ms)
+✔ rereading a missing direction uses the current Packet and fingerprint without persisting the previous suggestion (117.9118ms)
+✖ read-only existing report RPC supplies suggestions for missing directions without creating any decision files (349.268ms)
+✔ draft, confirmed and needs_reconfirmation retain their fields, hashes, source and disk bytes across suggestion reads (1974.5613ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"a8f9eed8-0b99-411a-ae3d-c7f053ee7eda","taskId":"vnext-task-3ad182c2-f954-49a7-899c-afabf107ad7a","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":9939,"compileDurationMs":119.98}
+✖ integrated project direction reaches the standard provider body without a reference input (1845.1222ms)
+✔ architectural revision preserves approved atmosphere, structured palette, material optics and light (2.1274ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"f58c3226-442a-434d-9cf0-b6b55b886b46","taskId":"vnext-task-4ecaf024-7e5a-454c-8fd2-171cd741c7bf","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8602,"compileDurationMs":109.69}
+✖ project direction alone reaches formal standard request with height, open transition and usable functions (2093.5957ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"77366e81-0278-4a69-aa66-d1cd76dd8246","taskId":"vnext-task-79caf0a2-03e1-4b13-8562-1ea84ea0d83d","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6838,"compileDurationMs":38.316}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"7f18eb28-084b-47c0-a3cc-00c58c1845c3","taskId":"vnext-task-04cb2dc9-ef9f-4c7e-9423-c9b1d3629688","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6822,"compileDurationMs":25.125}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"2635c27d-edd7-40e9-bde8-0e8e97675e6e","taskId":"vnext-task-38c00418-2f8c-4fe6-a611-483209610d94","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6812,"compileDurationMs":30.938}
+✔ three other industries keep their actual standard request bodies byte-identical to the reviewed baseline (3946.3422ms)
+✔ refinement preserves the integrated direction and approved atmosphere without expanding drift guards (3.0498ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"e5936a39-43eb-4eaf-8904-a11238dc4794","taskId":"vnext-task-c495e374-08e2-4acc-a372-8dbad39c11f8","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":10396,"compileDurationMs":107.282}
+✖ P1-P4 survive confirmation, projection, formal compilation and the actual standard provider adapter (1999.0443ms)
+✔ hall protection changes only four project relation fields and keeps the established art, material and light (3.2255ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"b6c3c55b-717f-423b-a4ea-1ec037a28a5b","taskId":"vnext-task-2be20bd2-e340-4044-a7b9-419aa2f3a3dc","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":11051,"compileDurationMs":98.671}
+✖ open hall, complete service face, single screened threshold and optional cues survive standard provider dispatch (1760.2765ms)
+✔ official space route applies project confirmation before compiler and semantic gates, without mutating history (165.4641ms)
+✔ project, approval and invalid spatial data fail closed in the official route (17.0008ms)
+✔ family scope does not apply a spatial confirmation to another deliverable (0.3154ms)
+✔ other medical, restaurant and hotel standard tasks retain their input; no art direction leaks by industry or name (232.374ms)
+✔ adapter feasibility encodes and verifies actual registered bytes; standard remains zero images (133.2348ms)
+✔ negative, logo, cross-project, missing, duplicate, unapproved, corrupt and path-traversal references fail closed (122.5704ms)
+✔ missing files and parent-directory symlinks cannot leave the authorized review root (35.6963ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"97de027f-5868-4257-bd35-6bfdb0da98a7","taskId":"vnext-task-bef9f661-4323-454f-8514-7a6776465b8a","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8368,"compileDurationMs":119.764}
+✔ application service loads confirmation, preserves gates and sends four ordered original byte inputs through actual image adapter (2180.0605ms)
+✔ independent provider and product capacity are consistent and unsupported models fail closed (412.1817ms)
+✔ registration rejects negative/Logo roles, duplicates, foreign authority, corrupt images and invalid MIME before modifying a directive (1078.5838ms)
+✔ missing, duplicate, foreign project and unknown reference selections never become text generation (1997.5477ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"a5921631-5943-4fad-af17-a6705daeedbd","taskId":"vnext-task-2bb280c2-d2b0-481f-a96c-9ae53f741867","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8368,"compileDurationMs":42.951}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"a13300cb-e7b3-48bd-9916-9704bb2ca540","taskId":"vnext-task-29db5166-a712-4e80-b6d8-8401d43f7fc3","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8368,"compileDurationMs":23.927}
+✔ post-compilation asset edits and missing files fail before any adapter transport (3790.9331ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"758fe61c-64e3-4229-912d-fda71952c9fd","taskId":"vnext-task-23284bec-6085-4efb-b997-062aace517fc","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8368,"compileDurationMs":27.826}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"67926730-a016-47b3-bb8e-059e90b75fb7","taskId":"vnext-task-2f0aea4b-12dc-4366-841e-2d5725334ec9","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8368,"compileDurationMs":83.467}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"0eca0f57-e68f-47a3-bcc4-49157f40b670","taskId":"vnext-task-38dc52f1-39aa-4ad1-8380-335e214f57b1","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8368,"compileDurationMs":34.139}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"9569ba38-22e3-4387-a370-e617fda3e0dd","taskId":"vnext-task-abb70764-8f47-496e-b01e-8b90d16a8e4b","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8368,"compileDurationMs":32.316}
+✔ revocation, authorization change, source directive change and registry role tampering invalidate the execution snapshot (5399.2255ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"d2253d9b-cd69-4f46-b39a-d50ecee5cc23","taskId":"vnext-task-c9baeec5-017f-4ca3-b86f-60d638969006","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8368,"compileDurationMs":22.496}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"27177afa-0e09-465c-b7bf-6db5295921fe","taskId":"vnext-task-16cb2b85-c271-4c0a-8556-ef91b891287e","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8368,"compileDurationMs":24.254}
+✔ provider profile model or protocol changes cannot silently execute a compiled reference task (1996.5645ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"3918398d-3def-4def-831f-79bc6f4dfefa","taskId":"vnext-task-64a4bc61-ef62-4db2-b3b5-fe00774c9dfe","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8368,"compileDurationMs":22.066}
+✔ edited prompts and tampered task snapshots cannot bypass compile or Provider prompt gates (846.5642ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"e08400ff-1f4f-449a-ab9b-8d3c04f764b3","taskId":"vnext-task-b88fc8bf-5963-4e29-b95d-ca8fa8e4a193","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8368,"compileDurationMs":25.275}
+✔ asset parent junctions and registry traversal fail closed (567.9941ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"3d3c7534-5939-4c5c-8716-bfb9ef99aa9e","taskId":"vnext-task-aad0cff5-7856-4c80-909f-b84fc0162990","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6832,"compileDurationMs":17.79}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"3d3c7534-5939-4c5c-8716-bfb9ef99aa9e","taskId":"vnext-task-5f226c0b-8310-4ab3-abc0-f899338d59ab","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6832,"compileDurationMs":19.754}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"046c5237-ce89-4646-b242-ddf62fef0979","taskId":"vnext-task-dcda2699-05e3-4945-9365-0d5c678d1ace","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6816,"compileDurationMs":17.821}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"046c5237-ce89-4646-b242-ddf62fef0979","taskId":"vnext-task-6e7805dc-2fc9-4c7f-b8e4-5ca335730f37","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6816,"compileDurationMs":15.473}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"799eb359-cd45-48fa-a3da-35bb8d660cb0","taskId":"vnext-task-484da90d-1c63-4b1b-b57d-21c79ca96815","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6806,"compileDurationMs":23.546}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"799eb359-cd45-48fa-a3da-35bb8d660cb0","taskId":"vnext-task-917ef3eb-4e8b-43cb-a6ae-5ba5090ae875","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6806,"compileDurationMs":23.768}
+✔ ordinary standard generation remains byte-for-byte identical across medical, restaurant and hotel projects (1818.1021ms)
+✖ public operations verify the approved implementation before registration, compilation, generation and Logo composition (230.4041ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"691d709e-e9a5-41ea-8136-db45caeff2d8","taskId":"vnext-task-d25cec51-713f-4d87-bdf2-5bab9bac8860","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8368,"compileDurationMs":19.978}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"22046679-9aed-43fe-ba60-208d2dad8783","taskId":"vnext-task-821d8f01-71aa-4eaa-840e-ea6efe95587b","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8368,"compileDurationMs":14.571}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"947e6839-2df0-42d6-bc6e-fd5b9a5b288f","taskId":"vnext-task-df8f11e6-a6d5-4efa-98c2-ab1cd8e56c1b","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8368,"compileDurationMs":30.912}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"b6beb966-2065-4727-ae53-650483b6d703","taskId":"vnext-task-3004fd31-df2a-449f-8691-f98d7644954f","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8368,"compileDurationMs":19.669}
+✔ image service independently rejects reordered or relabeled execution references (4171.4865ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"b7eb3adf-1eb0-413a-ab3f-15fe25a83288","taskId":"vnext-task-304f45fa-834d-4707-9c62-18af3f7ca341","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8781,"compileDurationMs":26.627}
+✔ ten unique authorized files are supported; eleven inputs or an empty set are rejected without truncation (3190.8322ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"30e874d4-f14d-419b-8f01-ff6df2aa2e49","taskId":"vnext-task-dd0807a6-7f30-4496-928e-604c267f8ed1","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8368,"compileDurationMs":28.254}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"7b77e915-5b5f-493e-a2d1-1a56f14eb566","taskId":"vnext-task-8239eb46-73b0-43b9-b4d4-be0ab2a4fc61","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8368,"compileDurationMs":17.149}
+✔ a changed analysis context or a malformed current confirmation blocks instead of silently recompiling (3017.3647ms)
+✔ multi-megabyte canonical image uploads register and resolve without regex stack exhaustion (964.2234ms)
+✔ default model request asks for automatic proposals while retaining evidence and unknown-fact boundaries (1.5046ms)
+✔ model output keeps scoped colors, composition and proposal provenance through normalization and autofill (29.2631ms)
+✔ invalid scope or claimed confirmation cannot acquire proposal authority (1.917ms)
+✔ functional relation recognition does not grant authority to identity, motifs or color geometry (30.0494ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"f04c1af5-67c2-4a26-ae81-abc8dadfe029","taskId":"vnext-task-a4777bf9-bd19-446d-8aec-cff32a2cf08c","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7243,"compileDurationMs":48.319}
+✔ automatic suggestion can be confirmed without field rewriting and reaches actual offline image adapter (1404.8909ms)
+✔ commercial refinement keeps architecture, art, lateral composition, palette and guardrails unchanged (2.0041ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"6ff7fd27-bcd8-4fb4-a072-d98103f2003c","taskId":"vnext-task-bad8e0bb-9de2-491f-bf3f-31fc3f9ae6e1","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":11054,"compileDurationMs":111.712}
+✖ restrained service cues, unlettered identity carriers, fine edges and diffuse light reach the standard request (1231.4883ms)
+✔ cross-zone relationship remains a current boundary constraint: Reception circulation connects to treatment through a screened access route (4.4593ms)
+✔ cross-zone relationship remains a current boundary constraint: Reception waiting must not expose consultation conversations (2.0034ms)
+✔ cross-zone relationship remains a current boundary constraint: Recovery return traffic must avoid the reception queue (0.5828ms)
+✔ cross-zone relationship remains a current boundary constraint: Reception is adjacent to consultation with an acoustic privacy boundary (0.3075ms)
+✔ cross-zone relationship remains a current boundary constraint: 接待区到治疗区的患者动线与员工通道分离 (2.6903ms)
+✖ cross-zone relationship remains a current boundary constraint: 接待区与治疗区之间应保持隔声边界 (7.9648ms)
+✖ cross-zone relationship remains a current boundary constraint: 咨询区入口不得从接待座位直接看到，保护隐私 (0.8062ms)
+✔ cross-zone relationship remains a current boundary constraint: 恢复区返回人流不得与接待候客队列交叉 (0.6075ms)
+✔ foreign interior remains off frame: Treatment room contains procedure beds (2.3852ms)
+✔ foreign interior remains off frame: Consultation room furniture and display walls (1.5733ms)
+✔ foreign interior remains off frame: Recovery room equipped with lounge beds (0.8326ms)
+✔ foreign interior remains off frame: 治疗室内有诊疗设备 (0.2019ms)
+✔ mixed clauses preserve the local operational relation without granting interior visibility (0.9037ms)
+✖ a foreign-only privacy statement is retained only in an operational source context (0.5352ms)
+✔ formal compiler retains legitimate relationships once without exposing foreign interiors or mutating input (66.6916ms)
+✔ bilingual background scope works for neutral and chromatic colors (2.28ms)
+✔ identity rank and color names cannot manufacture spatial scope (1.1601ms)
+✖ role, ratio and carrier mutations reach the final compiler while materials and functions stay fixed (34.0979ms)
+✖ conflicting scope is visible, not resolved through matcher order (5.4306ms)
+✖ chromatic and neutral materials preserve carrier, optical behavior and role without adding optics (14.7136ms)
+✔ lighting retains supplied optical interaction and filters identity light (0.7977ms)
+✔ actions retain the supplied object: Circulation flow guides visitors (0.3022ms)
+✔ actions retain the supplied object: 动线流动引导访客 (2.6795ms)
+✔ actions retain the supplied object: Layered light falls on the wall (0.9115ms)
+✔ actions retain the supplied object: 层叠光影照亮接待台 (0.3583ms)
+✔ actions retain the supplied object: Complex curved ceiling and curved walls (0.1815ms)
+✔ actions retain the supplied object: 复杂曲线天花与连续曲墙 (0.133ms)
+✔ actions retain the supplied object: Translucent glass partitions filter views (0.4564ms)
+✖ nonspatial sources are excluded before action derivation (21.2444ms)
+✔ motif translation does not invent geometry and explicit complex architecture survives (19.7433ms)
+✖ functional movement remains outside geometric actions and material paths retain original indices (7.3862ms)
+✖ full compiler preserves complex architectural intent across industries without adding installations (16.1792ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"45cd4e8a-bd3c-4391-91bb-8d1e81ee5529","taskId":"vnext-task-91ff7b67-dbcf-443a-ab65-5a5a067fbd0d","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7359,"compileDurationMs":123.353}
+✖ natural-language form values retain independent semantic fields through official standard business compilation (2388.9408ms)
+✔ ambiguous color scope, misplaced full color prose, missing optics and duplicated function relations require clarification (5775.958ms)
+✔ explicit ordinary layouts retain source wording and provenance without invented architecture (39.842ms)
+✔ decorative or functional prose cannot grant ordinary layout authority (33.0407ms)
+✖ ordinary Chinese and English layout terms pass source gates; genuinely absent architecture stays blocked (16.3292ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"df568f8a-da74-4cc4-b6a2-b7937d76a187","taskId":"vnext-task-f873e279-60b1-4d46-96c5-5abab5a819f8","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":10944,"compileDurationMs":113.967}
+✖ direction correction replaces the rejected art mechanism and preserves five functional targets through the standard adapter (1867.9488ms)
+✔ simplified hall direction remains project-local and does not replace an unedited project in the same store (2617.2321ms)
+✖ baseline lock prevents input/model/code drift and old tasks; other projects remain independent, zero network (905.4863ms)
+✖ bakery-methodology: current-project relations and scope reach suggestion and compiler without mutation (44.094ms)
+✖ outdoor-methodology: current-project relations and scope reach suggestion and compiler without mutation (11.3687ms)
+✔ insufficient evidence remains absent rather than acquiring another project decision (1.0638ms)
+✖ brand or industry renaming alone does not change functional decisions or invent artwork (51.9815ms)
+✖ relationship mutation is preserved as a change, not accepted on object counts (11.8434ms)
+✔ historical P7a formal and provider prompts retain their recorded text hashes (1.9204ms)
+✔ project direction saves and confirms without registering or uploading a single reference (2337.1787ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"67a4ee23-33d5-4f20-be43-8daf5f51cb53","taskId":"vnext-task-fe4be85c-f25b-42a1-94e7-bfa06ed38c5a","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7089,"compileDurationMs":166.12}
+✔ web standard task, effective Packet, official compiler, actual image request and validator share the confirmed direction (3244.8321ms)
+✔ a changed analysis Packet cannot silently overwrite or reuse the confirmed decision (2389.5805ms)
+✔ an analysis request preserves direction and requires explicit reconfirmation even if analysis fails or app restarts (1430.2048ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"da9bd7cb-f001-4350-89cd-41594f8b60ca","taskId":"vnext-task-058676a0-67e3-40dc-b581-cd448e88d774","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7089,"compileDurationMs":26.297}
+✔ decision changes after compile block dispatch and keep all history (906.3355ms)
+✔ cross-project, stale editing, non-confirmation and invalid confirmed decisions are rejected (467.619ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"f3c85ee7-546f-4512-97b0-22dae8ab399b","taskId":"vnext-task-137d4978-7903-4e19-82a5-8db5303ac20d","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7094,"compileDurationMs":25.846}
+✔ a newly confirmed decision invalidates a previously compiled ordinary task with no direction (1237.3483ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"9157b8d6-b937-4550-9440-a2106aefa07f","taskId":"vnext-task-731d2ceb-15b9-4a4b-bf51-c1c098e8bf5d","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7094,"compileDurationMs":33.358}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"c94a9297-21e8-40e8-8b87-49210d5e9f3d","taskId":"vnext-task-1a2e41f6-bae0-4f92-95de-2b905eacac9f","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7078,"compileDurationMs":29.44}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"eeb886a1-2f2d-499b-aa63-61aad1ac333a","taskId":"vnext-task-6f728abd-0303-47ce-a02d-e25a0a89dc98","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7068,"compileDurationMs":17.837}
+✔ ordinary industries remain byte-identical and contain no direction or image request fields (2342.2085ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"77065828-6dc7-4a4e-8312-c6e279799ba2","taskId":"vnext-task-69909044-8c4e-4d7c-909c-c837cc073084","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8368,"compileDurationMs":31.047}
+✔ existing four-image art direction route remains independent and operational (1165.4838ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"e482b801-3c14-4257-8065-852969edf741","taskId":"vnext-task-03205c6c-54e4-450e-a4bc-8d9dc2c8c4b0","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7084,"compileDurationMs":29.593}
+✔ the plain-language web editor saves and confirms a usable direction without JSON editing (494.4915ms)
+✖ guarded public web operations save, confirm, compile, generate, reopen and invalidate on an analysis request (200.3435ms)
+✖ explicit details save persists identity, retains artifacts and requires new analysis/confirmation without calling models (2945.0489ms)
+✔ details editing rejects invalid values, stale saves, another project and active analysis without changing stored data (578.1449ms)
+✔ synthetic Packet comparison uses existing pure compiler, with no confirmation or transport (106.5082ms)
+✔ RKS-01E synthetic field lineage distinguishes routing from scene filtering without transport (274.7448ms)
+✔ FTT fixture is a frozen byte-identical historical restaurant Packet, never a generic example or image1 Run (4.0719ms)
+✔ raw refusal remains evidence; common post-composite adaptation is exact and shared (2.8887ms)
+✔ every B mutation is replayable from the explicit direction delta ledger; no hidden input or property change (5.0956ms)
+✔ all three paired scenes have identical shot, subtype, model, standard, aspect, count and zero-reference controls (0.3215ms)
+✔ project goal reaches the actual commercial-purpose block; full restaurant program has no generic consultation functions (0.851ms)
+✔ visible operating hypotheses obey resolved entrance and dining scope; unresolved authority is audited as a blocker (0.6966ms)
+✔ the original ambiguous pot/steam item is not misreported as preserved English operating fields (0.5777ms)
+✔ material physics, light numeric parameters and unreviewed structures retain original proposal authority (0.6351ms)
+✔ historical human material evidence is independently pinned and does not authorize red brick or new physical parameters (1.2169ms)
+✔ no compiler pass, keyword count or prompt length authorizes visual quality or generation (0.3855ms)
+✔ pure compilation and report inputs cannot dispatch network calls or mutate historical sources (240.5518ms)
+✔ RKS-02B cross-project attempted FTT adoption: FTT 合成目标（并非图 1 实际输入） (28.2918ms)
+✔ RKS-02B cross-project attempted FTT adoption: 商场标准化川味快餐 (5.2442ms)
+✔ RKS-02B cross-project attempted FTT adoption: 临街现代外带小吃店 (3.8638ms)
+✔ RKS-02B cross-project attempted FTT adoption: 社区复古咖啡馆 (15.3209ms)
+✔ RKS-02B cross-project attempted FTT adoption: 写字楼复古中餐厅 (1.0158ms)
+✔ RKS-02B cross-project attempted FTT adoption: 材料不足的餐饮品牌 (10.2908ms)
+✔ a separately declared non-Sichuan restaurant cannot inherit FTT materials or acquire invented cuisine/style mappings (1.1162ms)
+✔ six-case counterexample: FTT 合成目标（并非图 1 实际输入） (23.5453ms)
+✔ six-case counterexample: 商场标准化川味快餐 (0.5485ms)
+✔ six-case counterexample: 临街现代外带小吃店 (0.3777ms)
+✔ six-case counterexample: 社区复古咖啡馆 (0.3172ms)
+✔ six-case counterexample: 写字楼复古中餐厅 (0.2909ms)
+✔ six-case counterexample: 材料不足的餐饮品牌 (0.1531ms)
+✔ order, synonyms, provenance and project-name independence (5.4975ms)
+✔ all six conflict codes with paired evidence and no efficiency-only false positive (2.4826ms)
+✔ unknown tags, conflicting facts and competing archetypes stay unresolved (7.6469ms)
+✔ invalid ownership and fake authority fail closed (1.8315ms)
+✔ candidate cards cannot be mistaken for promoted cross-project knowledge (0.5507ms)
+✔ direction comparison is read-only, controlled and explicitly unconfirmed (5.9668ms)
+✔ prototype has no transport, production imports, brand rules or mutable global store (3.8534ms)
+✔ A/B uses actual B1 projection and pure compilers with controlled synthetic input, no confirmation or transport (304.8666ms)
+✔ pre-analysis boundary cannot read a Packet and never classifies proposals or history as original facts (28.0125ms)
+✔ FTT reviewed upgrade proposal triggers paired direction conflict without making modernity universally incompatible (3.2847ms)
+✔ candidate materials/operations remain separately reviewable and never become confirmed B1 fields (6.2393ms)
+✔ pure execution preserves all caller inputs, original historical Packet and resources across order changes (8.4095ms)
+✔ shadow six-case isolation: FTT 合成目标（并非图 1 实际输入） (1.0597ms)
+✔ shadow six-case isolation: 商场标准化川味快餐 (0.5192ms)
+✔ shadow six-case isolation: 临街现代外带小吃店 (0.8044ms)
+✔ shadow six-case isolation: 社区复古咖啡馆 (1.6134ms)
+✔ shadow six-case isolation: 写字楼复古中餐厅 (0.776ms)
+✔ shadow six-case isolation: 材料不足的餐饮品牌 (0.4234ms)
+✔ changing a brand label or trying to reuse FTT material bindings cannot move project-specific knowledge (1.8369ms)
+✔ evidence binding/ownership and exact mapping fail closed instead of inferring prose (13.689ms)
+✔ unverified intake/goals cannot authorize archetypes, styles or B1 drafts (1.9237ms)
+✔ contradictory confirmed direction values stay unresolved rather than last-write winning (2.63ms)
+✔ verified structured source facts remain facts; user location/customer goals remain goals (0.6116ms)
+✔ the shadow entry is isolated, has no I/O or production imports, and cannot dispatch a model (0.8197ms)
+✔ storefront/front preserves explicit requester, exterior program and exact camera through formal and Provider prompts (135.1004ms)
+✔ all public subtype/shot choices have resolved authority or explicitly fail closed (839.9542ms)
+✔ exterior default camera uses exterior authority: legacy_project_default (18.368ms)
+✔ exterior default camera uses exterior authority: target_scene_default (18.2637ms)
+✔ unknown targets cannot turn an unresolved visible requirement into executable content (44.4174ms)
+✔ complete functional dependencies are preserved without acquiring shot visibility: 点餐区 → 明档制作区 → 取餐区 → 就餐区 (13.3456ms)
+✔ complete functional dependencies are preserved without acquiring shot visibility: ordering area -> food preparation area -> pickup area -> dining area (16.5864ms)
+✔ source clauses retain exact ranges and mixed local/dependency/review dispositions (8.8913ms)
+✔ unsafe networks stay reviewable: 点餐制作取餐就餐的完整关系 (16.7904ms)
+✔ unsafe networks stay reviewable: 入口 → 无法确定的节点 (20.4741ms)
+✔ unsafe networks stay reviewable: whole project operating network (13.4625ms)
+✔ kitchen relationships cannot inherit a boundary authority merely from their container or another entrance clause (16.3131ms)
+✔ dining operations and Chinese actors remain visible with exactly one rendered owner (74.1069ms)
+✔ unlocated storefront activity requires review: chef preparing food (13.0128ms)
+✔ unlocated storefront activity requires review: steam above dishes (30.8484ms)
+✔ interior sightline request awaits a reviewed interface: chef preparing food in kitchen visible through storefront glazing (10.5629ms)
+✔ interior sightline request awaits a reviewed interface: 厨师在厨房制作食品并透过临街橱窗玻璃可见 (7.8332ms)
+✔ interior sightline request awaits a reviewed interface: 入口视线可见厨房制作活动 (11.5934ms)
+✔ an exterior prohibition protects interior privacy as a boundary, never as a rendered interior (8.7212ms)
+✔ cross-project exterior projection follows sources, not industry: 临街外带档口 (15.6116ms)
+✔ cross-project exterior projection follows sources, not industry: 现代连锁快餐 (11.4867ms)
+✔ cross-project exterior projection follows sources, not industry: 社区咖啡馆 (14.3434ms)
+✔ cross-project exterior projection follows sources, not industry: 日本料理餐厅 (8.4475ms)
+✔ cross-project exterior projection follows sources, not industry: 零售商店 (10.2396ms)
+✔ cross-project exterior projection follows sources, not industry: 旅宿服务 (9.7576ms)
+✔ other established commercial scene authorities retain their own local activities (35.8149ms)
+✔ artistic focus is composed once and remains distinct from operations (93.7548ms)
+✔ optional artwork stays optional and a source without art does not acquire an installation (38.1706ms)
+✔ single reception shot keeps other program nodes in the trace rather than displaying their interiors (18.2861ms)
+✔ scene projection preserves trace and does not translate a color or transparency keyword into new geometry (35.7082ms)
+✔ gallery character passes sanitization while identity text remains protected (18.8188ms)
+✔ source-scoped decisions occur once instead of being repeated through strategy/form/organization (15.8346ms)
+✔ unconfirmed color scopes and ratios remain proposals without mandatory large-area authority (24.7046ms)
+✔ brand names and stored brand keys cannot auto-select architecture examples (69.9558ms)
+✔ explicit optional examples require scene and mechanism compatibility and cannot outrank the project (23.6944ms)
+✔ Medical aesthetics: formal route retains complex architecture and explicit strong color without manufacturing art (13.5284ms)
+✔ Hospitality: formal route retains complex architecture and explicit strong color without manufacturing art (15.5041ms)
+✔ Restaurant: formal route retains complex architecture and explicit strong color without manufacturing art (31.3423ms)
+✔ source scopes retain provenance and unknown scenes remain explicitly unresolved (0.6398ms)
+✔ Packet and source adapter reject empty functional data even with a stale ready flag (59.7251ms)
+✔ blank string arrays cannot satisfy spatial decision repair (4.3931ms)
+✔ stale ready packet cannot compile when all functional entries are removed by cleanup (11.7055ms)
+✔ semantic cleanup cannot erase required data and still complete analysis (6.5991ms)
+✖ explicit material installation survives in brand layer, outside the functional and architectural layers (40.8488ms)
+✖ installation preservation retains identity protection without inventing gradient area authority (11.1407ms)
+✖ ordinary hospitality space needs no art object and packaging is unaffected (8.1682ms)
+✔ post-composite identity absence never violates locked assets in generation (3.6642ms)
+✔ generated text is checked independently, with visible evidence (1.0215ms)
+✔ uncertainty and subjective quality hints never authorize regeneration (0.4136ms)
+✔ physical blocking findings retain concrete evidence without triggering paid work (0.3758ms)
+✔ non-composite modes keep identity violation evidence (4.6995ms)
+✔ text regeneration prompt does not claim pixel preservation or local editing (2.281ms)
+✔ a second passed validation never ranks its image over the first; uncertainty is not passed (0.3871ms)
+✔ legacy retry recommendation cannot cause a second generation and paid first image remains available (251.9761ms)
+✔ explicit later invocation keeps both runs and validation summaries independently (286.6713ms)
+✔ validator exception retains successful first run and truthful unverified state (465.2884ms)
+✔ validator request declares stage and asks for separately scoped identity evidence (135.3795ms)
+✔ actual offline composite preserves the original and records confirmed logo source digest (129.5933ms)
+✔ post-composite service requires confirmation and records stage separately from visual acceptance (154.5825ms)
+✔ visible operations have one actual execution owner: lobby/default (114.6966ms)
+✔ visible operations have one actual execution owner: lobby/entrance_view (63.8915ms)
+✔ visible operations have one actual execution owner: lobby/three_quarter_wide (30.3019ms)
+✔ visible operations have one actual execution owner: dining/default (52.283ms)
+✔ visible operations have one actual execution owner: dining/entrance_view (63.73ms)
+✔ visible operations have one actual execution owner: dining/three_quarter_wide (43.7181ms)
+✔ bilingual activity/effect has functional evidence and ownership: 厨师正在备餐 (15.1924ms)
+✔ bilingual activity/effect has functional evidence and ownership: 菜品上方升起热气 (14.8887ms)
+✔ bilingual activity/effect has functional evidence and ownership: 顾客在餐桌用餐 (15.3818ms)
+✔ bilingual activity/effect has functional evidence and ownership: 店员为顾客打包商品 (16.7121ms)
+✔ bilingual activity/effect has functional evidence and ownership: customers browsing products (10.2574ms)
+✔ bilingual activity/effect has functional evidence and ownership: staff handing parcels to visitors (10.6832ms)
+✔ bilingual activity/effect has functional evidence and ownership: guests checking in at reception (13.2815ms)
+✔ bilingual activity/effect has functional evidence and ownership: receptionist greeting visitors (13.9749ms)
+✔ bilingual activity/effect has functional evidence and ownership: water flowing into the basin (15.529ms)
+✔ de-duplication retains an actual rendered owner, not mere raw membership; original indices survive (16.2375ms)
+✔ foreign operations cannot re-enter through the brand branch after scope rejection (19.5019ms)
+✔ an activity also supplied in a signature source has one rendered visible owner (14.9184ms)
+✔ brand duplicate is removed only after the current visible owner exists (21.8094ms)
+✔ a prohibitive list never receives credit as the positive visible execution owner (31.4267ms)
+✔ unknown or wishful fragments stay reviewable without becoming a hard operating requirement (33.8304ms)
+✔ identity, motif, color, decoration and architecture retain distinct semantic routes (34.9333ms)
+✔ mixed clauses retain only the local activity and boundary, with foreign interiors rejected in trace (16.0644ms)
+✔ sourceMap reflects actual renderer ownership, not a broad promise of preservation (25.0888ms)
+✔ reference-first target program still replaces source operations instead of inheriting standard fallback (49.2399ms)
+✔ continuation keeps the target program authoritative and does not expose source dining operations (21.0055ms)
+ℹ tests 237
+ℹ suites 0
+ℹ pass 208
+ℹ fail 29
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 35444.8947
+
+✖ failing tests:
+
+test at packages\visual-workflow\tests\analysis-direction-suggestion.test.ts:1:8343
+✖ read-only existing report RPC supplies suggestions for missing directions without creating any decision files (349.268ms)
+  Error: VISUAL_WORKFLOW_IMPLEMENTATION_CHANGED: src/generation-runtime/space/continuation/target-functional-programs.js
+      at verifyImplementation (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/integrity.js:13:39)
+      at async Object.visual-workflow:report (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/service.js:183:28)
+      at async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\analysis-direction-suggestion.test.ts:106:14)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+
+test at packages\visual-workflow\tests\architectural-integration.test.ts:1:801
+✖ integrated project direction reaches the standard provider body without a reference input (1845.1222ms)
+  AssertionError [ERR_ASSERTION]: Formal Prompt lost functionalRelationships: consultation privacy remains protected while other room interiors stay off frame
+      at check (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/design-direction-editor-evidence.mjs:9:30)
+      at assertEditorSemanticFidelity (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/design-direction-editor-evidence.mjs:28:5)
+      at TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\architectural-integration.test.ts:32:3)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at packages\visual-workflow\tests\architectural-language.test.ts:1:1409
+✖ project direction alone reaches formal standard request with height, open transition and usable functions (2093.5957ms)
+  AssertionError [ERR_ASSERTION]: Formal Prompt lost functionalRelationships: the semi-open transition maintains consultation privacy through offset screened access while other room interiors remain off frame
+      at check (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/design-direction-editor-evidence.mjs:9:30)
+      at assertEditorSemanticFidelity (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/design-direction-editor-evidence.mjs:28:5)
+      at TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\architectural-language.test.ts:47:18)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at packages\visual-workflow\tests\architectural-refinement.test.ts:1:1891
+✖ P1-P4 survive confirmation, projection, formal compilation and the actual standard provider adapter (1999.0443ms)
+  AssertionError [ERR_ASSERTION]: Formal Prompt lost functionalRelationships: consultation privacy remains protected while other room interiors stay off frame
+      at check (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/design-direction-editor-evidence.mjs:9:30)
+      at assertEditorSemanticFidelity (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/design-direction-editor-evidence.mjs:28:5)
+      at TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\architectural-refinement.test.ts:46:3)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at packages\visual-workflow\tests\architecture-commercial-layer.test.ts:1:1621
+✖ open hall, complete service face, single screened threshold and optional cues survive standard provider dispatch (1760.2765ms)
+  AssertionError [ERR_ASSERTION]: Formal Prompt lost functionalRelationships: consultation privacy remains protected while other room interiors stay off frame
+      at check (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/design-direction-editor-evidence.mjs:9:30)
+      at assertEditorSemanticFidelity (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/design-direction-editor-evidence.mjs:28:5)
+      at TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\architecture-commercial-layer.test.ts:37:3)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at packages\visual-workflow\tests\art-direction-route.test.ts:1:9779
+✖ public operations verify the approved implementation before registration, compilation, generation and Logo composition (230.4041ms)
+  Error: VISUAL_WORKFLOW_IMPLEMENTATION_CHANGED: src/generation-runtime/space/continuation/target-functional-programs.js
+      at verifyImplementation (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/integrity.js:13:39)
+      at async Object.visual-workflow:save-profile (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/service.js:183:28)
+      at async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\art-direction-route.test.ts:147:3)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+
+test at packages\visual-workflow\tests\commercial-attribute.test.ts:1:1677
+✖ restrained service cues, unlettered identity carriers, fine edges and diffuse light reach the standard request (1231.4883ms)
+  AssertionError [ERR_ASSERTION]: Formal Prompt lost functionalRelationships: consultation privacy remains protected while other room interiors stay off frame
+      at check (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/design-direction-editor-evidence.mjs:9:30)
+      at assertEditorSemanticFidelity (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/design-direction-editor-evidence.mjs:28:5)
+      at TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\commercial-attribute.test.ts:36:3)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at packages\visual-workflow\tests\cross-zone-operation-scope.test.ts:1:1108
+✖ cross-zone relationship remains a current boundary constraint: 接待区与治疗区之间应保持隔声边界 (7.9648ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + 'off_frame_dependency'
+  - 'cross_scene_constraint'
+
+      at TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\cross-zone-operation-scope.test.ts:18:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'off_frame_dependency',
+    expected: 'cross_scene_constraint',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at packages\visual-workflow\tests\cross-zone-operation-scope.test.ts:1:1108
+✖ cross-zone relationship remains a current boundary constraint: 咨询区入口不得从接待座位直接看到，保护隐私 (0.8062ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  '保护隐私' !== ''
+
+      at TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\cross-zone-operation-scope.test.ts:22:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '保护隐私',
+    expected: '',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at packages\visual-workflow\tests\cross-zone-operation-scope.test.ts:1:2811
+✖ a foreign-only privacy statement is retained only in an operational source context (0.5352ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + 'off_frame_dependency'
+  - 'cross_scene_constraint'
+
+      at TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\cross-zone-operation-scope.test.ts:43:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'off_frame_dependency',
+    expected: 'cross_scene_constraint',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at packages\visual-workflow\tests\design-decision-fidelity.test.js:37:1
+✖ role, ratio and carrier mutations reach the final compiler while materials and functions stay fixed (34.0979ms)
+  Error: SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED: undefined
+      at adaptSpaceSource (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/source-adapter.js:263:25)
+      at compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:250:18)
+      at TestContext.<anonymous> (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/design-decision-fidelity.test.js:38:38)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    code: 'SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED',
+    targetScene: undefined,
+    disposition: 'review_required'
+  }
+
+test at packages\visual-workflow\tests\design-decision-fidelity.test.js:55:1
+✖ conflicting scope is visible, not resolved through matcher order (5.4306ms)
+  Error: SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED: undefined
+      at adaptSpaceSource (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/source-adapter.js:263:25)
+      at compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:250:18)
+      at TestContext.<anonymous> (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/design-decision-fidelity.test.js:57:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    code: 'SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED',
+    targetScene: undefined,
+    disposition: 'review_required'
+  }
+
+test at packages\visual-workflow\tests\design-decision-fidelity.test.js:61:1
+✖ chromatic and neutral materials preserve carrier, optical behavior and role without adding optics (14.7136ms)
+  Error: SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED: undefined
+      at adaptSpaceSource (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/source-adapter.js:263:25)
+      at compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:250:18)
+      at TestContext.<anonymous> (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/design-decision-fidelity.test.js:70:39)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    code: 'SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED',
+    targetScene: undefined,
+    disposition: 'review_required'
+  }
+
+test at packages\visual-workflow\tests\design-decision-fidelity.test.js:88:1
+✖ nonspatial sources are excluded before action derivation (21.2444ms)
+  Error: SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED: undefined
+      at adaptSpaceSource (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/source-adapter.js:263:25)
+      at compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:250:18)
+      at TestContext.<anonymous> (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/design-decision-fidelity.test.js:89:37)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    code: 'SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED',
+    targetScene: undefined,
+    disposition: 'review_required'
+  }
+
+test at packages\visual-workflow\tests\design-decision-fidelity.test.js:108:1
+✖ functional movement remains outside geometric actions and material paths retain original indices (7.3862ms)
+  Error: SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED: undefined
+      at adaptSpaceSource (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/source-adapter.js:263:25)
+      at compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:250:18)
+      at TestContext.<anonymous> (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/design-decision-fidelity.test.js:112:18)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    code: 'SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED',
+    targetScene: undefined,
+    disposition: 'review_required'
+  }
+
+test at packages\visual-workflow\tests\design-decision-fidelity.test.js:117:1
+✖ full compiler preserves complex architectural intent across industries without adding installations (16.1792ms)
+  Error: SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED: undefined
+      at adaptSpaceSource (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/source-adapter.js:263:25)
+      at compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:250:18)
+      at TestContext.<anonymous> (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/design-decision-fidelity.test.js:120:20)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    code: 'SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED',
+    targetScene: undefined,
+    disposition: 'review_required'
+  }
+
+test at packages\visual-workflow\tests\design-direction-editor.test.ts:1:504
+✖ natural-language form values retain independent semantic fields through official standard business compilation (2388.9408ms)
+  AssertionError [ERR_ASSERTION]: Formal Prompt lost functionalRelationships: preserve the consultation privacy boundary while other room interiors remain off frame
+      at check (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/design-direction-editor-evidence.mjs:9:30)
+      at assertEditorSemanticFidelity (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/design-direction-editor-evidence.mjs:28:5)
+      at TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\design-direction-editor.test.ts:16:18)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at packages\visual-workflow\tests\explicit-spatial-layout.test.ts:1:2572
+✖ ordinary Chinese and English layout terms pass source gates; genuinely absent architecture stays blocked (16.3292ms)
+  AssertionError [ERR_ASSERTION]: Got unwanted exception.
+  Actual message: "SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED: undefined"
+      at TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\explicit-spatial-layout.test.ts:36:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: Error: SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED: undefined
+        at adaptSpaceSource (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/source-adapter.js:263:25)
+        at <anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\explicit-spatial-layout.test.ts:36:29)
+        at getActual (node:assert:611:5)
+        at strict.doesNotThrow (node:assert:779:32)
+        at TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\explicit-spatial-layout.test.ts:36:12)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1397:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+        at Test.postRun (node:internal/test_runner/test:1537:19)
+        at Test.run (node:internal/test_runner/test:1462:12),
+    expected: undefined,
+    operator: 'doesNotThrow',
+    diff: 'simple'
+  }
+
+test at packages\visual-workflow\tests\fig2-fig3-spatial-direction.test.ts:1:542
+✖ direction correction replaces the rejected art mechanism and preserves five functional targets through the standard adapter (1867.9488ms)
+  AssertionError [ERR_ASSERTION]: Formal Prompt lost functionalRelationships: treatment activity and private room interiors remain off frame
+      at check (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/design-direction-editor-evidence.mjs:9:30)
+      at assertEditorSemanticFidelity (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/design-direction-editor-evidence.mjs:28:5)
+      at TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\fig2-fig3-spatial-direction.test.ts:21:18)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at packages\visual-workflow\tests\generation-baseline-lock.test.ts:1:516
+✖ baseline lock prevents input/model/code drift and old tasks; other projects remain independent, zero network (905.4863ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /BASELINE_LOCKED/. Input:
+
+  'Error: VISUAL_WORKFLOW_IMPLEMENTATION_CHANGED: src/generation-runtime/space/continuation/target-functional-programs.js'
+
+      at async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\generation-baseline-lock.test.ts:38:3)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: VISUAL_WORKFLOW_IMPLEMENTATION_CHANGED: src/generation-runtime/space/continuation/target-functional-programs.js
+        at verifyImplementation (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/integrity.js:13:39)
+        at async Object.visual-workflow:analyze (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/service.js:183:28)
+        at async waitForActual (node:assert:646:5)
+        at async strict.rejects (node:assert:769:25)
+        at async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\generation-baseline-lock.test.ts:38:3)
+        at async Test.run (node:internal/test_runner/test:1404:7)
+        at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3),
+    expected: /BASELINE_LOCKED/,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at packages\visual-workflow\tests\methodology\acceptance.test.mjs:61:3
+✖ bakery-methodology: current-project relations and scope reach suggestion and compiler without mutation (44.094ms)
+  Error: SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED: custom
+      at adaptSpaceSource (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/source-adapter.js:263:25)
+      at compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:250:18)
+      at TestContext.<anonymous> (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/methodology/acceptance.test.mjs:71:20)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.start (node:internal/test_runner/test:1257:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    code: 'SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED',
+    targetScene: 'custom',
+    disposition: 'review_required'
+  }
+
+test at packages\visual-workflow\tests\methodology\acceptance.test.mjs:61:3
+✖ outdoor-methodology: current-project relations and scope reach suggestion and compiler without mutation (11.3687ms)
+  Error: SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED: custom
+      at adaptSpaceSource (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/source-adapter.js:263:25)
+      at compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:250:18)
+      at TestContext.<anonymous> (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/methodology/acceptance.test.mjs:71:20)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    code: 'SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED',
+    targetScene: 'custom',
+    disposition: 'review_required'
+  }
+
+test at packages\visual-workflow\tests\methodology\acceptance.test.mjs:98:1
+✖ brand or industry renaming alone does not change functional decisions or invent artwork (51.9815ms)
+  Error: SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED: custom
+      at adaptSpaceSource (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/source-adapter.js:263:25)
+      at compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:250:18)
+      at TestContext.<anonymous> (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/methodology/acceptance.test.mjs:105:18)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    code: 'SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED',
+    targetScene: 'custom',
+    disposition: 'review_required'
+  }
+
+test at packages\visual-workflow\tests\methodology\acceptance.test.mjs:110:1
+✖ relationship mutation is preserved as a change, not accepted on object counts (11.8434ms)
+  Error: SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED: custom
+      at adaptSpaceSource (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/source-adapter.js:263:25)
+      at compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:250:18)
+      at TestContext.<anonymous> (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/methodology/acceptance.test.mjs:112:18)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    code: 'SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED',
+    targetScene: 'custom',
+    disposition: 'review_required'
+  }
+
+test at packages\visual-workflow\tests\project-design-direction.test.ts:1:9324
+✖ guarded public web operations save, confirm, compile, generate, reopen and invalidate on an analysis request (200.3435ms)
+  Error: VISUAL_WORKFLOW_IMPLEMENTATION_CHANGED: src/generation-runtime/space/continuation/target-functional-programs.js
+      at verifyImplementation (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/integrity.js:13:39)
+      at async Object.visual-workflow:save-profile (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/service.js:183:28)
+      at async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\project-design-direction.test.ts:119:3)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+
+test at packages\visual-workflow\tests\project-details-editing.test.ts:1:442
+✖ explicit details save persists identity, retains artifacts and requires new analysis/confirmation without calling models (2945.0489ms)
+  Error: VISUAL_WORKFLOW_IMPLEMENTATION_CHANGED: src/generation-runtime/space/continuation/target-functional-programs.js
+      at verifyImplementation (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/integrity.js:13:39)
+      at async Object.visual-workflow:update-project (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/service.js:183:28)
+      at async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\project-details-editing.test.ts:20:17)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+
+test at packages\visual-workflow\tests\spatial-quality.test.ts:1:3770
+✖ explicit material installation survives in brand layer, outside the functional and architectural layers (40.8488ms)
+  Error: SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED: undefined
+      at adaptSpaceSource (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/source-adapter.js:263:25)
+      at TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\spatial-quality.test.ts:67:18)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    code: 'SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED',
+    targetScene: undefined,
+    disposition: 'review_required'
+  }
+
+test at packages\visual-workflow\tests\spatial-quality.test.ts:1:5410
+✖ installation preservation retains identity protection without inventing gradient area authority (11.1407ms)
+  Error: SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED: undefined
+      at adaptSpaceSource (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/source-adapter.js:263:25)
+      at compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:250:18)
+      at TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\spatial-quality.test.ts:87:20)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    code: 'SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED',
+    targetScene: undefined,
+    disposition: 'review_required'
+  }
+
+test at packages\visual-workflow\tests\spatial-quality.test.ts:1:6338
+✖ ordinary hospitality space needs no art object and packaging is unaffected (8.1682ms)
+  Error: SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED: undefined
+      at adaptSpaceSource (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/source-adapter.js:263:25)
+      at TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\spatial-quality.test.ts:94:18)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    code: 'SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED',
+    targetScene: undefined,
+    disposition: 'review_required'
+  }

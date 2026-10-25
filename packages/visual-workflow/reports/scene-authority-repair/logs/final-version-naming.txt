@@ -1,0 +1,5 @@
+
+> masterpiece-os@5.0.0-rc.1 verify:version-naming
+> node ./scripts/verify-version-naming.mjs
+
+[version-naming] PASS — current product semantics use capability names; compatibility identifiers remain allowed.

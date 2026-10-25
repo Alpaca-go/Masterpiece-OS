@@ -1,0 +1,35 @@
+
+> masterpiece-os@5.0.0-rc.1 verify:version-consistency
+> node ./scripts/verify-version-consistency.mjs
+
+Product version: 5.0.0-rc.1
+
+  [ok]   VERSION file
+  [ok]   package.json version matches VERSION
+  [ok]   package-lock.json root version matches VERSION
+  [ok]   no sub-directory package-lock.json files
+  [ok]   apps/cli/src/runtime-trace.js DEFAULT_APP_VERSION matches VERSION
+  [ok]   removed Desktop workspace is absent from package-lock.json
+
+Internal packages (packages/*):
+  [ok]     packages/analysis-runtime: private + version 0.0.0
+  [ok]     packages/creative-intelligence: private + version 0.0.0
+  [ok]     packages/creative-production-runtime: private + version 0.0.0
+  [ok]     packages/document-ingestion: private + version 0.0.0
+  [ok]     packages/evaluation-loop-contracts: private + version 0.0.0
+  [ok]     packages/image-generation-adapter: private + version 0.0.0
+  [ok]     packages/image-generation-contracts: private + version 0.0.0
+  [ok]     packages/image-generation-runtime: private + version 0.0.0
+  [ok]     packages/image-provider-dashscope: private + version 0.0.0
+  [ok]     packages/model-benchmark: private + version 0.0.0
+  [ok]     packages/model-registry: private + version 0.0.0
+  [ok]     packages/model-runtime: private + version 0.0.0
+  [ok]     packages/project-contracts: private + version 0.0.0
+  [ok]     packages/reference-asset-inspector: private + version 0.0.0
+  [ok]     packages/runtime-core: private + version 0.0.0
+  [ok]     packages/visual-workflow: private + version 0.0.0
+
+Lab packages (labs/*):
+  [ok]     labs/reference-style-conversion: private
+
+PASS  version consistency gate completed without inconsistencies.

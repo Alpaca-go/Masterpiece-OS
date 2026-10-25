@@ -1,5 +1,19 @@
 const TARGET_FUNCTIONAL_PROGRAM_VERSION = "space-target-functional-program@1.0.0";
 const TARGET_FUNCTIONAL_PROGRAMS = Object.freeze({
+  // Exterior authority describes the camera's domain, never an inferred
+  // interior program or permission to see through a window.
+  storefront: Object.freeze({
+    sceneId: "storefront",
+    sceneLabel: "门店外立面",
+    viewStrategy: "exterior_front_view",
+    requiredFunctions: ["Exterior arrival and identification"],
+    requiredSpatialElements: ["Facade boundary", "Threshold and street relationship"],
+    circulationRequirements: ["Street-to-threshold access"],
+    privacyRequirements: [],
+    scaleRequirements: [],
+    operationalRequirements: [],
+    sourceProgramElementsToDrop: []
+  }),
   consultation: Object.freeze({
     sceneId: "consultation",
     sceneLabel: "\u54A8\u8BE2\u5BA4",
@@ -331,6 +345,7 @@ function resolveTargetFunctionalProgram(scene, customSceneDescription) {
   });
 }
 const TARGET_VIEW_STRATEGIES = Object.freeze({
+  storefront: "exterior_front_view",
   entrance: "threshold_arrival_view",
   lobby: "public_overview_view",
   reception: "reception_arrival_view",

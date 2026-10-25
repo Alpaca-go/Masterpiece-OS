@@ -1,0 +1,114 @@
+✖ storefront/front preserves explicit requester, exterior program and exact camera through formal and Provider prompts (55.0755ms)
+✔ all public subtype/shot choices have resolved authority or explicitly fail closed (444.9089ms)
+✔ exterior default camera uses exterior authority: legacy_project_default (13.3833ms)
+✔ exterior default camera uses exterior authority: target_scene_default (9.817ms)
+✖ unknown targets cannot turn an unresolved visible requirement into executable content (0.6605ms)
+✔ complete functional dependencies are preserved without acquiring shot visibility: 点餐区 → 明档制作区 → 取餐区 → 就餐区 (9.3548ms)
+✔ complete functional dependencies are preserved without acquiring shot visibility: ordering area -> food preparation area -> pickup area -> dining area (6.23ms)
+✔ source clauses retain exact ranges and mixed local/dependency/review dispositions (10.6132ms)
+✔ unsafe networks stay reviewable: 点餐制作取餐就餐的完整关系 (6.0168ms)
+✔ unsafe networks stay reviewable: 入口 → 无法确定的节点 (7.3956ms)
+✔ unsafe networks stay reviewable: whole project operating network (6.071ms)
+✔ kitchen relationships cannot inherit a boundary authority merely from their container or another entrance clause (7.1438ms)
+✔ dining operations and Chinese actors remain visible with exactly one rendered owner (24.5826ms)
+✔ unlocated storefront activity requires review: chef preparing food (6.9711ms)
+✔ unlocated storefront activity requires review: steam above dishes (7.5395ms)
+✔ interior sightline request awaits a reviewed interface: chef preparing food in kitchen visible through storefront glazing (5.7113ms)
+✔ interior sightline request awaits a reviewed interface: 厨师在厨房制作食品并透过临街橱窗玻璃可见 (7.719ms)
+✔ interior sightline request awaits a reviewed interface: 入口视线可见厨房制作活动 (6.2474ms)
+✔ an exterior prohibition protects interior privacy as a boundary, never as a rendered interior (13.0947ms)
+✔ cross-project exterior projection follows sources, not industry: 临街外带档口 (13.1499ms)
+✔ cross-project exterior projection follows sources, not industry: 现代连锁快餐 (11.1432ms)
+✔ cross-project exterior projection follows sources, not industry: 社区咖啡馆 (8.7491ms)
+✔ cross-project exterior projection follows sources, not industry: 日本料理餐厅 (8.0248ms)
+✔ cross-project exterior projection follows sources, not industry: 零售商店 (9.7874ms)
+✔ cross-project exterior projection follows sources, not industry: 旅宿服务 (8.1252ms)
+✖ other established commercial scene authorities retain their own local activities (0.2717ms)
+ℹ tests 26
+ℹ suites 0
+ℹ pass 23
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1240.9243
+
+✖ failing tests:
+
+test at packages\visual-workflow\tests\scene-authority-repair.test.ts:1:894
+✖ storefront/front preserves explicit requester, exterior program and exact camera through formal and Provider prompts (55.0755ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + '生成一张完整、可商用的品牌视觉图片。\n' +
+  +   '准确执行已确认的品牌规则、中文商业设计语境与交付物职责。\n' +
+  +   'Output aspect ratio: 16:9. Generate exactly one image.\n' +
+  +   '# Task\n' +
+  - '# Task\n' +
+      '\n' +
+      'Generate a single premium-grade space image for **Offline service project** (Independent commercial service).\n' +
+      'Scene: `storefront` / front.\n' +
+      'Task: Show the selected scene using only its authorized activities.\n' +
+      'Aspect ratio: 16:9.\n' +
+
+      at TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:24:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.start (node:internal/test_runner/test:1257:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: "生成一张完整、可商用的品牌视觉图片。\n准确执行已确认的品牌规则、中文商业设计语境与交付物职责。\nOutput aspect ratio: 16:9. Generate exactly one image.\n# Task\n\nGenerate a single premium-grade space image for **Offline service project** (Independent commercial service).\nScene: `storefront` / front.\nTask: Show the selected scene using only its authorized activities.\nAspect ratio: 16:9.\n\n# Spatial Intent\n\n> The experience goal and spatial strategy set the tone before any building mechanism.\n\n**Experience Goal**: A clear sequence of service zones\n\n**Spatial Strategy**: source-scoped decisions are stated once in Architecture Language.\n\n# Architecture Language\n\n> Preserve the supplied subjects, carriers and action scopes. These are project proposals; do not add walls, ceilings or lighting hardware from generic action words.\n\n**Source-scoped architectural decisions (each stated once)**:\n\n# Architecture Context\n\nNo optional architecture examples have been selected for this request. Brand name and industry do not grant example authority.\nUse project decisions and the current user instruction. Artistic focus may coexist with practical reception, waiting, access and privacy requirements; examples cannot replace either dimension.\nDo not infer construction details from historical accepted images or from an industry's customary appearance. Preserve explicitly requested complex architecture without importing unrelated scene mechanisms.\n\n# Architecture-Function Bridge\n\n> Artistic character and commercial operations are simultaneous requirements. Industry constrains use, access and privacy; it does not dictate an architectural style.\n\n**Commercial Purpose**: A welcoming service destination\n\n**Spatial Translation (architecture → commercial action)**:\nCurrent-shot nodes and relationships are stated in Functional & Commercial Requirement.\n\n**Operation Constraints (hard, must hold)**:\n\n\n**Human Experience (path + rhythm)**:\n\n\n**Commercial Reality (compatible with project artistic character)**:\nPreserve the supplied differentiators in Functional & Commercial Requirement together with the artistic focus in Composition.\n\n**Concept Drift Guards (must avoid)**:\n- (none)\n\n**Cross-zone operational constraints (current-shot boundary only; other interiors remain off frame)**:\n- No additional cross-zone relationship is established by the supplied sources.\n\nOff-frame program dependencies are retained in the source trace. Preserve access and privacy boundaries without exposing the interiors of other program areas.\n\n# Architectural Concept\n\nUse the experience goal in Spatial Intent and the source-scoped decisions in Architecture Language together with the artistic hierarchy in Composition.\nUser instructions take priority over model proposals and optional examples. Do not make a generic building template displace the project's artistic expression.\n\n# Architecture DNA\n\n**Decision relationships**: Architecture Language owns architectural actions; Spatial Color Roles owns color scope; Material System owns optical behavior; Composition owns focal hierarchy.\nKeep buildable junctions, readable circulation and human scale. Complex curves, restrained geometry, strong color and gallery-like character remain available when supported by project intent. No industry-wide aesthetic is imposed.\n\n# Brand Translation\n\n> Preserve project identity and artistic expression together with the functional program. The artistic focus is stated in Composition.\n> Brand identity (logo, wordmark, signage text) is composited AFTER generation; do NOT render it in-scene.\n**Brand**: Offline service project | **Industry**: Independent commercial service\n**Brand Role**: see the Commercial Purpose in Architecture-Function Bridge.\n**Brand Role Manifestation in Space**:\n\n# Functional & Commercial Requirement\n\n**Current-shot Program Nodes (source-scoped; other areas remain off frame)**:\n\n\n**Functional Network**:\n\n\n**Visible hierarchy**: see Composition; an artistic focus does not replace operational facilities.\n\n**Positive Differentiators**:\n- (none)\n\n# Spatial Color Roles\n\nPalette identity rank does not determine interior area. Entries below are existing model proposals, not user-confirmed facts.\nProposed scopes and ratios retain their source meaning for review. Do not execute an unconfirmed dominant field or area allocation as a mandatory instruction. Area authority remains pending unless explicitly supplied by the current user instruction; that instruction takes priority.\nUnknown ratios stay unknown. Neither a color name, a palette rank, a gradient nor a proposed role independently authorizes geometry or whole-room color coverage.\n- warm white | palette: primary | proposed spatial scope: unspecified | execution authority: proposal_only\n  role: clear base\n  area ratio: unknown\n- natural wood | palette: secondary | proposed spatial scope: unspecified | execution authority: proposal_only\n  role: human warmth\n  area ratio: unknown\n- identity black | palette: accent | proposed spatial scope: unspecified | execution authority: proposal_only\n  role: precise identity emphasis\n  area ratio: unknown\n\n# Material System\n\n- **matte metal**: precise edge\n  brand role: makes service order legible\n  avoid: mirror finish\n\n# Lighting System\n\n**Primary Strategy**: soft area light\n**Contrast**: low contrast\n**Light / Material Behavior**:\n- soft reflection\n**Lighting Prohibitions**:\n- colored effect light\n\n# Composition & Photography\n\n**Output Ratio**: 16:9\n**Project Artistic Focus (separate from operational facilities)**:\n- No artistic installation is required by the supplied sources.\nDo not demote a supplied core artwork to background texture. Its mounting, dimensions and optical construction remain unspecified unless supplied; do not invent them.\n**Operational Elements (remain usable alongside the artistic focus)**:\n**Positive Differentiators**:\nUse the differentiators in Functional & Commercial Requirement without repeating them as additional demands.\nUse a credible commercial architectural camera: controlled perspective, depth, hierarchy and human scale.\n\n# Rendering Requirements\n\n- High-end architectural visualization, photoreal, physically based materials.\n- Balanced exposure, accurate white balance, readable texture and shadow detail.\n- No blown highlights; clean, resolved, professionally finished.\n\n# Prohibited (fail-closed)\n\nThe following MUST NOT appear in the generated image:\n- no rendered brand name, wordmark, logotype, signage text, or illuminated letters in the scene\n- no generic AI clinic look, no stock-photo medical aesthetic template\n- mirror finish\n- colored effect light\n- neon gradient",
+    expected: "# Task\n\nGenerate a single premium-grade space image for **Offline service project** (Independent commercial service).\nScene: `storefront` / front.\nTask: Show the selected scene using only its authorized activities.\nAspect ratio: 16:9.\n\n# Spatial Intent\n\n> The experience goal and spatial strategy set the tone before any building mechanism.\n\n**Experience Goal**: A clear sequence of service zones\n\n**Spatial Strategy**: source-scoped decisions are stated once in Architecture Language.\n\n# Architecture Language\n\n> Preserve the supplied subjects, carriers and action scopes. These are project proposals; do not add walls, ceilings or lighting hardware from generic action words.\n\n**Source-scoped architectural decisions (each stated once)**:\n\n# Architecture Context\n\nNo optional architecture examples have been selected for this request. Brand name and industry do not grant example authority.\nUse project decisions and the current user instruction. Artistic focus may coexist with practical reception, waiting, access and privacy requirements; examples cannot replace either dimension.\nDo not infer construction details from historical accepted images or from an industry's customary appearance. Preserve explicitly requested complex architecture without importing unrelated scene mechanisms.\n\n# Architecture-Function Bridge\n\n> Artistic character and commercial operations are simultaneous requirements. Industry constrains use, access and privacy; it does not dictate an architectural style.\n\n**Commercial Purpose**: A welcoming service destination\n\n**Spatial Translation (architecture → commercial action)**:\nCurrent-shot nodes and relationships are stated in Functional & Commercial Requirement.\n\n**Operation Constraints (hard, must hold)**:\n\n\n**Human Experience (path + rhythm)**:\n\n\n**Commercial Reality (compatible with project artistic character)**:\nPreserve the supplied differentiators in Functional & Commercial Requirement together with the artistic focus in Composition.\n\n**Concept Drift Guards (must avoid)**:\n- (none)\n\n**Cross-zone operational constraints (current-shot boundary only; other interiors remain off frame)**:\n- No additional cross-zone relationship is established by the supplied sources.\n\nOff-frame program dependencies are retained in the source trace. Preserve access and privacy boundaries without exposing the interiors of other program areas.\n\n# Architectural Concept\n\nUse the experience goal in Spatial Intent and the source-scoped decisions in Architecture Language together with the artistic hierarchy in Composition.\nUser instructions take priority over model proposals and optional examples. Do not make a generic building template displace the project's artistic expression.\n\n# Architecture DNA\n\n**Decision relationships**: Architecture Language owns architectural actions; Spatial Color Roles owns color scope; Material System owns optical behavior; Composition owns focal hierarchy.\nKeep buildable junctions, readable circulation and human scale. Complex curves, restrained geometry, strong color and gallery-like character remain available when supported by project intent. No industry-wide aesthetic is imposed.\n\n# Brand Translation\n\n> Preserve project identity and artistic expression together with the functional program. The artistic focus is stated in Composition.\n> Brand identity (logo, wordmark, signage text) is composited AFTER generation; do NOT render it in-scene.\n**Brand**: Offline service project | **Industry**: Independent commercial service\n**Brand Role**: see the Commercial Purpose in Architecture-Function Bridge.\n**Brand Role Manifestation in Space**:\n\n# Functional & Commercial Requirement\n\n**Current-shot Program Nodes (source-scoped; other areas remain off frame)**:\n\n\n**Functional Network**:\n\n\n**Visible hierarchy**: see Composition; an artistic focus does not replace operational facilities.\n\n**Positive Differentiators**:\n- (none)\n\n# Spatial Color Roles\n\nPalette identity rank does not determine interior area. Entries below are existing model proposals, not user-confirmed facts.\nProposed scopes and ratios retain their source meaning for review. Do not execute an unconfirmed dominant field or area allocation as a mandatory instruction. Area authority remains pending unless explicitly supplied by the current user instruction; that instruction takes priority.\nUnknown ratios stay unknown. Neither a color name, a palette rank, a gradient nor a proposed role independently authorizes geometry or whole-room color coverage.\n- warm white | palette: primary | proposed spatial scope: unspecified | execution authority: proposal_only\n  role: clear base\n  area ratio: unknown\n- natural wood | palette: secondary | proposed spatial scope: unspecified | execution authority: proposal_only\n  role: human warmth\n  area ratio: unknown\n- identity black | palette: accent | proposed spatial scope: unspecified | execution authority: proposal_only\n  role: precise identity emphasis\n  area ratio: unknown\n\n# Material System\n\n- **matte metal**: precise edge\n  brand role: makes service order legible\n  avoid: mirror finish\n\n# Lighting System\n\n**Primary Strategy**: soft area light\n**Contrast**: low contrast\n**Light / Material Behavior**:\n- soft reflection\n**Lighting Prohibitions**:\n- colored effect light\n\n# Composition & Photography\n\n**Output Ratio**: 16:9\n**Project Artistic Focus (separate from operational facilities)**:\n- No artistic installation is required by the supplied sources.\nDo not demote a supplied core artwork to background texture. Its mounting, dimensions and optical construction remain unspecified unless supplied; do not invent them.\n**Operational Elements (remain usable alongside the artistic focus)**:\n**Positive Differentiators**:\nUse the differentiators in Functional & Commercial Requirement without repeating them as additional demands.\nUse a credible commercial architectural camera: controlled perspective, depth, hierarchy and human scale.\n\n# Rendering Requirements\n\n- High-end architectural visualization, photoreal, physically based materials.\n- Balanced exposure, accurate white balance, readable texture and shadow detail.\n- No blown highlights; clean, resolved, professionally finished.\n\n# Prohibited (fail-closed)\n\nThe following MUST NOT appear in the generated image:\n- no rendered brand name, wordmark, logotype, signage text, or illuminated letters in the scene\n- no generic AI clinic look, no stock-photo medical aesthetic template\n- mirror finish\n- colored effect light\n- neon gradient",
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at packages\visual-workflow\tests\scene-authority-repair.test.ts:1:3247
+✖ unknown targets cannot turn an unresolved visible requirement into executable content (0.6605ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + Comparison {}
+  - Comparison {
+  -   code: 'SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED'
+  - }
+
+      at TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:49:70)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: No vNext template registered for subtype.space.unknown_scene
+        at file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/template-router.js:12:26
+        at Array.map (<anonymous>)
+        at routeShortChainTemplates (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/template-router.js:10:25)
+        at compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:69:17)
+        at compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+        at assert.throws.code (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:49:81)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:49:70)
+        at Test.runInAsyncScope (node:async_hooks:227:14),
+    expected: { code: 'SPACE_TARGET_SCENE_AUTHORITY_UNRESOLVED' },
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at packages\visual-workflow\tests\scene-authority-repair.test.ts:1:9728
+✖ other established commercial scene authorities retain their own local activities (0.2717ms)
+  Error: No vNext template registered for subtype.space.retail
+      at file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/template-router.js:12:26
+      at Array.map (<anonymous>)
+      at routeShortChainTemplates (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/template-router.js:10:25)
+      at compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:69:17)
+      at compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+      at TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:146:18)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)

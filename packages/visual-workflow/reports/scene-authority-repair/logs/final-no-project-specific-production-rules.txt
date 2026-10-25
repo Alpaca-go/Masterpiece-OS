@@ -1,0 +1,8 @@
+
+> masterpiece-os@5.0.0-rc.1 verify:no-project-specific-production-rules
+> node ./scripts/verify-no-project-specific-production-rules.mjs
+
+{
+  "status": "pass",
+  "violations": []
+}
