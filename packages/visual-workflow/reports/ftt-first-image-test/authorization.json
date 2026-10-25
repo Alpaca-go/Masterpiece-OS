@@ -1,0 +1,31 @@
+{
+  "source": "explicit human message in current conversation",
+  "designApproved": true,
+  "realGenerationAuthorized": true,
+  "scope": {
+    "modelDisplay": "Seedream 5.0 Pro",
+    "model": "doubao-seedream-5-0-pro-260628",
+    "adapterId": "seedream-5.0-pro",
+    "generationBasis": "standard",
+    "scene": "dining",
+    "shot": "three_quarter_wide",
+    "shotSource": "user_explicit",
+    "aspectRatio": "16:9",
+    "imageSize": "2K",
+    "count": 1,
+    "references": 0,
+    "logoUsageMode": "post_composite"
+  },
+  "authorizationText": "我确认冯烫烫 RKS-02E0 首张测试图设计方案，授权进入 RKS-02E1 单张真实生图测试。\n\n执行范围严格限定为：\n- 项目：冯烫烫\n- 使用已确认的 E0 候选输入\n- 场景：dining\n- 镜头：three_quarter_wide\n- 模型：Seedream 5.0 Pro\n- 策略：standard\n- 画幅：16:9\n- 尺寸：2K\n- 数量：1\n- 参考图：0\n- 自动重试：0\n- 不执行额外真实分析\n- 不执行模型校验\n- Logo 与品牌文字继续 post_composite\n- 生成完成后立即停止，提交运行证据、实际 Prompt、费用记录与结果图，等待我人工验收\n\n本次授权仅覆盖上述单张真实生图，不推导为其他场景、其他镜头、额外轮次或其他模型调用授权。若出现异常、未知状态、权限不清、输入指纹不一致或费用信息缺失，必须停止，不自动补跑。",
+  "stopCondition": "input fingerprint mismatch detected in confirmation projection",
+  "authorizedCalls": 1,
+  "consumedCalls": 0,
+  "notAuthorized": [
+    "analysis",
+    "model validation",
+    "automatic retries",
+    "other models/scenes/shots",
+    "production project mutation"
+  ],
+  "persistedB1Confirmation": false
+}

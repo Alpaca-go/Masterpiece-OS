@@ -1,0 +1,11 @@
+{
+  "status": "not_incurred_no_dispatch",
+  "providerModel": "doubao-seedream-5-0-pro-260628",
+  "imageRequests": 0,
+  "usage": null,
+  "accountSettlement": null,
+  "currentUnitPrice": null,
+  "priceLookupPerformed": false,
+  "attributablePaidOperations": 0,
+  "statement": "No model request was submitted, so this task caused no model-call charge. No invoice or current tariff is claimed. Stopped on the earlier fingerprint mismatch; billing and credential preflight were not continued."
+}

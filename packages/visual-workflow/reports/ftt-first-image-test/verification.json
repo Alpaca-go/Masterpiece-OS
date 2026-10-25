@@ -1,0 +1,23 @@
+{
+  "checks": [
+    {
+      "command": "npm run repo:verify",
+      "exitCode": 0,
+      "currentFlows": "pass",
+      "productionAndIsolationGuards": "pass",
+      "realProviderCalls": 0
+    },
+    {
+      "command": "offline evidence inventory and exact design-field comparison",
+      "exitCode": 0
+    }
+  ],
+  "log": {
+    "path": "verification-output.txt",
+    "capturedSha256": "d30b0922f0a4a138a395c2633eaa4a567501a44f5fa33a00d21445a0eff89c35",
+    "sha256": "9b089249ed62edfc6fb30da5d9183a7e0523e594f8e399db738cdaa19473c3ba",
+    "normalization": "CRLF to LF and trailing horizontal whitespace only"
+  },
+  "protectedDiff": [],
+  "scope": "Evidence documents only; no product behavior changes or new tests"
+}

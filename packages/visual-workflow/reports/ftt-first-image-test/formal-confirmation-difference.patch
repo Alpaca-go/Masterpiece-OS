@@ -1,0 +1,28 @@
+diff --git a/packages/visual-workflow/reports/ftt-first-image-preflight/formal-prompt.txt b/packages/visual-workflow/reports/ftt-first-image-test/diagnostic-confirmed-formal.txt
+index 85deb526..6d00e077 100644
+--- a/packages/visual-workflow/reports/ftt-first-image-preflight/formal-prompt.txt
++++ b/packages/visual-workflow/reports/ftt-first-image-test/diagnostic-confirmed-formal.txt
+@@ -24 +24 @@ Aspect ratio: 16:9.
+-> Preserve the supplied subjects, carriers and action scopes. These are project proposals; do not add walls, ceilings or lighting hardware from generic action words.
++> User-confirmed spatial design intent: preserve the supplied subjects, carriers and action scopes. Construction details remain unverified; do not invent hardware.
+@@ -109 +109 @@ Keep buildable junctions, readable circulation and human scale. Complex curves,
+-Palette identity rank does not determine interior area. Entries below are existing model proposals, not user-confirmed facts.
++Palette identity rank does not determine interior area. Entries below are user-confirmed design intent, not verified material facts. Execute the explicit supplied surface scopes; leave unspecified ratios unknown.
+@@ -112 +112 @@ Unknown ratios stay unknown. Neither a color name, a palette rank, a gradient no
+-- 品牌红 | palette: primary | proposed spatial scope: local_accent | execution authority: proposal_only
++- 品牌红 | palette: primary | proposed spatial scope: local_accent | execution authority: user_confirmed_design_intent
+@@ -116 +116 @@ Unknown ratios stay unknown. Neither a color name, a palette rank, a gradient no
+-- 品牌黑 | palette: secondary | proposed spatial scope: detail_trim | execution authority: proposal_only
++- 品牌黑 | palette: secondary | proposed spatial scope: detail_trim | execution authority: user_confirmed_design_intent
+@@ -120 +120 @@ Unknown ratios stay unknown. Neither a color name, a palette rank, a gradient no
+-- 暖木色 | palette: secondary | proposed spatial scope: secondary_surface | execution authority: proposal_only
++- 暖木色 | palette: secondary | proposed spatial scope: secondary_surface | execution authority: user_confirmed_design_intent
+@@ -124 +124 @@ Unknown ratios stay unknown. Neither a color name, a palette rank, a gradient no
+-- 砖红色 | palette: secondary | proposed spatial scope: secondary_surface | execution authority: proposal_only
++- 砖红色 | palette: secondary | proposed spatial scope: secondary_surface | execution authority: user_confirmed_design_intent
+@@ -128 +128 @@ Unknown ratios stay unknown. Neither a color name, a palette rank, a gradient no
+-- 赤陶色 | palette: secondary | proposed spatial scope: secondary_surface | execution authority: proposal_only
++- 赤陶色 | palette: secondary | proposed spatial scope: secondary_surface | execution authority: user_confirmed_design_intent
+@@ -132 +132 @@ Unknown ratios stay unknown. Neither a color name, a palette rank, a gradient no
+-- 浅抹灰色 | palette: secondary | proposed spatial scope: secondary_surface | execution authority: proposal_only
++- 浅抹灰色 | palette: secondary | proposed spatial scope: secondary_surface | execution authority: user_confirmed_design_intent

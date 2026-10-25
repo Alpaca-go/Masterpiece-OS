@@ -1,0 +1,37 @@
+{
+  "algorithm": "SHA256 exact file bytes",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "c8ceb59ef051d9068d012f6560809324eb10b1469c7b24036137fbc235a21f67"
+    },
+    {
+      "path": "authorization.json",
+      "sha256": "4dcdd8294cbf5913bc247feff06ec179389dacb88a7a216d1f1ebc7a7c313d0c"
+    },
+    {
+      "path": "confirmation-diagnostic-input.json",
+      "sha256": "cac8b499ecd78db3b50c13198b83b52936981ae591e1c80d57bd6e32eba1c1ac"
+    },
+    {
+      "path": "diagnostic-confirmed-formal.txt",
+      "sha256": "747d475e3128be1eb8e992ab554ad8e0d75ed975095f0f65820968074a524f01"
+    },
+    {
+      "path": "diagnostic-confirmed-provider.txt",
+      "sha256": "675607e36effa5e2a0ddc2d9e67d2e1604b9da4ab73bdbe207530d4bd615740a"
+    },
+    {
+      "path": "fee-record.json",
+      "sha256": "4f4a24798f34055bbefdafce519956e06cb8be77766a35de9bb42b1bb99873b2"
+    },
+    {
+      "path": "formal-confirmation-difference.patch",
+      "sha256": "97d5b8b687a8c9572ccb0caf1c4661465eb65e8cd8624b6b8f4f9b24bd05ffdd"
+    },
+    {
+      "path": "preflight-stop.json",
+      "sha256": "b1ec200995bb78bf35616df6b54175b17dd06a052a9c274cdfbe7714b0729b7d"
+    }
+  ]
+}

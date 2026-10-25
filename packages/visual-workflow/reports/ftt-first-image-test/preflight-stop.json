@@ -1,0 +1,162 @@
+{
+  "baseline": "506fe73920a138d0a46335fd1acb4752311eab8f",
+  "branch": "codex/rks-ftt-first-image-test",
+  "status": "stopped_before_dispatch",
+  "trigger": "INPUT_FINGERPRINT_MISMATCH_AFTER_CONFIRMATION_PROJECTION",
+  "frozenArtifacts": "pass",
+  "frozenFormalReplay": "pass",
+  "distinction": "E0 bytes are intact. User signature is acknowledged. A minimal application of that signature via the existing confirmation compiler changes effective authority and text; this is diagnostic output, not an actual service Run.",
+  "comparisons": {
+    "effectivePacket": {
+      "frozen": "86ff632cf2e0a16c36dc67fb335cb0aacc279b5d5ec7a8e09781760d50989d26",
+      "diagnosticConfirmed": "7eb82c2ee967632705c32328852838d01800cc487d1b35b07b583c4a0e250ceb",
+      "match": false
+    },
+    "formalPrompt": {
+      "frozen": "23988122f27c0852d9fe472a6b7ea7bd7c42b6d2593899c171d7ad4bf82639d9",
+      "diagnosticConfirmed": "747d475e3128be1eb8e992ab554ad8e0d75ed975095f0f65820968074a524f01",
+      "match": false
+    },
+    "providerPrompt": {
+      "frozen": "7cdd418b0341a691db511dc3ad0d62d42f53eadd7abbe544bd1715507c0e0542",
+      "diagnosticConfirmed": "675607e36effa5e2a0ddc2d9e67d2e1604b9da4ab73bdbe207530d4bd615740a",
+      "match": false
+    },
+    "inputFingerprint": {
+      "frozen": "f993f914f5a7fe6b662ccd60664d46efde4d26412c828291687d22ffe7f4d942",
+      "diagnosticConfirmed": "c5a12f264a66e70d6f58f90459c35d9651c57a6e03755ec10a6064ab17971fa2",
+      "match": false
+    }
+  },
+  "unchangedDesignInputs": [
+    "confirmation.spatialTranslation exactly copied from E0 spatial fields",
+    "confirmation.creativeDecision exactly copied from E0",
+    "model, shot, aspect, count, references and logo mode unchanged"
+  ],
+  "authorityChanges": {
+    "userConfirmedFields": [
+      "mediaTranslations.spatial",
+      "colorSystem",
+      "materialSystem",
+      "lightingSystem"
+    ],
+    "sourceFingerprintChanged": true,
+    "colorBefore": "proposal_only",
+    "colorAfter": [
+      {
+        "sourcePath": "colorSystem.primary[0]",
+        "evidenceClass": "user_confirmed",
+        "executionAuthority": "user_confirmed_design_intent"
+      },
+      {
+        "sourcePath": "colorSystem.secondary[0]",
+        "evidenceClass": "user_confirmed",
+        "executionAuthority": "user_confirmed_design_intent"
+      },
+      {
+        "sourcePath": "colorSystem.secondary[1]",
+        "evidenceClass": "user_confirmed",
+        "executionAuthority": "user_confirmed_design_intent"
+      },
+      {
+        "sourcePath": "colorSystem.secondary[2]",
+        "evidenceClass": "user_confirmed",
+        "executionAuthority": "user_confirmed_design_intent"
+      },
+      {
+        "sourcePath": "colorSystem.secondary[3]",
+        "evidenceClass": "user_confirmed",
+        "executionAuthority": "user_confirmed_design_intent"
+      },
+      {
+        "sourcePath": "colorSystem.secondary[4]",
+        "evidenceClass": "user_confirmed",
+        "executionAuthority": "user_confirmed_design_intent"
+      }
+    ]
+  },
+  "actualRunId": null,
+  "actualSubmittedPrompt": null,
+  "resultImage": null,
+  "providerRequestSubmitted": false,
+  "counters": {
+    "realAnalysis": 0,
+    "realGeneration": 0,
+    "modelValidation": 0,
+    "automaticRetries": 0,
+    "referenceInputs": 0,
+    "providerExecute": 0,
+    "networkAttempts": 0
+  },
+  "implementation": {
+    "owner": "visual-workflow",
+    "extractionStatus": "independent-current-implementation",
+    "qualityAcceptance": "pending-separate-quality-repair",
+    "implementationDigest": "4b8ea1fa7c759bc05a42cf1ffd95e8b321f91aa9dfa63c283256250a4a8c5410"
+  },
+  "sources": [
+    {
+      "path": "packages/visual-workflow/src/project-design-direction.js",
+      "sha256": "cccd26e77c37a542a86598f7a9a8b612afbdf5c0c08c73aebb9c9d7d1b605a7d",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/generation/user-confirmed-visual-decision.js",
+      "sha256": "3d6ec8e9fc701de0967d226c2f323c34861456d6b0137c762fa580dfc0ec0ad4",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/source-adapter.js",
+      "sha256": "b4fe223f16c1cf4e0bde5a83e936e598ed6eb63fb7ccb6fe94fd61af0e649299",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/compiler.js",
+      "sha256": "a6614dce173d79c159854c19fe649d71204037a52183d1d0467242afad4cf352",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/src/runtime/image-generation/short-chain-service.js",
+      "sha256": "9df3e2ee086e076d0e5aeb749f442836b3c57c3975377854defe8d05a9c5aec3",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/src/image-adapter/multi-model.js",
+      "sha256": "7cabe7adf1cc79a315b4ae757940ab482c515e40e22ca33a3fb86cada51003d1",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/implementation-integrity.json",
+      "sha256": "85947e556d9467837f7583c106f5f7fec10f65207ed9b2c31b410ae7c2f13bec",
+      "unchangedFromBaseline": true
+    }
+  ],
+  "protectedRoots": [
+    "packages/visual-workflow/src",
+    "packages/visual-workflow/prompts",
+    "packages/visual-workflow/implementation-integrity.json",
+    "apps/web/src/features/visual-workflow",
+    "packages/visual-workflow/offline",
+    "packages/visual-workflow/reports/restaurant-knowledge",
+    "packages/visual-workflow/reports/restaurant-shadow",
+    "packages/visual-workflow/reports/restaurant-fidelity",
+    "packages/visual-workflow/reports/scene-authority-integrity",
+    "packages/visual-workflow/reports/p7b-single-generation",
+    "evaluation",
+    "space-generator",
+    "config/repository-contract",
+    "package-lock.json",
+    "packages/visual-workflow/reports/ftt-final-design/",
+    "packages/visual-workflow/tests/restaurant-knowledge/ftt-final-design-fixture.ts",
+    "packages/visual-workflow/src/project-design-direction.js",
+    "packages/visual-workflow/reports/ftt-first-image-preflight/"
+  ],
+  "protectedDiff": [],
+  "limitations": [
+    "No isolated executable project/B1 record was created or confirmed",
+    "No actual request, image or new actual-run association exists",
+    "Diagnostic confirmation is not the full project-design-direction-store.confirm artifact",
+    "No alternative route was attempted after the mismatch",
+    "No current tariff, authenticated billing, credentials or model availability probe was attempted after stopping"
+  ]
+}

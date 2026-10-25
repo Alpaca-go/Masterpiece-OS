@@ -1,0 +1,298 @@
+{
+  "purpose": "minimal in-memory confirmation projection through the existing formal compiler; NOT a persisted B1 decision, executable project or replacement E0 input",
+  "sourceCandidate": "packages/visual-workflow/reports/ftt-first-image-preflight/candidate-input.json",
+  "confirmation": {
+    "schemaVersion": "1.0",
+    "id": "rks-02e1-user-authorization-diagnostic-only",
+    "projectId": "e002e000-2026-4000-8000-000000000001",
+    "status": "confirmed",
+    "sourceDocument": "User explicitly confirmed the RKS-02E0 candidate and authorized one RKS-02E1 image in the current conversation; diagnostic projection only, no persisted B1 record.",
+    "evidenceRefs": [
+      "user:rks-02e1-single-image-authorization"
+    ],
+    "appliesTo": {
+      "deliverableFamilies": [
+        "space"
+      ]
+    },
+    "creativeDecision": {
+      "brandRoleStatement": "四川特色小吃 / 跷脚牛肉；社区临街特色小馆；亲民堂食为主，兼顾外带。 市井烟火、温暖、热闹、亲切；明确的品牌特色和真实餐饮经营活动。",
+      "upgradeFrom": [
+        "过于沉重的传统酒楼感",
+        "模糊的品类认知（仅强调牛肉）",
+        "不稳定的中英文层级"
+      ],
+      "preserveCore": [
+        "冯烫烫品牌名",
+        "红色圆形“冯”字标",
+        "跷脚牛肉核心品类",
+        "红黑主色调",
+        "“小碗实惠”的价值主张"
+      ],
+      "upgradeTo": [
+        "亲民日常的社区四川小馆",
+        "真实制作、服务与就餐关系",
+        "清晰品类与品牌识别，文字后期合成"
+      ],
+      "uniqueUpgradeThesis": "四川特色小吃 / 跷脚牛肉；社区临街特色小馆；亲民堂食为主，兼顾外带。 市井烟火、温暖、热闹、亲切；明确的品牌特色和真实餐饮经营活动。 允许合理的现代设备、高效服务动线和商业卫生要求。",
+      "targetWorldview": [
+        "地道",
+        "亲民",
+        "市井烟火",
+        "温暖",
+        "热闹",
+        "亲切"
+      ],
+      "toneBoundaries": [
+        {
+          "target": "热闹、烟火气、食欲感",
+          "avoid": [
+            "冷淡",
+            "极简",
+            "Fine Dining",
+            "距离感"
+          ]
+        },
+        {
+          "target": "亲切、快捷、实惠",
+          "avoid": [
+            "沉重",
+            "老旧",
+            "昂贵",
+            "复杂"
+          ]
+        }
+      ],
+      "strategicNegatives": [
+        "不增加未经证实的非遗或老字号背书",
+        "不以标准化商场快餐、极简咖啡馆或高端精致餐饮替代本项目定位",
+        "不以昏暗压抑或静态样板间取代真实餐饮经营氛围"
+      ]
+    },
+    "spatialTranslation": {
+      "status": "ready",
+      "spatialConcept": "四川特色小吃 / 跷脚牛肉；社区临街特色小馆；亲民堂食为主，兼顾外带。 市井烟火、温暖、热闹、亲切；明确的品牌特色和真实餐饮经营活动。",
+      "brandRoleManifestation": [
+        "跷脚牛肉与四川小吃的菜品特征",
+        "亲切热闹的社区用餐体验",
+        "制作、出餐和日常餐具的品牌联系"
+      ],
+      "signatureSpatialMechanism": [
+        "开放明档与餐桌区域形成可读的制作、服务和就餐关系",
+        "服务通行路径清晰可进入，具体布局待物业复核"
+      ],
+      "functionalNetwork": [
+        "点餐区 -> 明档制作区 -> 取餐区 -> 就餐区",
+        "全店外带包装功能依赖；位置与设置方式待确认"
+      ],
+      "positiveDifferentiators": [
+        "四川特色小吃与跷脚牛肉的品类识别",
+        "温暖热闹亲切的社区经营氛围",
+        "现代设备和清晰服务动线兼容亲民堂食"
+      ],
+      "mustBeVisible": [
+        "chef preparing food in kitchen",
+        "steam above dishes in kitchen",
+        "customers dining at tables",
+        "service counter with an accessible staff side and customer handoff side in dining area",
+        "wooden dining table and chairs with accessible service aisle on both sides in dining area"
+      ],
+      "structureLanguage": [
+        "开放式布局",
+        "红砖与暖色木质构件共同组织空间；具体位置和构造待人工签署，不推定现有建筑条件"
+      ],
+      "materialLanguage": [
+        {
+          "material": "红砖（待签署视觉候选）",
+          "behavior": [
+            "红砖综合色调与质朴表面；无特殊光学效果要求，砖规格、砌法与工程参数未指定"
+          ],
+          "brandRole": "拟与暖色木质构件共同组织堂食和服务空间；具体分布待人工签署",
+          "forbidden": []
+        },
+        {
+          "material": "暖色木质构件与木质桌椅（待签署视觉候选）",
+          "behavior": [
+            "温暖木色与可读的木质感；无特殊光学效果要求，木种、构件尺寸、涂层及光学参数未指定"
+          ],
+          "brandRole": "拟用于空间组织与人尺度家具，保持服务通行；具体部位待人工签署",
+          "forbidden": []
+        },
+        {
+          "material": "赤陶色地面（待签署视觉候选）",
+          "behavior": [
+            "温暖赤陶综合色调；无特殊光学效果要求，地面制品类型、规格、釉面与工程参数未指定"
+          ],
+          "brandRole": "拟作为堂食地面色调，与浅色抹灰墙面共同建立质朴基调；不是现有地面事实",
+          "forbidden": []
+        },
+        {
+          "material": "浅色抹灰墙面（待签署视觉候选）",
+          "behavior": [
+            "浅色质朴抹灰视觉；无特殊光学效果要求，配方、厚度、性能与光学参数未指定"
+          ],
+          "brandRole": "拟作为墙面背景以保持明亮和亲切；不是现有墙体事实",
+          "forbidden": []
+        }
+      ],
+      "lightingLanguage": {
+        "source": [
+          "温暖人工照明服务明档、菜品、餐桌及通行；不指定色温数值或灯具型号",
+          "自然光结合为本轮待签署设计假设；当前没有已核实的采光来源，不指定开窗位置、形状、朝向或尺寸"
+        ],
+        "contrast": "温暖、明亮可读，菜品和人物不过曝；不刻意昏暗或拥挤。",
+        "interactionWithMaterials": [
+          "呈现红砖、暖木、赤陶色地面及浅色抹灰墙面的综合色调；反射、透射、光泽等工程参数未指定"
+        ],
+        "forbidden": [
+          "昏暗压抑",
+          "以彩色霓虹替代基础照明",
+          "将假设自然光描述成已验证物业事实"
+        ]
+      },
+      "colorBehavior": {
+        "primary": [
+          {
+            "name": "品牌红",
+            "role": "品牌识别候选，原始标识及文字后期合成",
+            "surfaceApplicability": "可移动品牌载体的局部；具体载体待签署",
+            "spatialUsage": "local_accent"
+          }
+        ],
+        "secondary": [
+          {
+            "name": "品牌黑",
+            "role": "品牌信息的局部细节候选",
+            "surfaceApplicability": "品牌载体细节；文字及 Logo 后期合成",
+            "spatialUsage": "detail_trim"
+          },
+          {
+            "name": "暖木色",
+            "role": "温暖亲切的材质色候选",
+            "surfaceApplicability": "拟用木质构件与桌椅",
+            "spatialUsage": "secondary_surface"
+          },
+          {
+            "name": "砖红色",
+            "role": "质朴空间组织候选",
+            "surfaceApplicability": "拟用红砖的局部表面；具体分布待签署",
+            "spatialUsage": "secondary_surface"
+          },
+          {
+            "name": "赤陶色",
+            "role": "温暖地面色候选",
+            "surfaceApplicability": "拟用堂食地面；不确认实际制品",
+            "spatialUsage": "secondary_surface"
+          },
+          {
+            "name": "浅抹灰色",
+            "role": "明亮质朴的墙面背景候选",
+            "surfaceApplicability": "拟用抹灰墙面；不确认现有墙体",
+            "spatialUsage": "secondary_surface"
+          }
+        ],
+        "accent": [],
+        "forbidden": [
+          "以整体冷淡空间替代已确认的温暖亲切氛围"
+        ]
+      },
+      "brandIntegration": [
+        "品牌文字和原始标识留待后期合成",
+        "菜品、日常餐具与包装的项目识别方向待人工审核"
+      ],
+      "functionalRelationships": [
+        "Kitchen preparation connects to service counter; dining tables remain accessible; takeaway handoff keeps a clear route"
+      ],
+      "sceneProgram": [
+        "点餐",
+        "取餐",
+        "堂食",
+        "外带",
+        "明档展示"
+      ],
+      "peopleBehavior": [],
+      "functionalExperience": [
+        "进店闻到香味/看到热气",
+        "清晰看到菜单和价格",
+        "快速点餐取餐",
+        "舒适进食"
+      ],
+      "sceneMisreadRisks": []
+    },
+    "abstractions": [
+      {
+        "sourceAsset": "b3e273c2-fc19-4c56-8577-e39510ee616b",
+        "semanticMeaning": [
+          "热气",
+          "温度",
+          "团聚",
+          "满足",
+          "新鲜"
+        ],
+        "formalProperties": [
+          "上升的曲线（蒸汽）",
+          "圆形（锅/碗）",
+          "丰富的纹理（肉/菜）"
+        ],
+        "rhythmProperties": [
+          "慢炖的时间感",
+          "沸腾的动态感"
+        ],
+        "materialPotential": [
+          "陶土/砂锅的粗粝感",
+          "汤汁的流动感",
+          "蒸汽的朦胧感"
+        ],
+        "lightingPotential": [
+          "暖光",
+          "顶光（突出食物）",
+          "逆光（勾勒蒸汽轮廓）"
+        ],
+        "forbiddenLiteralUse": [
+          "直接复制砂锅图片作为背景纹理",
+          "使用低分辨率的食物图"
+        ],
+        "evidenceRefs": [
+          "b3e273c2-fc19-4c56-8577-e39510ee616b",
+          "f5596e13-b481-4311-8862-bb88c5265f07"
+        ],
+        "confidence": 0.95
+      },
+      {
+        "sourceAsset": "7e83aa91-ab22-44dc-9fa7-b127c62d3661",
+        "semanticMeaning": [
+          "印章",
+          "承诺",
+          "聚焦",
+          "品牌印记"
+        ],
+        "formalProperties": [
+          "圆形",
+          "红白对比",
+          "书法笔触"
+        ],
+        "rhythmProperties": [
+          "稳重",
+          "中心对称"
+        ],
+        "materialPotential": [
+          "印泥的质感",
+          "纸张的渗透感"
+        ],
+        "lightingPotential": [
+          "平面光",
+          "高对比"
+        ],
+        "forbiddenLiteralUse": [
+          "将Logo拆解后重新组合",
+          "改变“冯”字字形"
+        ],
+        "evidenceRefs": [
+          "7e83aa91-ab22-44dc-9fa7-b127c62d3661",
+          "1a905140-7935-4a43-88cc-8ab3739bf97a"
+        ],
+        "confidence": 1
+      }
+    ]
+  }
+}
