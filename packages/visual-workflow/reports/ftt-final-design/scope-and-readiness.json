@@ -1,0 +1,103 @@
+{
+  "baseline": "0326f608e58b11bb687c26d13bb6e412e2cc71bd",
+  "branch": "codex/rks-ftt-final-design-review",
+  "implementation": {
+    "owner": "visual-workflow",
+    "extractionStatus": "independent-current-implementation",
+    "qualityAcceptance": "pending-separate-quality-repair",
+    "implementationDigest": "4b8ea1fa7c759bc05a42cf1ffd95e8b321f91aa9dfa63c283256250a4a8c5410"
+  },
+  "protectedRoots": [
+    "packages/visual-workflow/src",
+    "packages/visual-workflow/prompts",
+    "packages/visual-workflow/implementation-integrity.json",
+    "apps/web/src/features/visual-workflow",
+    "packages/visual-workflow/offline",
+    "packages/visual-workflow/reports/restaurant-knowledge",
+    "packages/visual-workflow/reports/restaurant-shadow",
+    "packages/visual-workflow/reports/restaurant-fidelity",
+    "packages/visual-workflow/reports/scene-authority-integrity",
+    "packages/visual-workflow/reports/p7b-single-generation",
+    "evaluation",
+    "space-generator",
+    "config/repository-contract",
+    "package-lock.json"
+  ],
+  "protectedDiff": [],
+  "manifestSha256": "85947e556d9467837f7583c106f5f7fec10f65207ed9b2c31b410ae7c2f13bec",
+  "sceneReadiness": [
+    {
+      "scene": "dining",
+      "offlineInputStatus": "complete_for_qualitative_design_review",
+      "displayStatus": "等待人工确认与模型授权",
+      "humanConfirmed": false,
+      "modelAuthorized": false,
+      "readyToInvoke": false,
+      "visualQuality": "not_evaluated",
+      "sceneBlockers": [],
+      "pendingHumanDecisions": [
+        "qualitative material and palette direction",
+        "open-kitchen layout as a design proposal, not an existing-property fact",
+        "raw B versus advisory B* text",
+        "actual model-call budget and authorization"
+      ],
+      "otherScenesDoNotBlockThisScene": true
+    },
+    {
+      "scene": "entrance",
+      "offlineInputStatus": "conditional_entrance_boundary_only",
+      "displayStatus": "入口局部方案待人工审核；局部堂食视线未授权",
+      "humanConfirmed": false,
+      "modelAuthorized": false,
+      "readyToInvoke": false,
+      "visualQuality": "not_evaluated",
+      "sceneBlockers": [
+        "partial_dining_interior_visibility_not_authorized"
+      ],
+      "pendingHumanDecisions": [
+        "qualitative material and palette direction",
+        "open-kitchen layout as a design proposal, not an existing-property fact",
+        "raw B versus advisory B* text",
+        "actual model-call budget and authorization"
+      ],
+      "otherScenesDoNotBlockThisScene": true
+    },
+    {
+      "scene": "storefront",
+      "offlineInputStatus": "partial_exterior_only",
+      "displayStatus": "未获得完整生图许可：隔窗可见待审核",
+      "humanConfirmed": false,
+      "modelAuthorized": false,
+      "readyToInvoke": false,
+      "visualQuality": "not_evaluated",
+      "sceneBlockers": [
+        "window_visibility_review_required",
+        "exterior_material_suitability_and_street_conditions_unknown"
+      ],
+      "pendingHumanDecisions": [
+        "qualitative material and palette direction",
+        "open-kitchen layout as a design proposal, not an existing-property fact",
+        "raw B versus advisory B* text",
+        "actual model-call budget and authorization"
+      ],
+      "otherScenesDoNotBlockThisScene": true
+    }
+  ],
+  "actualImage1RunAssociation": "undetermined",
+  "knowledgePromoted": false,
+  "qualityAccepted": false,
+  "userProjectsRead": false,
+  "userProjectsWritten": false,
+  "credentialsRead": false,
+  "counters": {
+    "realAnalysis": 0,
+    "realGeneration": 0,
+    "realValidation": 0,
+    "automaticRetries": 0,
+    "referenceInputs": 0,
+    "networkAttempts": 0
+  },
+  "deployments": 0,
+  "published": 0,
+  "merged": false
+}

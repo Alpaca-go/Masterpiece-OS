@@ -1,0 +1,98 @@
+{
+  "protectedTemplatesModified": false,
+  "advisoryIsOfficialCompilerOutput": false,
+  "retainedRenderingQualityText": "High-end architectural visualization, photoreal, physically based materials.",
+  "retainedNegativeGuard": "no generic AI clinic look",
+  "scenes": [
+    {
+      "scene": "dining",
+      "status": "unapproved_experimental_text_proposal_not_official_compiler_output",
+      "sha256": "6ab72016add5769a5200ffd93f90f9df92d93e10c009e8618acdfa270f74d149",
+      "patches": [
+        {
+          "id": "project-task-quality-wording",
+          "category": "quality_wording_optional_neutralization",
+          "before": "Generate a single premium-grade space image for",
+          "after": "Generate a single commercial architectural image for",
+          "reason": "仅建议中性化质量措辞，不把 premium 当作消费层级或已证明污染"
+        },
+        {
+          "id": "project-context-operations",
+          "category": "generic_positive_context_project_replacement",
+          "before": "Use project decisions and the current user instruction. Artistic focus may coexist with practical reception, waiting, access and privacy requirements; examples cannot replace either dimension.",
+          "after": "Use this project’s warm, lively neighborhood eatery direction. Food preparation, service and dining remain readable within this authorized dining scene.",
+          "reason": "用项目与镜头职责替换通用接待/等候语境；不新增室内权限"
+        },
+        {
+          "id": "project-optional-gallery-cue",
+          "category": "optional_positive_style_risk",
+          "before": "Keep buildable junctions, readable circulation and human scale. Complex curves, restrained geometry, strong color and gallery-like character remain available when supported by project intent. No industry-wide aesthetic is imposed.",
+          "after": "Keep buildable junctions, readable circulation and human scale. Follow this project’s warm, lively, approachable Sichuan neighborhood eatery direction without importing a gallery, minimalist cafe or upscale dining style.",
+          "reason": "只在实验建议稿中移除未被本项目选择的可选风格先验；不改正式模板或其他项目"
+        }
+      ],
+      "providerRequest": null,
+      "requiresSeparateReviewAndFormalRouteBeforeExecution": true
+    },
+    {
+      "scene": "entrance",
+      "status": "unapproved_experimental_text_proposal_not_official_compiler_output",
+      "sha256": "5cf74c89b98dbc9073367572466cfb049647859f5b1b260fd03052ad8dd01bf2",
+      "patches": [
+        {
+          "id": "project-task-quality-wording",
+          "category": "quality_wording_optional_neutralization",
+          "before": "Generate a single premium-grade space image for",
+          "after": "Generate a single commercial architectural image for",
+          "reason": "仅建议中性化质量措辞，不把 premium 当作消费层级或已证明污染"
+        },
+        {
+          "id": "project-context-operations",
+          "category": "generic_positive_context_project_replacement",
+          "before": "Use project decisions and the current user instruction. Artistic focus may coexist with practical reception, waiting, access and privacy requirements; examples cannot replace either dimension.",
+          "after": "Use this project’s approachable entrance direction. Preserve threshold access and the dining access boundary; other program interiors remain off frame.",
+          "reason": "用项目与镜头职责替换通用接待/等候语境；不新增室内权限"
+        },
+        {
+          "id": "project-optional-gallery-cue",
+          "category": "optional_positive_style_risk",
+          "before": "Keep buildable junctions, readable circulation and human scale. Complex curves, restrained geometry, strong color and gallery-like character remain available when supported by project intent. No industry-wide aesthetic is imposed.",
+          "after": "Keep buildable junctions, readable circulation and human scale. Follow this project’s warm, lively, approachable Sichuan neighborhood eatery direction without importing a gallery, minimalist cafe or upscale dining style.",
+          "reason": "只在实验建议稿中移除未被本项目选择的可选风格先验；不改正式模板或其他项目"
+        }
+      ],
+      "providerRequest": null,
+      "requiresSeparateReviewAndFormalRouteBeforeExecution": true
+    },
+    {
+      "scene": "storefront",
+      "status": "unapproved_experimental_text_proposal_not_official_compiler_output",
+      "sha256": "75299cc148f70eff5ba79a163382f1194ce2152ec2e4c50d44d34cf6be69fe02",
+      "patches": [
+        {
+          "id": "project-task-quality-wording",
+          "category": "quality_wording_optional_neutralization",
+          "before": "Generate a single premium-grade space image for",
+          "after": "Generate a single commercial architectural image for",
+          "reason": "仅建议中性化质量措辞，不把 premium 当作消费层级或已证明污染"
+        },
+        {
+          "id": "project-context-operations",
+          "category": "generic_positive_context_project_replacement",
+          "before": "Use project decisions and the current user instruction. Artistic focus may coexist with practical reception, waiting, access and privacy requirements; examples cannot replace either dimension.",
+          "after": "Use this project’s street-facing storefront direction. Preserve the facade and threshold; interior window visibility remains unapproved.",
+          "reason": "用项目与镜头职责替换通用接待/等候语境；不新增室内权限"
+        },
+        {
+          "id": "project-optional-gallery-cue",
+          "category": "optional_positive_style_risk",
+          "before": "Keep buildable junctions, readable circulation and human scale. Complex curves, restrained geometry, strong color and gallery-like character remain available when supported by project intent. No industry-wide aesthetic is imposed.",
+          "after": "Keep buildable junctions, readable circulation and human scale. Follow this project’s warm, lively, approachable Sichuan neighborhood eatery direction without importing a gallery, minimalist cafe or upscale dining style.",
+          "reason": "只在实验建议稿中移除未被本项目选择的可选风格先验；不改正式模板或其他项目"
+        }
+      ],
+      "providerRequest": null,
+      "requiresSeparateReviewAndFormalRouteBeforeExecution": true
+    }
+  ]
+}

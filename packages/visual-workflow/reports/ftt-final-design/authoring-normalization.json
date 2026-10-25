@@ -1,0 +1,28 @@
+{
+  "kind": "experiment_author_wording_not_compiler_patch",
+  "before": "wooden dining tables and chairs with accessible service aisles in dining area",
+  "after": "wooden dining table and chairs with accessible service aisle on both sides in dining area",
+  "beforeClassification": {
+    "classification": "ambiguous",
+    "classificationReason": "unresolved_visible_requirement",
+    "motifHits": [],
+    "colorHits": [],
+    "archHits": 0,
+    "propertyHits": 0,
+    "metaphor": false,
+    "accent": false,
+    "geometryAction": false
+  },
+  "afterClassification": {
+    "classification": "functional",
+    "classificationReason": "explicit_object_use_relation",
+    "motifHits": [],
+    "colorHits": [],
+    "archHits": 0,
+    "propertyHits": 0,
+    "metaphor": false,
+    "accent": false,
+    "geometryAction": false
+  },
+  "reason": "Explicit table and opposing-side access relation authored for the experiment; singular exemplifies the furniture relation without specifying a count. No protected classifier or existing expectation was modified."
+}

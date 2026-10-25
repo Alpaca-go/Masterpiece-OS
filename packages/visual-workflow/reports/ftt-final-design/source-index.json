@@ -1,0 +1,129 @@
+{
+  "baseline": "0326f608e58b11bb687c26d13bb6e412e2cc71bd",
+  "sources": [
+    {
+      "path": "space-generator/quality-baselines/current-verification/source-packets/_packets/feng-tang-tang/visual-decision-packet.json",
+      "sha256": "e3564d51888661989eeb16de8923992a4e1148268e7f55e7427c4c70e6fb613c",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/golden-selection.json",
+      "sha256": "65daac53a8eaf6fb132d92e563f2aca17b21d19983c7321e9e3cab8c98818539",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/final-dining-1/evaluation.json",
+      "sha256": "ff1c5f11f27dcdf435eb5fff90b2c3e948a820ce5f6b493422bc550234f8a66c",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/final-dining-1/manifest.json",
+      "sha256": "16b683f8d37c70daded8decded15b96fe8373586d656ba3953b9d32890b3ad3a",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/final-dining-1/prompt.md",
+      "sha256": "d1877d17fc6dcdfcc6cb9f736c7e384b3b0a8a459a43e9ff3542d9eed71bfd9f",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/ftt-direction-proposal.json",
+      "sha256": "b53d9b27f0bcec2f1010171aaa3c2580a8fa11a44ec790cda510229cfb20ca1e",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/ftt-evidence-trace.md",
+      "sha256": "0619ed66afc898092b0a449f3b60f74266ddfa915930d16821f699979e049ef9",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-knowledge/rks-candidate-knowledge.json",
+      "sha256": "4517b041fd373babd6ce223f247ad32ea8089865b2fb5edf496691d81351d735",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-shadow/RKS-02A-report.md",
+      "sha256": "78bdd055d5f71210ef71d4deddcbe5add101736c08f1e838f13c2ca2c32e1c6d",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-shadow/direction-conflict-matrix.json",
+      "sha256": "cf593f2275614eb1c1d565eec325571cb4bdc48c7a2186dd1c8c0c1d79e0aee0",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-shadow/ftt-shadow-result.json",
+      "sha256": "4d7a452367a9c8fa4393e47c36c173978d03acb7cab7910d99f3fee2639a2e2a",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-fidelity/AB-review.md",
+      "sha256": "fc0b4a5a32987795748284af60a91aee2db5a110ab9dddb1af31a3d3ec63e42e",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/restaurant-fidelity/compiled-evidence.json",
+      "sha256": "2043800a69ab4e0a5a9e1f41f37d321937feddd1824b4491a75c7d085f761c5e",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/scene-authority-repair/README.md",
+      "sha256": "82e72568ed880030a875e0e3b90ad1750accc7af133484bd188716950d4680d3",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/scene-authority-repair/after.json",
+      "sha256": "047b7b5f2331aebd350984daec3b021871c2055534fa0b4f299ec1c76db1749c",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/scene-authority-integrity/README.md",
+      "sha256": "68fdcd57284411b1ae538b499ee794b90a9a0fac0457e0a265521d475171adb0",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/scene-authority-integrity/manifest-change-audit.json",
+      "sha256": "0c60de19387d19cdd92b482b5b43fa6fe7e1e5b09364559bfad9d26d987c5d83",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/scene-authority-integrity/closure-evidence.json",
+      "sha256": "59c70fb024e3eef4c247c011393a113f3e7b8fd709322cf0285cf8f57d2ccc84",
+      "unchangedFromBaseline": true
+    }
+  ],
+  "userInstruction": {
+    "ref": "user:RKS-02D.sections1,3,5",
+    "transcription": {
+      "positioning": "四川特色小吃 / 跷脚牛肉；社区临街特色小馆；亲民堂食为主，兼顾外带。",
+      "mood": "市井烟火、温暖、热闹、亲切；明确的品牌特色和真实餐饮经营活动。",
+      "service": "允许合理的现代设备、高效服务动线和商业卫生要求。",
+      "wrongDirections": "不重新解释为标准化商场快餐、现代极简咖啡馆或高端精致餐饮。",
+      "source": "user:RKS-02D.sections1,3,5",
+      "authority": "confirmed_design_goal_not_verified_property"
+    },
+    "assertion": "user-confirmed design goals only; not verified current property facts"
+  },
+  "historicalAcceptance": {
+    "selection": {
+      "type": "commercial",
+      "goldenName": "FTT_COMMERCIAL_GOLDEN_R8.6",
+      "runId": "r8.6-final-feng-tang-tang-lobby-1-1786203182756",
+      "scene": "final-dining-1",
+      "promptHash": "d1877d17fc6dcdfcc6cb9f736c7e384b3b0a8a459a43e9ff3542d9eed71bfd9f",
+      "imageSha256": "6445aa30a380f6a8d474967c37a2b5df4f5f08c7d461e5bd73c2778f91c97ba6",
+      "total": 86,
+      "reason": "人工验收 PASS（86/100）。真实餐饮运营关系依然存在：open kitchen / staff operation / cooking / food display / dining / customer area / counter；空间第一眼是正在营业的餐饮空间而非静态样板间。Cross-brand isolation PASS（无 JZMX 膜结构/医美玻璃、无 YJLF 药柜、无高级酒店化）。用途：检查未来 shared Space Compiler 是否仍能保留餐饮空间真实运营密度。"
+    },
+    "materialNote": "人工验收：暖色木/赤陶 + 厨房暖光。",
+    "compositionNote": "人工验收：16:9 明档居中构图。",
+    "imagePath": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/final-dining-1/output.png",
+    "imagePresent": false,
+    "imageInspected": false,
+    "recordedImageSha256": "6445aa30a380f6a8d474967c37a2b5df4f5f08c7d461e5bd73c2778f91c97ba6",
+    "newQualityScore": null,
+    "limitation": "Historical text acceptance is reviewed; no new image inspection or acceptance is claimed"
+  },
+  "historicalPacketProvenance": "Original analysis provenance is preserved as historical source metadata; it does not describe new model analysis of B",
+  "actualImage1RunAssociation": "undetermined"
+}

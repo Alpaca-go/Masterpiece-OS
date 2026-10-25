@@ -1,0 +1,96 @@
+{
+  "productionRksIntegrated": false,
+  "rksMode": "offline_shadow_only",
+  "projectOwnerAlias": {
+    "originalProjectId": "dca9b7d4-f233-46ff-b4df-44a890f13c4f",
+    "logicalKnowledgeOwner": "feng-tang-tang",
+    "currentUserProjectAssociation": null
+  },
+  "selected": [
+    {
+      "selection": {
+        "id": "rks-observation-5",
+        "status": "project_observation",
+        "scope": "project",
+        "application": "explicit experiment-only operations hypothesis"
+      },
+      "originalCard": {
+        "knowledgeId": "rks-observation-5",
+        "title": "项目历史认可的真实经营密度",
+        "judgment": "项目历史认可的真实经营密度",
+        "scope": "project",
+        "status": "project_observation",
+        "applicableTags": [],
+        "excludedTags": [],
+        "prerequisites": [
+          "项目目标明确且镜头范围可呈现"
+        ],
+        "exceptions": [
+          "若物业、卫生或镜头约束不支持，保留冲突并人工审查"
+        ],
+        "sourceProjects": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "human_selection",
+          "human_evaluation"
+        ],
+        "reviewSources": [
+          "human:historical-r8.6-record"
+        ],
+        "beforeAfter": "离线修正草案尚未产生新图；无成功 A/B 对照。",
+        "uncertainty": "未验证跨项目泛化；不宣称修正后质量通过。",
+        "validatedCases": [],
+        "failedCases": [],
+        "antiHomogenization": "不强制菜系对应固定风格或材料；仅项目验收不得晋升行业规则。"
+      },
+      "adoption": "manual experiment-only selection",
+      "stateUpdated": false,
+      "validatedCasesUpdated": false
+    },
+    {
+      "selection": {
+        "id": "rks-observation-3",
+        "status": "candidate",
+        "scope": "project",
+        "application": "reviewed as source; red brick not in core input; warm wood/terracotta traced independently to human evaluation"
+      },
+      "originalCard": {
+        "knowledgeId": "rks-observation-3",
+        "title": "本项目砖木赤陶与暖光的组合",
+        "judgment": "本项目砖木赤陶与暖光的组合",
+        "scope": "project",
+        "status": "candidate",
+        "applicableTags": [],
+        "excludedTags": [],
+        "prerequisites": [
+          "项目目标明确且镜头范围可呈现"
+        ],
+        "exceptions": [
+          "若物业、卫生或镜头约束不支持，保留冲突并人工审查"
+        ],
+        "sourceProjects": [
+          "feng-tang-tang"
+        ],
+        "evidenceRefs": [
+          "ftt-direction-brief:6"
+        ],
+        "reviewSources": [
+          "plan:candidate-only"
+        ],
+        "beforeAfter": "离线修正草案尚未产生新图；无成功 A/B 对照。",
+        "uncertainty": "未验证跨项目泛化；不宣称修正后质量通过。",
+        "validatedCases": [],
+        "failedCases": [],
+        "antiHomogenization": "不强制菜系对应固定风格或材料；仅项目验收不得晋升行业规则。"
+      },
+      "adoption": "manual experiment-only selection",
+      "stateUpdated": false,
+      "validatedCasesUpdated": false
+    }
+  ],
+  "redBrick": "not applied to core B; independent optional material review",
+  "operations": "historical observation translated explicitly by offline author; not newly confirmed property",
+  "actualImage1RunAssociation": "undetermined",
+  "knowledgePromoted": false
+}

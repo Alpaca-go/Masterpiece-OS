@@ -1,0 +1,122 @@
+[
+  {
+    "name": "design-review",
+    "command": "node --import tsx --test packages/visual-workflow/tests/restaurant-knowledge/ftt-final-design.test.ts",
+    "exitCode": 0,
+    "durationMs": 643,
+    "countGroups": {
+      "tests": [
+        10
+      ],
+      "pass": [
+        10
+      ],
+      "fail": [
+        0
+      ],
+      "skipped": [
+        0
+      ]
+    },
+    "log": "logs/design-review.txt",
+    "sha256": "91ab81bd32bc4210f05ee0ecaf4cf5fe59eaded725a75adbd37e4fba6b3c31c2",
+    "rawSha256": "91ab81bd32bc4210f05ee0ecaf4cf5fe59eaded725a75adbd37e4fba6b3c31c2",
+    "normalization": "CRLF to LF; trailing horizontal whitespace removed; one terminal newline"
+  },
+  {
+    "name": "visual-workflow",
+    "command": "node --import tsx --test packages\\visual-workflow\\tests\\analysis-direction-suggestion.test.ts packages\\visual-workflow\\tests\\architectural-integration.test.ts packages\\visual-workflow\\tests\\architectural-language.test.ts packages\\visual-workflow\\tests\\architectural-refinement.test.ts packages\\visual-workflow\\tests\\architecture-commercial-layer.test.ts packages\\visual-workflow\\tests\\art-direction-authority.test.ts packages\\visual-workflow\\tests\\art-direction-route.test.ts packages\\visual-workflow\\tests\\automatic-design-proposal.test.ts packages\\visual-workflow\\tests\\commercial-attribute.test.ts packages\\visual-workflow\\tests\\cross-zone-operation-scope.test.ts packages\\visual-workflow\\tests\\design-decision-fidelity.test.js packages\\visual-workflow\\tests\\design-direction-editor.test.ts packages\\visual-workflow\\tests\\explicit-spatial-layout.test.ts packages\\visual-workflow\\tests\\fig2-fig3-spatial-direction.test.ts packages\\visual-workflow\\tests\\generation-baseline-lock.test.ts packages\\visual-workflow\\tests\\methodology\\acceptance.test.mjs packages\\visual-workflow\\tests\\methodology\\custom-compatibility.test.ts packages\\visual-workflow\\tests\\project-design-direction.test.ts packages\\visual-workflow\\tests\\project-details-editing.test.ts packages\\visual-workflow\\tests\\restaurant-knowledge\\compile.test.ts packages\\visual-workflow\\tests\\restaurant-knowledge\\field-lineage.test.ts packages\\visual-workflow\\tests\\restaurant-knowledge\\ftt-fidelity.test.ts packages\\visual-workflow\\tests\\restaurant-knowledge\\ftt-final-design.test.ts packages\\visual-workflow\\tests\\restaurant-knowledge\\knowledge.test.js packages\\visual-workflow\\tests\\restaurant-knowledge\\shadow-compile.test.ts packages\\visual-workflow\\tests\\restaurant-knowledge\\shadow.test.ts packages\\visual-workflow\\tests\\scene-authority-repair.test.ts packages\\visual-workflow\\tests\\scene-decision-fidelity.test.ts packages\\visual-workflow\\tests\\spatial-quality.test.ts packages\\visual-workflow\\tests\\validation-policy.test.js packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts",
+    "exitCode": 0,
+    "durationMs": 10692,
+    "countGroups": {
+      "tests": [
+        259
+      ],
+      "pass": [
+        259
+      ],
+      "fail": [
+        0
+      ],
+      "skipped": [
+        0
+      ]
+    },
+    "log": "logs/visual-workflow.txt",
+    "sha256": "b4e2ad38aa7b65a327353e1968f39a94b6314df451a755b6974b32482c236eda",
+    "rawSha256": "b4e2ad38aa7b65a327353e1968f39a94b6314df451a755b6974b32482c236eda",
+    "normalization": "CRLF to LF; trailing horizontal whitespace removed; one terminal newline"
+  },
+  {
+    "name": "repo-verify",
+    "command": "npm run repo:verify",
+    "exitCode": 0,
+    "durationMs": 37727,
+    "countGroups": {
+      "tests": [
+        2,
+        1294,
+        56
+      ],
+      "pass": [
+        2,
+        1294,
+        56
+      ],
+      "fail": [
+        0,
+        0,
+        0
+      ],
+      "skipped": [
+        0,
+        0,
+        0
+      ]
+    },
+    "log": "logs/repo-verify.txt",
+    "sha256": "4f304653c4b3b319b3408954f1148813f1863c1e5d5db88307e908835c3ae5ba",
+    "rawSha256": "4f304653c4b3b319b3408954f1148813f1863c1e5d5db88307e908835c3ae5ba",
+    "normalization": "CRLF to LF; trailing horizontal whitespace removed; one terminal newline"
+  },
+  {
+    "name": "golden",
+    "command": "npm run golden:test",
+    "exitCode": 0,
+    "durationMs": 503,
+    "countGroups": {
+      "tests": [],
+      "pass": [],
+      "fail": [],
+      "skipped": []
+    },
+    "log": "logs/golden.txt",
+    "sha256": "effbe1522354f6b3e1a4a3053a6bbfd15c600d2de7be614ae7a5123cceac16ed",
+    "rawSha256": "effbe1522354f6b3e1a4a3053a6bbfd15c600d2de7be614ae7a5123cceac16ed",
+    "normalization": "CRLF to LF; trailing horizontal whitespace removed; one terminal newline"
+  },
+  {
+    "name": "historical-policy",
+    "command": "node --test tests/repository-policy.test.js",
+    "exitCode": 1,
+    "durationMs": 583,
+    "countGroups": {
+      "tests": [
+        2
+      ],
+      "pass": [
+        0
+      ],
+      "fail": [
+        2
+      ],
+      "skipped": [
+        0
+      ]
+    },
+    "log": "logs/historical-policy.txt",
+    "sha256": "28103ac0880921f2b5aa3f310a5e845c40de61ad3d3fef886bf28231b9d54027",
+    "rawSha256": "c3cf4a5be21b87cbf679f5781ba8b9dd11d893f09302c092f4eb83b2e69bc43a",
+    "normalization": "CRLF to LF; trailing horizontal whitespace removed; one terminal newline"
+  }
+]

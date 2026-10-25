@@ -1,0 +1,2192 @@
+{
+  "scope": "Source-traceable suggestions for future explicit manual transfer; not product integration",
+  "userGoalLane": {
+    "positioning": "四川特色小吃 / 跷脚牛肉；社区临街特色小馆；亲民堂食为主，兼顾外带。",
+    "mood": "市井烟火、温暖、热闹、亲切；明确的品牌特色和真实餐饮经营活动。",
+    "service": "允许合理的现代设备、高效服务动线和商业卫生要求。",
+    "wrongDirections": "不重新解释为标准化商场快餐、现代极简咖啡馆或高端精致餐饮。",
+    "source": "user:RKS-02D.sections1,3,5",
+    "authority": "confirmed_design_goal_not_verified_property"
+  },
+  "historicalAndHypothesisLanes": [
+    {
+      "scene": "common",
+      "path": "mediaTranslations.spatial.brandRoleManifestation",
+      "before": [
+        "明档厨房展示“现做”",
+        "小碗菜陈列台强调“巧搭配”",
+        "红色Logo和灯笼营造“热闹”氛围"
+      ],
+      "after": [
+        "跷脚牛肉与四川小吃的菜品特征",
+        "亲切热闹的社区用餐体验",
+        "制作、出餐和日常餐具的品牌联系"
+      ],
+      "category": "D",
+      "evidenceRefs": [
+        "user:RKS-02D.sections1,3,5",
+        "human_selection:golds[0].reason",
+        "human_evaluation:dimensions.materialAndLighting.note"
+      ],
+      "reason": "项目表达方案；不强制灯笼、脸谱或现场品牌文字",
+      "status": "proposed_for_human_review_not_confirmed"
+    },
+    {
+      "scene": "common",
+      "path": "mediaTranslations.spatial.brandIntegration",
+      "before": [
+        "门头大字招牌",
+        "悬挂灯笼",
+        "墙面海报",
+        "明档玻璃贴字",
+        "餐具/包装统一视觉"
+      ],
+      "after": [
+        "品牌文字和原始标识留待后期合成",
+        "菜品、日常餐具与包装的项目识别方向待人工审核"
+      ],
+      "category": "D",
+      "evidenceRefs": [
+        "user:RKS-02D.sections1,3,5"
+      ],
+      "reason": "保留品牌职责，不制造任何已授权贴字或新的文化背书",
+      "status": "proposed_for_human_review_not_confirmed"
+    },
+    {
+      "scene": "common",
+      "path": "mediaTranslations.spatial.signatureSpatialMechanism",
+      "before": [
+        "入口即见的明档厨房（视觉焦点，传递热气）",
+        "环绕式点餐/取餐台（促进流转）",
+        "顶部暖色灯光阵列（聚焦食物）"
+      ],
+      "after": [
+        "开放明档与餐桌区域形成可读的制作、服务和就餐关系",
+        "服务通行路径清晰可进入，具体布局待物业复核"
+      ],
+      "category": "D",
+      "evidenceRefs": [
+        "human_selection:golds[0].reason",
+        "human_evaluation:dimensions.materialAndLighting.note",
+        "user:RKS-02D.sections1,3,5"
+      ],
+      "reason": "历史经营关系的方案化表达；不预设入口厨房、环绕台或格栅构造",
+      "status": "proposed_for_human_review_not_confirmed"
+    },
+    {
+      "scene": "common",
+      "path": "mediaTranslations.spatial.structureLanguage",
+      "before": [
+        "开放式布局",
+        "木质格栅（半通透）",
+        "直线与圆（灯笼/锅）的结合"
+      ],
+      "after": [
+        "开放式布局"
+      ],
+      "category": "D",
+      "evidenceRefs": [
+        "human_selection:golds[0].reason",
+        "human_evaluation:dimensions.materialAndLighting.note"
+      ],
+      "reason": "保留明档开放的设计方向，不确认现有开放厨房许可",
+      "status": "proposed_for_human_review_not_confirmed"
+    },
+    {
+      "scene": "common",
+      "path": "mediaTranslations.spatial.functionalNetwork",
+      "before": [
+        "点餐区 -> 明档制作区 -> 取餐区 -> 就餐区",
+        "外带包装区独立设置"
+      ],
+      "after": [
+        "点餐区 -> 明档制作区 -> 取餐区 -> 就餐区",
+        "全店外带包装功能依赖；位置与设置方式待确认"
+      ],
+      "category": "D",
+      "evidenceRefs": [
+        "historical_packet:mediaTranslations.spatial.functionalNetwork",
+        "user:RKS-02D.sections1,3,5"
+      ],
+      "reason": "保留全店经营链；独立包装区位置从历史提案降为待确认，不强迫同框",
+      "status": "proposed_for_human_review_not_confirmed"
+    },
+    {
+      "scene": "common",
+      "path": "mediaTranslations.spatial.functionalRelationships",
+      "before": [
+        "点餐区与明档展示及取餐口相邻，形成高效服务动线；外带包装与堂食视觉统一，支持多场景消费"
+      ],
+      "after": [
+        "Kitchen preparation connects to service counter; dining tables remain accessible; takeaway handoff keeps a clear route"
+      ],
+      "category": "D",
+      "evidenceRefs": [
+        "knowledge:rks-observation-5",
+        "human_selection:golds[0].reason"
+      ],
+      "reason": "既有离线经营观察的明确方案假设，不是测量的厨房位置",
+      "status": "proposed_for_human_review_not_confirmed"
+    },
+    {
+      "scene": "common",
+      "path": "mediaTranslations.spatial.peopleBehavior",
+      "before": [],
+      "after": [],
+      "category": "D",
+      "evidenceRefs": [
+        "human_selection:golds[0].reason",
+        "human_evaluation:dimensions.materialAndLighting.note"
+      ],
+      "reason": "经营活动只由 mustBeVisible 一处输入，避免重复要求",
+      "status": "proposed_for_human_review_not_confirmed"
+    },
+    {
+      "scene": "common",
+      "path": "mediaTranslations.spatial.mustBeVisible",
+      "before": [
+        "明档内的砂锅/热气"
+      ],
+      "after": [
+        "chef preparing food in kitchen",
+        "steam above dishes in kitchen",
+        "customers dining at tables",
+        "service counter with an accessible staff side and customer handoff side in dining area",
+        "wooden dining table and chairs with accessible service aisle on both sides in dining area"
+      ],
+      "category": "D",
+      "evidenceRefs": [
+        "human_selection:golds[0].reason",
+        "human_evaluation:dimensions.materialAndLighting.note",
+        "user:RKS-02D.sections1,3,5"
+      ],
+      "reason": "为堂食镜头选择可观察要求；木制桌椅及具体同框关系仍待人审",
+      "status": "proposed_for_human_review_not_confirmed"
+    },
+    {
+      "scene": "common",
+      "path": "colorSystem",
+      "before": {
+        "primary": [
+          {
+            "name": "品牌红",
+            "role": "视觉焦点，品牌识别，激发食欲"
+          }
+        ],
+        "secondary": [
+          {
+            "name": "品牌黑",
+            "role": "文字信息，稳重视觉，对比红色"
+          }
+        ],
+        "accent": [
+          {
+            "name": "木色",
+            "role": "空间基调，温暖自然"
+          },
+          {
+            "name": "白色",
+            "role": "背景，清洁感，衬托食物"
+          }
+        ],
+        "forbidden": [
+          "大面积冷色调（蓝/绿）",
+          "杂乱色彩"
+        ]
+      },
+      "after": {
+        "primary": [
+          {
+            "name": "品牌红",
+            "role": "品牌识别候选色；表面和面积未指定"
+          }
+        ],
+        "secondary": [
+          {
+            "name": "品牌黑",
+            "role": "品牌信息候选色；不预设室内表面范围"
+          }
+        ],
+        "accent": [
+          {
+            "name": "木色",
+            "role": "暖色木的材质色候选；表面和面积均未指定"
+          },
+          {
+            "name": "白色",
+            "role": "清洁明亮的辅助色候选；范围待审核"
+          }
+        ],
+        "forbidden": [
+          "以整体冷淡空间替代已确认的温暖亲切氛围"
+        ]
+      },
+      "category": "D",
+      "evidenceRefs": [
+        "historical_packet:colorSystem",
+        "user:RKS-02D.sections1,3,5"
+      ],
+      "reason": "保留历史识别色名称作提案，撤去面积暗示及未经本轮确认的蓝绿整体禁令；不新增色值或比例",
+      "status": "proposed_for_human_review_not_confirmed"
+    },
+    {
+      "scene": "common",
+      "path": "mediaTranslations.spatial.colorBehavior",
+      "before": {
+        "primary": [
+          {
+            "name": "品牌红",
+            "role": "视觉焦点，品牌识别，激发食欲"
+          }
+        ],
+        "secondary": [
+          {
+            "name": "品牌黑",
+            "role": "文字信息，稳重视觉，对比红色"
+          }
+        ],
+        "accent": [
+          {
+            "name": "木色",
+            "role": "空间基调，温暖自然"
+          },
+          {
+            "name": "白色",
+            "role": "背景，清洁感，衬托食物"
+          }
+        ],
+        "forbidden": [
+          "大面积冷色调（蓝/绿）",
+          "杂乱色彩"
+        ]
+      },
+      "after": {
+        "primary": [
+          {
+            "name": "品牌红",
+            "role": "品牌识别候选色；表面和面积未指定"
+          }
+        ],
+        "secondary": [
+          {
+            "name": "品牌黑",
+            "role": "品牌信息候选色；不预设室内表面范围"
+          }
+        ],
+        "accent": [
+          {
+            "name": "木色",
+            "role": "暖色木的材质色候选；表面和面积均未指定"
+          },
+          {
+            "name": "白色",
+            "role": "清洁明亮的辅助色候选；范围待审核"
+          }
+        ],
+        "forbidden": [
+          "以整体冷淡空间替代已确认的温暖亲切氛围"
+        ]
+      },
+      "category": "D",
+      "evidenceRefs": [
+        "historical_packet:colorSystem",
+        "user:RKS-02D.sections1,3,5"
+      ],
+      "reason": "实验副本同义配色字段一致；不授予 user_confirmed 空间面积权限",
+      "status": "proposed_for_human_review_not_confirmed"
+    },
+    {
+      "scene": "common",
+      "path": "materialSystem",
+      "before": [
+        {
+          "material": "浅色木材",
+          "behavior": [
+            "温暖触感",
+            "自然纹理"
+          ],
+          "brandRole": "营造亲切、自然的就餐氛围，平衡红色的热烈",
+          "forbidden": [
+            "深色沉重木材",
+            "高光烤漆木"
+          ]
+        },
+        {
+          "material": "红色金属/塑料",
+          "behavior": [
+            "高反射（金属）",
+            "哑光（塑料）"
+          ],
+          "brandRole": "品牌色载体，用于招牌、装饰件、灯笼",
+          "forbidden": [
+            "暗红色",
+            "粉紅色"
+          ]
+        },
+        {
+          "material": "浅色石材/瓷砖",
+          "behavior": [
+            "耐用",
+            "易清洁",
+            "漫反射"
+          ],
+          "brandRole": "地面和墙面基础，提供明亮背景",
+          "forbidden": [
+            "深色大理石",
+            "复杂花纹砖"
+          ]
+        }
+      ],
+      "after": [
+        {
+          "material": "暖色木（项目视觉方向）",
+          "behavior": [
+            "呈现暖色木的综合色调；木种、纹理尺度、涂层与光学参数均未指定"
+          ],
+          "brandRole": "项目温暖亲切的材质方向，具体适用表面待设计师确认",
+          "forbidden": []
+        },
+        {
+          "material": "赤陶（项目视觉方向）",
+          "behavior": [
+            "呈现暖赤陶的综合色调；制品形态、釉面与光学参数均未指定"
+          ],
+          "brandRole": "本项目历史视觉经验；不意味着墙地整铺或任何构造已确认",
+          "forbidden": []
+        }
+      ],
+      "category": "B",
+      "evidenceRefs": [
+        "human_selection:golds[0].reason",
+        "human_evaluation:dimensions.materialAndLighting.note"
+      ],
+      "reason": "采用验收记载的材质色感，不推定精确工艺；暂不将红砖候选写入核心材料",
+      "status": "proposed_for_human_review_not_confirmed"
+    },
+    {
+      "scene": "common",
+      "path": "mediaTranslations.spatial.materialLanguage",
+      "before": [
+        {
+          "material": "浅色木材",
+          "behavior": [
+            "温暖触感",
+            "自然纹理"
+          ],
+          "brandRole": "营造亲切、自然的就餐氛围，平衡红色的热烈",
+          "forbidden": [
+            "深色沉重木材",
+            "高光烤漆木"
+          ]
+        },
+        {
+          "material": "红色金属/塑料",
+          "behavior": [
+            "高反射（金属）",
+            "哑光（塑料）"
+          ],
+          "brandRole": "品牌色载体，用于招牌、装饰件、灯笼",
+          "forbidden": [
+            "暗红色",
+            "粉紅色"
+          ]
+        },
+        {
+          "material": "浅色石材/瓷砖",
+          "behavior": [
+            "耐用",
+            "易清洁",
+            "漫反射"
+          ],
+          "brandRole": "地面和墙面基础，提供明亮背景",
+          "forbidden": [
+            "深色大理石",
+            "复杂花纹砖"
+          ]
+        }
+      ],
+      "after": [
+        {
+          "material": "暖色木（项目视觉方向）",
+          "behavior": [
+            "呈现暖色木的综合色调；木种、纹理尺度、涂层与光学参数均未指定"
+          ],
+          "brandRole": "项目温暖亲切的材质方向，具体适用表面待设计师确认",
+          "forbidden": []
+        },
+        {
+          "material": "赤陶（项目视觉方向）",
+          "behavior": [
+            "呈现暖赤陶的综合色调；制品形态、釉面与光学参数均未指定"
+          ],
+          "brandRole": "本项目历史视觉经验；不意味着墙地整铺或任何构造已确认",
+          "forbidden": []
+        }
+      ],
+      "category": "B",
+      "evidenceRefs": [
+        "human_selection:golds[0].reason",
+        "human_evaluation:dimensions.materialAndLighting.note"
+      ],
+      "reason": "实验副本中的同义材料字段保持一致；不更改生产材料系统",
+      "status": "proposed_for_human_review_not_confirmed"
+    },
+    {
+      "scene": "common",
+      "path": "lightingSystem",
+      "before": {
+        "source": [
+          "暖黄光（3000K-3500K）",
+          "重点照明（射灯）"
+        ],
+        "contrast": "整体明亮，食物区域高亮，形成视觉焦点。",
+        "interactionWithMaterials": [
+          "暖光打在木材上显温馨",
+          "射灯照亮砂锅食物，强调热气和色泽"
+        ],
+        "forbidden": [
+          "冷白光",
+          "昏暗灯光",
+          "彩色霓虹灯（除Logo外）"
+        ]
+      },
+      "after": {
+        "source": [
+          "温暖的厨房与菜品照明；不指定色温值或灯具型号"
+        ],
+        "contrast": "整体明亮可读且温暖，菜品与人物不过曝。",
+        "interactionWithMaterials": [
+          "照明呈现暖色木与赤陶的综合色调；反射、透射和光泽参数未指定"
+        ],
+        "forbidden": [
+          "昏暗压抑",
+          "以彩色霓虹替代基础照明"
+        ]
+      },
+      "category": "B",
+      "evidenceRefs": [
+        "human_selection:golds[0].reason",
+        "human_evaluation:dimensions.materialAndLighting.note"
+      ],
+      "reason": "保留厨房暖光经验，移除未验收的具体色温、射灯与反射要求",
+      "status": "proposed_for_human_review_not_confirmed"
+    },
+    {
+      "scene": "common",
+      "path": "mediaTranslations.spatial.lightingLanguage",
+      "before": {
+        "source": [
+          "暖黄光（3000K-3500K）",
+          "重点照明（射灯）"
+        ],
+        "contrast": "整体明亮，食物区域高亮，形成视觉焦点。",
+        "interactionWithMaterials": [
+          "暖光打在木材上显温馨",
+          "射灯照亮砂锅食物，强调热气和色泽"
+        ],
+        "forbidden": [
+          "冷白光",
+          "昏暗灯光",
+          "彩色霓虹灯（除Logo外）"
+        ]
+      },
+      "after": {
+        "source": [
+          "温暖的厨房与菜品照明；不指定色温值或灯具型号"
+        ],
+        "contrast": "整体明亮可读且温暖，菜品与人物不过曝。",
+        "interactionWithMaterials": [
+          "照明呈现暖色木与赤陶的综合色调；反射、透射和光泽参数未指定"
+        ],
+        "forbidden": [
+          "昏暗压抑",
+          "以彩色霓虹替代基础照明"
+        ]
+      },
+      "category": "B",
+      "evidenceRefs": [
+        "human_selection:golds[0].reason",
+        "human_evaluation:dimensions.materialAndLighting.note"
+      ],
+      "reason": "实验副本同义光照字段一致；自然光结合作为单独待确认选项",
+      "status": "proposed_for_human_review_not_confirmed"
+    },
+    {
+      "scene": "entrance",
+      "path": "mediaTranslations.spatial.sceneProgram",
+      "before": [
+        "点餐",
+        "取餐",
+        "堂食",
+        "外带",
+        "明档展示"
+      ],
+      "after": [
+        "入口到达与通行路径",
+        "入口局部服务活动"
+      ],
+      "category": "D",
+      "evidenceRefs": [
+        "user:RKS-02D.sections1,3,5"
+      ],
+      "reason": "实验作者明确筛选当前局部程序，不让无位置的全店短标签取得入口可见权威；完整网络另存依赖",
+      "status": "proposed_for_human_review_not_confirmed"
+    },
+    {
+      "scene": "entrance",
+      "path": "mediaTranslations.spatial.brandRoleManifestation",
+      "before": [
+        "跷脚牛肉与四川小吃的菜品特征",
+        "亲切热闹的社区用餐体验",
+        "制作、出餐和日常餐具的品牌联系"
+      ],
+      "after": [
+        "温暖亲切的入口服务体验",
+        "社区小馆品牌原资产留待后期合成"
+      ],
+      "category": "D",
+      "evidenceRefs": [
+        "user:RKS-02D.sections1,3,5"
+      ],
+      "reason": "入口品牌表达不夹带厨房和完整堂食活动",
+      "status": "proposed_for_human_review_not_confirmed"
+    },
+    {
+      "scene": "entrance",
+      "path": "mediaTranslations.spatial.positiveDifferentiators",
+      "before": [
+        "四川特色小吃与跷脚牛肉的品类识别",
+        "温暖热闹亲切的社区经营氛围",
+        "现代设备和清晰服务动线兼容亲民堂食"
+      ],
+      "after": [
+        "入口与堂食的通达关系",
+        "入口温暖可接近的体验"
+      ],
+      "category": "D",
+      "evidenceRefs": [
+        "user:RKS-02D.sections1,3,5"
+      ],
+      "reason": "仅保留入口职责和合法边界",
+      "status": "proposed_for_human_review_not_confirmed"
+    },
+    {
+      "scene": "entrance",
+      "path": "mediaTranslations.spatial.mustBeVisible",
+      "before": [
+        "chef preparing food in kitchen",
+        "steam above dishes in kitchen",
+        "customers dining at tables",
+        "service counter with an accessible staff side and customer handoff side in dining area",
+        "wooden dining table and chairs with accessible service aisle on both sides in dining area"
+      ],
+      "after": [
+        "staff serving customers at entrance"
+      ],
+      "category": "D",
+      "evidenceRefs": [
+        "user:RKS-02D.sections1,3,5"
+      ],
+      "reason": "只准备入口位置明确的活动；局部堂食视线另列待审",
+      "status": "proposed_for_human_review_not_confirmed"
+    },
+    {
+      "scene": "entrance",
+      "path": "mediaTranslations.spatial.functionalRelationships",
+      "before": [
+        "Kitchen preparation connects to service counter; dining tables remain accessible; takeaway handoff keeps a clear route"
+      ],
+      "after": [
+        "Entrance access connects to dining area through a clear threshold route; other dining interiors remain off frame"
+      ],
+      "category": "D",
+      "evidenceRefs": [
+        "user:RKS-02D.sections1,3,5"
+      ],
+      "reason": "入口与堂食保留边界/通行联系，不取得室内可见权威",
+      "status": "proposed_for_human_review_not_confirmed"
+    },
+    {
+      "scene": "entrance",
+      "path": "lightingSystem",
+      "before": {
+        "source": [
+          "温暖的厨房与菜品照明；不指定色温值或灯具型号"
+        ],
+        "contrast": "整体明亮可读且温暖，菜品与人物不过曝。",
+        "interactionWithMaterials": [
+          "照明呈现暖色木与赤陶的综合色调；反射、透射和光泽参数未指定"
+        ],
+        "forbidden": [
+          "昏暗压抑",
+          "以彩色霓虹替代基础照明"
+        ]
+      },
+      "after": {
+        "source": [
+          "温暖可读的入口照明；不指定色温、灯具或开窗位置"
+        ],
+        "contrast": "保持入口识别与空间可读性，不预设街道光照条件。",
+        "interactionWithMaterials": [
+          "呈现项目暖色材料方向；光学参数未指定"
+        ],
+        "forbidden": [
+          "昏暗压抑"
+        ]
+      },
+      "category": "D",
+      "evidenceRefs": [
+        "user:RKS-02D.sections1,3,5"
+      ],
+      "reason": "将照明限定为当前镜头，避免以厨房光照要求泄漏室内",
+      "status": "proposed_for_human_review_not_confirmed"
+    },
+    {
+      "scene": "entrance",
+      "path": "mediaTranslations.spatial.lightingLanguage",
+      "before": {
+        "source": [
+          "温暖的厨房与菜品照明；不指定色温值或灯具型号"
+        ],
+        "contrast": "整体明亮可读且温暖，菜品与人物不过曝。",
+        "interactionWithMaterials": [
+          "照明呈现暖色木与赤陶的综合色调；反射、透射和光泽参数未指定"
+        ],
+        "forbidden": [
+          "昏暗压抑",
+          "以彩色霓虹替代基础照明"
+        ]
+      },
+      "after": {
+        "source": [
+          "温暖可读的入口照明；不指定色温、灯具或开窗位置"
+        ],
+        "contrast": "保持入口识别与空间可读性，不预设街道光照条件。",
+        "interactionWithMaterials": [
+          "呈现项目暖色材料方向；光学参数未指定"
+        ],
+        "forbidden": [
+          "昏暗压抑"
+        ]
+      },
+      "category": "D",
+      "evidenceRefs": [
+        "user:RKS-02D.sections1,3,5"
+      ],
+      "reason": "保持同义字段一致",
+      "status": "proposed_for_human_review_not_confirmed"
+    },
+    {
+      "scene": "storefront",
+      "path": "mediaTranslations.spatial.sceneProgram",
+      "before": [
+        "点餐",
+        "取餐",
+        "堂食",
+        "外带",
+        "明档展示"
+      ],
+      "after": [
+        "门头与外立面",
+        "临街外侧的到达路径"
+      ],
+      "category": "D",
+      "evidenceRefs": [
+        "user:RKS-02D.sections1,3,5"
+      ],
+      "reason": "实验作者明确外立面程序，完整室内经营节点不作为当前必见清单",
+      "status": "proposed_for_human_review_not_confirmed"
+    },
+    {
+      "scene": "storefront",
+      "path": "mediaTranslations.spatial.brandRoleManifestation",
+      "before": [
+        "跷脚牛肉与四川小吃的菜品特征",
+        "亲切热闹的社区用餐体验",
+        "制作、出餐和日常餐具的品牌联系"
+      ],
+      "after": [
+        "亲民温暖的外立面体验",
+        "外立面品牌原资产留待后期合成"
+      ],
+      "category": "D",
+      "evidenceRefs": [
+        "user:RKS-02D.sections1,3,5"
+      ],
+      "reason": "品牌资产后期呈现，不带入整店室内活动",
+      "status": "proposed_for_human_review_not_confirmed"
+    },
+    {
+      "scene": "storefront",
+      "path": "mediaTranslations.spatial.positiveDifferentiators",
+      "before": [
+        "四川特色小吃与跷脚牛肉的品类识别",
+        "温暖热闹亲切的社区经营氛围",
+        "现代设备和清晰服务动线兼容亲民堂食"
+      ],
+      "after": [
+        "外立面识别与可进入的到达关系",
+        "临街外侧的温暖亲切氛围"
+      ],
+      "category": "D",
+      "evidenceRefs": [
+        "user:RKS-02D.sections1,3,5"
+      ],
+      "reason": "明确本镜头可审核的目标，玻璃目标另留待审",
+      "status": "proposed_for_human_review_not_confirmed"
+    },
+    {
+      "scene": "storefront",
+      "path": "mediaTranslations.spatial.mustBeVisible",
+      "before": [
+        "chef preparing food in kitchen",
+        "steam above dishes in kitchen",
+        "customers dining at tables",
+        "service counter with an accessible staff side and customer handoff side in dining area",
+        "wooden dining table and chairs with accessible service aisle on both sides in dining area"
+      ],
+      "after": [
+        "staff serving customers at storefront",
+        "chef preparing food in kitchen visible through storefront glazing"
+      ],
+      "category": "D",
+      "evidenceRefs": [
+        "user:RKS-02D.sections1,3,5"
+      ],
+      "reason": "外立面活动与隔窗目标分别审计，隔窗必须保持待审而非自动放行",
+      "status": "proposed_for_human_review_not_confirmed"
+    },
+    {
+      "scene": "storefront",
+      "path": "mediaTranslations.spatial.functionalRelationships",
+      "before": [
+        "Kitchen preparation connects to service counter; dining tables remain accessible; takeaway handoff keeps a clear route"
+      ],
+      "after": [
+        "Storefront access must not expose kitchen or dining interiors"
+      ],
+      "category": "D",
+      "evidenceRefs": [
+        "user:RKS-02D.sections1,3,5"
+      ],
+      "reason": "现有权限先保护室内；展示营业氛围的目标保留在待审字段",
+      "status": "proposed_for_human_review_not_confirmed"
+    },
+    {
+      "scene": "storefront",
+      "path": "lightingSystem",
+      "before": {
+        "source": [
+          "温暖的厨房与菜品照明；不指定色温值或灯具型号"
+        ],
+        "contrast": "整体明亮可读且温暖，菜品与人物不过曝。",
+        "interactionWithMaterials": [
+          "照明呈现暖色木与赤陶的综合色调；反射、透射和光泽参数未指定"
+        ],
+        "forbidden": [
+          "昏暗压抑",
+          "以彩色霓虹替代基础照明"
+        ]
+      },
+      "after": {
+        "source": [
+          "立面与门槛照明服务入口识别；不指定色温、灯具或开口参数"
+        ],
+        "contrast": "保持入口识别与空间可读性，不预设街道光照条件。",
+        "interactionWithMaterials": [
+          "呈现项目暖色材料方向；光学参数未指定"
+        ],
+        "forbidden": [
+          "昏暗压抑"
+        ]
+      },
+      "category": "D",
+      "evidenceRefs": [
+        "user:RKS-02D.sections1,3,5"
+      ],
+      "reason": "将照明限定为当前镜头，避免以厨房光照要求泄漏室内",
+      "status": "proposed_for_human_review_not_confirmed"
+    },
+    {
+      "scene": "storefront",
+      "path": "mediaTranslations.spatial.lightingLanguage",
+      "before": {
+        "source": [
+          "温暖的厨房与菜品照明；不指定色温值或灯具型号"
+        ],
+        "contrast": "整体明亮可读且温暖，菜品与人物不过曝。",
+        "interactionWithMaterials": [
+          "照明呈现暖色木与赤陶的综合色调；反射、透射和光泽参数未指定"
+        ],
+        "forbidden": [
+          "昏暗压抑",
+          "以彩色霓虹替代基础照明"
+        ]
+      },
+      "after": {
+        "source": [
+          "立面与门槛照明服务入口识别；不指定色温、灯具或开口参数"
+        ],
+        "contrast": "保持入口识别与空间可读性，不预设街道光照条件。",
+        "interactionWithMaterials": [
+          "呈现项目暖色材料方向；光学参数未指定"
+        ],
+        "forbidden": [
+          "昏暗压抑"
+        ]
+      },
+      "category": "D",
+      "evidenceRefs": [
+        "user:RKS-02D.sections1,3,5"
+      ],
+      "reason": "保持同义字段一致",
+      "status": "proposed_for_human_review_not_confirmed"
+    }
+  ],
+  "drafts": [
+    {
+      "scene": "dining",
+      "status": "review_only_not_save_payload",
+      "projectId": "dca9b7d4-f233-46ff-b4df-44a890f13c4f",
+      "sourceType": "RKS02D_manual_experiment_draft",
+      "projection": {
+        "projectId": "dca9b7d4-f233-46ff-b4df-44a890f13c4f",
+        "sourceType": "analysis_suggestion",
+        "availability": "available",
+        "analysisFingerprint": "0d867b826c2ee5b4c14409213fa0565f613171f9a3f046359eab3761078b8790",
+        "fields": {
+          "spatialConcept": "四川特色小吃 / 跷脚牛肉；社区临街特色小馆；亲民堂食为主，兼顾外带。 市井烟火、温暖、热闹、亲切；明确的品牌特色和真实餐饮经营活动。",
+          "structureLanguage": "开放式布局",
+          "lightingLanguage": "温暖的厨房与菜品照明；不指定色温值或灯具型号",
+          "lightingContrast": "整体明亮可读且温暖，菜品与人物不过曝。",
+          "lightingInteraction": "照明呈现暖色木与赤陶的综合色调；反射、透射和光泽参数未指定",
+          "lightingAvoid": "昏暗压抑\n以彩色霓虹替代基础照明",
+          "colorAvoid": "以整体冷淡空间替代已确认的温暖亲切氛围",
+          "functionalProgram": "点餐\n取餐\n堂食\n外带\n明档展示",
+          "functionalNetwork": "点餐区 -> 明档制作区 -> 取餐区 -> 就餐区\n全店外带包装功能依赖；位置与设置方式待确认",
+          "functionalRelationships": "Kitchen preparation connects to service counter; dining tables remain accessible; takeaway handoff keeps a clear route",
+          "visibleRequirements": "chef preparing food in kitchen\nsteam above dishes in kitchen\ncustomers dining at tables\nservice counter with an accessible staff side and customer handoff side in dining area\nwooden dining table and chairs with accessible service aisle on both sides in dining area",
+          "artisticFocus": "开放明档与餐桌区域形成可读的制作、服务和就餐关系\n服务通行路径清晰可进入，具体布局待物业复核",
+          "compositionRequirements": "",
+          "mustAvoid": "不增加未经证实的非遗或老字号背书\n不以标准化商场快餐、极简咖啡馆或高端精致餐饮替代本项目定位\n不以昏暗压抑或静态样板间取代真实餐饮经营氛围",
+          "colorEntries": [
+            {
+              "name": "品牌红",
+              "paletteRole": "primary",
+              "role": "品牌识别候选色；表面和面积未指定",
+              "surfaceApplicability": "",
+              "spatialUsage": ""
+            },
+            {
+              "name": "品牌黑",
+              "paletteRole": "secondary",
+              "role": "品牌信息候选色；不预设室内表面范围",
+              "surfaceApplicability": "",
+              "spatialUsage": ""
+            },
+            {
+              "name": "木色",
+              "paletteRole": "accent",
+              "role": "暖色木的材质色候选；表面和面积均未指定",
+              "surfaceApplicability": "",
+              "spatialUsage": ""
+            },
+            {
+              "name": "白色",
+              "paletteRole": "accent",
+              "role": "清洁明亮的辅助色候选；范围待审核",
+              "surfaceApplicability": "",
+              "spatialUsage": ""
+            }
+          ],
+          "colorPolicy": "品牌红：品牌识别候选色；表面和面积未指定\n品牌黑：品牌信息候选色；不预设室内表面范围\n木色：暖色木的材质色候选；表面和面积均未指定\n白色：清洁明亮的辅助色候选；范围待审核",
+          "materialEntries": [
+            {
+              "material": "暖色木（项目视觉方向）",
+              "behavior": "呈现暖色木的综合色调；木种、纹理尺度、涂层与光学参数均未指定",
+              "brandRole": "项目温暖亲切的材质方向，具体适用表面待设计师确认",
+              "forbidden": ""
+            },
+            {
+              "material": "赤陶（项目视觉方向）",
+              "behavior": "呈现暖赤陶的综合色调；制品形态、釉面与光学参数均未指定",
+              "brandRole": "本项目历史视觉经验；不意味着墙地整铺或任何构造已确认",
+              "forbidden": ""
+            }
+          ],
+          "materialLanguage": "暖色木（项目视觉方向）：呈现暖色木的综合色调；木种、纹理尺度、涂层与光学参数均未指定\n赤陶（项目视觉方向）：呈现暖赤陶的综合色调；制品形态、釉面与光学参数均未指定"
+        },
+        "sourcePaths": {
+          "spatialConcept": [
+            "mediaTranslations.spatial.spatialConcept"
+          ],
+          "structureLanguage": [
+            "mediaTranslations.spatial.structureLanguage[0]"
+          ],
+          "lightingLanguage": [
+            "mediaTranslations.spatial.lightingLanguage.source[0]"
+          ],
+          "lightingContrast": [
+            "mediaTranslations.spatial.lightingLanguage.contrast"
+          ],
+          "lightingInteraction": [
+            "mediaTranslations.spatial.lightingLanguage.interactionWithMaterials[0]"
+          ],
+          "lightingAvoid": [
+            "mediaTranslations.spatial.lightingLanguage.forbidden[0]",
+            "mediaTranslations.spatial.lightingLanguage.forbidden[1]"
+          ],
+          "colorAvoid": [
+            "mediaTranslations.spatial.colorBehavior.forbidden[0]"
+          ],
+          "functionalProgram": [
+            "mediaTranslations.spatial.sceneProgram[0]",
+            "mediaTranslations.spatial.sceneProgram[1]",
+            "mediaTranslations.spatial.sceneProgram[2]",
+            "mediaTranslations.spatial.sceneProgram[3]",
+            "mediaTranslations.spatial.sceneProgram[4]"
+          ],
+          "functionalNetwork": [
+            "mediaTranslations.spatial.functionalNetwork[0]",
+            "mediaTranslations.spatial.functionalNetwork[1]"
+          ],
+          "functionalRelationships": [
+            "mediaTranslations.spatial.functionalRelationships[0]"
+          ],
+          "visibleRequirements": [
+            "mediaTranslations.spatial.mustBeVisible[0]",
+            "mediaTranslations.spatial.mustBeVisible[1]",
+            "mediaTranslations.spatial.mustBeVisible[2]",
+            "mediaTranslations.spatial.mustBeVisible[3]",
+            "mediaTranslations.spatial.mustBeVisible[4]"
+          ],
+          "artisticFocus": [
+            "mediaTranslations.spatial.signatureSpatialMechanism[0]",
+            "mediaTranslations.spatial.signatureSpatialMechanism[1]"
+          ],
+          "mustAvoid": [
+            "creativeDecision.strategicNegatives[0]",
+            "creativeDecision.strategicNegatives[1]",
+            "creativeDecision.strategicNegatives[2]"
+          ],
+          "colorEntries[0].name": [
+            "mediaTranslations.spatial.colorBehavior.primary[0].name"
+          ],
+          "colorEntries[0].paletteRole": [
+            "mediaTranslations.spatial.colorBehavior.primary"
+          ],
+          "colorEntries[0].role": [
+            "mediaTranslations.spatial.colorBehavior.primary[0].role"
+          ],
+          "colorEntries[1].name": [
+            "mediaTranslations.spatial.colorBehavior.secondary[0].name"
+          ],
+          "colorEntries[1].paletteRole": [
+            "mediaTranslations.spatial.colorBehavior.secondary"
+          ],
+          "colorEntries[1].role": [
+            "mediaTranslations.spatial.colorBehavior.secondary[0].role"
+          ],
+          "colorEntries[2].name": [
+            "mediaTranslations.spatial.colorBehavior.accent[0].name"
+          ],
+          "colorEntries[2].paletteRole": [
+            "mediaTranslations.spatial.colorBehavior.accent"
+          ],
+          "colorEntries[2].role": [
+            "mediaTranslations.spatial.colorBehavior.accent[0].role"
+          ],
+          "colorEntries[3].name": [
+            "mediaTranslations.spatial.colorBehavior.accent[1].name"
+          ],
+          "colorEntries[3].paletteRole": [
+            "mediaTranslations.spatial.colorBehavior.accent"
+          ],
+          "colorEntries[3].role": [
+            "mediaTranslations.spatial.colorBehavior.accent[1].role"
+          ],
+          "colorPolicy": [
+            "mediaTranslations.spatial.colorBehavior.primary[0].name",
+            "mediaTranslations.spatial.colorBehavior.primary[0].role",
+            "mediaTranslations.spatial.colorBehavior.secondary[0].name",
+            "mediaTranslations.spatial.colorBehavior.secondary[0].role",
+            "mediaTranslations.spatial.colorBehavior.accent[0].name",
+            "mediaTranslations.spatial.colorBehavior.accent[0].role",
+            "mediaTranslations.spatial.colorBehavior.accent[1].name",
+            "mediaTranslations.spatial.colorBehavior.accent[1].role"
+          ],
+          "materialEntries[0].material": [
+            "mediaTranslations.spatial.materialLanguage[0].material"
+          ],
+          "materialEntries[0].behavior": [
+            "mediaTranslations.spatial.materialLanguage[0].behavior[0]"
+          ],
+          "materialEntries[0].brandRole": [
+            "mediaTranslations.spatial.materialLanguage[0].brandRole"
+          ],
+          "materialEntries[1].material": [
+            "mediaTranslations.spatial.materialLanguage[1].material"
+          ],
+          "materialEntries[1].behavior": [
+            "mediaTranslations.spatial.materialLanguage[1].behavior[0]"
+          ],
+          "materialEntries[1].brandRole": [
+            "mediaTranslations.spatial.materialLanguage[1].brandRole"
+          ],
+          "materialLanguage": [
+            "mediaTranslations.spatial.materialLanguage[0].material",
+            "mediaTranslations.spatial.materialLanguage[0].behavior[0]",
+            "mediaTranslations.spatial.materialLanguage[1].material",
+            "mediaTranslations.spatial.materialLanguage[1].behavior[0]"
+          ]
+        },
+        "missingFields": [
+          {
+            "field": "compositionRequirements",
+            "reason": "missing_or_insufficient_source"
+          },
+          {
+            "field": "colorEntries[0].surfaceApplicability",
+            "reason": "explicit_spatial_scope_required"
+          },
+          {
+            "field": "colorEntries[0].spatialUsage",
+            "reason": "explicit_spatial_scope_required"
+          },
+          {
+            "field": "colorEntries[1].surfaceApplicability",
+            "reason": "explicit_spatial_scope_required"
+          },
+          {
+            "field": "colorEntries[1].spatialUsage",
+            "reason": "explicit_spatial_scope_required"
+          },
+          {
+            "field": "colorEntries[2].surfaceApplicability",
+            "reason": "explicit_spatial_scope_required"
+          },
+          {
+            "field": "colorEntries[2].spatialUsage",
+            "reason": "explicit_spatial_scope_required"
+          },
+          {
+            "field": "colorEntries[3].surfaceApplicability",
+            "reason": "explicit_spatial_scope_required"
+          },
+          {
+            "field": "colorEntries[3].spatialUsage",
+            "reason": "explicit_spatial_scope_required"
+          },
+          {
+            "field": "materialEntries[0].forbidden",
+            "reason": "missing_or_insufficient_source"
+          },
+          {
+            "field": "materialEntries[1].forbidden",
+            "reason": "missing_or_insufficient_source"
+          }
+        ]
+      },
+      "fieldDeltaRefs": [
+        {
+          "path": "projectFacts.brandRole",
+          "category": "A",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "creativeDecision.brandRoleStatement",
+          "category": "A",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "creativeDecision.uniqueUpgradeThesis",
+          "category": "A",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "creativeDecision.upgradeTo",
+          "category": "A",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "creativeDecision.targetWorldview",
+          "category": "A",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "creativeDecision.strategicNegatives",
+          "category": "A",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.spatialConcept",
+          "category": "A",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.brandRoleManifestation",
+          "category": "D",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5",
+            "human_selection:golds[0].reason",
+            "human_evaluation:dimensions.materialAndLighting.note"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.brandIntegration",
+          "category": "D",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.signatureSpatialMechanism",
+          "category": "D",
+          "evidenceRefs": [
+            "human_selection:golds[0].reason",
+            "human_evaluation:dimensions.materialAndLighting.note",
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.structureLanguage",
+          "category": "D",
+          "evidenceRefs": [
+            "human_selection:golds[0].reason",
+            "human_evaluation:dimensions.materialAndLighting.note"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.functionalNetwork",
+          "category": "D",
+          "evidenceRefs": [
+            "historical_packet:mediaTranslations.spatial.functionalNetwork",
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.functionalRelationships",
+          "category": "D",
+          "evidenceRefs": [
+            "knowledge:rks-observation-5",
+            "human_selection:golds[0].reason"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.peopleBehavior",
+          "category": "D",
+          "evidenceRefs": [
+            "human_selection:golds[0].reason",
+            "human_evaluation:dimensions.materialAndLighting.note"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.mustBeVisible",
+          "category": "D",
+          "evidenceRefs": [
+            "human_selection:golds[0].reason",
+            "human_evaluation:dimensions.materialAndLighting.note",
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.positiveDifferentiators",
+          "category": "A",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "colorSystem",
+          "category": "D",
+          "evidenceRefs": [
+            "historical_packet:colorSystem",
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.colorBehavior",
+          "category": "D",
+          "evidenceRefs": [
+            "historical_packet:colorSystem",
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "materialSystem",
+          "category": "B",
+          "evidenceRefs": [
+            "human_selection:golds[0].reason",
+            "human_evaluation:dimensions.materialAndLighting.note"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.materialLanguage",
+          "category": "B",
+          "evidenceRefs": [
+            "human_selection:golds[0].reason",
+            "human_evaluation:dimensions.materialAndLighting.note"
+          ]
+        },
+        {
+          "path": "lightingSystem",
+          "category": "B",
+          "evidenceRefs": [
+            "human_selection:golds[0].reason",
+            "human_evaluation:dimensions.materialAndLighting.note"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.lightingLanguage",
+          "category": "B",
+          "evidenceRefs": [
+            "human_selection:golds[0].reason",
+            "human_evaluation:dimensions.materialAndLighting.note"
+          ]
+        }
+      ],
+      "humanConfirmed": false,
+      "saveCalled": false,
+      "confirmCalled": false,
+      "existingDecisionModified": false
+    },
+    {
+      "scene": "entrance",
+      "status": "review_only_not_save_payload",
+      "projectId": "dca9b7d4-f233-46ff-b4df-44a890f13c4f",
+      "sourceType": "RKS02D_manual_experiment_draft",
+      "projection": {
+        "projectId": "dca9b7d4-f233-46ff-b4df-44a890f13c4f",
+        "sourceType": "analysis_suggestion",
+        "availability": "available",
+        "analysisFingerprint": "9d3fe713023691beea78e569847c928d2fc0b6fc6b950c85f9b671f205ef6860",
+        "fields": {
+          "spatialConcept": "四川特色小吃 / 跷脚牛肉；社区临街特色小馆；亲民堂食为主，兼顾外带。 市井烟火、温暖、热闹、亲切；明确的品牌特色和真实餐饮经营活动。",
+          "structureLanguage": "开放式布局",
+          "lightingLanguage": "温暖可读的入口照明；不指定色温、灯具或开窗位置",
+          "lightingContrast": "保持入口识别与空间可读性，不预设街道光照条件。",
+          "lightingInteraction": "呈现项目暖色材料方向；光学参数未指定",
+          "lightingAvoid": "昏暗压抑",
+          "colorAvoid": "以整体冷淡空间替代已确认的温暖亲切氛围",
+          "functionalProgram": "入口到达与通行路径\n入口局部服务活动",
+          "functionalNetwork": "点餐区 -> 明档制作区 -> 取餐区 -> 就餐区\n全店外带包装功能依赖；位置与设置方式待确认",
+          "functionalRelationships": "Entrance access connects to dining area through a clear threshold route; other dining interiors remain off frame",
+          "visibleRequirements": "staff serving customers at entrance",
+          "artisticFocus": "开放明档与餐桌区域形成可读的制作、服务和就餐关系\n服务通行路径清晰可进入，具体布局待物业复核",
+          "compositionRequirements": "",
+          "mustAvoid": "不增加未经证实的非遗或老字号背书\n不以标准化商场快餐、极简咖啡馆或高端精致餐饮替代本项目定位\n不以昏暗压抑或静态样板间取代真实餐饮经营氛围",
+          "colorEntries": [
+            {
+              "name": "品牌红",
+              "paletteRole": "primary",
+              "role": "品牌识别候选色；表面和面积未指定",
+              "surfaceApplicability": "",
+              "spatialUsage": ""
+            },
+            {
+              "name": "品牌黑",
+              "paletteRole": "secondary",
+              "role": "品牌信息候选色；不预设室内表面范围",
+              "surfaceApplicability": "",
+              "spatialUsage": ""
+            },
+            {
+              "name": "木色",
+              "paletteRole": "accent",
+              "role": "暖色木的材质色候选；表面和面积均未指定",
+              "surfaceApplicability": "",
+              "spatialUsage": ""
+            },
+            {
+              "name": "白色",
+              "paletteRole": "accent",
+              "role": "清洁明亮的辅助色候选；范围待审核",
+              "surfaceApplicability": "",
+              "spatialUsage": ""
+            }
+          ],
+          "colorPolicy": "品牌红：品牌识别候选色；表面和面积未指定\n品牌黑：品牌信息候选色；不预设室内表面范围\n木色：暖色木的材质色候选；表面和面积均未指定\n白色：清洁明亮的辅助色候选；范围待审核",
+          "materialEntries": [
+            {
+              "material": "暖色木（项目视觉方向）",
+              "behavior": "呈现暖色木的综合色调；木种、纹理尺度、涂层与光学参数均未指定",
+              "brandRole": "项目温暖亲切的材质方向，具体适用表面待设计师确认",
+              "forbidden": ""
+            },
+            {
+              "material": "赤陶（项目视觉方向）",
+              "behavior": "呈现暖赤陶的综合色调；制品形态、釉面与光学参数均未指定",
+              "brandRole": "本项目历史视觉经验；不意味着墙地整铺或任何构造已确认",
+              "forbidden": ""
+            }
+          ],
+          "materialLanguage": "暖色木（项目视觉方向）：呈现暖色木的综合色调；木种、纹理尺度、涂层与光学参数均未指定\n赤陶（项目视觉方向）：呈现暖赤陶的综合色调；制品形态、釉面与光学参数均未指定"
+        },
+        "sourcePaths": {
+          "spatialConcept": [
+            "mediaTranslations.spatial.spatialConcept"
+          ],
+          "structureLanguage": [
+            "mediaTranslations.spatial.structureLanguage[0]"
+          ],
+          "lightingLanguage": [
+            "mediaTranslations.spatial.lightingLanguage.source[0]"
+          ],
+          "lightingContrast": [
+            "mediaTranslations.spatial.lightingLanguage.contrast"
+          ],
+          "lightingInteraction": [
+            "mediaTranslations.spatial.lightingLanguage.interactionWithMaterials[0]"
+          ],
+          "lightingAvoid": [
+            "mediaTranslations.spatial.lightingLanguage.forbidden[0]"
+          ],
+          "colorAvoid": [
+            "mediaTranslations.spatial.colorBehavior.forbidden[0]"
+          ],
+          "functionalProgram": [
+            "mediaTranslations.spatial.sceneProgram[0]",
+            "mediaTranslations.spatial.sceneProgram[1]"
+          ],
+          "functionalNetwork": [
+            "mediaTranslations.spatial.functionalNetwork[0]",
+            "mediaTranslations.spatial.functionalNetwork[1]"
+          ],
+          "functionalRelationships": [
+            "mediaTranslations.spatial.functionalRelationships[0]"
+          ],
+          "visibleRequirements": [
+            "mediaTranslations.spatial.mustBeVisible[0]"
+          ],
+          "artisticFocus": [
+            "mediaTranslations.spatial.signatureSpatialMechanism[0]",
+            "mediaTranslations.spatial.signatureSpatialMechanism[1]"
+          ],
+          "mustAvoid": [
+            "creativeDecision.strategicNegatives[0]",
+            "creativeDecision.strategicNegatives[1]",
+            "creativeDecision.strategicNegatives[2]"
+          ],
+          "colorEntries[0].name": [
+            "mediaTranslations.spatial.colorBehavior.primary[0].name"
+          ],
+          "colorEntries[0].paletteRole": [
+            "mediaTranslations.spatial.colorBehavior.primary"
+          ],
+          "colorEntries[0].role": [
+            "mediaTranslations.spatial.colorBehavior.primary[0].role"
+          ],
+          "colorEntries[1].name": [
+            "mediaTranslations.spatial.colorBehavior.secondary[0].name"
+          ],
+          "colorEntries[1].paletteRole": [
+            "mediaTranslations.spatial.colorBehavior.secondary"
+          ],
+          "colorEntries[1].role": [
+            "mediaTranslations.spatial.colorBehavior.secondary[0].role"
+          ],
+          "colorEntries[2].name": [
+            "mediaTranslations.spatial.colorBehavior.accent[0].name"
+          ],
+          "colorEntries[2].paletteRole": [
+            "mediaTranslations.spatial.colorBehavior.accent"
+          ],
+          "colorEntries[2].role": [
+            "mediaTranslations.spatial.colorBehavior.accent[0].role"
+          ],
+          "colorEntries[3].name": [
+            "mediaTranslations.spatial.colorBehavior.accent[1].name"
+          ],
+          "colorEntries[3].paletteRole": [
+            "mediaTranslations.spatial.colorBehavior.accent"
+          ],
+          "colorEntries[3].role": [
+            "mediaTranslations.spatial.colorBehavior.accent[1].role"
+          ],
+          "colorPolicy": [
+            "mediaTranslations.spatial.colorBehavior.primary[0].name",
+            "mediaTranslations.spatial.colorBehavior.primary[0].role",
+            "mediaTranslations.spatial.colorBehavior.secondary[0].name",
+            "mediaTranslations.spatial.colorBehavior.secondary[0].role",
+            "mediaTranslations.spatial.colorBehavior.accent[0].name",
+            "mediaTranslations.spatial.colorBehavior.accent[0].role",
+            "mediaTranslations.spatial.colorBehavior.accent[1].name",
+            "mediaTranslations.spatial.colorBehavior.accent[1].role"
+          ],
+          "materialEntries[0].material": [
+            "mediaTranslations.spatial.materialLanguage[0].material"
+          ],
+          "materialEntries[0].behavior": [
+            "mediaTranslations.spatial.materialLanguage[0].behavior[0]"
+          ],
+          "materialEntries[0].brandRole": [
+            "mediaTranslations.spatial.materialLanguage[0].brandRole"
+          ],
+          "materialEntries[1].material": [
+            "mediaTranslations.spatial.materialLanguage[1].material"
+          ],
+          "materialEntries[1].behavior": [
+            "mediaTranslations.spatial.materialLanguage[1].behavior[0]"
+          ],
+          "materialEntries[1].brandRole": [
+            "mediaTranslations.spatial.materialLanguage[1].brandRole"
+          ],
+          "materialLanguage": [
+            "mediaTranslations.spatial.materialLanguage[0].material",
+            "mediaTranslations.spatial.materialLanguage[0].behavior[0]",
+            "mediaTranslations.spatial.materialLanguage[1].material",
+            "mediaTranslations.spatial.materialLanguage[1].behavior[0]"
+          ]
+        },
+        "missingFields": [
+          {
+            "field": "compositionRequirements",
+            "reason": "missing_or_insufficient_source"
+          },
+          {
+            "field": "colorEntries[0].surfaceApplicability",
+            "reason": "explicit_spatial_scope_required"
+          },
+          {
+            "field": "colorEntries[0].spatialUsage",
+            "reason": "explicit_spatial_scope_required"
+          },
+          {
+            "field": "colorEntries[1].surfaceApplicability",
+            "reason": "explicit_spatial_scope_required"
+          },
+          {
+            "field": "colorEntries[1].spatialUsage",
+            "reason": "explicit_spatial_scope_required"
+          },
+          {
+            "field": "colorEntries[2].surfaceApplicability",
+            "reason": "explicit_spatial_scope_required"
+          },
+          {
+            "field": "colorEntries[2].spatialUsage",
+            "reason": "explicit_spatial_scope_required"
+          },
+          {
+            "field": "colorEntries[3].surfaceApplicability",
+            "reason": "explicit_spatial_scope_required"
+          },
+          {
+            "field": "colorEntries[3].spatialUsage",
+            "reason": "explicit_spatial_scope_required"
+          },
+          {
+            "field": "materialEntries[0].forbidden",
+            "reason": "missing_or_insufficient_source"
+          },
+          {
+            "field": "materialEntries[1].forbidden",
+            "reason": "missing_or_insufficient_source"
+          }
+        ]
+      },
+      "fieldDeltaRefs": [
+        {
+          "path": "projectFacts.brandRole",
+          "category": "A",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "creativeDecision.brandRoleStatement",
+          "category": "A",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "creativeDecision.uniqueUpgradeThesis",
+          "category": "A",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "creativeDecision.upgradeTo",
+          "category": "A",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "creativeDecision.targetWorldview",
+          "category": "A",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "creativeDecision.strategicNegatives",
+          "category": "A",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.spatialConcept",
+          "category": "A",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.brandRoleManifestation",
+          "category": "D",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5",
+            "human_selection:golds[0].reason",
+            "human_evaluation:dimensions.materialAndLighting.note"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.brandIntegration",
+          "category": "D",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.signatureSpatialMechanism",
+          "category": "D",
+          "evidenceRefs": [
+            "human_selection:golds[0].reason",
+            "human_evaluation:dimensions.materialAndLighting.note",
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.structureLanguage",
+          "category": "D",
+          "evidenceRefs": [
+            "human_selection:golds[0].reason",
+            "human_evaluation:dimensions.materialAndLighting.note"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.functionalNetwork",
+          "category": "D",
+          "evidenceRefs": [
+            "historical_packet:mediaTranslations.spatial.functionalNetwork",
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.functionalRelationships",
+          "category": "D",
+          "evidenceRefs": [
+            "knowledge:rks-observation-5",
+            "human_selection:golds[0].reason"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.peopleBehavior",
+          "category": "D",
+          "evidenceRefs": [
+            "human_selection:golds[0].reason",
+            "human_evaluation:dimensions.materialAndLighting.note"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.mustBeVisible",
+          "category": "D",
+          "evidenceRefs": [
+            "human_selection:golds[0].reason",
+            "human_evaluation:dimensions.materialAndLighting.note",
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.positiveDifferentiators",
+          "category": "A",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "colorSystem",
+          "category": "D",
+          "evidenceRefs": [
+            "historical_packet:colorSystem",
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.colorBehavior",
+          "category": "D",
+          "evidenceRefs": [
+            "historical_packet:colorSystem",
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "materialSystem",
+          "category": "B",
+          "evidenceRefs": [
+            "human_selection:golds[0].reason",
+            "human_evaluation:dimensions.materialAndLighting.note"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.materialLanguage",
+          "category": "B",
+          "evidenceRefs": [
+            "human_selection:golds[0].reason",
+            "human_evaluation:dimensions.materialAndLighting.note"
+          ]
+        },
+        {
+          "path": "lightingSystem",
+          "category": "B",
+          "evidenceRefs": [
+            "human_selection:golds[0].reason",
+            "human_evaluation:dimensions.materialAndLighting.note"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.lightingLanguage",
+          "category": "B",
+          "evidenceRefs": [
+            "human_selection:golds[0].reason",
+            "human_evaluation:dimensions.materialAndLighting.note"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.sceneProgram",
+          "category": "D",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.brandRoleManifestation",
+          "category": "D",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.positiveDifferentiators",
+          "category": "D",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.mustBeVisible",
+          "category": "D",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.functionalRelationships",
+          "category": "D",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "lightingSystem",
+          "category": "D",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.lightingLanguage",
+          "category": "D",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        }
+      ],
+      "humanConfirmed": false,
+      "saveCalled": false,
+      "confirmCalled": false,
+      "existingDecisionModified": false
+    },
+    {
+      "scene": "storefront",
+      "status": "review_only_not_save_payload",
+      "projectId": "dca9b7d4-f233-46ff-b4df-44a890f13c4f",
+      "sourceType": "RKS02D_manual_experiment_draft",
+      "projection": {
+        "projectId": "dca9b7d4-f233-46ff-b4df-44a890f13c4f",
+        "sourceType": "analysis_suggestion",
+        "availability": "available",
+        "analysisFingerprint": "65bf30b2962fab0d0ad0447d6d251dbd5b4f6601de7f1ba5c30765eabeb7b936",
+        "fields": {
+          "spatialConcept": "四川特色小吃 / 跷脚牛肉；社区临街特色小馆；亲民堂食为主，兼顾外带。 市井烟火、温暖、热闹、亲切；明确的品牌特色和真实餐饮经营活动。",
+          "structureLanguage": "开放式布局",
+          "lightingLanguage": "立面与门槛照明服务入口识别；不指定色温、灯具或开口参数",
+          "lightingContrast": "保持入口识别与空间可读性，不预设街道光照条件。",
+          "lightingInteraction": "呈现项目暖色材料方向；光学参数未指定",
+          "lightingAvoid": "昏暗压抑",
+          "colorAvoid": "以整体冷淡空间替代已确认的温暖亲切氛围",
+          "functionalProgram": "门头与外立面\n临街外侧的到达路径",
+          "functionalNetwork": "点餐区 -> 明档制作区 -> 取餐区 -> 就餐区\n全店外带包装功能依赖；位置与设置方式待确认",
+          "functionalRelationships": "Storefront access must not expose kitchen or dining interiors",
+          "visibleRequirements": "staff serving customers at storefront\nchef preparing food in kitchen visible through storefront glazing",
+          "artisticFocus": "开放明档与餐桌区域形成可读的制作、服务和就餐关系\n服务通行路径清晰可进入，具体布局待物业复核",
+          "compositionRequirements": "",
+          "mustAvoid": "不增加未经证实的非遗或老字号背书\n不以标准化商场快餐、极简咖啡馆或高端精致餐饮替代本项目定位\n不以昏暗压抑或静态样板间取代真实餐饮经营氛围",
+          "colorEntries": [
+            {
+              "name": "品牌红",
+              "paletteRole": "primary",
+              "role": "品牌识别候选色；表面和面积未指定",
+              "surfaceApplicability": "",
+              "spatialUsage": ""
+            },
+            {
+              "name": "品牌黑",
+              "paletteRole": "secondary",
+              "role": "品牌信息候选色；不预设室内表面范围",
+              "surfaceApplicability": "",
+              "spatialUsage": ""
+            },
+            {
+              "name": "木色",
+              "paletteRole": "accent",
+              "role": "暖色木的材质色候选；表面和面积均未指定",
+              "surfaceApplicability": "",
+              "spatialUsage": ""
+            },
+            {
+              "name": "白色",
+              "paletteRole": "accent",
+              "role": "清洁明亮的辅助色候选；范围待审核",
+              "surfaceApplicability": "",
+              "spatialUsage": ""
+            }
+          ],
+          "colorPolicy": "品牌红：品牌识别候选色；表面和面积未指定\n品牌黑：品牌信息候选色；不预设室内表面范围\n木色：暖色木的材质色候选；表面和面积均未指定\n白色：清洁明亮的辅助色候选；范围待审核",
+          "materialEntries": [
+            {
+              "material": "暖色木（项目视觉方向）",
+              "behavior": "呈现暖色木的综合色调；木种、纹理尺度、涂层与光学参数均未指定",
+              "brandRole": "项目温暖亲切的材质方向，具体适用表面待设计师确认",
+              "forbidden": ""
+            },
+            {
+              "material": "赤陶（项目视觉方向）",
+              "behavior": "呈现暖赤陶的综合色调；制品形态、釉面与光学参数均未指定",
+              "brandRole": "本项目历史视觉经验；不意味着墙地整铺或任何构造已确认",
+              "forbidden": ""
+            }
+          ],
+          "materialLanguage": "暖色木（项目视觉方向）：呈现暖色木的综合色调；木种、纹理尺度、涂层与光学参数均未指定\n赤陶（项目视觉方向）：呈现暖赤陶的综合色调；制品形态、釉面与光学参数均未指定"
+        },
+        "sourcePaths": {
+          "spatialConcept": [
+            "mediaTranslations.spatial.spatialConcept"
+          ],
+          "structureLanguage": [
+            "mediaTranslations.spatial.structureLanguage[0]"
+          ],
+          "lightingLanguage": [
+            "mediaTranslations.spatial.lightingLanguage.source[0]"
+          ],
+          "lightingContrast": [
+            "mediaTranslations.spatial.lightingLanguage.contrast"
+          ],
+          "lightingInteraction": [
+            "mediaTranslations.spatial.lightingLanguage.interactionWithMaterials[0]"
+          ],
+          "lightingAvoid": [
+            "mediaTranslations.spatial.lightingLanguage.forbidden[0]"
+          ],
+          "colorAvoid": [
+            "mediaTranslations.spatial.colorBehavior.forbidden[0]"
+          ],
+          "functionalProgram": [
+            "mediaTranslations.spatial.sceneProgram[0]",
+            "mediaTranslations.spatial.sceneProgram[1]"
+          ],
+          "functionalNetwork": [
+            "mediaTranslations.spatial.functionalNetwork[0]",
+            "mediaTranslations.spatial.functionalNetwork[1]"
+          ],
+          "functionalRelationships": [
+            "mediaTranslations.spatial.functionalRelationships[0]"
+          ],
+          "visibleRequirements": [
+            "mediaTranslations.spatial.mustBeVisible[0]",
+            "mediaTranslations.spatial.mustBeVisible[1]"
+          ],
+          "artisticFocus": [
+            "mediaTranslations.spatial.signatureSpatialMechanism[0]",
+            "mediaTranslations.spatial.signatureSpatialMechanism[1]"
+          ],
+          "mustAvoid": [
+            "creativeDecision.strategicNegatives[0]",
+            "creativeDecision.strategicNegatives[1]",
+            "creativeDecision.strategicNegatives[2]"
+          ],
+          "colorEntries[0].name": [
+            "mediaTranslations.spatial.colorBehavior.primary[0].name"
+          ],
+          "colorEntries[0].paletteRole": [
+            "mediaTranslations.spatial.colorBehavior.primary"
+          ],
+          "colorEntries[0].role": [
+            "mediaTranslations.spatial.colorBehavior.primary[0].role"
+          ],
+          "colorEntries[1].name": [
+            "mediaTranslations.spatial.colorBehavior.secondary[0].name"
+          ],
+          "colorEntries[1].paletteRole": [
+            "mediaTranslations.spatial.colorBehavior.secondary"
+          ],
+          "colorEntries[1].role": [
+            "mediaTranslations.spatial.colorBehavior.secondary[0].role"
+          ],
+          "colorEntries[2].name": [
+            "mediaTranslations.spatial.colorBehavior.accent[0].name"
+          ],
+          "colorEntries[2].paletteRole": [
+            "mediaTranslations.spatial.colorBehavior.accent"
+          ],
+          "colorEntries[2].role": [
+            "mediaTranslations.spatial.colorBehavior.accent[0].role"
+          ],
+          "colorEntries[3].name": [
+            "mediaTranslations.spatial.colorBehavior.accent[1].name"
+          ],
+          "colorEntries[3].paletteRole": [
+            "mediaTranslations.spatial.colorBehavior.accent"
+          ],
+          "colorEntries[3].role": [
+            "mediaTranslations.spatial.colorBehavior.accent[1].role"
+          ],
+          "colorPolicy": [
+            "mediaTranslations.spatial.colorBehavior.primary[0].name",
+            "mediaTranslations.spatial.colorBehavior.primary[0].role",
+            "mediaTranslations.spatial.colorBehavior.secondary[0].name",
+            "mediaTranslations.spatial.colorBehavior.secondary[0].role",
+            "mediaTranslations.spatial.colorBehavior.accent[0].name",
+            "mediaTranslations.spatial.colorBehavior.accent[0].role",
+            "mediaTranslations.spatial.colorBehavior.accent[1].name",
+            "mediaTranslations.spatial.colorBehavior.accent[1].role"
+          ],
+          "materialEntries[0].material": [
+            "mediaTranslations.spatial.materialLanguage[0].material"
+          ],
+          "materialEntries[0].behavior": [
+            "mediaTranslations.spatial.materialLanguage[0].behavior[0]"
+          ],
+          "materialEntries[0].brandRole": [
+            "mediaTranslations.spatial.materialLanguage[0].brandRole"
+          ],
+          "materialEntries[1].material": [
+            "mediaTranslations.spatial.materialLanguage[1].material"
+          ],
+          "materialEntries[1].behavior": [
+            "mediaTranslations.spatial.materialLanguage[1].behavior[0]"
+          ],
+          "materialEntries[1].brandRole": [
+            "mediaTranslations.spatial.materialLanguage[1].brandRole"
+          ],
+          "materialLanguage": [
+            "mediaTranslations.spatial.materialLanguage[0].material",
+            "mediaTranslations.spatial.materialLanguage[0].behavior[0]",
+            "mediaTranslations.spatial.materialLanguage[1].material",
+            "mediaTranslations.spatial.materialLanguage[1].behavior[0]"
+          ]
+        },
+        "missingFields": [
+          {
+            "field": "compositionRequirements",
+            "reason": "missing_or_insufficient_source"
+          },
+          {
+            "field": "colorEntries[0].surfaceApplicability",
+            "reason": "explicit_spatial_scope_required"
+          },
+          {
+            "field": "colorEntries[0].spatialUsage",
+            "reason": "explicit_spatial_scope_required"
+          },
+          {
+            "field": "colorEntries[1].surfaceApplicability",
+            "reason": "explicit_spatial_scope_required"
+          },
+          {
+            "field": "colorEntries[1].spatialUsage",
+            "reason": "explicit_spatial_scope_required"
+          },
+          {
+            "field": "colorEntries[2].surfaceApplicability",
+            "reason": "explicit_spatial_scope_required"
+          },
+          {
+            "field": "colorEntries[2].spatialUsage",
+            "reason": "explicit_spatial_scope_required"
+          },
+          {
+            "field": "colorEntries[3].surfaceApplicability",
+            "reason": "explicit_spatial_scope_required"
+          },
+          {
+            "field": "colorEntries[3].spatialUsage",
+            "reason": "explicit_spatial_scope_required"
+          },
+          {
+            "field": "materialEntries[0].forbidden",
+            "reason": "missing_or_insufficient_source"
+          },
+          {
+            "field": "materialEntries[1].forbidden",
+            "reason": "missing_or_insufficient_source"
+          }
+        ]
+      },
+      "fieldDeltaRefs": [
+        {
+          "path": "projectFacts.brandRole",
+          "category": "A",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "creativeDecision.brandRoleStatement",
+          "category": "A",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "creativeDecision.uniqueUpgradeThesis",
+          "category": "A",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "creativeDecision.upgradeTo",
+          "category": "A",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "creativeDecision.targetWorldview",
+          "category": "A",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "creativeDecision.strategicNegatives",
+          "category": "A",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.spatialConcept",
+          "category": "A",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.brandRoleManifestation",
+          "category": "D",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5",
+            "human_selection:golds[0].reason",
+            "human_evaluation:dimensions.materialAndLighting.note"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.brandIntegration",
+          "category": "D",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.signatureSpatialMechanism",
+          "category": "D",
+          "evidenceRefs": [
+            "human_selection:golds[0].reason",
+            "human_evaluation:dimensions.materialAndLighting.note",
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.structureLanguage",
+          "category": "D",
+          "evidenceRefs": [
+            "human_selection:golds[0].reason",
+            "human_evaluation:dimensions.materialAndLighting.note"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.functionalNetwork",
+          "category": "D",
+          "evidenceRefs": [
+            "historical_packet:mediaTranslations.spatial.functionalNetwork",
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.functionalRelationships",
+          "category": "D",
+          "evidenceRefs": [
+            "knowledge:rks-observation-5",
+            "human_selection:golds[0].reason"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.peopleBehavior",
+          "category": "D",
+          "evidenceRefs": [
+            "human_selection:golds[0].reason",
+            "human_evaluation:dimensions.materialAndLighting.note"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.mustBeVisible",
+          "category": "D",
+          "evidenceRefs": [
+            "human_selection:golds[0].reason",
+            "human_evaluation:dimensions.materialAndLighting.note",
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.positiveDifferentiators",
+          "category": "A",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "colorSystem",
+          "category": "D",
+          "evidenceRefs": [
+            "historical_packet:colorSystem",
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.colorBehavior",
+          "category": "D",
+          "evidenceRefs": [
+            "historical_packet:colorSystem",
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "materialSystem",
+          "category": "B",
+          "evidenceRefs": [
+            "human_selection:golds[0].reason",
+            "human_evaluation:dimensions.materialAndLighting.note"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.materialLanguage",
+          "category": "B",
+          "evidenceRefs": [
+            "human_selection:golds[0].reason",
+            "human_evaluation:dimensions.materialAndLighting.note"
+          ]
+        },
+        {
+          "path": "lightingSystem",
+          "category": "B",
+          "evidenceRefs": [
+            "human_selection:golds[0].reason",
+            "human_evaluation:dimensions.materialAndLighting.note"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.lightingLanguage",
+          "category": "B",
+          "evidenceRefs": [
+            "human_selection:golds[0].reason",
+            "human_evaluation:dimensions.materialAndLighting.note"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.sceneProgram",
+          "category": "D",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.brandRoleManifestation",
+          "category": "D",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.positiveDifferentiators",
+          "category": "D",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.mustBeVisible",
+          "category": "D",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.functionalRelationships",
+          "category": "D",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "lightingSystem",
+          "category": "D",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        },
+        {
+          "path": "mediaTranslations.spatial.lightingLanguage",
+          "category": "D",
+          "evidenceRefs": [
+            "user:RKS-02D.sections1,3,5"
+          ]
+        }
+      ],
+      "humanConfirmed": false,
+      "saveCalled": false,
+      "confirmCalled": false,
+      "existingDecisionModified": false
+    }
+  ],
+  "warning": "Original B1 sourceType labels remain projector metadata; input is an authored experiment, not a new model analysis or persisted user decision"
+}
