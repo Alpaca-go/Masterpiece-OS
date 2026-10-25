@@ -1,0 +1,147 @@
+{
+  "baseline": "d103019042a65f275fb81d3d92b034baa6ef807f",
+  "branch": "codex/rks-ftt-confirmed-input-freeze",
+  "status": "blocked_at_B3",
+  "reason": "BLOCKED_NO_ELIGIBLE_ISOLATED_ANALYZED_PROJECT",
+  "taskDocument": {
+    "path": "C:/Users/kyrie/Downloads/Masterpiece_OS_RKS_02E1R_Confirmed_Freeze_Review.md",
+    "sha256": "2f027ab990389223960539a1fde0e7152695457b012f77f7267e1e81a3431059",
+    "instructionApplied": "B.3 stop on missing legal analyzed project; D output freeze only after legitimate confirmation and compile succeed"
+  },
+  "originalEvidence": [
+    {
+      "path": "packages/visual-workflow/reports/ftt-first-image-preflight/formal-prompt.txt",
+      "expected": "23988122f27c0852d9fe472a6b7ea7bd7c42b6d2593899c171d7ad4bf82639d9",
+      "actual": "23988122f27c0852d9fe472a6b7ea7bd7c42b6d2593899c171d7ad4bf82639d9",
+      "match": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/ftt-first-image-preflight/provider-prompt.txt",
+      "expected": "7cdd418b0341a691db511dc3ad0d62d42f53eadd7abbe544bd1715507c0e0542",
+      "actual": "7cdd418b0341a691db511dc3ad0d62d42f53eadd7abbe544bd1715507c0e0542",
+      "match": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/ftt-first-image-test/diagnostic-confirmed-formal.txt",
+      "expected": "747d475e3128be1eb8e992ab554ad8e0d75ed975095f0f65820968074a524f01",
+      "actual": "747d475e3128be1eb8e992ab554ad8e0d75ed975095f0f65820968074a524f01",
+      "match": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/ftt-first-image-test/diagnostic-confirmed-provider.txt",
+      "expected": "675607e36effa5e2a0ddc2d9e67d2e1604b9da4ab73bdbe207530d4bd615740a",
+      "actual": "675607e36effa5e2a0ddc2d9e67d2e1604b9da4ab73bdbe207530d4bd615740a",
+      "match": true
+    }
+  ],
+  "classification": "expected_authority_transition",
+  "expectedVsUnexpected": "Five provenance field changes and their authority-rendering consequences are expected between E0 and diagnostic. The E1 strict stop remains valid; original authorization does not approve a new executable signature.",
+  "confirmedExecutableFreezeProduced": false,
+  "confirmedExecutableFreezePath": null,
+  "formalConfirmedProjectCompile": null,
+  "formalConfirmedProjectPromptHashes": null,
+  "newExecutableSignatureHumanReview": "not_available_not_approved",
+  "authorization": {
+    "designApproval": "explicit E1 human approval recorded; design scope unchanged",
+    "historicalSingleImageAllowance": 1,
+    "consumed": 0,
+    "modelDispatchAllowedThisRound": false,
+    "newSignatureApproval": null
+  },
+  "implementation": {
+    "owner": "visual-workflow",
+    "extractionStatus": "independent-current-implementation",
+    "qualityAcceptance": "pending-separate-quality-repair",
+    "implementationDigest": "4b8ea1fa7c759bc05a42cf1ffd95e8b321f91aa9dfa63c283256250a4a8c5410"
+  },
+  "implementationManifestSha256": "85947e556d9467837f7583c106f5f7fec10f65207ed9b2c31b410ae7c2f13bec",
+  "sources": [
+    {
+      "path": "packages/visual-workflow/src/project-store.js",
+      "sha256": "da493e7a958ebf356e519c855a89b8d96965597a9ad07cb9b14f3b476da4c376",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/src/project-design-direction.js",
+      "sha256": "cccd26e77c37a542a86598f7a9a8b612afbdf5c0c08c73aebb9c9d7d1b605a7d",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/src/service.js",
+      "sha256": "9b2f7ab0d11f2135459a6b5ec40629effb11656a76a0dc7009f872566fc80544",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/generation/compile.js",
+      "sha256": "0d01aea348d2c4853d0e5fcff18c9d3b1e964dae1d642821a91590c39754212a",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/generation/user-confirmed-visual-decision.js",
+      "sha256": "3d6ec8e9fc701de0967d226c2f323c34861456d6b0137c762fa580dfc0ec0ad4",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/compiler.js",
+      "sha256": "a6614dce173d79c159854c19fe649d71204037a52183d1d0467242afad4cf352",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/implementation-integrity.json",
+      "sha256": "85947e556d9467837f7583c106f5f7fec10f65207ed9b2c31b410ae7c2f13bec",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "apps/web-runtime/src/runtime-paths.ts",
+      "sha256": "b23af1c9b0faa58afb22047bdada213f044ddb72a7ab184c6087a328e6c7410d",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/ftt-first-image-preflight/candidate-input.json",
+      "sha256": "a260ec9b34b25ef3c733ffa71b764de4e2de1530a24d927a23ea031b4523c838",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/ftt-first-image-preflight/freeze-record.json",
+      "sha256": "2f0fe540b6bfaa1289c20120abfeb35ac75b32b40cee22688120fb5c2dd35ad4",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/ftt-first-image-test/confirmation-diagnostic-input.json",
+      "sha256": "cac8b499ecd78db3b50c13198b83b52936981ae591e1c80d57bd6e32eba1c1ac",
+      "unchangedFromBaseline": true
+    }
+  ],
+  "protectedRoots": [
+    "packages/visual-workflow/src",
+    "packages/visual-workflow/prompts",
+    "packages/visual-workflow/implementation-integrity.json",
+    "apps/web/src/features/visual-workflow",
+    "packages/visual-workflow/offline",
+    "packages/visual-workflow/reports/restaurant-knowledge",
+    "packages/visual-workflow/reports/restaurant-shadow",
+    "packages/visual-workflow/reports/restaurant-fidelity",
+    "packages/visual-workflow/reports/scene-authority-integrity",
+    "packages/visual-workflow/reports/p7b-single-generation",
+    "evaluation",
+    "space-generator",
+    "config/repository-contract",
+    "package-lock.json",
+    "packages/visual-workflow/reports/ftt-final-design/",
+    "packages/visual-workflow/tests/restaurant-knowledge/ftt-final-design-fixture.ts",
+    "packages/visual-workflow/src/project-design-direction.js",
+    "packages/visual-workflow/reports/ftt-first-image-preflight/",
+    "packages/visual-workflow/reports/ftt-first-image-test/"
+  ],
+  "protectedDiff": [],
+  "counters": {
+    "realAnalysis": 0,
+    "realGeneration": 0,
+    "modelValidation": 0,
+    "automaticRetries": 0,
+    "newReferenceInputs": 0,
+    "networkAttempts": 0,
+    "productionProjectWrites": 0
+  },
+  "limitation": "Eligibility search is limited to the configured independent workflow store and workspace .codex-smoke project stores. No assertion that an eligible project does not exist elsewhere."
+}

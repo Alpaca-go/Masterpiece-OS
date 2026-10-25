@@ -1,0 +1,23 @@
+{
+  "status": "pass_for_bounded_offline_audit_not_executable_freeze",
+  "baseline": "d103019042a65f275fb81d3d92b034baa6ef807f",
+  "checks": {
+    "originalFourHashes": true,
+    "existingCompilerReplays": true,
+    "designFieldsE0EqualDiagnostic": true,
+    "provenanceTransitions": 5,
+    "unexplainedDesignChangesE0VsDiagnostic": 0,
+    "realConfirmedThirdSideAvailable": false,
+    "productionMetadataReadOnly": true,
+    "sourceFilesUnchanged": true,
+    "implementationIntegrity": true
+  },
+  "currentBlocker": "BLOCKED_NO_ELIGIBLE_ISOLATED_ANALYZED_PROJECT",
+  "compileStages": {
+    "E0Replay": 1,
+    "existingE1DiagnosticReplay": 1,
+    "formalConfirmedProjectCompile": 0
+  },
+  "modelCalls": 0,
+  "originalDocumentSha256": "2f027ab990389223960539a1fde0e7152695457b012f77f7267e1e81a3431059"
+}

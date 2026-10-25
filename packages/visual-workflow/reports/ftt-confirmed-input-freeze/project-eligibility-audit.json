@@ -1,0 +1,76 @@
+{
+  "scope": {
+    "currentIndependentWorkflowRoot": "resolved by apps/web-runtime/src/runtime-paths.ts; only the independent visual-workflow/data project store",
+    "workspaceExperimentRoot": ".codex-smoke",
+    "otherPrivateDirectoriesSearched": false,
+    "credentialsRead": false,
+    "completeProjectDataExported": false
+  },
+  "currentStore": {
+    "projectRecordsInspected": 4,
+    "matchingProjects": [
+      {
+        "projectId": "3b5b03c0-915a-41aa-9c54-4ffaa166ab88",
+        "projectName": "冯烫烫",
+        "source": "current independent workflow store; user project, no isolation authorization inferred",
+        "status": "ready",
+        "visualContextVNextStatus": "missing",
+        "contextFilePresent": true,
+        "contextStructureValidation": {
+          "valid": true,
+          "errors": []
+        },
+        "directionStatus": "missing",
+        "observedAnalysisFingerprint": "ad57e2c19f893346aea981b23301c4588d212ec310e84ff00dadbda08f9ed1c6",
+        "recordSha256": null,
+        "confirmationSha256": null,
+        "eligibleForFormalConfirmation": false,
+        "isolationApproval": null,
+        "files": [
+          {
+            "path": "project.json",
+            "sha256": "420db426e5cf71dd19bbab0516d8f6924d371040ff8cdc1d8d4090c1afb5413b"
+          },
+          {
+            "path": "project-context/visual-decision-packet.json",
+            "sha256": "4b6985706f81f5dbc05e4a7ad39456b03843cd8544f44f927204fba8ebf03077"
+          },
+          {
+            "path": "project-context/project-visual-context.vnext.json",
+            "sha256": "bd1d769f9d76f9191c016b4140d1a02d83061eb34267f0de767126de1264612c"
+          },
+          {
+            "path": "project-context/design-direction.json",
+            "sha256": null
+          }
+        ],
+        "readOnlyUnchanged": true
+      }
+    ]
+  },
+  "workspaceExperiments": {
+    "projectFilesDiscovered": 105,
+    "workflowRecordsInspected": 101,
+    "nonProjectStoreLayoutsSkipped": 4,
+    "matchingProjects": []
+  },
+  "e0Probe": {
+    "status": "draft",
+    "temporaryStoreRemoved": true,
+    "canonicalCandidateId": "e002e000-2026-4000-8000-000000000001",
+    "source": "packages/visual-workflow/reports/ftt-first-image-preflight/project-direction-draft.json",
+    "eligible": false,
+    "reason": "E0 probe was disposable and was not a completed analysis project"
+  },
+  "outcome": "BLOCKED_NO_ELIGIBLE_ISOLATED_ANALYZED_PROJECT",
+  "blockedAt": "document B.3 before saveDraft",
+  "reason": "The current matching user project has ready/missing flags, despite structurally valid historical context files; no legal isolated completed/ready FTT experiment was found in the inspected stores. Context schema validity does not authorize rewriting project status.",
+  "calls": {
+    "saveDraft": 0,
+    "confirm": 0,
+    "capture": 0,
+    "formalConfirmedProjectCompile": 0,
+    "productionProjectWrites": 0,
+    "modelCalls": 0
+  }
+}

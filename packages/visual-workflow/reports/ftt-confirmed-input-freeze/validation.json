@@ -1,0 +1,60 @@
+{
+  "baseline": "d103019042a65f275fb81d3d92b034baa6ef807f",
+  "scope": "report-only RKS-02E1R offline review; no business source changes",
+  "checks": [
+    {
+      "command": "four source Prompt SHA256 checks and existing official compiler pure replay",
+      "status": "pass"
+    },
+    {
+      "command": "bounded current-project and workspace experiment inventory through existing project-store interfaces",
+      "status": "complete_with_B3_blocker"
+    },
+    {
+      "command": "npx tsx --test packages/visual-workflow/tests/project-design-direction.test.ts",
+      "exitCode": 0,
+      "passed": 11,
+      "failed": 0,
+      "note": "Existing synthetic mock tests do not establish a legal analyzed FTT project."
+    },
+    {
+      "command": "npm run repo:verify",
+      "exitCode": 0,
+      "currentFlows": "pass",
+      "nodeHostAndWebTypechecks": "pass",
+      "boundariesAndIntegrity": "pass"
+    },
+    {
+      "command": "readonly source evidence and user-project hashes after gates",
+      "status": "pass"
+    },
+    {
+      "command": "git diff --cached --check",
+      "exitCode": 0
+    },
+    {
+      "command": "npm run verify:secret-safety (new evidence staged)",
+      "exitCode": 0,
+      "violationCount": 0
+    }
+  ],
+  "logs": [
+    {
+      "path": "project-direction-tests.txt",
+      "sha256": "f6987c014de64f27826e53bf461b693e1e7f1bfdfdc5b25787a809dbe68b29f3",
+      "captureSha256": "dda5a2f6375aca7df1ee34fa10af67dcb5182903e30897ed3cb2401f5e660a38",
+      "normalization": "CRLF to LF and trailing horizontal whitespace only"
+    },
+    {
+      "path": "repo-verification.txt",
+      "sha256": "5e70a47a018d3ba09aac708b1206b68da6dceefaa0ceff3a7aae74a633229247",
+      "captureSha256": "fb5a4243a03fe70a42ef63abd4221187161f8bb4f5a93ae2be2c5d97f2ff3634",
+      "normalization": "CRLF to LF and trailing horizontal whitespace only"
+    }
+  ],
+  "productionFilesUnchanged": true,
+  "userProjectContentUnchanged": true,
+  "confirmedExecutableFreezeProduced": false,
+  "historicalRepositoryPolicyConflicts": "Not rerun; the two previously recorded unrelated policy failures remain outside repo:verify. No historic assets or rules changed.",
+  "realModelCalls": 0
+}

@@ -1,0 +1,28 @@
+✔ project direction saves and confirms without registering or uploading a single reference (184.8554ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"d895cd3d-b3e3-4f0f-9b18-2d4893feab5e","taskId":"vnext-task-2fd74235-bd58-48ef-a032-1cc763156431","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7098,"compileDurationMs":70.492}
+✔ web standard task, effective Packet, official compiler, actual image request and validator share the confirmed direction (592.0952ms)
+✔ a changed analysis Packet cannot silently overwrite or reuse the confirmed decision (436.0227ms)
+✔ an analysis request preserves direction and requires explicit reconfirmation even if analysis fails or app restarts (314.1196ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"f5c2ca19-802e-47d1-a5e0-8777eae2339e","taskId":"vnext-task-74ccc054-442b-4d77-90c6-62cc00b0ac64","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7098,"compileDurationMs":25.25}
+✔ decision changes after compile block dispatch and keep all history (778.3052ms)
+✔ cross-project, stale editing, non-confirmation and invalid confirmed decisions are rejected (377.5133ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"415bfd6d-dfe8-4535-a51f-891d26b738b7","taskId":"vnext-task-efb26778-7897-4541-b8df-19c75d6fefc9","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7094,"compileDurationMs":32.671}
+✔ a newly confirmed decision invalidates a previously compiled ordinary task with no direction (361.5819ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"cf133118-09a9-46b1-8d70-a99f454a0b1f","taskId":"vnext-task-8626fc49-1888-4b2d-8d74-a91f94e06777","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7094,"compileDurationMs":16.092}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"fd611df0-2f7f-480e-8ffc-02689ed10adf","taskId":"vnext-task-15148f79-0967-4d25-ac61-c5862e1f294a","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7078,"compileDurationMs":15.493}
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"1fb9f7c9-31f5-4a53-8e82-a5c1e6602e18","taskId":"vnext-task-af5b314b-0988-4154-85d9-058ad48b4799","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7068,"compileDurationMs":20.355}
+✔ ordinary industries remain byte-identical and contain no direction or image request fields (1348.9155ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"2d4b2e2b-b6c3-4d2d-a742-34d428583af3","taskId":"vnext-task-7eb0d1a3-fdb2-4ba1-90f9-58712a75d36a","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":8377,"compileDurationMs":26.712}
+✔ existing four-image art direction route remains independent and operational (693.4201ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"24ef3e71-3d64-4085-92f1-1d6f9071ffb3","taskId":"vnext-task-c986e829-aa33-43c3-901f-ff4336bf44e1","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7093,"compileDurationMs":24.011}
+✔ the plain-language web editor saves and confirms a usable direction without JSON editing (249.7382ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"9f78fd6e-e628-46da-a76b-2b1477de0126","taskId":"vnext-task-faef609d-4949-4c8e-b35a-bb6ce073e271","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7098,"compileDurationMs":28.271}
+✔ guarded public web operations save, confirm, compile, generate, reopen and invalidate on an analysis request (1447.7623ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 9627.8259

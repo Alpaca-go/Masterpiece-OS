@@ -1,0 +1,37 @@
+{
+  "algorithm": "SHA256 exact bytes",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "2c79b97b35f7fc17bfb9aadb443b54b37ad21f7ad6b4c11844fda672116bbeb8"
+    },
+    {
+      "path": "audit-checks.json",
+      "sha256": "e323252e5645941496854f990d9fc716dc2fa179d8293d60449c584a851982bb"
+    },
+    {
+      "path": "blocked-freeze-review.json",
+      "sha256": "e02076c0f4013c828032a3c0528cde3b405df19ff47706f0398568e8acf845ca"
+    },
+    {
+      "path": "future-single-image-gates.md",
+      "sha256": "eabdb63aa4e22533bda33cf4a6dd4e41ae389dcec017a8134c3e5c60432afeaa"
+    },
+    {
+      "path": "project-eligibility-audit.json",
+      "sha256": "f80bd3c0b2c699541747c347866de91811ebf6a6007d6f4b89b9d2b3354a66f4"
+    },
+    {
+      "path": "signature-review-checklist.md",
+      "sha256": "950887268ff37bac850b77f0b7a23775664143e6179f02dea6416486b0bf4193"
+    },
+    {
+      "path": "three-way-field-audit.json",
+      "sha256": "09abca9b8d1593e92cab5e9e1d8d5c6a88bee5a374e537e34d100625244f14ae"
+    },
+    {
+      "path": "three-way-review.md",
+      "sha256": "9d65653cba7014ddeeea67b7688124bbcb1b27f063b96a1e682115a494cff518"
+    }
+  ]
+}
