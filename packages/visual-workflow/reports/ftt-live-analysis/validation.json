@@ -1,0 +1,26 @@
+{
+  "status": "stopped",
+  "issues": [],
+  "sourceManifestUnchanged": true,
+  "inputUnchanged": true,
+  "originalProjectUnchanged": true,
+  "formalProjectCompletedReady": false,
+  "packetSchemaValid": null,
+  "contextSchemaValid": null,
+  "realProviderRequests": 2,
+  "imageGeneration": 0,
+  "modelValidation": 0,
+  "directionWrites": 0,
+  "repoVerify": {
+    "exitCode": 0,
+    "currentFlowsPassed": true,
+    "offline": true,
+    "logPath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1c-live\\repo-verification.txt",
+    "logSha256": "ef655421a86904680464ea63be1e2c1a18cac298fe992e9dbd5af29438f1aa95"
+  },
+  "reportSecretShapeScan": {
+    "files": 7,
+    "violations": 0
+  },
+  "finalStop": "No further execution; awaiting human review"
+}

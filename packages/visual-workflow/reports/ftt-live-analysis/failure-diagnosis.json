@@ -1,0 +1,63 @@
+{
+  "projectId": "d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627",
+  "formalAnalysisSucceeded": false,
+  "terminalReason": "DISPATCH_LIMIT",
+  "spatialValidationStatus": "block",
+  "spatialFindings": [
+    {
+      "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+      "severity": "block",
+      "field": "functionalNetwork",
+      "path": "mediaTranslations.spatial.functionalNetwork[0]",
+      "classification": "decorative_identity"
+    },
+    {
+      "code": "INVALID_SPACE_MUST_BE_VISIBLE_SEMANTICS",
+      "severity": "block",
+      "field": "mustBeVisible",
+      "path": "mediaTranslations.spatial.mustBeVisible[0]",
+      "classification": "decorative_identity"
+    }
+  ],
+  "repairRuntimeRoot": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\runtime\\repair-sessions\\repair-run-5e4f53dd-fb7c-4864-961b-62f22494d4ae",
+  "repairAudit": {
+    "runId": "repair-run-5e4f53dd-fb7c-4864-961b-62f22494d4ae",
+    "status": "failed",
+    "attempts": 1,
+    "locallyCountedModelInvocations": 1,
+    "actualRepairProviderRequests": 0,
+    "counterMeaning": "Repair audit counts invocation before the guarded provider accepts it; it does not prove a network dispatch.",
+    "defaultedFields": [
+      {
+        "path": "execution.camera.focalLength",
+        "strategy": "system_default",
+        "previousState": "missing"
+      },
+      {
+        "path": "execution.aspectRatio",
+        "strategy": "system_default",
+        "previousState": "missing"
+      }
+    ],
+    "errors": [
+      {
+        "code": "ANALYSIS_SPATIAL_SEMANTICS_INVALID",
+        "message": "Structured repair failed."
+      },
+      {
+        "code": "ANALYSIS_SPATIAL_SEMANTICS_INVALID",
+        "message": "Spatial functional semantics remained invalid after targeted repair."
+      }
+    ]
+  },
+  "blockedAttempts": [
+    {
+      "reason": "DISPATCH_LIMIT",
+      "at": "2026-10-26T07:33:53.526Z",
+      "stage": "REPAIR",
+      "attemptedSequence": 3
+    }
+  ],
+  "noRetryOrFixPerformed": true,
+  "partialPacketMayNotBeUsedAsCompletedReady": true
+}

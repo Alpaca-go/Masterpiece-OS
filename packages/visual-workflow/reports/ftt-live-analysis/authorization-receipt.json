@@ -1,0 +1,35 @@
+{
+  "task": "RKS-02E1C-LIVE",
+  "at": "2026-10-26T07:26:58.642Z",
+  "basis": "Explicit human single-analysis authorization followed by explicit Windows environment variable authorization in this conversation",
+  "credentialSource": {
+    "type": "current-process-environment",
+    "name": "P14C_QWEN_API_KEY",
+    "exists": true,
+    "nonEmpty": true,
+    "readable": true,
+    "valueRecorded": false
+  },
+  "readOnlyPreflight": "PASS before execution; project/material/body/source pins verified; original project unchanged; live ledger absent",
+  "authorization": {
+    "explicitlyAuthorized": true,
+    "task": "RKS-02E1C",
+    "policySha256": "19d5cfacf6f1b839cad4e0be80b68cc7019f32db64244c8a93faac54b0182fc6",
+    "sourceManifestSha256": "a27a7649f3106ac1da0014a365c4182e58c7360b6a6d5d5010d0b321b205db12",
+    "sessionId": "rks-02e1c-ftt-3d7fe3b8-once",
+    "projectId": "d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627",
+    "ledgerRoot": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1b\\real-analysis-budget",
+    "acceptAliasDrift": true,
+    "acceptNoAbsoluteCnyCap": true,
+    "credentialUse": "explicit-user-authorized-argument-only",
+    "allowIsolatedCredentialWrite": true
+  },
+  "fixedLedgerRoot": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1b\\real-analysis-budget",
+  "maxFormalAnalyses": 1,
+  "maxProviderRequests": 2,
+  "concurrency": 1,
+  "automaticRetries": 0,
+  "imageGeneration": 0,
+  "modelValidation": 0,
+  "postAnalysisDirectionWritesAuthorized": false
+}

@@ -1,0 +1,85 @@
+{
+  "task": "RKS-02E1C-LIVE",
+  "at": "2026-10-26T07:36:57.668Z",
+  "executionCommit": "ace11a248c7e3ca5d00f486ed3e53111ba8cf576",
+  "status": "stopped",
+  "compositionStatus": "stopped",
+  "formalAnalyzeInvocations": 1,
+  "sessionId": "rks-02e1c-ftt-3d7fe3b8-once",
+  "projectId": "d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627",
+  "projectName": "冯烫烫",
+  "provider": "dashscope",
+  "model": "qwen3.6-plus",
+  "url": "https://ws-1miaebhuom22vyxa.cn-beijing.maas.aliyuncs.com/compatible-mode/v1/chat/completions",
+  "ledgerRoot": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1b\\real-analysis-budget",
+  "ledgerStatus": "terminated",
+  "terminalReason": "DISPATCH_LIMIT",
+  "providerRequestsReserved": 2,
+  "providerResponsesReceived": 2,
+  "startedAt": "2026-10-26T07:26:58.644Z",
+  "endedAt": "2026-10-26T07:33:53.749Z",
+  "durationMs": 415105,
+  "totalUsage": {
+    "inputTokens": 29710,
+    "outputTokens": 23944,
+    "totalTokens": 53654
+  },
+  "estimatedTotalCostCny": 0.346748,
+  "costMeaning": "Published-price usage estimate, not an invoice or a currency hard cap",
+  "projectStatus": "failed",
+  "visualContextVNextStatus": "missing",
+  "reportPath": null,
+  "packetPath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\project-context\\visual-decision-packet.json",
+  "contextPath": null,
+  "sourceFingerprints": {
+    "packet": "f9864b46dce85ac90f8970d25629176bad2a15748c628ee8d824ac9acd36b22c",
+    "context": null
+  },
+  "partialArtifactMeaning": "DCD-stage report and failed-validation Packet only; no completed formal report or ready context",
+  "spatialValidationStatus": "block",
+  "spatialFindings": [
+    {
+      "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+      "severity": "block",
+      "field": "functionalNetwork",
+      "path": "mediaTranslations.spatial.functionalNetwork[0]",
+      "classification": "decorative_identity"
+    },
+    {
+      "code": "INVALID_SPACE_MUST_BE_VISIBLE_SEMANTICS",
+      "severity": "block",
+      "field": "mustBeVisible",
+      "path": "mediaTranslations.spatial.mustBeVisible[0]",
+      "classification": "decorative_identity"
+    }
+  ],
+  "originalProjectUnchanged": true,
+  "originalProjectFiles": 46,
+  "originalProjectTreeSha256": "e4c417097b951eed3cac0d2a27e29748a43fa471f8b7b87812ecc31cfbe2acaf",
+  "sourceManifestUnchanged": true,
+  "inputUnchanged": true,
+  "issues": [],
+  "blockedAttempts": [
+    {
+      "reason": "DISPATCH_LIMIT",
+      "at": "2026-10-26T07:33:53.526Z",
+      "stage": "REPAIR",
+      "attemptedSequence": 3
+    }
+  ],
+  "counters": {
+    "automaticRetries": 0,
+    "additionalRepairProviderRequests": 0,
+    "imageGeneration": 0,
+    "modelValidation": 0,
+    "directionWrites": 0
+  },
+  "credentialSource": "P14C_QWEN_API_KEY",
+  "secretRecorded": false,
+  "alternateCredentialsRead": false,
+  "approvedParametersChanged": false,
+  "e0DesignDirectionPreserved": true,
+  "shadowOnly": true,
+  "waitingForHumanReview": true,
+  "ledgerKindNote": "Frozen guard retains its historical kind label offline_test_or_unapproved_experiment; actual authorization and live outcome are separately recorded; ledger was not rewritten."
+}

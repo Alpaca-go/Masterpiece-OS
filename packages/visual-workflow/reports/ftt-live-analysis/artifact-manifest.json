@@ -1,0 +1,76 @@
+{
+  "artifacts": [
+    {
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\project.json",
+      "sha256": "9c5f11b73786ffef14223f953463f4498482e884b1fdab2a88bc7c8efe3df7f3",
+      "bytes": 7349
+    },
+    {
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1b\\real-analysis-budget\\claim.json",
+      "sha256": "40fe0e248fff7e8f666e27a57a4a2777b7dd74c9763d261432b3e1134a9fba77",
+      "bytes": 187
+    },
+    {
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1b\\real-analysis-budget\\ledger.json",
+      "sha256": "4e4c1fa3c8576a4a4785b5b09a2912ec4d8161f54ec6d3aeeb1a86a3977435d6",
+      "bytes": 10455
+    },
+    {
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1c-live\\authorization-receipt.json",
+      "sha256": "36531e713df73e3abe3557204c74334162350a71043d01682ccaf9abe18a74e7",
+      "bytes": 1527
+    },
+    {
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1c-live\\executor-result.json",
+      "sha256": "084c1170989b76e9aadcc11adda5350c5f9238b5c4e21aa92580500f76adda3b",
+      "bytes": 429
+    },
+    {
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\.runtime\\run-report.json",
+      "sha256": "51a2e154e1516c679c6ddbc03a218c5ca4343a674515e5f8f03daec4e4d04b2c",
+      "bytes": 1702
+    },
+    {
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\project-context\\visual-decision-packet.json",
+      "sha256": "a226ddddbd0e21c648fed3d6a4d0fd91d092eafbe3f03c66687298003e8050d3",
+      "bytes": 53645
+    },
+    {
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\project-context\\analysis-repair-audit.json",
+      "sha256": "e8d7ca081a2883e8f6d3a308a5d3d0ccc06ec7509b9fc7c2ce88d725863da084",
+      "bytes": 1039
+    },
+    {
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\outputs\\视觉方案升级报告.md",
+      "sha256": "6d2d0da96ed7e2192891f0f28223ec443e46a54128be71fff154a747503f2d76",
+      "bytes": 22462
+    },
+    {
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\runtime\\repair-sessions\\repair-run-5e4f53dd-fb7c-4864-961b-62f22494d4ae\\initial-validation.json",
+      "sha256": "fb13f8a902e0b45b20f58bcf834818bf81423aae8c38b5e941ee30c131925007",
+      "bytes": 876
+    },
+    {
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\runtime\\repair-sessions\\repair-run-5e4f53dd-fb7c-4864-961b-62f22494d4ae\\repair-plan.json",
+      "sha256": "7e2f341fcd43364625bf7e449d804f6c6a6ac3605508404cb1897b378b7d092e",
+      "bytes": 978
+    },
+    {
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\runtime\\repair-sessions\\repair-run-5e4f53dd-fb7c-4864-961b-62f22494d4ae\\final-validation.json",
+      "sha256": "66129d284700050f319cf719a02f48eddffcd4d43d355c59d46bcd340a3c1d76",
+      "bytes": 41
+    },
+    {
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\runtime\\repair-sessions\\repair-run-5e4f53dd-fb7c-4864-961b-62f22494d4ae\\spatial-semantic-validation.initial.json",
+      "sha256": "413fa4ede0e38cd885535dfd6fed2a0e290e1ddb372e57d0d0960baf6c2f5fb3",
+      "bytes": 517
+    }
+  ],
+  "sourceFingerprints": {
+    "packet": "f9864b46dce85ac90f8970d25629176bad2a15748c628ee8d824ac9acd36b22c",
+    "context": null
+  },
+  "packetSchemaValid": null,
+  "contextSchemaValid": null,
+  "note": "Paths point to actual isolated formal output; raw provider responses, credentials and image base64 are neither copied nor committed."
+}

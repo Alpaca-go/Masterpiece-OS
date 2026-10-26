@@ -1,0 +1,33 @@
+{
+  "algorithm": "SHA256(file bytes)",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "885f965cc29c68a8e80e9caec8c8beed12fbb382668beec46ed0f1010538898c"
+    },
+    {
+      "path": "artifact-manifest.json",
+      "sha256": "20b8838c464bfc9c0d068522d504be9c9eac95d06ad4fed6faa102f8052b5e78"
+    },
+    {
+      "path": "authorization-receipt.json",
+      "sha256": "36531e713df73e3abe3557204c74334162350a71043d01682ccaf9abe18a74e7"
+    },
+    {
+      "path": "execution-summary.json",
+      "sha256": "398da9f411670e81e1b666f9535a5bb9d6098a01709e677df11e36a4b6f49a31"
+    },
+    {
+      "path": "failure-diagnosis.json",
+      "sha256": "aab41692f4b91654f0c33d4e3d8de0f6acbb639824aa5331ba465567e299d98a"
+    },
+    {
+      "path": "provider-evidence.json",
+      "sha256": "3618ddceff463571d3923fbfbd7404b85d88639a04c207dba03155fadfd1687b"
+    },
+    {
+      "path": "validation.json",
+      "sha256": "877d62bdad3c5c3ebbd23d43f51fa1b8c52eed51728198b5b27286dcce71ac11"
+    }
+  ]
+}
