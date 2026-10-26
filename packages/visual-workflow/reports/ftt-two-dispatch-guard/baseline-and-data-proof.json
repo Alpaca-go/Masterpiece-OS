@@ -1,0 +1,91 @@
+{
+  "baseline": "16ede4188d56cdcd22834dbc4131efbeef2e5f29",
+  "branch": "codex/rks-ftt-two-dispatch-guard",
+  "originalProject": {
+    "id": "3b5b03c0-915a-41aa-9c54-4ffaa166ab88",
+    "fileCount": 46,
+    "treeSha256": "e4c417097b951eed3cac0d2a27e29748a43fa471f8b7b87812ecc31cfbe2acaf",
+    "unchanged": true
+  },
+  "isolatedProject": {
+    "id": "d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627",
+    "status": "ready",
+    "contextStatus": "missing",
+    "fileCount": 11,
+    "treeSha256": "b90042d631ec8c2f460c96e62a291ef94b0e3f4ebd23571fd317220ef88a6cef",
+    "unchanged": true
+  },
+  "protectedRoots": [
+    "packages/visual-workflow/src",
+    "packages/visual-workflow/prompts",
+    "packages/visual-workflow/implementation-integrity.json",
+    "apps/web/src/features/visual-workflow",
+    "packages/visual-workflow/offline",
+    "packages/visual-workflow/reports/p7b-single-generation",
+    "packages/visual-workflow/reports/restaurant-shadow",
+    "packages/visual-workflow/reports/restaurant-knowledge",
+    "evaluation",
+    "space-generator",
+    "config/repository-contract",
+    "package-lock.json",
+    "apps/web-runtime/src",
+    "apps/web-runtime/tests/node-runtime-host.test.ts"
+  ],
+  "protectedDiff": [],
+  "baselineFailureEvidence": [
+    {
+      "path": "packages/visual-workflow/reports/art-medical-identity/review.md",
+      "baselineBlob": "a0352d575a060f80c496fa64f6c9f9169e67a2f2",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/local-spatial-boundaries/review.md",
+      "baselineBlob": "2912ac4943816aa27a294dc139764ac676dad327",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/art-medical-identity/web-confirmed.png",
+      "baselineBlob": "48bd4c8051577a27f87bf31250c9eb665e15d399",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/local-spatial-boundaries/web-confirmed.png",
+      "baselineBlob": "418d175d1e8c600191835df4e5b4a5e41562910d",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/p7-spatial-layout-contract/P7-web-confirmed.png",
+      "baselineBlob": "418d175d1e8c600191835df4e5b4a5e41562910d",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/p7a-prompt-budget/P7a-web-confirmed.png",
+      "baselineBlob": "1b05c3ffd32e312598c3e9d1090edbd622524128",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/spatial-balance/web-confirmed.png",
+      "baselineBlob": "48bd4c8051577a27f87bf31250c9eb665e15d399",
+      "unchanged": true
+    },
+    {
+      "path": "tests/repository-policy.test.js",
+      "baselineBlob": "ec1d7c3669a42102e576727c03e0d80d34389fcb",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web-runtime/tests/node-runtime-host.test.ts",
+      "baselineBlob": "f347a358ecea6986d871b2129cea225ee9b27746",
+      "unchanged": true
+    }
+  ],
+  "reportEncodingCorrection": {
+    "path": "packages/visual-workflow/reports/ftt-analysis-preparation/source-readonly-proof.json",
+    "parsedJsonDeepEqualToBaseline": true,
+    "productionIntegrityChanged": false,
+    "reason": "Existing task filename falsely matched a secret prefix; only JSON Unicode spelling changed, report checksum updated"
+  },
+  "analysisOrImageCallsOnRealProjects": 0,
+  "credentialsRead": false,
+  "qualityAcceptanceChanged": false
+}

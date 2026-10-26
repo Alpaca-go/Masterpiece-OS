@@ -1,0 +1,52 @@
+
+> masterpiece-os@5.0.0-rc.1 cli:test
+> cd apps/cli && node --test tests/*.test.js tests/analysis-engine/*.test.js
+
+✔ v5 defaults to Deep Mode, Maximum authority, one output and Logo lock (2.7245ms)
+✔ v5 rejects a performance maximum below the target (0.5951ms)
+✔ v5 only changes the Logo lock through an explicit project override (0.2696ms)
+✔ Reasoning Session Guard rejects a second full creative reasoning run (0.327ms)
+✔ document preparation prefers market research over generic brand strategy labels (16.6782ms)
+✔ document preparation splits long text at a natural sentence boundary (0.8408ms)
+✔ OpenAI-compatible stream assembles reasoning, content and final usage (41.4135ms)
+✔ stream rejects when no reasoning or content activity arrives (23.5445ms)
+✔ stream idle timeout counts reasoning as activity and then rejects after silence (14.9517ms)
+✔ stream hard timeout has a Step 4 specific error code (15.6611ms)
+✔ streamed length finish reason is still surfaced as OUTPUT_TRUNCATED (0.9331ms)
+✔ stream request safely accepts a provider that falls back to JSON (1.8551ms)
+✔ visual preparation creates one contact sheet, limits detail attachments, and then hits cache (908.8471ms)
+✔ benchmark preparation bounds resolver output and reuses its industry cache (7.395ms)
+✔ explicit project Benchmark context takes precedence over an industry cache (4.6166ms)
+✔ creative reasoner receives an abort signal and fails at the configured deadline (9.5775ms)
+✔ v5 performs one reasoning call, skips Compilers and publishes one official document (412.695ms)
+✔ v5 reuses an exact prompt result without a second model call (58.9658ms)
+✔ Analysis rejects retired --mode selection before reasoning (3.8415ms)
+✔ v5 records failure stage, wall-clock time, and model-call start (9.9882ms)
+✔ Prompt Builder merges maintainable modules into one model request (59.4899ms)
+✔ System Prompt establishes evidence, Logo and Maximum authority boundaries (0.9693ms)
+✔ User Prompt contains both Benchmark types, Execution Core and the fixed report schema (0.6329ms)
+✔ Qwen Reasoner sends one multimodal request with asset labels and readable text documents (115.5133ms)
+✔ Qwen Reasoner validates required credentials and model (1.4488ms)
+✔ Qwen Reasoner rejects empty reports and redacts secrets from client errors (182.2222ms)
+✔ Qwen Reasoner enforces maximumDurationMs even when the client ignores AbortSignal (118.7035ms)
+✔ Qwen Reasoner honors caller cancellation even when the client ignores AbortSignal (77.0397ms)
+✔ Qwen integration performs one request, caches it, and force-reasoning performs one new request (454.1085ms)
+✔ reasoner factory is not created when the exact reasoning cache is hit (31.2038ms)
+✔ report template preserves the fixed v5 heading order (23.0192ms)
+✔ report schema requires the five action decisions and forbids v4 three-state decisions (1.4248ms)
+✔ Execution Core template remains concise and contains all execution fields (1.1041ms)
+✔ 读取 PNG 尺寸 (1.6998ms)
+✔ 统计 PDF 页面和元数据 (0.6389ms)
+✔ 读取 ZIP 中央目录 (0.7186ms)
+✔ 读取 PPTX 幻灯片、主题色和字体 (1.5369ms)
+✔ Runtime Trace validates mandatory stage fields and rejects invalid Provider traces (6.0187ms)
+✔ Runtime Trace marks slow stages, counts calls and never double-sums nested elapsed time (6.8896ms)
+✔ failure trace keeps completed stages and marks all downstream stages blocked (1.546ms)
+ℹ tests 40
+ℹ suites 0
+ℹ pass 40
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1347.8156

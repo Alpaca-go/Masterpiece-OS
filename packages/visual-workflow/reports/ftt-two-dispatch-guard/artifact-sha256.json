@@ -1,0 +1,106 @@
+{
+  "algorithm": "SHA256",
+  "excludesSelf": true,
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "32dbc076288da98a81c9956150e751cd204a33256e617a4c22c90239a128edf3"
+    },
+    {
+      "path": "authorization-checklist.md",
+      "sha256": "68ed1b37b52c9b6cd0fee24623c2f4d26ddfc323a5c28841a3edec3591c32b1f"
+    },
+    {
+      "path": "baseline-and-data-proof.json",
+      "sha256": "9ccffdd7e9f15fcbd266b230a7bf9e51b6b85dab4863f573cf4b23ea9415599d"
+    },
+    {
+      "path": "candidate-scope.json",
+      "sha256": "01c37f803e9a049cd3dbdd49e57977bc5811ef660f970702cc28fe03bc890b32"
+    },
+    {
+      "path": "cli-tests.txt",
+      "sha256": "bb0fa216a309933c4d0abbacadfc20f7f1021f2b71077569a873b0f0fb1cbc65"
+    },
+    {
+      "path": "design-and-acceptance.md",
+      "sha256": "534add784b2650bb12b453f202a818857f4cb028851933b16a8f02db557d6cc6"
+    },
+    {
+      "path": "golden-tests.txt",
+      "sha256": "78a4f5734232760dcf2bc1d582a66a5a73e1b296580fa769923fc6b2e2f537c5"
+    },
+    {
+      "path": "guard-tests.txt",
+      "sha256": "193db0e459d3875cefceca8cadb3a8bf9c5ac038dc2c503b0c6f139ea4dd76c3"
+    },
+    {
+      "path": "owned-regression.txt",
+      "sha256": "0b31023a6f6c0445b2e80add6f418eac100bb70840c08df779624f5b113f580a"
+    },
+    {
+      "path": "repo-check-initial.txt",
+      "sha256": "61a4bca8dc53751d37d7b32e9f3d91da28f6556f1ad35a3f000ec171eb0f4e2c"
+    },
+    {
+      "path": "repo-check.txt",
+      "sha256": "34af32fe908905682a07e9d5ffffd92aca7ac5444392a8ccbaf9bbe82bcf3b49"
+    },
+    {
+      "path": "repo-verification.txt",
+      "sha256": "a4851917bee1fc4890710aee785d96198a406fb0530db338ca0815821aca7183"
+    },
+    {
+      "path": "runtime-tests.txt",
+      "sha256": "d7ef3d995b3cda0c8b83a50c32ecc266509d30b3ee6c8c0c0de67db848b8769f"
+    },
+    {
+      "path": "validation.json",
+      "sha256": "eb487ff0e2c7a9122f1125d776fb00b8d758809c83f2955d3686b8a0d4f9b5eb"
+    },
+    {
+      "path": "web-build.txt",
+      "sha256": "b77b476d634331c7eb512d2dcd1342b5ed32380f5f7e0afdb4fa868b5315c945"
+    },
+    {
+      "path": "web-runtime-tests.txt",
+      "sha256": "1a3e2189908ab3b14447784e51347fb365668c8abd33051bd9e123967bcb8314"
+    },
+    {
+      "path": "web-smoke.txt",
+      "sha256": "8cb3b5e2618d861f13eda5c34d801124a89a8a15ce939c25c01bb08bb250a205"
+    },
+    {
+      "path": "../../tests/restaurant-knowledge/two-dispatch-guard/fixtures.mjs",
+      "sha256": "99f74001094645b606c091223d3047ebde8c3c89318b8e88ed8161f5ecf9053d"
+    },
+    {
+      "path": "../../tests/restaurant-knowledge/two-dispatch-guard/freeze.mjs",
+      "sha256": "bffa4d6cee16f44b3614dc1ae4b09675e25cf2dc99ee064ae9ef6c433426365b"
+    },
+    {
+      "path": "../../tests/restaurant-knowledge/two-dispatch-guard/guard.mjs",
+      "sha256": "d3f2e9a4b06574cffcfc19d5f94d2d7d0934a2db0750b29b6e454d44eef8286b"
+    },
+    {
+      "path": "../../tests/restaurant-knowledge/two-dispatch-guard/guard.test.mjs",
+      "sha256": "3d7f62f6d6385e4f0e31cc5d15ec7c8934968f81c378e335f4d0a50c2beff0eb"
+    },
+    {
+      "path": "../../tests/restaurant-knowledge/two-dispatch-guard/integration.test.ts",
+      "sha256": "895b8b46f1e64958fb33fbf728cce960a077520d2c00430fee504832ed1697c9"
+    },
+    {
+      "path": "../../tests/restaurant-knowledge/two-dispatch-guard/ledger.mjs",
+      "sha256": "36c0e4c5fa8eb0ed2a0353fd23c2ef1db3f2d6776ae45ba2bc66f9926079ee63"
+    },
+    {
+      "path": "../../tests/restaurant-knowledge/two-dispatch-guard/single-post-transport.mjs",
+      "sha256": "82a2fe8e3c7bf76454075f3be51b8d864abe2840f96a239e47c36e7d3a6266eb"
+    },
+    {
+      "path": "../../tests/restaurant-knowledge/two-dispatch-guard/transport.test.mjs",
+      "sha256": "3a3f44bef7ffadb5c93f9df092f93e8c558c51edc6984fa75bc19006c19b3739"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+
+> masterpiece-os@5.0.0-rc.1 web-runtime:test
+> tsx --test apps/web-runtime/tests/*.test.ts
+
+✔ Node runtime paths are explicit and preserve the configured user-data convention (1.3316ms)
+✔ Node credential adapter encrypts local secrets and honors environment override (37.0937ms)
+✔ Node settings adapter preserves profile selection and keeps secrets out of settings JSON (53.0979ms)
+✖ Node Runtime Host binds shared and independently owned channels without Electron (1207.2487ms)
+✔ P3-D3.6B body cap: upload channel 64 MiB, general RPC 10 MiB (1.6068ms)
+✔ P3-D3.6B upload RPC reaches the operation (structured error, no transport failure) (61.3865ms)
+✔ CI-W1B.1 document import RPC persists browser-uploaded documents and returns real paths (52.6333ms)
+▶ P3-C4.1 production composition root identity fixture
+  ✔ AP-01..07 canonical owners project the complete mode-invariant identity (1.7736ms)
+  ✔ AP-11 production composition root analysis-led reaches READY (40.3961ms)
+  ✔ AP-12 production composition root reference-first reaches READY (32.9543ms)
+  ✔ AP-13 missing canonical identity fails closed without filler (618.2333ms)
+  ✔ AP-14 project mismatch fails closed at canonical selector authority (169.3427ms)
+✔ P3-C4.1 production composition root identity fixture (1069.0957ms)
+✔ anchor production reads the configured runtime data path (8.7703ms)
+✔ Node host resolves settings before creating runtime services (3.4077ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 14
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2418.0631
+
+✖ failing tests:
+
+test at apps\web-runtime\tests\node-runtime-host.test.ts:1:621
+✖ Node Runtime Host binds shared and independently owned channels without Electron (1207.2487ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  21 !== 20
+  
+      at TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\apps\web-runtime\tests\node-runtime-host.test.ts:39:10)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 21,
+    expected: 20,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

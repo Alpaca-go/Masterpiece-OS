@@ -1,0 +1,17 @@
+
+> masterpiece-os@5.0.0-rc.1 web:smoke
+> npm --prefix apps/web-runtime run smoke
+
+
+> smoke
+> node ./scripts/run-web-primary-smoke.mjs
+
+
+  VITE v7.3.6  ready in 503 ms
+
+  ➜  Local:   http://127.0.0.1:60639/
+{"event":"NODE_WEB_HOST_READY","host":"node","rpcUrl":"http://127.0.0.1:60638","allowedOrigin":"http://127.0.0.1:60639","operationCount":257,"pid":35192}
+WEB_PRIMARY_SMOKE {"schemaVersion":"1.1","status":"pass","runtime":"web","host":"node","rendererUrl":"http://127.0.0.1:60639","rpcUrl":"http://127.0.0.1:60638","checks":{"nodeHostBoot":true,"nodeHealth":true,"rendererPage":true,"configLoad":true,"providerResolution":true,"analysisServiceReachable":true,"referenceFirstServiceReachable":true,"compilerRouteReachable":true,"generatorRouteReachable":true,"electronProcessCountZero":true,"desktopMainProcessCountZero":true},"processEvidence":{"rootPid":20496,"inspectedProcessCount":20,"electronProcessCount":0,"desktopMainProcessCount":0,"forbiddenProcesses":[],"inspection":"windows-descendant-tree","browserInspection":{"rootPid":20496,"inspectedProcessCount":23,"electronProcessCount":0,"desktopMainProcessCount":0,"forbiddenProcesses":[],"inspection":"windows-descendant-tree"}},"rendererState":{"rootClass":"page-shell-v2 ","title":"Masterpiece OS Web"},"screenshotPath":"E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\web-primary-runtime\\latest-renderer.png","providerCalls":0,"businessWrites":0,"completedAt":"2026-10-26T02:48:25.501Z"}
+10:48:26 [vite] http proxy error: /_masterpiece/events
+Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:216:20)

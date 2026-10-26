@@ -1,0 +1,70 @@
+{
+  "status": "offline_candidate_not_authorized",
+  "dispatchAuthorized": false,
+  "sessionId": null,
+  "projectId": "d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627",
+  "projectFile": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\project.json",
+  "ledgerRoot": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1b\\real-analysis-budget",
+  "provider": "dashscope",
+  "model": "qwen3.6-plus",
+  "protocol": "openai-chat-multimodal",
+  "url": "https://ws-1miaebhuom22vyxa.cn-beijing.maas.aliyuncs.com/compatible-mode/v1/chat/completions",
+  "maxDispatches": 2,
+  "concurrency": 1,
+  "retries": 0,
+  "stages": null,
+  "projectRecordSha256": "e9a21e3bfabf1c4a6989a804cecc223fe5701fac7d05247bb65bd1ad74962bfc",
+  "materialSha256": [
+    {
+      "assetId": "3a14edef-9792-4466-b53b-16e1103153d7",
+      "sha256": "cde9a54b78b8ed452a7c09c64d2d79ba2d392b10208cc07945539dcac62f5f2c"
+    },
+    {
+      "assetId": "491fafb7-f5b7-4e5a-9014-2438c14604f6",
+      "sha256": "2b2d137ed2e9c049dcdba93f957b02e769a974536e13e28b2cf4bb1508eaec8d"
+    },
+    {
+      "assetId": "c9e1736d-a99d-4eaa-9140-94006643e7e3",
+      "sha256": "976d9d53b42a37e1969df9f4e5f3238e15a308705913a8cd42c82b77ef25e863"
+    },
+    {
+      "assetId": "5c52ea11-57cb-45fb-86fd-442838884e6e",
+      "sha256": "f99782648855997c4c5278f9b0d7c030ee96d068b4677d64e8602bb655080db6"
+    },
+    {
+      "assetId": "36d21220-a47a-496c-9db5-8e8eef446c2a",
+      "sha256": "c333cdddfdf40c1706c85e27dab3c3a392106124a055581be30d4bed4e991666"
+    },
+    {
+      "assetId": "58f2b3a3-7b83-4b93-b53d-f7586d4e27dd",
+      "sha256": "52dc4b3ff441da633478b42442e22bd627c3ffec1d0951d370038d7d19c0d7b3"
+    },
+    {
+      "assetId": "5c810cc6-b6a6-413e-be5d-a9b9d064ba63",
+      "sha256": "6b7fe70fa5da253c0baacebaf954e465912d5ec57b07c07c41d4300bf5c25d8d"
+    },
+    {
+      "assetId": "ef77f4d6-aa11-4b62-858e-5fa965b6e30a",
+      "sha256": "7e6e0d7a38921a4cf859fb5e53dc51b8ef926acb5f541f7be0ce29e438efde9e"
+    },
+    {
+      "assetId": "1957dc56-aaeb-4f81-bc18-8429b5446010",
+      "sha256": "88ae5ca134304ca6259057ee87eea81ff31ae4416f53c2562eaa88dbe63f320c"
+    },
+    {
+      "assetId": "e2d6fa7a-0d7f-4e74-ac56-13a9922d5221",
+      "sha256": "f6ad6f7c391cabffc8adf7fb4fe4cc8221d498a9fad79f39e53c31cf12ba9078"
+    }
+  ],
+  "inputAuthority": "E1A isolated project; E0 design goals remain separately confirmed and cannot be overwritten",
+  "liveLedgerCreated": false,
+  "modelParametersChanged": false,
+  "currencyHardCapAvailable": false,
+  "pending": [
+    "human model selection",
+    "human fee risk approval",
+    "separate real analysis authorization",
+    "reviewed live wiring",
+    "exact context/body/upload-attachment pins"
+  ]
+}

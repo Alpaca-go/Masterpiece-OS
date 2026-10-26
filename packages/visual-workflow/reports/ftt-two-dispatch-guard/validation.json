@@ -1,0 +1,104 @@
+{
+  "task": "RKS-02E1B",
+  "checkedAt": "2026-10-26T02:56:08.981Z",
+  "baseline": "16ede4188d56cdcd22834dbc4131efbeef2e5f29",
+  "outcome": "OFFLINE_GUARD_ACCEPTED_WITH_EXISTING_REPOSITORY_REGRESSION_FAILURES",
+  "checks": [
+    {
+      "command": "guard unit + formal pipeline integration + native transport tests",
+      "exitCode": 0,
+      "passed": 52,
+      "failed": 0,
+      "log": "guard-tests.txt"
+    },
+    {
+      "command": "all visual-workflow *.test.ts/js/mjs",
+      "exitCode": 0,
+      "passed": 311,
+      "failed": 0,
+      "log": "owned-regression.txt"
+    },
+    {
+      "command": "npm run repo:verify",
+      "exitCode": 0,
+      "log": "repo-verification.txt",
+      "currentFlowsPassed": 1294,
+      "guardCounterexamplesPassed": 56
+    },
+    {
+      "command": "npm run repo:check",
+      "exitCode": 1,
+      "log": "repo-check.txt",
+      "stoppedAt": "npm test",
+      "rootTests": {
+        "passed": 1699,
+        "failed": 2
+      },
+      "baselineFailures": true
+    },
+    {
+      "command": "npm run cli:test",
+      "exitCode": 0,
+      "passed": 40,
+      "failed": 0,
+      "log": "cli-tests.txt"
+    },
+    {
+      "command": "npm run runtime:test",
+      "exitCode": 0,
+      "passed": [
+        14,
+        1294
+      ],
+      "failed": 0,
+      "log": "runtime-tests.txt"
+    },
+    {
+      "command": "npm run web-runtime:test",
+      "exitCode": 1,
+      "passed": 14,
+      "failed": 1,
+      "log": "web-runtime-tests.txt",
+      "baselineFailure": "independent channel count expected 20 but current production has 21"
+    },
+    {
+      "command": "npm run web:build",
+      "exitCode": 0,
+      "log": "web-build.txt"
+    },
+    {
+      "command": "npm run web:smoke",
+      "exitCode": 0,
+      "log": "web-smoke.txt",
+      "providerCalls": 0,
+      "businessWrites": 0
+    },
+    {
+      "command": "npm run golden:test",
+      "exitCode": 0,
+      "log": "golden-tests.txt",
+      "goldenAutoUpdated": false,
+      "providerCalls": 0
+    }
+  ],
+  "productionInterfaceChanges": [],
+  "productionIntegrityDigestChanged": false,
+  "testsAreSyntheticOnly": true,
+  "counters": {
+    "realProviderDispatch": 0,
+    "realAnalysis": 0,
+    "realGeneration": 0,
+    "modelValidation": 0,
+    "realAutomaticRetries": 0
+  },
+  "isolatedProjectId": "d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627",
+  "isolatedStatus": "ready",
+  "isolatedContextStatus": "missing",
+  "realSessionLedgerCreated": false,
+  "realRequestPinsFrozen": false,
+  "realAnalysisAuthorized": false,
+  "noAbsoluteCurrencyHardCap": true,
+  "modelAndThinkingParametersUnchanged": true,
+  "requiresHumanReview": true,
+  "note": "Failure-injection tests contain fake HTTP sends and blocked retry attempts; these are not real model calls. repo:check did not pass; all skipped downstream suites were run separately."
+}
