@@ -1,0 +1,97 @@
+{
+  "old": "2302aa9fd39af0cee613e98f1e1a54cdd94b741e",
+  "head": "de0df03a4ef40dc6e7fbd5ba3d2152d5fbf87743",
+  "manifestBeforeSha256": "85947e556d9467837f7583c106f5f7fec10f65207ed9b2c31b410ae7c2f13bec",
+  "manifestAfterSha256": "85947e556d9467837f7583c106f5f7fec10f65207ed9b2c31b410ae7c2f13bec",
+  "decision": "WITHHELD_AUDIT_FAILED",
+  "changedEntryCount": 0,
+  "files": [
+    {
+      "path": "packages/visual-workflow/src/analysis-decisions/analysis-completion-orchestrator.js",
+      "recordedSha256": "9577c3d59c4d8869cb11e563163f49ad9bc324dda05855a32664f891cf1338ae",
+      "baselineGitSha256": "9577c3d59c4d8869cb11e563163f49ad9bc324dda05855a32664f891cf1338ae",
+      "baselineCheckoutCRLFSha256": "467d93aee51075d86894dc64dbd60c57c2fa49734c86b7d3899d5306d3611b4b",
+      "candidateGitSha256": "c7fc32dcd43de228d4f3e42c22908796a36d4c700733fa72062c466fd8dea51b",
+      "candidateDiskSha256": "c7fc32dcd43de228d4f3e42c22908796a36d4c700733fa72062c466fd8dea51b",
+      "diskMatchesGitAfterLFNormalization": true,
+      "historicalReportMatches": true,
+      "afterRecordedSha256": "9577c3d59c4d8869cb11e563163f49ad9bc324dda05855a32664f891cf1338ae",
+      "updateApplied": false
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/core/space-generation-core.js",
+      "recordedSha256": "56b85e5b2719da1860cf2f4f1ae9dff4ebcf9af34c8460380fd56e8dc67c1c9a",
+      "baselineGitSha256": "56b85e5b2719da1860cf2f4f1ae9dff4ebcf9af34c8460380fd56e8dc67c1c9a",
+      "baselineCheckoutCRLFSha256": "106143da48f21136c538741c1929557a561e223821cff588ea45e56731939380",
+      "candidateGitSha256": "4dd49955c536f676916cf1a99c0b09ba498f5ed7bc49608e8e8339dbac8cd7d5",
+      "candidateDiskSha256": "4dd49955c536f676916cf1a99c0b09ba498f5ed7bc49608e8e8339dbac8cd7d5",
+      "diskMatchesGitAfterLFNormalization": true,
+      "historicalReportMatches": true,
+      "afterRecordedSha256": "56b85e5b2719da1860cf2f4f1ae9dff4ebcf9af34c8460380fd56e8dc67c1c9a",
+      "updateApplied": false
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/semantic/separate-space-semantics.js",
+      "recordedSha256": "9867c041bd560bd968575deb9261f25494603b116e9a7e7ea39c15daeaf799a2",
+      "baselineGitSha256": "9867c041bd560bd968575deb9261f25494603b116e9a7e7ea39c15daeaf799a2",
+      "baselineCheckoutCRLFSha256": "d51a69e085e71a1ffbee6e22238bdb50d15a28867b37f47ac8e4dc80481ab474",
+      "candidateGitSha256": "fe21c12b6206e7e2a341dce430fbfadec11819b57a60f928513196c3d699a117",
+      "candidateDiskSha256": "fe21c12b6206e7e2a341dce430fbfadec11819b57a60f928513196c3d699a117",
+      "diskMatchesGitAfterLFNormalization": true,
+      "historicalReportMatches": true,
+      "afterRecordedSha256": "9867c041bd560bd968575deb9261f25494603b116e9a7e7ea39c15daeaf799a2",
+      "updateApplied": false
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/semantic/validate-spatial-semantics.js",
+      "recordedSha256": "ab7b12cdbc4cb9a67b71001e0be38bd4abfaa46b960dcd65558916ab49728288",
+      "baselineGitSha256": "ab7b12cdbc4cb9a67b71001e0be38bd4abfaa46b960dcd65558916ab49728288",
+      "baselineCheckoutCRLFSha256": "ea9563dfdf81dd1cad52e346f4ec413b5e7ce77f77c641bef7e417e9f42690b5",
+      "candidateGitSha256": "15e0376c81d71bba784cd066934b73cc7eba21480f0a3a61e5e31e4ecb00401e",
+      "candidateDiskSha256": "15e0376c81d71bba784cd066934b73cc7eba21480f0a3a61e5e31e4ecb00401e",
+      "diskMatchesGitAfterLFNormalization": true,
+      "historicalReportMatches": true,
+      "afterRecordedSha256": "ab7b12cdbc4cb9a67b71001e0be38bd4abfaa46b960dcd65558916ab49728288",
+      "updateApplied": false
+    },
+    {
+      "path": "packages/visual-workflow/src/runtime/pipeline-service.js",
+      "recordedSha256": "f8a4fe7344a6c08ce2567277856203cbb88849a264fa5c277051bc6177fb8147",
+      "baselineGitSha256": "f8a4fe7344a6c08ce2567277856203cbb88849a264fa5c277051bc6177fb8147",
+      "baselineCheckoutCRLFSha256": "571384429b9e45dbb606e3ffcc8089b28ebce12374a66443e254cadbb69d0c34",
+      "candidateGitSha256": "84fee2b4f1a352f029f3b03e9f6b4bc97cb486452bc96b78d30d8e35bf04febb",
+      "candidateDiskSha256": "84fee2b4f1a352f029f3b03e9f6b4bc97cb486452bc96b78d30d8e35bf04febb",
+      "diskMatchesGitAfterLFNormalization": true,
+      "historicalReportMatches": true,
+      "afterRecordedSha256": "f8a4fe7344a6c08ce2567277856203cbb88849a264fa5c277051bc6177fb8147",
+      "updateApplied": false
+    }
+  ],
+  "mismatches": [
+    {
+      "path": "src/analysis-decisions/analysis-completion-orchestrator.js",
+      "recorded": "9577c3d59c4d8869cb11e563163f49ad9bc324dda05855a32664f891cf1338ae",
+      "actual": "c7fc32dcd43de228d4f3e42c22908796a36d4c700733fa72062c466fd8dea51b"
+    },
+    {
+      "path": "src/generation-runtime/core/space-generation-core.js",
+      "recorded": "56b85e5b2719da1860cf2f4f1ae9dff4ebcf9af34c8460380fd56e8dc67c1c9a",
+      "actual": "4dd49955c536f676916cf1a99c0b09ba498f5ed7bc49608e8e8339dbac8cd7d5"
+    },
+    {
+      "path": "src/generation-runtime/space/semantic/separate-space-semantics.js",
+      "recorded": "9867c041bd560bd968575deb9261f25494603b116e9a7e7ea39c15daeaf799a2",
+      "actual": "fe21c12b6206e7e2a341dce430fbfadec11819b57a60f928513196c3d699a117"
+    },
+    {
+      "path": "src/generation-runtime/space/semantic/validate-spatial-semantics.js",
+      "recorded": "ab7b12cdbc4cb9a67b71001e0be38bd4abfaa46b960dcd65558916ab49728288",
+      "actual": "15e0376c81d71bba784cd066934b73cc7eba21480f0a3a61e5e31e4ecb00401e"
+    },
+    {
+      "path": "src/runtime/pipeline-service.js",
+      "recorded": "f8a4fe7344a6c08ce2567277856203cbb88849a264fa5c277051bc6177fb8147",
+      "actual": "84fee2b4f1a352f029f3b03e9f6b4bc97cb486452bc96b78d30d8e35bf04febb"
+    }
+  ]
+}

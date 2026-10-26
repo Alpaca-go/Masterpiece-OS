@@ -1,0 +1,37 @@
+{
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "3f84c422b589251fff6dfc384ccc208e8e8efdb15bd96a7c39d9bc44f28280b0"
+    },
+    {
+      "path": "integrity-comparison.json",
+      "sha256": "0f8431aa0e0204f27cd5f3541cf8392d7cef866a81adb77bd53aafbb13cf4af0"
+    },
+    {
+      "path": "preservation.json",
+      "sha256": "6b09d22fee0a455b7c81f46cedef838f41a8f65806bbb2cb375844ac08153938"
+    },
+    {
+      "path": "production-diff.patch",
+      "sha256": "fbcb62f107ba46eb6482533c1b451cdb6f1f44918f60789d320d6232789d97c3"
+    },
+    {
+      "path": "regression-results.json",
+      "sha256": "31b42bdce77db0fa881517847672f11e9681f63dbe1b7777133b72e0c0c5022c"
+    },
+    {
+      "path": "review-probes.json",
+      "sha256": "e8959bb3a8f5c88d618ff893315b774da23c992f5496dcd24add3979de51e7be"
+    },
+    {
+      "path": "root-baseline-comparison.json",
+      "sha256": "1a65edd2eb66234926d0fdacd783e537eb5f3ec1a6ce75b879c96e10d21c54b2"
+    },
+    {
+      "path": "../../tests/restaurant-knowledge/spatial-semantics/integrity-review-probes.mjs",
+      "sha256": "39e28b3346b262a998fef07c45b689ae060565bc45aceda1c14e2be3f4c73af7"
+    }
+  ],
+  "logHashesVerified": 29
+}

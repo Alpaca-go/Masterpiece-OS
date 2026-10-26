@@ -1,0 +1,825 @@
+{
+  "base": "2302aa9fd39af0cee613e98f1e1a54cdd94b741e",
+  "head": "de0df03a4ef40dc6e7fbd5ba3d2152d5fbf87743",
+  "rows": [
+    {
+      "text": "equipment conveying happiness",
+      "expected": "block",
+      "baselineClassification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "baselineGate": "pass",
+      "classification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "gate": "pass",
+      "afterSeparationGate": "pass",
+      "requirementMet": false,
+      "split": {
+        "spatial": {
+          "mustBeVisible": [
+            "equipment conveying happiness"
+          ]
+        },
+        "changes": [],
+        "unresolved": []
+      }
+    },
+    {
+      "text": "砂锅传递幸福感",
+      "expected": "block",
+      "baselineClassification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "baselineGate": "pass",
+      "classification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "gate": "pass",
+      "afterSeparationGate": "pass",
+      "requirementMet": false,
+      "split": {
+        "spatial": {
+          "mustBeVisible": [
+            "砂锅传递幸福感"
+          ]
+        },
+        "changes": [],
+        "unresolved": []
+      }
+    },
+    {
+      "text": "设备自动治愈顾客",
+      "expected": "block",
+      "baselineClassification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "baselineGate": "pass",
+      "classification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "gate": "pass",
+      "afterSeparationGate": "pass",
+      "requirementMet": false,
+      "split": {
+        "spatial": {
+          "mustBeVisible": [
+            "设备自动治愈顾客"
+          ]
+        },
+        "changes": [],
+        "unresolved": []
+      }
+    },
+    {
+      "text": "在设备旁员工畅想未来",
+      "expected": "block",
+      "baselineClassification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "baselineGate": "pass",
+      "classification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "gate": "pass",
+      "afterSeparationGate": "pass",
+      "requirementMet": false,
+      "split": {
+        "spatial": {
+          "mustBeVisible": [
+            "在设备旁员工畅想未来"
+          ]
+        },
+        "changes": [],
+        "unresolved": []
+      }
+    },
+    {
+      "text": "petal curved counter",
+      "expected": "block",
+      "baselineClassification": {
+        "classification": "ambiguous",
+        "classificationReason": "existing_ambiguous_rule",
+        "motifHits": [
+          "petal"
+        ],
+        "colorHits": [],
+        "archHits": 2,
+        "propertyHits": 2,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "baselineGate": "block",
+      "classification": {
+        "classification": "ambiguous",
+        "classificationReason": "existing_ambiguous_rule",
+        "motifHits": [
+          "petal"
+        ],
+        "colorHits": [],
+        "archHits": 2,
+        "propertyHits": 2,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "gate": "pass",
+      "afterSeparationGate": "pass",
+      "requirementMet": false,
+      "split": {
+        "spatial": {
+          "mustBeVisible": [
+            "petal curved counter"
+          ]
+        },
+        "changes": [],
+        "unresolved": []
+      }
+    },
+    {
+      "text": "lotus layered table",
+      "expected": "block",
+      "baselineClassification": {
+        "classification": "ambiguous",
+        "classificationReason": "existing_ambiguous_rule",
+        "motifHits": [
+          "lotus"
+        ],
+        "colorHits": [],
+        "archHits": 2,
+        "propertyHits": 2,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "baselineGate": "block",
+      "classification": {
+        "classification": "ambiguous",
+        "classificationReason": "existing_ambiguous_rule",
+        "motifHits": [
+          "lotus"
+        ],
+        "colorHits": [],
+        "archHits": 2,
+        "propertyHits": 2,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "gate": "pass",
+      "afterSeparationGate": "pass",
+      "requirementMet": false,
+      "split": {
+        "spatial": {
+          "mustBeVisible": [
+            "lotus layered table"
+          ]
+        },
+        "changes": [],
+        "unresolved": []
+      }
+    },
+    {
+      "text": "花瓣曲线桌",
+      "expected": "block",
+      "baselineClassification": {
+        "classification": "ambiguous",
+        "classificationReason": "existing_ambiguous_rule",
+        "motifHits": [
+          "花瓣"
+        ],
+        "colorHits": [],
+        "archHits": 1,
+        "propertyHits": 1,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "baselineGate": "block",
+      "classification": {
+        "classification": "ambiguous",
+        "classificationReason": "existing_ambiguous_rule",
+        "motifHits": [
+          "花瓣"
+        ],
+        "colorHits": [],
+        "archHits": 1,
+        "propertyHits": 1,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "gate": "pass",
+      "afterSeparationGate": "pass",
+      "requirementMet": false,
+      "split": {
+        "spatial": {
+          "mustBeVisible": [
+            "花瓣曲线桌"
+          ]
+        },
+        "changes": [],
+        "unresolved": []
+      }
+    },
+    {
+      "text": "Logo and equipment conveying happiness",
+      "expected": "block",
+      "baselineClassification": {
+        "classification": "decorative_identity",
+        "classificationReason": "existing_decorative_identity_rule",
+        "motifHits": [
+          "logo"
+        ],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "baselineGate": "block",
+      "classification": {
+        "classification": "decorative_identity",
+        "classificationReason": "existing_decorative_identity_rule",
+        "motifHits": [
+          "logo"
+        ],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "gate": "block",
+      "afterSeparationGate": "pass",
+      "requirementMet": false,
+      "split": {
+        "spatial": {
+          "mustBeVisible": [
+            "equipment conveying happiness"
+          ],
+          "brandRoleManifestation": [
+            "Logo"
+          ]
+        },
+        "changes": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "original": "Logo and equipment conveying happiness",
+            "retained": [
+              "equipment conveying happiness"
+            ],
+            "routedTo": "brandRoleManifestation",
+            "brand": [
+              "Logo"
+            ],
+            "method": "explicit_clause_separation",
+            "evidenceFragments": [
+              {
+                "sourceFragment": "Logo",
+                "value": "Logo",
+                "kind": "brand"
+              },
+              {
+                "sourceFragment": "equipment conveying happiness",
+                "value": "equipment conveying happiness",
+                "kind": "functional"
+              }
+            ]
+          }
+        ],
+        "unresolved": []
+      }
+    },
+    {
+      "text": "staff operating equipment and enjoying cosmic essence",
+      "expected": "block",
+      "baselineClassification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "baselineGate": "pass",
+      "classification": {
+        "classification": "functional",
+        "classificationReason": "visible_device_operation",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "gate": "pass",
+      "afterSeparationGate": "pass",
+      "requirementMet": false,
+      "split": {
+        "spatial": {
+          "mustBeVisible": [
+            "staff operating equipment and enjoying cosmic essence"
+          ]
+        },
+        "changes": [],
+        "unresolved": []
+      }
+    },
+    {
+      "text": "员工操作设备并畅想未来",
+      "expected": "block",
+      "baselineClassification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "baselineGate": "pass",
+      "classification": {
+        "classification": "functional",
+        "classificationReason": "visible_device_operation",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "gate": "pass",
+      "afterSeparationGate": "pass",
+      "requirementMet": false,
+      "split": {
+        "spatial": {
+          "mustBeVisible": [
+            "员工操作设备并畅想未来"
+          ]
+        },
+        "changes": [],
+        "unresolved": []
+      }
+    },
+    {
+      "text": "员工没有使用设备",
+      "expected": "block",
+      "baselineClassification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "baselineGate": "pass",
+      "classification": {
+        "classification": "functional",
+        "classificationReason": "visible_device_operation",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "gate": "pass",
+      "afterSeparationGate": "pass",
+      "requirementMet": false,
+      "split": {
+        "spatial": {
+          "mustBeVisible": [
+            "员工没有使用设备"
+          ]
+        },
+        "changes": [],
+        "unresolved": []
+      }
+    },
+    {
+      "text": "员工不会操作设备",
+      "expected": "block",
+      "baselineClassification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "baselineGate": "pass",
+      "classification": {
+        "classification": "functional",
+        "classificationReason": "visible_device_operation",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "gate": "pass",
+      "afterSeparationGate": "pass",
+      "requirementMet": false,
+      "split": {
+        "spatial": {
+          "mustBeVisible": [
+            "员工不会操作设备"
+          ]
+        },
+        "changes": [],
+        "unresolved": []
+      }
+    },
+    {
+      "text": "员工尚未操作设备",
+      "expected": "block",
+      "baselineClassification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "baselineGate": "pass",
+      "classification": {
+        "classification": "functional",
+        "classificationReason": "visible_device_operation",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "gate": "pass",
+      "afterSeparationGate": "pass",
+      "requirementMet": false,
+      "split": {
+        "spatial": {
+          "mustBeVisible": [
+            "员工尚未操作设备"
+          ]
+        },
+        "changes": [],
+        "unresolved": []
+      }
+    },
+    {
+      "text": "staff operating equipment",
+      "expected": "pass",
+      "baselineClassification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "baselineGate": "pass",
+      "classification": {
+        "classification": "functional",
+        "classificationReason": "visible_device_operation",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "gate": "pass",
+      "afterSeparationGate": "pass",
+      "requirementMet": true,
+      "split": {
+        "spatial": {
+          "mustBeVisible": [
+            "staff operating equipment"
+          ]
+        },
+        "changes": [],
+        "unresolved": []
+      }
+    },
+    {
+      "text": "Waiting area seating",
+      "expected": "pass",
+      "baselineClassification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "baselineGate": "pass",
+      "classification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "gate": "pass",
+      "afterSeparationGate": "pass",
+      "requirementMet": true,
+      "split": {
+        "spatial": {
+          "mustBeVisible": [
+            "Waiting area seating"
+          ]
+        },
+        "changes": [],
+        "unresolved": []
+      }
+    },
+    {
+      "text": "入口处的菜单",
+      "expected": "pass",
+      "baselineClassification": {
+        "classification": "architectural",
+        "classificationReason": "existing_architectural_rule",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 1,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "baselineGate": "pass",
+      "classification": {
+        "classification": "functional",
+        "classificationReason": "visible_service_artifact",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 1,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "gate": "pass",
+      "afterSeparationGate": "pass",
+      "requirementMet": true,
+      "split": {
+        "spatial": {
+          "mustBeVisible": [
+            "入口处的菜单"
+          ]
+        },
+        "changes": [],
+        "unresolved": []
+      }
+    },
+    {
+      "text": "Logo吸引顾客点餐",
+      "expected": "block",
+      "baselineClassification": {
+        "classification": "decorative_identity",
+        "classificationReason": "existing_decorative_identity_rule",
+        "motifHits": [
+          "logo"
+        ],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "baselineGate": "block",
+      "classification": {
+        "classification": "decorative_identity",
+        "classificationReason": "existing_decorative_identity_rule",
+        "motifHits": [
+          "logo"
+        ],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "gate": "block",
+      "afterSeparationGate": "block",
+      "requirementMet": true,
+      "split": {
+        "spatial": {
+          "mustBeVisible": [
+            "Logo吸引顾客点餐"
+          ]
+        },
+        "changes": [],
+        "unresolved": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "original": "Logo吸引顾客点餐",
+            "reason": "inseparable_or_insufficient_functional_evidence"
+          }
+        ]
+      }
+    },
+    {
+      "text": "staff not operating equipment",
+      "expected": "block",
+      "baselineClassification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "baselineGate": "pass",
+      "classification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "gate": "block",
+      "afterSeparationGate": "block",
+      "requirementMet": true,
+      "split": {
+        "spatial": {
+          "mustBeVisible": [
+            "staff not operating equipment"
+          ]
+        },
+        "changes": [],
+        "unresolved": []
+      }
+    },
+    {
+      "text": "unresolved rendezvous",
+      "expected": "block",
+      "baselineClassification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "baselineGate": "pass",
+      "classification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "gate": "block",
+      "afterSeparationGate": "block",
+      "requirementMet": true,
+      "split": {
+        "spatial": {
+          "mustBeVisible": [
+            "unresolved rendezvous"
+          ]
+        },
+        "changes": [],
+        "unresolved": []
+      }
+    }
+  ],
+  "unsafeCompletion": {
+    "status": "ready",
+    "expected": "failed",
+    "requirementMet": false,
+    "events": [
+      "deterministic"
+    ],
+    "modelCalls": 0,
+    "mustBeVisible": [
+      "equipment conveying happiness"
+    ],
+    "inputUnchanged": true
+  },
+  "orderingScope": {
+    "status": "failed",
+    "events": [
+      "structured-model-stub",
+      "structured-model-stub"
+    ],
+    "note": "Deterministic spatial separation precedes only optional spatial repair, not the earlier structured sufficiency-repair loop. These model callbacks only throw; no Provider."
+  },
+  "note": "Observed defects, not passing acceptance tests. Synthetic in-memory packet only; no real project status changed."
+}

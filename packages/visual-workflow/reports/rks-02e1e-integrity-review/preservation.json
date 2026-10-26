@@ -1,0 +1,97 @@
+{
+  "algorithm": "SHA256(JSON.stringify(sorted relative-path and file-SHA256 pairs)); snapshots contain no file contents",
+  "roots": [
+    {
+      "root": "C:\\Users\\kyrie\\AppData\\Roaming\\masterpiece-os-desktop\\visual-workflow\\data\\projects\\3b5b03c0-915a-41aa-9c54-4ffaa166ab88",
+      "fileCount": 46,
+      "beforeSha256": "2c3a1120297ab3c6069b4283bbe7403d29213c68a20d5d598957ceff4bef358e",
+      "afterSha256": "2c3a1120297ab3c6069b4283bbe7403d29213c68a20d5d598957ceff4bef358e",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627",
+      "fileCount": 20,
+      "beforeSha256": "3791d134c79069ab913a2342d117f71f4c496a48c7e5df31d1bb78a25e7afa8f",
+      "afterSha256": "3791d134c79069ab913a2342d117f71f4c496a48c7e5df31d1bb78a25e7afa8f",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1b\\real-analysis-budget",
+      "fileCount": 4,
+      "beforeSha256": "35a1c271521f2782b1cbcd594f6f02161d4def2af7200dedff4c199dbdb01dec",
+      "afterSha256": "35a1c271521f2782b1cbcd594f6f02161d4def2af7200dedff4c199dbdb01dec",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\reports\\ftt-live-analysis",
+      "fileCount": 8,
+      "beforeSha256": "b3bc2b38de712532613fd280497def52940270737eff46818c53e7e168b0ddd7",
+      "afterSha256": "b3bc2b38de712532613fd280497def52940270737eff46818c53e7e168b0ddd7",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\reports\\ftt-analysis-input-freeze",
+      "fileCount": 17,
+      "beforeSha256": "b6e1f8de46defa8c6231b37cbc239a3e6f1bc0bc28309b12e59e0d64358f9699",
+      "afterSha256": "b6e1f8de46defa8c6231b37cbc239a3e6f1bc0bc28309b12e59e0d64358f9699",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\reports\\p7b-single-generation",
+      "fileCount": 22,
+      "beforeSha256": "031c6621da18895ca2968520abbf7354d1946f29f5f9cc9ca212d59dfb97abdc",
+      "afterSha256": "031c6621da18895ca2968520abbf7354d1946f29f5f9cc9ca212d59dfb97abdc",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\reports\\restaurant-shadow",
+      "fileCount": 8,
+      "beforeSha256": "bc371a38f7bf4b939c1724af2bbbb3ac09e559199cf514b0ad18dd78c068faec",
+      "afterSha256": "bc371a38f7bf4b939c1724af2bbbb3ac09e559199cf514b0ad18dd78c068faec",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\offline",
+      "fileCount": 7,
+      "beforeSha256": "b31ce4d464fd7e2246c6e5f0e364e408a3e213af862f0be4a8aacea751099847",
+      "afterSha256": "b31ce4d464fd7e2246c6e5f0e364e408a3e213af862f0be4a8aacea751099847",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\implementation-integrity.json",
+      "fileCount": 1,
+      "beforeSha256": "6e1ffcfd8876e455ea652230e8836c8d665f71160dd477f07abf6282945893e1",
+      "afterSha256": "6e1ffcfd8876e455ea652230e8836c8d665f71160dd477f07abf6282945893e1",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\reports\\ftt-spatial-semantic-repair",
+      "fileCount": 18,
+      "beforeSha256": "5f9f1e4b2a8d2a80e5f10e7d3223d466ca2d2b81fa74d39106e2cd19e42c700c",
+      "afterSha256": "5f9f1e4b2a8d2a80e5f10e7d3223d466ca2d2b81fa74d39106e2cd19e42c700c",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\prompts",
+      "fileCount": 4,
+      "beforeSha256": "c72c911913bb3c740c40ffc0467ca392ee825a538a4c4c198c873302e394a9a7",
+      "afterSha256": "c72c911913bb3c740c40ffc0467ca392ee825a538a4c4c198c873302e394a9a7",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\config\\repository-contract",
+      "fileCount": 5,
+      "beforeSha256": "e48da95d60a1853da4998cdc514321b35304704ec3b832197f0a0c9c07225445",
+      "afterSha256": "e48da95d60a1853da4998cdc514321b35304704ec3b832197f0a0c9c07225445",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\tests\\golden",
+      "fileCount": 2,
+      "beforeSha256": "4d0a7b18af1398d2cf64d893385cbe44bde1120425a403897d5342cce5396fa9",
+      "afterSha256": "4d0a7b18af1398d2cf64d893385cbe44bde1120425a403897d5342cce5396fa9",
+      "unchanged": true
+    }
+  ],
+  "trackedProtectedChanges": ""
+}

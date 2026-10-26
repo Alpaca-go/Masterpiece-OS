@@ -1,0 +1,73 @@
+{
+  "baselineCommit": "de0df03a4ef40dc6e7fbd5ba3d2152d5fbf87743",
+  "preE1DCommit": "2302aa9fd39af0cee613e98f1e1a54cdd94b741e",
+  "baselineRunDirectory": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1e\\baseline-de0",
+  "retainedWorktree": "E:/Masterpiece-OS-RKS-02E1E-Baseline-de0",
+  "dependencySetup": "No install; third-party installed dependencies reused through directory junctions. @masterpiece workspace packages resolve to baseline checkout, not primary production sources.",
+  "current": {
+    "tests": 1701,
+    "pass": 1699,
+    "fail": 2
+  },
+  "baseline": {
+    "tests": 1701,
+    "pass": 1699,
+    "fail": 2
+  },
+  "preE1DPolicy": {
+    "tests": 2,
+    "pass": 0,
+    "fail": 2
+  },
+  "conclusion": "Both repository-policy failures predate E1D and are not introduced by E1E. No historical artifact moved or policy expectation changed.",
+  "files": [
+    {
+      "path": "tests/repository-policy.test.js",
+      "preE1DSha256": "e0b4a12325ad7124857b3839af264cb77bbdd28cf1085b275be72b379307b6a7",
+      "baselineSha256": "e0b4a12325ad7124857b3839af264cb77bbdd28cf1085b275be72b379307b6a7",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/art-medical-identity/review.md",
+      "preE1DSha256": "b12d5c04c19cf46afe9ba5d9487f1bb703727df8b730bf03b48f5dad0963ced3",
+      "baselineSha256": "b12d5c04c19cf46afe9ba5d9487f1bb703727df8b730bf03b48f5dad0963ced3",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/local-spatial-boundaries/review.md",
+      "preE1DSha256": "b4c92dd1b7b79f1cb9a64f006763bed4a5033ba01da129b2bfaa85accb46801d",
+      "baselineSha256": "b4c92dd1b7b79f1cb9a64f006763bed4a5033ba01da129b2bfaa85accb46801d",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/art-medical-identity/web-confirmed.png",
+      "preE1DSha256": "397fcb16b6f7cd1914984a0037492c519d4aee25ccd575139978275b0b25367d",
+      "baselineSha256": "397fcb16b6f7cd1914984a0037492c519d4aee25ccd575139978275b0b25367d",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/local-spatial-boundaries/web-confirmed.png",
+      "preE1DSha256": "b321d766caca74ac1b37bb9961249c43a6057532829f5a44af1fc461b442de1e",
+      "baselineSha256": "b321d766caca74ac1b37bb9961249c43a6057532829f5a44af1fc461b442de1e",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/p7-spatial-layout-contract/P7-web-confirmed.png",
+      "preE1DSha256": "b321d766caca74ac1b37bb9961249c43a6057532829f5a44af1fc461b442de1e",
+      "baselineSha256": "b321d766caca74ac1b37bb9961249c43a6057532829f5a44af1fc461b442de1e",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/p7a-prompt-budget/P7a-web-confirmed.png",
+      "preE1DSha256": "82bce98cd13474c16d176a1ea838db942514284c1a28bb236224d475ee3a2889",
+      "baselineSha256": "82bce98cd13474c16d176a1ea838db942514284c1a28bb236224d475ee3a2889",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/spatial-balance/web-confirmed.png",
+      "preE1DSha256": "397fcb16b6f7cd1914984a0037492c519d4aee25ccd575139978275b0b25367d",
+      "baselineSha256": "397fcb16b6f7cd1914984a0037492c519d4aee25ccd575139978275b0b25367d",
+      "unchanged": true
+    }
+  ]
+}
