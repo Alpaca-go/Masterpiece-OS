@@ -1,0 +1,68 @@
+
+> masterpiece-os@5.0.0-rc.1 repo:guard:test
+> node --test tests/visual-workflow-boundary-guard.test.js tests/repository-contract-guard.test.js tests/version-naming-guard.test.js tests/archive-boundary.test.js tests/runtime-boundary.test.js tests/web-runtime-host-boundary.test.js tests/packages/runtime-core/operation-registry.test.js tests/analysis-release-guards.test.js
+
+✔ analysis guard analysis-provider-authority PASSES against CURRENT repository (1329.9217ms)
+✔ analysis guard analysis-prompt-integrity PASSES against CURRENT repository (209.6196ms)
+✔ analysis guard analysis-namespace PASSES against CURRENT repository (473.8409ms)
+✔ analysis guard runtime-isolation PASSES against CURRENT repository (294.3828ms)
+✔ analysis guard analysis-golden-integrity PASSES against CURRENT repository (143.2298ms)
+✔ analysis guard secret-safety PASSES against CURRENT repository (988.1053ms)
+✔ A4 G-A4-01 default-authority guard catches an injected hardcoded default (0.4486ms)
+✔ A4 G-A4-03 frozen-prompt guard records the canonical digests (0.2448ms)
+✔ A4 G-A4-05 version-namespace guard lists all the A4-forbidden patterns (0.4189ms)
+✔ A4 G-A4-06 legacy-desktop guard checks TRACKED dirs (not on-disk untracked) (0.326ms)
+✔ A4 G-A4-07 golden-mutation guard records the canonical Golden digests (0.2313ms)
+✔ A4 G-A4-10 secret-safety guard masks the matched value in its output (0.2368ms)
+✔ active code and current tests do not load repository archive artifacts (403.077ms)
+✔ Shared Operation Registry dispatches existing channel semantics without a host (1.9489ms)
+✔ Shared Operation Registry rejects duplicate, invalid and unknown operations (0.7ms)
+✔ Shared Runtime boots, dispatches and disposes with Electron absent (0.6005ms)
+✔ repository contract path: historical R11 evidence remains legal (1.3832ms)
+✔ repository contract path: schema v1 remains legal (0.5294ms)
+✔ repository contract path: API v2 remains legal (0.1335ms)
+✔ repository contract path: current v13 implementation fails (0.1416ms)
+✔ repository contract path: latest implementation fails (0.1146ms)
+✔ repository contract path: final implementation fails (0.1107ms)
+✔ repository contract boundary: production archive import fails (0.4393ms)
+✔ repository contract boundary: production Electron import fails (1.208ms)
+✔ repository contract local artifact reference fails (0.4101ms)
+✔ unregistered compatibility alias fails (0.3991ms)
+✔ registered compatibility alias passes (0.9271ms)
+✔ frozen prompt mutation is represented by stable RC004 (0.514ms)
+✔ Golden mutation is represented by stable RC005 (0.1599ms)
+✔ Shared Core packages never depend on Desktop (186.2626ms)
+✔ Web renderer never imports host business services (26.1194ms)
+✔ Current Runtime consumers use Core facades instead of historical generation namespaces (42.3406ms)
+✔ Visual Analysis pipeline receives host paths through an adapter (1.153ms)
+✔ Reference resolver is owned by Shared Runtime (0.3825ms)
+✔ version naming guard detects known current product-copy blind spots (2.6784ms)
+✔ version naming guard detects new historical-stage runtime IDs and targeted symbols (3.7164ms)
+✔ version naming guard allows explicit compatibility and version-domain examples (0.364ms)
+✔ version naming guard scans current generation, space, prompt-contract, and model-registry roots (15.5926ms)
+✔ isolated quality repair cannot depend on another business implementation: import x from '@masterpiece/model-runtime/qwen-reasoner.js' (3.2071ms)
+✔ isolated quality repair cannot depend on another business implementation: export {x} from '@masterpiece/model-runtime/qwen-reasoner.js' (0.3285ms)
+✔ isolated quality repair cannot depend on another business implementation: import('@masterpiece/model-runtime/qwen-reasoner.js') (0.1596ms)
+✔ isolated quality repair cannot depend on another business implementation: require('@masterpiece/model-runtime/qwen-reasoner.js') (0.1285ms)
+✔ isolated quality repair cannot depend on another business implementation: import(`@masterpiece/model-runtime/qwen-reasoner.js`) (0.1618ms)
+✔ isolated quality repair cannot depend on another business implementation: import x from '../../runtime-core/src/application/quality.ts' (0.255ms)
+✔ isolated quality repair cannot depend on another business implementation: import(modulePath) (0.141ms)
+✔ planning/migration cannot consume isolated quality implementation: import x from '@masterpiece/visual-workflow/service.js' (0.3704ms)
+✔ planning/migration cannot consume isolated quality implementation: export * from '../../../visual-workflow/src/service.js' (6.1631ms)
+✔ planning/migration cannot consume isolated quality implementation: import('../../../visual-workflow/src/service.js') (0.4762ms)
+✔ planning/migration cannot consume isolated quality implementation: require('../../../visual-workflow/src/service.js') (0.2516ms)
+✔ planning/migration cannot consume isolated quality implementation: rpc('visual-workflow:compile') (1.3718ms)
+✔ owned UI cannot escape via re-export, dynamic import or shared bridge (0.4002ms)
+✔ global configuration cannot enter through bracket environment access (0.1211ms)
+✔ owned relative modules and approved infrastructure remain usable (1.3823ms)
+✔ Node Runtime Host has zero Electron and Desktop dependencies (4.1745ms)
+✔ Web Renderer has zero Electron and Desktop dependencies (41.2983ms)
+✔ primary Web entry launches the Node host and independent Web renderer only (0.8939ms)
+ℹ tests 56
+ℹ suites 0
+ℹ pass 56
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3684.9743

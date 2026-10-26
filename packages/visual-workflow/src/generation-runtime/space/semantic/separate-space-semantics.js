@@ -61,9 +61,15 @@ const FUNCTIONAL_PROVENANCE_FIELDS = /* @__PURE__ */ new Set([
 // relationships across service industries. These rules never infer a scene.
 function visibleOperationEvidence(text) {
   if (/\b(?:maybe|might|could|wish|dream|symbolic|metaphor|imaginary)\b|也许|可能|希望|象征|意境|灵魂/iu.test(text)) return null;
+  if (/\b(?:no|not|without)\b|禁止|不得|无需|不(?:操作|使用)/iu.test(text)) return null;
   const actor = /^(?:(?:a|an|the|visible)\s+)?(?:staff|employees?|workers?|operators?|customers?|guests?|visitors?|clerks?|chefs?|receptionists?|attendants?|technicians?|servers?)\s+(?:(?:is|are)\s+)?(?:preparing|cooking|serving|dining|eating|browsing|selecting|paying|checking\s+in|greeting|guiding|assisting|handing|packing|carrying|cleaning|consulting)\b\s+\S/iu;
   const actorCjk = /^(?:可见的?)?(?:厨师|店员|员工|服务员|顾客|客人|旅客|访客|接待员|工作人员|客户|技师).{0,16}(?:备餐|烹饪|制作|用餐|就餐|点餐|选购|挑选|结账|办理入住|迎接|引导|接待|协助|递交|打包|搬运|清洁|咨询)/u;
   if (actor.test(text) || actorCjk.test(text)) return "visible_actor_activity";
+  const deviceOperation = /^(?:(?:a|an|the|visible)\s+)?(?:staff|employees?|workers?|operators?|clerks?|technicians?)\s+(?:(?:is|are)\s+)?(?:operating|using)\s+(?:(?:the|a|an)\s+)?(?:cash\s+register|payment\s+terminal|scanner|machine|equipment)\b/iu;
+  const deviceOperationCjk = /^(?:可见的?)?(?:店员|员工|工作人员|技师|操作员).{0,12}(?:操作|使用).{0,8}(?:收银机|收银台|支付终端|扫描仪|检测设备|机器|设备)/u;
+  if (deviceOperation.test(text) || deviceOperationCjk.test(text)) return 'visible_device_operation';
+  if (/^(?:(?:入口|入口处|点餐区|服务区|柜台)(?:的|处的)?\s*)?(?:菜单|价目表)(?:展示|查看|显示)?[。.!！]?$/u.test(text)
+    || /^(?:(?:a|the)\s+)?(?:menu|price\s+list)(?:\s+(?:display|at\s+the\s+entrance))?[.!]?$/iu.test(text)) return 'visible_service_artifact';
   const effect = /^(?:visible\s+|hot\s+)?(?:steam|mist|foam|water|condensation|spray|bubbles)\s+(?:(?:rising|flowing|forming|emerging)\s+)?(?:above|over|from|on|into|in)\s+(?:(?:the|a|an)\s+)?(?:dishes|food|cups?|bowls?|trays?|products?|basins?|sinks?|glass|surfaces?|drinks?)\b/iu;
   const effectCjk = /(?:菜品|食物|餐盘|杯|碗|托盘|商品|水槽|水池|玻璃|表面|饮品)(?:上方|上|中|内|表面).{0,6}(?:蒸汽|热气|水流|水汽|泡沫|水雾|气泡)|^(?:蒸汽|热气|水流|水汽|泡沫|水雾|气泡)(?:从|在|于).{0,12}(?:菜品|食物|餐盘|杯|碗|水槽|水池|玻璃|表面|饮品)/u;
   return effect.test(text) || effectCjk.test(text) ? "visible_effect_carrier_relation" : null;
@@ -72,7 +78,9 @@ function classifyPhrase(rawPhrase, sourceField = "") {
   const text = norm(rawPhrase);
   const field = String(sourceField || "");
   const motifHits = [...BRAND_MOTIF_TERMS].filter((t) => hasTermAsWord(text, t));
-  const colorHits = [...COLOR_TERMS].filter((t) => hasTermAsWord(text, t));
+  // The compound for taking payment is not a silver finish specification.
+  const colorText = text.replace(/收银/gu, '');
+  const colorHits = [...COLOR_TERMS].filter((t) => hasTermAsWord(colorText, t));
   const archHits = countHits(text, ARCHITECTURE_TERMS);
   const propertyHits = countHits(text, SPATIAL_PROPERTY_TERMS);
   const metaphor = hasAny(text, METAPHOR_MARKERS);
@@ -92,6 +100,10 @@ function classifyPhrase(rawPhrase, sourceField = "") {
     || field === 'mustBeVisible' && /signage\s+text|illuminated\s+letters|文字招牌|标语/iu.test(text);
   if (hasIdentity) {
     classification = SEMANTIC_CLASS.DECORATIVE_IDENTITY;
+  } else if (!hasColor && /品牌(?:色彩|配色|视觉|图文|形象)(?:系统)?|brand\s+(?:colou?r|palette|visual|identity)(?:\s+system)?/iu.test(text)) {
+    // A verbal description of a brand system does not become architecture
+    // merely because it mentions layers or hierarchy.
+    classification = SEMANTIC_CLASS.BRAND_MOTIF;
   } else if (hasDecorativeObject && functionalProvenance) {
     classification = SEMANTIC_CLASS.DECORATIVE_OBJECT;
   } else if (hasDecorativeObject) {

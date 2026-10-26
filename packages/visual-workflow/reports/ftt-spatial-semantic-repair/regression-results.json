@@ -1,0 +1,264 @@
+{
+  "results": [
+    {
+      "name": "targeted",
+      "command": "node --import tsx --test separation.test.ts spatial-quality.test.ts visible-requirement-ownership.test.ts scene-authority-repair.test.ts scene-decision-fidelity.test.ts cross-zone-operation-scope.test.ts",
+      "exitCode": 0,
+      "countGroups": {
+        "tests": [
+          117
+        ],
+        "pass": [
+          117
+        ],
+        "fail": [
+          0
+        ]
+      },
+      "logPath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1d\\targeted-final.txt",
+      "logSha256": "763a5d8c6a9dc9a4f8cc63da800bd77d1c231f69f04c1f01b3f80c49fff7b479",
+      "networkPolicy": "HTTP/HTTPS/TLS/TCP denied; Windows named-pipe loader IPC allowed; test-provided fake clients are not real Provider dispatches"
+    },
+    {
+      "name": "compatibility",
+      "command": "node --import tsx --test separation.test.ts architectural-language.test.ts custom-compatibility.test.ts ftt-fidelity.test.ts ftt-final-design.test.ts",
+      "exitCode": 0,
+      "countGroups": {
+        "tests": [
+          69
+        ],
+        "pass": [
+          69
+        ],
+        "fail": [
+          0
+        ]
+      },
+      "logPath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1d\\compatibility-final.txt",
+      "logSha256": "b86322cd299da8a7ea9341f50f9f0a9c9078f5f51d1a5d5fd5c4c9daa9bdd52e",
+      "networkPolicy": "HTTP/HTTPS/TLS/TCP denied; Windows named-pipe loader IPC allowed; test-provided fake clients are not real Provider dispatches"
+    },
+    {
+      "name": "shared-protection",
+      "command": "node --import tsx --test tests/image-generation/space-spatial-semantic-gate.test.js tests/image-generation/space-route-integrity.test.js",
+      "exitCode": 0,
+      "countGroups": {
+        "tests": [
+          19
+        ],
+        "pass": [
+          19
+        ],
+        "fail": [
+          0
+        ]
+      },
+      "logPath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1d\\shared-protection-tests.txt",
+      "logSha256": "a407911e68b1a3e3f822a011c4e98424f2b8272e74fe24e1f32a01416f6fe6c7",
+      "networkPolicy": "HTTP/HTTPS/TLS/TCP denied; Windows named-pipe loader IPC allowed; test-provided fake clients are not real Provider dispatches"
+    },
+    {
+      "name": "guard-transport",
+      "command": "node --import tsx --test packages/visual-workflow/tests/restaurant-knowledge/two-dispatch-guard/guard.test.mjs packages/visual-workflow/tests/restaurant-knowledge/two-dispatch-guard/transport.test.mjs",
+      "exitCode": 0,
+      "countGroups": {
+        "tests": [
+          46
+        ],
+        "pass": [
+          46
+        ],
+        "fail": [
+          0
+        ]
+      },
+      "logPath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1d\\guard-transport-final.txt",
+      "logSha256": "932ad92f705a19e0ffbe83d06254028ff7ba27d43a9f1f1c2c1d9ae85c687070",
+      "networkPolicy": "HTTP/HTTPS/TLS/TCP denied; Windows named-pipe loader IPC allowed; test-provided fake clients are not real Provider dispatches"
+    },
+    {
+      "name": "full-workflow",
+      "command": "node --import tsx --test --test-concurrency=1 (all recursively discovered .test.ts/.test.js/.test.mjs under packages/visual-workflow/tests)",
+      "exitCode": 1,
+      "countGroups": {
+        "tests": [
+          339
+        ],
+        "pass": [
+          329
+        ],
+        "fail": [
+          10
+        ]
+      },
+      "logPath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1d\\full-workflow-confirmed.txt",
+      "logSha256": "d9b0ba7e72a281705017532a46382011d4e72da1cfaf4329ab949d16bceb9a98",
+      "networkPolicy": "HTTP/HTTPS/TLS/TCP denied; Windows named-pipe loader IPC allowed; test-provided fake clients are not real Provider dispatches"
+    },
+    {
+      "name": "repo-verify",
+      "command": "npm run repo:verify",
+      "exitCode": 1,
+      "countGroups": {
+        "tests": [],
+        "pass": [],
+        "fail": []
+      },
+      "logPath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1d\\repo-final.txt",
+      "logSha256": "2bcbede691f2a80adf54a35d03cd65f06c89419ab43c806510801c0f0a42325e",
+      "networkPolicy": "HTTP/HTTPS/TLS/TCP denied; Windows named-pipe loader IPC allowed; test-provided fake clients are not real Provider dispatches"
+    },
+    {
+      "name": "current-flows",
+      "command": "npm run verify:current-flows",
+      "exitCode": 1,
+      "countGroups": {
+        "tests": [
+          2,
+          1294
+        ],
+        "pass": [
+          2,
+          1292
+        ],
+        "fail": [
+          0,
+          2
+        ]
+      },
+      "logPath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1d\\current-flows-final.txt",
+      "logSha256": "c5da111b2d596521518ae9c80c52c3c539d635b7f1901587f1c99e728770b98f",
+      "networkPolicy": "HTTP/HTTPS/TLS/TCP denied; Windows named-pipe loader IPC allowed; test-provided fake clients are not real Provider dispatches"
+    },
+    {
+      "name": "root-contracts",
+      "command": "npm test",
+      "exitCode": 1,
+      "countGroups": {
+        "tests": [
+          1701
+        ],
+        "pass": [
+          1699
+        ],
+        "fail": [
+          2
+        ]
+      },
+      "logPath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1d\\root-tests.txt",
+      "logSha256": "612e5907e04bf12ed546ea181b566c51d68edd80f64661f7f342ed4b74304b5d",
+      "networkPolicy": "HTTP/HTTPS/TLS/TCP denied; Windows named-pipe loader IPC allowed; test-provided fake clients are not real Provider dispatches"
+    },
+    {
+      "name": "golden",
+      "command": "npm run golden:test",
+      "exitCode": 0,
+      "countGroups": {
+        "tests": [],
+        "pass": [],
+        "fail": []
+      },
+      "logPath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1d\\golden-tests.txt",
+      "logSha256": "78a4f5734232760dcf2bc1d582a66a5a73e1b296580fa769923fc6b2e2f537c5",
+      "networkPolicy": "HTTP/HTTPS/TLS/TCP denied; Windows named-pipe loader IPC allowed; test-provided fake clients are not real Provider dispatches"
+    },
+    {
+      "name": "repository-guards",
+      "command": "npm run repo:guard:test",
+      "exitCode": 0,
+      "countGroups": {
+        "tests": [
+          56
+        ],
+        "pass": [
+          56
+        ],
+        "fail": [
+          0
+        ]
+      },
+      "logPath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1d\\repository-guard-tests.txt",
+      "logSha256": "74b2ceeaf81dc50e42028677fd5ae09bcb6bdd2459a396e6faec74023cc232f9",
+      "networkPolicy": "HTTP/HTTPS/TLS/TCP denied; Windows named-pipe loader IPC allowed; test-provided fake clients are not real Provider dispatches"
+    },
+    {
+      "name": "host-typecheck",
+      "command": "npm run web-runtime:typecheck",
+      "exitCode": 0,
+      "countGroups": {
+        "tests": [],
+        "pass": [],
+        "fail": []
+      },
+      "logPath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1d\\host-typecheck.txt",
+      "logSha256": "e8aa58ef207280ca3a6d83d16cae3387bc317e2c1e142efcb378c1d706dc130d",
+      "networkPolicy": "HTTP/HTTPS/TLS/TCP denied; Windows named-pipe loader IPC allowed; test-provided fake clients are not real Provider dispatches"
+    },
+    {
+      "name": "web-typecheck",
+      "command": "npm run web:typecheck",
+      "exitCode": 0,
+      "countGroups": {
+        "tests": [],
+        "pass": [],
+        "fail": []
+      },
+      "logPath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1d\\web-typecheck.txt",
+      "logSha256": "686d5e01de8c32cfe6f44a062f077c298ff150b39c694ae2d3eda227e60ed6e8",
+      "networkPolicy": "HTTP/HTTPS/TLS/TCP denied; Windows named-pipe loader IPC allowed; test-provided fake clients are not real Provider dispatches"
+    }
+  ],
+  "fullWorkflowFailures": [
+    {
+      "name": "✖ read-only existing report RPC supplies suggestions for missing directions without creating any decision files (34.4359ms)",
+      "reason": "Error: VISUAL_WORKFLOW_IMPLEMENTATION_CHANGED: src/analysis-decisions/analysis-completion-orchestrator.js",
+      "integrityMentioned": true
+    },
+    {
+      "name": "✖ public operations verify the approved implementation before registration, compilation, generation and Logo composition (34.3666ms)",
+      "reason": "Error: VISUAL_WORKFLOW_IMPLEMENTATION_CHANGED: src/analysis-decisions/analysis-completion-orchestrator.js",
+      "integrityMentioned": true
+    },
+    {
+      "name": "✖ baseline lock prevents input/model/code drift and old tasks; other projects remain independent, zero network (49.9005ms)",
+      "reason": "AssertionError [ERR_ASSERTION]: The input did not match the regular expression /BASELINE_LOCKED/. Input:",
+      "integrityMentioned": true
+    },
+    {
+      "name": "✖ guarded public web operations save, confirm, compile, generate, reopen and invalidate on an analysis request (37.7593ms)",
+      "reason": "Error: VISUAL_WORKFLOW_IMPLEMENTATION_CHANGED: src/analysis-decisions/analysis-completion-orchestrator.js",
+      "integrityMentioned": true
+    },
+    {
+      "name": "✖ explicit details save persists identity, retains artifacts and requires new analysis/confirmation without calling models (111.4492ms)",
+      "reason": "Error: VISUAL_WORKFLOW_IMPLEMENTATION_CHANGED: src/analysis-decisions/analysis-completion-orchestrator.js",
+      "integrityMentioned": true
+    },
+    {
+      "name": "✖ formal create/import/analyze via injected provider succeeds with exactly two fake HTTP responses (122.3798ms)",
+      "reason": "Error: ANALYSIS_STOPPED",
+      "integrityMentioned": false
+    },
+    {
+      "name": "✖ formal UVU parse path does not retry after invalid JSON (77.1469ms)",
+      "reason": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:",
+      "integrityMentioned": false
+    },
+    {
+      "name": "✖ formal spatial semantic repair is blocked; existing semantic gate still fails (59.9469ms)",
+      "reason": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:",
+      "integrityMentioned": false
+    },
+    {
+      "name": "✖ formal structured decision repair catches errors but cannot obtain a third dispatch (114.5314ms)",
+      "reason": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:",
+      "integrityMentioned": false
+    },
+    {
+      "name": "✖ formal report validation is not bypassed by two-call budget logic (68.0567ms)",
+      "reason": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:",
+      "integrityMentioned": false
+    }
+  ],
+  "note": "Do not sum overlapping suites. Failures are preserved; no test, Golden, integrity baseline or fixture expectation was refreshed."
+}

@@ -1,0 +1,377 @@
+{
+  "source": "pre-edit baseline execution, preserved without rewriting original project",
+  "gate": {
+    "schemaVersion": "1.0",
+    "version": "space-spatial-semantic-gate@1.1.0",
+    "status": "block",
+    "findings": [
+      {
+        "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+        "severity": "block",
+        "field": "functionalNetwork",
+        "path": "mediaTranslations.spatial.functionalNetwork[0]",
+        "classification": "decorative_identity"
+      },
+      {
+        "code": "INVALID_SPACE_MUST_BE_VISIBLE_SEMANTICS",
+        "severity": "block",
+        "field": "mustBeVisible",
+        "path": "mediaTranslations.spatial.mustBeVisible[0]",
+        "classification": "decorative_identity"
+      }
+    ]
+  },
+  "replay": {
+    "status": "failed",
+    "attempts": 1,
+    "modelCallCount": 1,
+    "repairCallbackAttempts": 1,
+    "networkCalls": 0
+  },
+  "oldSanitizerIfReached": {
+    "spatial": {
+      "status": "ready",
+      "spatialConcept": "现代四川文化体验空间：通过现代设计语言重新诠释传统四川元素，创造层次化的色彩应用和清晰的功能分区，提供高效舒适的餐饮体验。",
+      "designProposal": {
+        "sourceType": "model_proposal",
+        "basis": [
+          "基于视觉资产中的圆形冯字标识、红黑配色和四川文化元素",
+          "基于诊断中发现的空间风格不一致和功能区域混杂问题",
+          "基于品牌需要提供现代四川小吃体验的定位"
+        ],
+        "assumptions": [
+          "项目场地为常规商业空间，层高正常",
+          "目标客群包括年轻消费者和家庭客群",
+          "需要支持堂食和外带两种服务模式"
+        ],
+        "unresolvedQuestions": [
+          "具体场地面积和形状未知",
+          "当地建筑规范和消防要求未知",
+          "厨房设备规格和排风要求未知",
+          "具体预算限制未知"
+        ]
+      },
+      "compositionRequirements": [
+        "入口区域应清晰可见品牌标识和菜单",
+        "点餐区与就餐区应有明确分隔但保持视觉连贯",
+        "厨房区域应部分开放以展示烹饪过程",
+        "色彩应用应有层次，避免大面积红黑对比",
+        "传统元素应现代转译，避免直接复制"
+      ],
+      "brandRoleManifestation": [
+        "通过现代几何形态转译圆形冯字标识，作为空间焦点",
+        "层次化应用红黑配色，以中性色为基底，红色为点缀，黑色为框架",
+        "通过材质和光影表现四川文化特质，而非直接符号堆砌",
+        "产品影像应以艺术化方式融入空间，而非简单放大"
+      ],
+      "signatureSpatialMechanism": [
+        "入口转折：通过色彩和材质变化引导顾客从公共区域进入品牌空间",
+        "功能分层：点餐区、等候区、就餐区按服务流程清晰组织",
+        "视觉焦点：以现代转译的品牌标识和产品影像作为空间视觉锚点",
+        "光影层次：通过不同色温和照度的灯光创造空间层次和氛围"
+      ],
+      "functionalNetwork": [
+        "员工动线：厨房→出餐口→清洁区，与顾客动线最小交叉",
+        "外带动线：点餐→等候→取餐→离开，与堂食区域部分分离"
+      ],
+      "positiveDifferentiators": [
+        "现代转译的四川文化元素，避免 cliché",
+        "层次化的色彩策略，平衡品牌识别与空间舒适度",
+        "清晰的功能分区，提升体验和效率",
+        "产品影像的艺术化融入，强化品牌核心"
+      ],
+      "mustBeVisible": [
+        "点餐区的清晰指示",
+        "就餐区的舒适座椅和桌面",
+        "厨房区域的部分可见性",
+        "品牌色彩系统的层次化应用"
+      ],
+      "structureLanguage": [
+        "空间组织采用线性流程布局，按顾客体验顺序排列功能区",
+        "天花板采用简约几何形态，呼应品牌标识的圆形元素",
+        "墙面以中性色为基底，通过材质变化创造层次",
+        "地面材料区分功能区域，引导人流"
+      ],
+      "materialLanguage": [
+        {
+          "material": "浅色石材/瓷砖",
+          "behavior": [
+            "平整表面",
+            "易清洁",
+            "反射光线"
+          ],
+          "brandRole": "空间基底，提供中性背景，平衡品牌色彩",
+          "forbidden": [
+            "避免使用过于冷硬的材质",
+            "避免与品牌色彩冲突的色调"
+          ]
+        },
+        {
+          "material": "深色金属框架",
+          "behavior": [
+            "结构支撑",
+            "视觉引导",
+            "现代感"
+          ],
+          "brandRole": "黑色元素的现代应用，作为空间框架和视觉引导",
+          "forbidden": [
+            "避免过度使用导致压抑",
+            "避免与木质元素冲突"
+          ]
+        },
+        {
+          "material": "红色亚克力/涂层",
+          "behavior": [
+            "色彩点缀",
+            "局部应用",
+            "视觉焦点"
+          ],
+          "brandRole": "品牌红色的节制应用，作为点缀和视觉焦点",
+          "forbidden": [
+            "避免大面积使用",
+            "避免与黑色直接对比"
+          ]
+        },
+        {
+          "material": "现代复合木材",
+          "behavior": [
+            "温暖质感",
+            "自然纹理",
+            "现代工艺"
+          ],
+          "brandRole": "传统木质元素的现代转译，提供温暖感和自然感",
+          "forbidden": [
+            "避免使用过于传统的样式",
+            "避免过度使用导致沉重"
+          ]
+        }
+      ],
+      "lightingLanguage": {
+        "source": [
+          "入口区域高亮度照明",
+          "点餐区重点照明",
+          "就餐区暖色调舒适照明",
+          "品牌标识背光/轮廓光",
+          "产品展示重点照明"
+        ],
+        "contrast": "通过不同区域的光照度和色温创造空间层次，避免均匀照明导致的平淡感",
+        "interactionWithMaterials": [
+          "暖光增强木材温暖感",
+          "冷光突出金属现代感",
+          "重点照明强化红色点缀",
+          "背光增强标识立体感"
+        ],
+        "forbidden": [
+          "避免过度照明导致视觉疲劳",
+          "避免色温不一致造成混乱",
+          "避免忽视自然光影响"
+        ]
+      },
+      "colorBehavior": {
+        "primary": [
+          {
+            "name": "中性米白/浅灰",
+            "role": "空间基底，提供舒适背景，平衡品牌色彩",
+            "surfaceApplicability": "墙面、天花板、部分地面",
+            "spatialUsage": "dominant_field"
+          }
+        ],
+        "secondary": [
+          {
+            "name": "品牌红色",
+            "role": "品牌识别，视觉焦点，食欲刺激",
+            "surfaceApplicability": "局部墙面、标识、家具点缀",
+            "spatialUsage": "local_accent"
+          },
+          {
+            "name": "品牌黑色",
+            "role": "空间框架，视觉引导，现代感",
+            "surfaceApplicability": "金属框架、部分家具、地面引导线",
+            "spatialUsage": "secondary_surface"
+          }
+        ],
+        "accent": [
+          {
+            "name": "木色/自然色",
+            "role": "温暖感，自然感，传统元素现代转译",
+            "surfaceApplicability": "家具、部分墙面、装饰元素",
+            "spatialUsage": "soft_furnishing"
+          },
+          {
+            "name": "绿色/植物色",
+            "role": "新鲜感，自然平衡，产品呼应",
+            "surfaceApplicability": "植物装饰、局部点缀",
+            "spatialUsage": "detail_trim"
+          }
+        ],
+        "forbidden": [
+          "避免大面积红黑对比",
+          "避免忽视中性色的平衡作用",
+          "避免色彩过度饱和"
+        ]
+      },
+      "brandIntegration": [
+        "圆形冯字标识以现代几何形态转译为空间焦点",
+        "红黑配色系统层次化应用，避免直接复制",
+        "产品影像艺术化融入，强化品牌核心",
+        "四川文化元素通过材质和光影表现，而非符号堆砌"
+      ],
+      "functionalRelationships": [
+        "入口区与点餐区直接相连，视觉引导清晰",
+        "点餐区与等候区相邻，便于顾客停留",
+        "等候区与就餐区部分分隔，减少干扰",
+        "厨房区与出餐口紧密相连，与就餐区部分可见",
+        "外带取餐区与堂食就餐区部分分离，减少交叉"
+      ],
+      "sceneProgram": [
+        "品牌入口：标识、菜单、吸引力",
+        "点餐区：自助点餐机、人工点餐台、菜单展示",
+        "等候区：座位、品牌影像、取餐提示",
+        "就餐区：桌椅、照明、品牌元素",
+        "厨房区：部分开放、烹饪展示",
+        "外带区：取餐台、包装区"
+      ],
+      "peopleBehavior": [],
+      "functionalExperience": [
+        "顾客进入被品牌标识吸引，清晰看到菜单",
+        "点餐过程顺畅，自助与人工选项并存",
+        "等候时有品牌内容可看，减少等待焦虑",
+        "就餐环境舒适，品牌元素适度呈现",
+        "离开时品牌印象强化，促进复购和分享"
+      ],
+      "sceneMisreadRisks": []
+    },
+    "validation": {
+      "schemaVersion": "1.0",
+      "version": "space-spatial-semantic-gate@1.1.0",
+      "status": "pass",
+      "findings": []
+    }
+  },
+  "visibleEntryExamples": [
+    {
+      "value": "厨师正在备餐",
+      "intended": {
+        "classification": "functional",
+        "classificationReason": "visible_actor_activity",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "actualGate": {
+        "classification": "functional",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      }
+    },
+    {
+      "value": "员工操作收银机",
+      "intended": {
+        "classification": "color_accent",
+        "classificationReason": "existing_color_accent_rule",
+        "motifHits": [],
+        "colorHits": [
+          "银"
+        ],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "actualGate": {
+        "classification": "color_accent",
+        "motifHits": [],
+        "colorHits": [
+          "银"
+        ],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      }
+    },
+    {
+      "value": "顾客在餐桌用餐",
+      "intended": {
+        "classification": "functional",
+        "classificationReason": "visible_actor_activity",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "actualGate": {
+        "classification": "functional",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      }
+    },
+    {
+      "value": "入口处的菜单",
+      "intended": {
+        "classification": "architectural",
+        "classificationReason": "existing_architectural_rule",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 1,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "actualGate": {
+        "classification": "architectural",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 1,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      }
+    },
+    {
+      "value": "品牌色彩系统的层次化应用",
+      "intended": {
+        "classification": "architectural",
+        "classificationReason": "existing_architectural_rule",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 2,
+        "propertyHits": 1,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "actualGate": {
+        "classification": "architectural",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 2,
+        "propertyHits": 1,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      }
+    }
+  ]
+}

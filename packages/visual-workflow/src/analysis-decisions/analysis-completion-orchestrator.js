@@ -236,7 +236,24 @@ async function completeStructuredAnalysis(input) {
       "spatial-semantic-validation.initial.json",
       semanticValidation
     ));
-    if (semanticValidation.status === "block" && input.repairInvalidFinalPacket) {
+    let deterministicFailed = false;
+    if (semanticValidation.status === "block" && input.repairFinalPacketDeterministically) {
+      try {
+        const repaired = await input.repairFinalPacketDeterministically({packet,findings:semanticValidation.findings});
+        packet = repaired.packet;
+        semanticValidation = input.validateFinalPacket(packet);
+        await persist(input.persistence, store => store.saveRuntimeArtifact('spatial-semantic-validation.repaired.json', {
+          ...semanticValidation,method:'deterministic_semantic_separation',
+          changes:repaired.changes ?? [],unresolved:repaired.unresolved ?? []
+        }));
+      } catch (error) {
+        deterministicFailed = true;
+        semanticValidation = {status:'block',findings:semanticValidation.findings};
+        accumulator.errors.push(safeError(Object.assign(error instanceof Error ? error : new Error(String(error)),
+          {code:'ANALYSIS_SPATIAL_SEMANTICS_INVALID'})));
+      }
+    }
+    if (!deterministicFailed && semanticValidation.status === "block" && input.repairInvalidFinalPacket) {
       input.onProgress?.("repairing");
       try {
         modelCallCount += 1;
@@ -267,9 +284,9 @@ async function completeStructuredAnalysis(input) {
   }
   // Semantic repair can delete unsafe entries. Recheck sufficiency on the
   // resulting packet rather than trusting the pre-cleanup ready status.
+  const finalSufficiency = evaluateDeliverableSufficiency({ packet, deliverable: input.deliverable, execution });
+  finalIssues = finalSufficiency.issues;
   if (finalStatus === "ready" || finalStatus === "ready_with_warnings") {
-    const finalSufficiency = evaluateDeliverableSufficiency({ packet, deliverable: input.deliverable, execution });
-    finalIssues = finalSufficiency.issues;
     finalStatus = finalSufficiency.status === "repairable" ? "failed" : finalSufficiency.status;
   }
   finalIssues.forEach((issue) => {

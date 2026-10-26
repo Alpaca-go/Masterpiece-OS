@@ -1,0 +1,37 @@
+{
+  "files": [
+    {
+      "path": "packages/visual-workflow/src/analysis-decisions/analysis-completion-orchestrator.js",
+      "baselineCommit": "2302aa9fd39af0cee613e98f1e1a54cdd94b741e",
+      "baselineGitBytesSha256": "9577c3d59c4d8869cb11e563163f49ad9bc324dda05855a32664f891cf1338ae",
+      "candidateSha256": "c7fc32dcd43de228d4f3e42c22908796a36d4c700733fa72062c466fd8dea51b"
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/core/space-generation-core.js",
+      "baselineCommit": "2302aa9fd39af0cee613e98f1e1a54cdd94b741e",
+      "baselineGitBytesSha256": "56b85e5b2719da1860cf2f4f1ae9dff4ebcf9af34c8460380fd56e8dc67c1c9a",
+      "candidateSha256": "4dd49955c536f676916cf1a99c0b09ba498f5ed7bc49608e8e8339dbac8cd7d5"
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/semantic/separate-space-semantics.js",
+      "baselineCommit": "2302aa9fd39af0cee613e98f1e1a54cdd94b741e",
+      "baselineGitBytesSha256": "9867c041bd560bd968575deb9261f25494603b116e9a7e7ea39c15daeaf799a2",
+      "candidateSha256": "fe21c12b6206e7e2a341dce430fbfadec11819b57a60f928513196c3d699a117"
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/semantic/validate-spatial-semantics.js",
+      "baselineCommit": "2302aa9fd39af0cee613e98f1e1a54cdd94b741e",
+      "baselineGitBytesSha256": "ab7b12cdbc4cb9a67b71001e0be38bd4abfaa46b960dcd65558916ab49728288",
+      "candidateSha256": "15e0376c81d71bba784cd066934b73cc7eba21480f0a3a61e5e31e4ecb00401e"
+    },
+    {
+      "path": "packages/visual-workflow/src/runtime/pipeline-service.js",
+      "baselineCommit": "2302aa9fd39af0cee613e98f1e1a54cdd94b741e",
+      "baselineGitBytesSha256": "f8a4fe7344a6c08ce2567277856203cbb88849a264fa5c277051bc6177fb8147",
+      "candidateSha256": "84fee2b4f1a352f029f3b03e9f6b4bc97cb486452bc96b78d30d8e35bf04febb"
+    }
+  ],
+  "integrityManifestRefreshed": false,
+  "sharedPlanningMigrationFilesChanged": false,
+  "providerOrPromptChanged": false
+}

@@ -1,0 +1,37 @@
+{
+  "task": "RKS-02E1D",
+  "branch": "fix/rks-spatial-semantic-separation",
+  "baseCommit": "2302aa9fd39af0cee613e98f1e1a54cdd94b741e",
+  "classification": "OFFLINE_CANDIDATE_PASS_ONLY",
+  "formalProjectStatus": "failed",
+  "formalContextStatus": "missing",
+  "ledgerStatus": "terminated",
+  "ledgerRequestsUnchanged": 2,
+  "productionIntegrityRecordChanged": false,
+  "sourceMaterialsChanged": false,
+  "userDirectionChanged": false,
+  "originalProjectsAndArchivedEvidenceUnchanged": true,
+  "productionFilesChanged": 5,
+  "repoVerifyPassed": false,
+  "currentFlowsPassed": false,
+  "allowedNextStep": "offline human code/field review",
+  "runtimeOrImageAcceptanceAllowed": false,
+  "counters": {
+    "realProviderDispatch": 0,
+    "realAnalysis": 0,
+    "imageGeneration": 0,
+    "modelValidation": 0,
+    "automaticRetries": 0
+  },
+  "candidateReplay": {
+    "status": "OFFLINE_CANDIDATE_PASS",
+    "changes": 6,
+    "modelCallCount": 0,
+    "networkAttempts": 0
+  },
+  "stoppedForHumanReview": true,
+  "newDeliverySecretShapeScan": {
+    "files": 21,
+    "violations": 0
+  }
+}

@@ -1,0 +1,27 @@
+✔ architecture anchor brand key resolves from registry display name without project rules (1.8139ms)
+✔ Standard refs=0 reaches r8_6_golden with all required blocks (28.9014ms)
+✔ Reference-First refs=1 reaches r8_6_golden with explicit provenance (0.3585ms)
+✔ generic five-block prompt fails closed before Provider (1.8825ms)
+✔ Standard ignores implicit and architecture anchors as Provider references (1.0589ms)
+✔ Reference-First refs=0 fails with its dedicated error (1.976ms)
+✔ 16:9 task fails when Provider payload is 1:1 (4.2263ms)
+✔ 16:9 task fails when Provider size is square despite a matching label (0.6254ms)
+✔ repository baseline fingerprint matches the runtime profile (1.3773ms)
+✔ assertSpaceGenerationRouteIntegrity: quality target overflow keeps the valid compiler route (28.9335ms)
+✔ assertSpaceGenerationRouteIntegrity: Provider hard cap includes boundary text and ignores trace limit inflation (1.5134ms)
+✔ assertSpaceGenerationRouteGateA: quality target overflow keeps the valid compiler route (0.7562ms)
+✔ assertSpaceGenerationRouteGateA: Provider hard cap includes boundary text and ignores trace limit inflation (0.3035ms)
+✔ functional circulation and privacy mechanisms pass (36.1632ms)
+✔ neutral required scene fixtures do not become brand motifs by field provenance alone (49.7151ms)
+✔ motif, color geometry and Logo in functional fields fail closed (12.4267ms)
+✔ literal brand motifs are stripped from brand and differentiator prompt text (28.8958ms)
+✔ color role keeps chromatic brand identity local and neutral base dominant (0.8677ms)
+✔ deterministic repair removes identity labels only when spatial meaning survives (1.6483ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1453.8265

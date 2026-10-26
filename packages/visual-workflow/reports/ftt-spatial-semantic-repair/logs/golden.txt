@@ -1,0 +1,13 @@
+
+> masterpiece-os@5.0.0-rc.1 golden:test
+> node ./scripts/golden/run-golden.mjs
+
+Golden Regression Report
+G-01-01 PASS (VISUAL_MANUAL_ACCEPTED)
+G-02-01 PASS (VISUAL_MANUAL_ACCEPTED)
+G-03-01 PASS (VISUAL_MANUAL_ACCEPTED)
+G-04-01 PASS (NOT_APPLICABLE)
+G-05-01 PASS (NOT_READY)
+Overall: PASS
+Provider calls: 0
+Golden auto-updated: NO

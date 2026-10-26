@@ -17,6 +17,7 @@ import {
   resolveEffectiveMaxReferences
 } from "../generation/space-quality/index.js";
 import { createSeedreamShortChainAdapter } from "../generation/seedream-adapter.js";
+import { separateSpatialFunctionalSemantics } from '../space/semantic/validate-spatial-semantics.js';
 import {
   normalizeSpatialFunctionalValue,
   validateShortChainEvidenceIntegrity
@@ -36,6 +37,7 @@ export {
   resolveEffectiveMaxReferences,
   resolveSpaceReferences,
   runSpaceQualityGate,
+  separateSpatialFunctionalSemantics,
   validateShortChainDeliverableEvidence,
   validateShortChainEvidenceIntegrity,
   validateSpatialSemantics

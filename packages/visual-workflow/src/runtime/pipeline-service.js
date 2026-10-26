@@ -6,6 +6,7 @@ import {
 } from "../analysis-decisions/core/visual-analysis-core.js";
 import {
   normalizeSpatialFunctionalValue,
+  separateSpatialFunctionalSemantics,
   validateSpatialSemantics
 } from "../generation-runtime/core/space-generation-core.js";
 import {
@@ -342,6 +343,12 @@ function createPipelineService(projects, readCredentials, readSettings, emitProg
               status: result.status === "pass" ? "pass" : "block",
               findings: result.findings
             };
+          },
+          repairFinalPacketDeterministically: ({packet}) => {
+            const separation=separateSpatialFunctionalSemantics(packet.mediaTranslations?.spatial ?? {});
+            const next=structuredClone(packet);
+            next.mediaTranslations.spatial=separation.spatial;
+            return {packet:next,changes:separation.changes,unresolved:separation.unresolved};
           },
           repairInvalidFinalPacket: async ({ packet, findings }) => {
             const current = packet;

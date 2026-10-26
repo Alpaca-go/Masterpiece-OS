@@ -1,0 +1,72 @@
+{
+  "baseCommit": "2302aa9fd39af0cee613e98f1e1a54cdd94b741e",
+  "archiveReportsVerified": 7,
+  "liveArtifactsVerified": 13,
+  "requiredFiles": [
+    "visual-decision-packet.json",
+    "视觉方案升级报告.md",
+    "analysis-repair-audit.json",
+    "spatial-semantic-validation.initial.json",
+    "failure-diagnosis.json"
+  ],
+  "proofs": [
+    {
+      "root": "C:\\Users\\kyrie\\AppData\\Roaming\\masterpiece-os-desktop\\visual-workflow\\data\\projects\\3b5b03c0-915a-41aa-9c54-4ffaa166ab88",
+      "fileCount": 46,
+      "treeSha256": "e4c417097b951eed3cac0d2a27e29748a43fa471f8b7b87812ecc31cfbe2acaf",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627",
+      "fileCount": 20,
+      "treeSha256": "3791d134c79069ab913a2342d117f71f4c496a48c7e5df31d1bb78a25e7afa8f",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1b\\real-analysis-budget",
+      "fileCount": 4,
+      "treeSha256": "35a1c271521f2782b1cbcd594f6f02161d4def2af7200dedff4c199dbdb01dec",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\reports\\ftt-live-analysis",
+      "fileCount": 8,
+      "treeSha256": "fa1284d7d6016c266658bc222a70befaec9b3c63db3788c3c3a9dfe152cf1884",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\reports\\ftt-analysis-input-freeze",
+      "fileCount": 17,
+      "treeSha256": "db6a5ad88a9bb3df91d964c063a33093923afba9c3c1b535df9af275e5c90308",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\reports\\p7b-single-generation",
+      "fileCount": 22,
+      "treeSha256": "031c6621da18895ca2968520abbf7354d1946f29f5f9cc9ca212d59dfb97abdc",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\reports\\restaurant-shadow",
+      "fileCount": 8,
+      "treeSha256": "858c36a85fde0e08edf54dafe958f86a20810073066539bd39e64d79bc6c5418",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\offline",
+      "fileCount": 7,
+      "treeSha256": "1aa85b5c0e0c3e0c217ec1fae776deb957faa21b4ccb63c28b711b0d9de74b91",
+      "unchanged": true
+    },
+    {
+      "root": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\implementation-integrity.json",
+      "fileCount": 1,
+      "treeSha256": "6e1ffcfd8876e455ea652230e8836c8d665f71160dd477f07abf6282945893e1",
+      "unchanged": true
+    }
+  ],
+  "realProviderCalls": 0,
+  "credentialsRead": false,
+  "ledgerReset": false,
+  "originalLiveState": "failed / missing"
+}

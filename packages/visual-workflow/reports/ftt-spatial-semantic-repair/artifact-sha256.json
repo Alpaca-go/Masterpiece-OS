@@ -1,0 +1,76 @@
+{
+  "algorithm": "SHA256(file bytes)",
+  "excludes": [
+    "artifact-sha256.json"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "4d3f1a045f7d02f9c2cd7356c0564b8b39142273bbccae55a8c26bf97043136f"
+    },
+    {
+      "path": "archive-and-preservation-proof.json",
+      "sha256": "26c6247e368e2fdbfaf5fa1194466f6a18f5858c78ed470c3b4492a713d3d82c"
+    },
+    {
+      "path": "code-changes.json",
+      "sha256": "2418d7d6a4538f7ddc99d47ccc0176b80c3bb296d7fd0a1ace70ec859c9c7f59"
+    },
+    {
+      "path": "code-changes.patch",
+      "sha256": "fbcb62f107ba46eb6482533c1b451cdb6f1f44918f60789d320d6232789d97c3"
+    },
+    {
+      "path": "field-replay.json",
+      "sha256": "b80a377ed3f72e5a9a0f44450572cb2f1d25f0367f4f2d6e28873327781df6a0"
+    },
+    {
+      "path": "logs/compatibility.txt",
+      "sha256": "cc6faeaddf88ac72939345507be434c2a5f48c8d6e27d06d8ea783c463f947f4"
+    },
+    {
+      "path": "logs/golden.txt",
+      "sha256": "effbe1522354f6b3e1a4a3053a6bbfd15c600d2de7be614ae7a5123cceac16ed"
+    },
+    {
+      "path": "logs/guard-transport.txt",
+      "sha256": "df461d1b261dc936d40b3290dff28541455010743acacb5983529ce540735626"
+    },
+    {
+      "path": "logs/host-typecheck.txt",
+      "sha256": "f51b6616dc2622eb9d681a4e17b72a03b912d1caf609af80add63da84c653f1d"
+    },
+    {
+      "path": "logs/repo-verify.txt",
+      "sha256": "91c38cc0e69c1c77b93b0c4dc59030aa081cc8c3bb52213fe49a86d1688b3d88"
+    },
+    {
+      "path": "logs/repository-guards.txt",
+      "sha256": "8d28b4bd4e9a78da5e8f43fae1ce1e0130c1939a2388a2ffd00b1e66f97b4d80"
+    },
+    {
+      "path": "logs/shared-protection.txt",
+      "sha256": "b301c3685a7e9738236601b85e8b37368ce553de02c574430848280cb1543ee0"
+    },
+    {
+      "path": "logs/targeted.txt",
+      "sha256": "258fa26a680e8836a163e4721780c26327640146ce963c83712b758a2629e636"
+    },
+    {
+      "path": "logs/web-typecheck.txt",
+      "sha256": "98ee5f51622e6d12b733e06abdc0f586f3d27d9752e90c32ca7c9b00cf052464"
+    },
+    {
+      "path": "old-cleanup-reproduction.json",
+      "sha256": "3b743fa6d7e8eaa14cdd4cfe510e385ad813d9b3921b268e61c57a3c6f709bdb"
+    },
+    {
+      "path": "regression-results.json",
+      "sha256": "8bf5af0774d89ab6ea3629b2d331cb62aeb27f4604c41a43d046c9e6586f43ee"
+    },
+    {
+      "path": "validation.json",
+      "sha256": "1da8a5071f5e8c3101fd3011077da9d4b90441ade96cd216daf83aea1dc5a21b"
+    }
+  ]
+}
