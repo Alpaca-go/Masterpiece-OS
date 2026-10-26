@@ -1,0 +1,72 @@
+{
+  "algorithm": "SHA256(file bytes)",
+  "excludes": [
+    "artifact-sha256.json"
+  ],
+  "files": [
+    {
+      "path": "attachment-proof.md",
+      "sha256": "2dce9966802b91054f530b28c73dda34af8b88576d079cdf27c5d9366dc9c345"
+    },
+    {
+      "path": "authorization-template.json",
+      "sha256": "bc8b26ba04a1e0533b8226fe50282db971dc9b5875125d6c0f55ed79fdaa9ee0"
+    },
+    {
+      "path": "authorization.md",
+      "sha256": "eea2b3b47c050cd3863ea62e175a1c6e0354d756e768f30e28434da00dba64f3"
+    },
+    {
+      "path": "cost-budget.json",
+      "sha256": "f41cdd47925c0b67fb6b1a957a246fc4274b760bd755ab607e33c5e45e66dfea"
+    },
+    {
+      "path": "dcd-request.json",
+      "sha256": "b1f536c2a445ff0df578c593e1ef11ad4c06e97a1b9334ed15166e1cb1a3848b"
+    },
+    {
+      "path": "execution-policy.json",
+      "sha256": "819ddb7619f991f574c24f632292932a3b95d0fa653ff3a3cc1ebfbcf7243107"
+    },
+    {
+      "path": "execution-review.md",
+      "sha256": "383979dc8cffd337e605852c9b99341af9271df4722cd84348ee93c9ba4c8852"
+    },
+    {
+      "path": "freeze-manifest.json",
+      "sha256": "9989d0a36f560e12d28df813db02cad9f535b1fbb5599bcd6ba8f055356a84be"
+    },
+    {
+      "path": "model-and-cost-review.md",
+      "sha256": "79de3485fec588123c5d5344d13a5ea247198a7c51c2eed878691ce33da23ef4"
+    },
+    {
+      "path": "offline-audit.json",
+      "sha256": "1ad3ec0fc8ac25aa50b8e193c4b6e657ad2b98106a0d139d5a097f3b6845f8b5"
+    },
+    {
+      "path": "post-analysis-freeze.md",
+      "sha256": "3bb7f7f06ff10fbdec8004f0312fd468b1cb74986e7569bf6c34ae344b6548d2"
+    },
+    {
+      "path": "README.md",
+      "sha256": "67ef9750ffc03f55844a59bc7355fcd2d964d7d74a85ab4cb227797f55aa32a5"
+    },
+    {
+      "path": "repo-verification.txt",
+      "sha256": "24e85b60a3d83ce5cef05a994f732e71b16c07d78b98c7e8a15dd856fc08a708"
+    },
+    {
+      "path": "source-manifest.json",
+      "sha256": "a27a7649f3106ac1da0014a365c4182e58c7360b6a6d5d5010d0b321b205db12"
+    },
+    {
+      "path": "uvu-request.json",
+      "sha256": "e112d4e2b0775266312d78201ee9a6605529a998c1ab98b6b97ef55a918dc711"
+    },
+    {
+      "path": "validation.json",
+      "sha256": "27f42ea321954979708102c7905512527c5f929a55d37f336750f802557728f4"
+    }
+  ]
+}

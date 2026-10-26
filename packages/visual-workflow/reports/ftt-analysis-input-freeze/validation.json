@@ -1,0 +1,57 @@
+{
+  "task": "RKS-02E1C",
+  "at": "2026-10-26T03:34:08.109Z",
+  "status": "offline_preflight_complete_waiting_for_explicit_authorization",
+  "frozenCommit": "3d7fe3b8355266ce84a175fb61a3b53fbb37e360",
+  "projectId": "d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627",
+  "verification": {
+    "repoVerify": {
+      "exitCode": 0,
+      "log": "repo-verification.txt",
+      "currentFlowsPassed": true
+    },
+    "existingGuardIntegrationTransport": {
+      "tests": 52,
+      "passed": 52,
+      "failed": 0,
+      "syntheticTemporaryProjectsOnly": true
+    },
+    "experimentSyntax": {
+      "files": 4,
+      "passed": true
+    },
+    "bodyRoundTrip": true,
+    "encoderRepeatedCaptureStable": true,
+    "unauthorizedExecutorRejected": true,
+    "templateNotAcceptedAsApproval": true,
+    "newDeliverySecretShapeScan": {
+      "files": 21,
+      "violations": 0
+    }
+  },
+  "originalProjectFilesUnchanged": 46,
+  "isolatedProjectRecordUnchanged": true,
+  "materialHashesUnchanged": true,
+  "sourceManifestMatches": true,
+  "protectedDiff": [],
+  "realLedgerCreated": false,
+  "isolatedSettingsCreated": false,
+  "realCredentialsRead": false,
+  "realCredentialsWritten": false,
+  "counters": {
+    "realProviderDispatch": 0,
+    "realAnalysis": 0,
+    "imageGeneration": 0,
+    "modelValidation": 0,
+    "automaticRetries": 0,
+    "networkAttempts": 0,
+    "offlineEncoderInterceptions": 4
+  },
+  "analysisOrDesignSuccessForged": false,
+  "shadowStatusChanged": false,
+  "awaiting": [
+    "explicit human model/cost/analysis authorization",
+    "explicit credential source for authorized execution"
+  ],
+  "releaseOrMergePerformed": false
+}

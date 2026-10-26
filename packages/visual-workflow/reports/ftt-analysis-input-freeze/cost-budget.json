@@ -1,0 +1,62 @@
+{
+  "reviewedAt": "2026-10-26",
+  "currency": "CNY",
+  "model": "qwen3.6-plus",
+  "url": "https://ws-1miaebhuom22vyxa.cn-beijing.maas.aliyuncs.com/compatible-mode/v1/chat/completions",
+  "requestParametersChanged": false,
+  "preciseTokenizerUsed": false,
+  "budgetIsEnforcedTokenLimit": false,
+  "currencyAbsoluteHardCap": false,
+  "inputBudget": [
+    {
+      "stage": "DCD",
+      "textUtf8Bytes": 15568,
+      "approximateVisualTokens": 8091,
+      "textBytePlusVisualProxyWithOverhead": 24683,
+      "plannedInputTokens": 32000
+    },
+    {
+      "stage": "UVU",
+      "textUtf8Bytes": 12838,
+      "approximateVisualTokens": 13140,
+      "textBytePlusVisualProxyWithOverhead": 27002,
+      "plannedInputTokens": 32000
+    }
+  ],
+  "costBasis": {
+    "currency": "CNY",
+    "reviewedAt": "2026-10-26",
+    "sourceUrl": "https://help.aliyun.com/zh/model-studio/qwen3-6-plus",
+    "meaning": "Beijing Model Studio workspace pay-as-you-go published estimate; thinking+answer billed as output; not invoice or absolute cap",
+    "tiers": [
+      {
+        "maxInputTokens": 256000,
+        "inputPerMillion": 2,
+        "outputPerMillion": 12
+      },
+      {
+        "maxInputTokens": 1000000,
+        "inputPerMillion": 8,
+        "outputPerMillion": 48
+      }
+    ]
+  },
+  "scenarios": [
+    {
+      "totalInputTokens": 64000,
+      "totalOutputIncludingThinkingTokens": 16000,
+      "estimatedCny": 0.32
+    },
+    {
+      "totalInputTokens": 64000,
+      "totalOutputIncludingThinkingTokens": 32000,
+      "estimatedCny": 0.512
+    },
+    {
+      "totalInputTokens": 64000,
+      "totalOutputIncludingThinkingTokens": 64000,
+      "estimatedCny": 0.896
+    }
+  ],
+  "warning": "Estimates only, not invoices, promises, observed usage or currency caps."
+}

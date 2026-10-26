@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-26T03:27:18.513Z",
+  "requestBodiesReconstructed": true,
+  "sourceManifestMatches": true,
+  "omittedOrExtraUploadAttachments": false,
+  "unauthorizedExecutorRejected": true,
+  "templateIsNotAuthorization": true,
+  "realProjectUnchanged": true,
+  "realLedgerAbsent": true,
+  "realProviderRequests": 0,
+  "networkAttempts": 0,
+  "totalUploadOccurrences": 16,
+  "uniqueUploadBytes": 11,
+  "tests": "existing two-dispatch-guard suite: 52/52 PASS; synthetic temporary projects only; no real project analysis or fake success evidence"
+}

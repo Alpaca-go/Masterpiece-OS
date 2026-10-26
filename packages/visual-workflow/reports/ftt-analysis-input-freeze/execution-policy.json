@@ -1,0 +1,184 @@
+{
+  "sessionId": "rks-02e1c-ftt-3d7fe3b8-once",
+  "projectId": "d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627",
+  "workflowRoot": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow",
+  "projectFile": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\project.json",
+  "projectRecordSha256": "e9a21e3bfabf1c4a6989a804cecc223fe5701fac7d05247bb65bd1ad74962bfc",
+  "intakeSha256": "37b74fca3fd07a7d17b745aa157d84109605aa1bd6cba69b0a4aa8d65e4e6e31",
+  "ledgerRoot": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1b\\real-analysis-budget",
+  "provider": "dashscope",
+  "model": "qwen3.6-plus",
+  "protocol": "openai-chat-multimodal",
+  "url": "https://ws-1miaebhuom22vyxa.cn-beijing.maas.aliyuncs.com/compatible-mode/v1/chat/completions",
+  "maxDispatches": 2,
+  "concurrency": 1,
+  "retries": 0,
+  "materials": [
+    {
+      "assetId": "3a14edef-9792-4466-b53b-16e1103153d7",
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\input\\assets\\3a14edef-9792-4466-b53b-16e1103153d7-658b7259-ea22-493d-a72d-defbf0e51046.png",
+      "sha256": "cde9a54b78b8ed452a7c09c64d2d79ba2d392b10208cc07945539dcac62f5f2c"
+    },
+    {
+      "assetId": "491fafb7-f5b7-4e5a-9014-2438c14604f6",
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\input\\assets\\491fafb7-f5b7-4e5a-9014-2438c14604f6-6d51834f-40d8-4c91-a4cc-0544e7950572.png",
+      "sha256": "2b2d137ed2e9c049dcdba93f957b02e769a974536e13e28b2cf4bb1508eaec8d"
+    },
+    {
+      "assetId": "c9e1736d-a99d-4eaa-9140-94006643e7e3",
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\input\\assets\\c9e1736d-a99d-4eaa-9140-94006643e7e3-9c047e01-2156-4261-9b03-2d7c86a6a935.png",
+      "sha256": "976d9d53b42a37e1969df9f4e5f3238e15a308705913a8cd42c82b77ef25e863"
+    },
+    {
+      "assetId": "5c52ea11-57cb-45fb-86fd-442838884e6e",
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\input\\assets\\5c52ea11-57cb-45fb-86fd-442838884e6e-9fa8f42e-dd4f-47b9-bc1b-e5f0a8118f89.png",
+      "sha256": "f99782648855997c4c5278f9b0d7c030ee96d068b4677d64e8602bb655080db6"
+    },
+    {
+      "assetId": "36d21220-a47a-496c-9db5-8e8eef446c2a",
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\input\\assets\\36d21220-a47a-496c-9db5-8e8eef446c2a-b4f3b42a-3073-4e0b-acff-b2ee0aab78a4.png",
+      "sha256": "c333cdddfdf40c1706c85e27dab3c3a392106124a055581be30d4bed4e991666"
+    },
+    {
+      "assetId": "58f2b3a3-7b83-4b93-b53d-f7586d4e27dd",
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\input\\assets\\58f2b3a3-7b83-4b93-b53d-f7586d4e27dd-c221b173-569f-4a3b-a045-add6708dd662.png",
+      "sha256": "52dc4b3ff441da633478b42442e22bd627c3ffec1d0951d370038d7d19c0d7b3"
+    },
+    {
+      "assetId": "5c810cc6-b6a6-413e-be5d-a9b9d064ba63",
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\input\\assets\\5c810cc6-b6a6-413e-be5d-a9b9d064ba63-e97c24d3-e4cd-4e1c-a6f2-b97b7fbd910f.png",
+      "sha256": "6b7fe70fa5da253c0baacebaf954e465912d5ec57b07c07c41d4300bf5c25d8d"
+    },
+    {
+      "assetId": "ef77f4d6-aa11-4b62-858e-5fa965b6e30a",
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\input\\assets\\ef77f4d6-aa11-4b62-858e-5fa965b6e30a-ea7f4bfb-8d59-44e4-8272-8fc148be9411.png",
+      "sha256": "7e6e0d7a38921a4cf859fb5e53dc51b8ef926acb5f541f7be0ce29e438efde9e"
+    },
+    {
+      "assetId": "1957dc56-aaeb-4f81-bc18-8429b5446010",
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\input\\assets\\1957dc56-aaeb-4f81-bc18-8429b5446010-f149b435-1315-4048-bfc7-663f895d5788.png",
+      "sha256": "88ae5ca134304ca6259057ee87eea81ff31ae4416f53c2562eaa88dbe63f320c"
+    },
+    {
+      "assetId": "e2d6fa7a-0d7f-4e74-ac56-13a9922d5221",
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\input\\assets\\e2d6fa7a-0d7f-4e74-ac56-13a9922d5221-f2ddc9ce-98f6-40e5-8a4e-ae25e44587e4.png",
+      "sha256": "f6ad6f7c391cabffc8adf7fb4fe4cc8221d498a9fad79f39e53c31cf12ba9078"
+    }
+  ],
+  "stages": [
+    {
+      "stage": "DCD",
+      "messagesSha256": "7494e9b2a4853b16bb92cdcdc2c5a152fd9a2303d7b027adda61ec2466dc4b4a",
+      "attachments": [
+        {
+          "assetId": "contact-sheet",
+          "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\prepared\\visual\\contact-sheet.png",
+          "sha256": "14e2923defe36da68e4b13d94f584c8f89f4ce9fb44a1e0bcfae929542ec1cce"
+        },
+        {
+          "assetId": "asset-001",
+          "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\input\\assets\\1957dc56-aaeb-4f81-bc18-8429b5446010-f149b435-1315-4048-bfc7-663f895d5788.png",
+          "sha256": "88ae5ca134304ca6259057ee87eea81ff31ae4416f53c2562eaa88dbe63f320c"
+        },
+        {
+          "assetId": "asset-003",
+          "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\input\\assets\\3a14edef-9792-4466-b53b-16e1103153d7-658b7259-ea22-493d-a72d-defbf0e51046.png",
+          "sha256": "cde9a54b78b8ed452a7c09c64d2d79ba2d392b10208cc07945539dcac62f5f2c"
+        },
+        {
+          "assetId": "asset-006",
+          "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\input\\assets\\5c52ea11-57cb-45fb-86fd-442838884e6e-9fa8f42e-dd4f-47b9-bc1b-e5f0a8118f89.png",
+          "sha256": "f99782648855997c4c5278f9b0d7c030ee96d068b4677d64e8602bb655080db6"
+        },
+        {
+          "assetId": "asset-008",
+          "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\input\\assets\\c9e1736d-a99d-4eaa-9140-94006643e7e3-9c047e01-2156-4261-9b03-2d7c86a6a935.png",
+          "sha256": "976d9d53b42a37e1969df9f4e5f3238e15a308705913a8cd42c82b77ef25e863"
+        },
+        {
+          "assetId": "asset-010",
+          "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\input\\assets\\ef77f4d6-aa11-4b62-858e-5fa965b6e30a-ea7f4bfb-8d59-44e4-8272-8fc148be9411.png",
+          "sha256": "7e6e0d7a38921a4cf859fb5e53dc51b8ef926acb5f541f7be0ce29e438efde9e"
+        }
+      ],
+      "url": "https://ws-1miaebhuom22vyxa.cn-beijing.maas.aliyuncs.com/compatible-mode/v1/chat/completions",
+      "bodySha256": "046cdbbaa9d94ff12b7cffbff964c44c9ddb3808377e595d02915703fac05809"
+    },
+    {
+      "stage": "UVU",
+      "messagesSha256": "ac2ed144a90bf8738aa30cb2d8bb7044f639e68cf1b8d30df198adf35dd0ff76",
+      "attachments": [
+        {
+          "assetId": "3a14edef-9792-4466-b53b-16e1103153d7",
+          "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\input\\assets\\3a14edef-9792-4466-b53b-16e1103153d7-658b7259-ea22-493d-a72d-defbf0e51046.png",
+          "sha256": "cde9a54b78b8ed452a7c09c64d2d79ba2d392b10208cc07945539dcac62f5f2c"
+        },
+        {
+          "assetId": "491fafb7-f5b7-4e5a-9014-2438c14604f6",
+          "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\input\\assets\\491fafb7-f5b7-4e5a-9014-2438c14604f6-6d51834f-40d8-4c91-a4cc-0544e7950572.png",
+          "sha256": "2b2d137ed2e9c049dcdba93f957b02e769a974536e13e28b2cf4bb1508eaec8d"
+        },
+        {
+          "assetId": "c9e1736d-a99d-4eaa-9140-94006643e7e3",
+          "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\input\\assets\\c9e1736d-a99d-4eaa-9140-94006643e7e3-9c047e01-2156-4261-9b03-2d7c86a6a935.png",
+          "sha256": "976d9d53b42a37e1969df9f4e5f3238e15a308705913a8cd42c82b77ef25e863"
+        },
+        {
+          "assetId": "5c52ea11-57cb-45fb-86fd-442838884e6e",
+          "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\input\\assets\\5c52ea11-57cb-45fb-86fd-442838884e6e-9fa8f42e-dd4f-47b9-bc1b-e5f0a8118f89.png",
+          "sha256": "f99782648855997c4c5278f9b0d7c030ee96d068b4677d64e8602bb655080db6"
+        },
+        {
+          "assetId": "36d21220-a47a-496c-9db5-8e8eef446c2a",
+          "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\input\\assets\\36d21220-a47a-496c-9db5-8e8eef446c2a-b4f3b42a-3073-4e0b-acff-b2ee0aab78a4.png",
+          "sha256": "c333cdddfdf40c1706c85e27dab3c3a392106124a055581be30d4bed4e991666"
+        },
+        {
+          "assetId": "58f2b3a3-7b83-4b93-b53d-f7586d4e27dd",
+          "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\input\\assets\\58f2b3a3-7b83-4b93-b53d-f7586d4e27dd-c221b173-569f-4a3b-a045-add6708dd662.png",
+          "sha256": "52dc4b3ff441da633478b42442e22bd627c3ffec1d0951d370038d7d19c0d7b3"
+        },
+        {
+          "assetId": "5c810cc6-b6a6-413e-be5d-a9b9d064ba63",
+          "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\input\\assets\\5c810cc6-b6a6-413e-be5d-a9b9d064ba63-e97c24d3-e4cd-4e1c-a6f2-b97b7fbd910f.png",
+          "sha256": "6b7fe70fa5da253c0baacebaf954e465912d5ec57b07c07c41d4300bf5c25d8d"
+        },
+        {
+          "assetId": "ef77f4d6-aa11-4b62-858e-5fa965b6e30a",
+          "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\input\\assets\\ef77f4d6-aa11-4b62-858e-5fa965b6e30a-ea7f4bfb-8d59-44e4-8272-8fc148be9411.png",
+          "sha256": "7e6e0d7a38921a4cf859fb5e53dc51b8ef926acb5f541f7be0ce29e438efde9e"
+        },
+        {
+          "assetId": "1957dc56-aaeb-4f81-bc18-8429b5446010",
+          "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\input\\assets\\1957dc56-aaeb-4f81-bc18-8429b5446010-f149b435-1315-4048-bfc7-663f895d5788.png",
+          "sha256": "88ae5ca134304ca6259057ee87eea81ff31ae4416f53c2562eaa88dbe63f320c"
+        },
+        {
+          "assetId": "e2d6fa7a-0d7f-4e74-ac56-13a9922d5221",
+          "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1a\\workflow\\data\\projects\\d9ccf5c1-10f3-4c43-b0a7-cd64b62f4627\\input\\assets\\e2d6fa7a-0d7f-4e74-ac56-13a9922d5221-f2ddc9ce-98f6-40e5-8a4e-ae25e44587e4.png",
+          "sha256": "f6ad6f7c391cabffc8adf7fb4fe4cc8221d498a9fad79f39e53c31cf12ba9078"
+        }
+      ],
+      "url": "https://ws-1miaebhuom22vyxa.cn-beijing.maas.aliyuncs.com/compatible-mode/v1/chat/completions",
+      "bodySha256": "6ef41ecd7a847eb92e9d226829f1b02923a3980d51f3dd631e4f573a261f8d7c"
+    }
+  ],
+  "costBasis": {
+    "currency": "CNY",
+    "reviewedAt": "2026-10-26",
+    "sourceUrl": "https://help.aliyun.com/zh/model-studio/qwen3-6-plus",
+    "meaning": "Beijing Model Studio workspace pay-as-you-go published estimate; thinking+answer billed as output; not invoice or absolute cap",
+    "tiers": [
+      {
+        "maxInputTokens": 256000,
+        "inputPerMillion": 2,
+        "outputPerMillion": 12
+      },
+      {
+        "maxInputTokens": 1000000,
+        "inputPerMillion": 8,
+        "outputPerMillion": 48
+      }
+    ]
+  }
+}
