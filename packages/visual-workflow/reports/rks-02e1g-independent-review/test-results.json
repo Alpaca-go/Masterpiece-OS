@@ -1,0 +1,421 @@
+{
+  "policy": "No network; injected synthetic responses only. Existing assertions unchanged.",
+  "results": [
+    {
+      "name": "targeted-final",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "--import",
+        "tsx",
+        "--test",
+        "--test-reporter=tap",
+        "--test-concurrency=1",
+        "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/evidence-boundaries.test.ts",
+        "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/separation.test.ts",
+        "packages/visual-workflow/tests/spatial-quality.test.ts",
+        "packages/visual-workflow/tests/visible-requirement-ownership.test.ts",
+        "packages/visual-workflow/tests/scene-authority-repair.test.ts",
+        "packages/visual-workflow/tests/scene-decision-fidelity.test.ts",
+        "packages/visual-workflow/tests/cross-zone-operation-scope.test.ts",
+        "packages/visual-workflow/tests/automatic-design-proposal.test.ts",
+        "packages/visual-workflow/tests/methodology/acceptance.test.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 6417,
+      "counts": {
+        "tests": [
+          159
+        ],
+        "pass": [
+          159
+        ],
+        "fail": [
+          0
+        ],
+        "skipped": [
+          0
+        ]
+      },
+      "logPath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1g\\targeted-final.txt",
+      "sha256": "d676e82466420dee56ac8cefe39b2b84f24b2a7f764211264f4294310527c3b4"
+    },
+    {
+      "name": "probes-final",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "--import",
+        "tsx",
+        "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/integrity-review-probes.mjs",
+        "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1g\\probes-final.json"
+      ],
+      "exitCode": 0,
+      "durationMs": 565,
+      "counts": {
+        "tests": [],
+        "pass": [],
+        "fail": [],
+        "skipped": []
+      },
+      "logPath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1g\\probes-final.txt",
+      "sha256": "673e475929715d5e86292dc44ff07f89b912238104c7a28a4bef1f7d08625898"
+    },
+    {
+      "name": "archive-replay",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/replay.mjs",
+        "packages/visual-workflow/reports/ftt-live-analysis/artifact-manifest.json",
+        "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1g\\archive-replay-final"
+      ],
+      "exitCode": 0,
+      "durationMs": 594,
+      "counts": {
+        "tests": [],
+        "pass": [],
+        "fail": [],
+        "skipped": []
+      },
+      "logPath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1g\\archive-replay.txt",
+      "sha256": "c2ce6ce4f437fe2238b386b331ba9a7f407d0ef512f983f6dee0c602e0679e90"
+    },
+    {
+      "name": "cross-industry",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "--import",
+        "tsx",
+        "--test",
+        "--test-reporter=tap",
+        "--test-concurrency=1",
+        "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/separation.test.ts",
+        "packages/visual-workflow/tests/architectural-language.test.ts",
+        "packages/visual-workflow/tests/methodology/custom-compatibility.test.ts",
+        "packages/visual-workflow/tests/restaurant-knowledge/ftt-fidelity.test.ts",
+        "packages/visual-workflow/tests/restaurant-knowledge/ftt-final-design.test.ts"
+      ],
+      "exitCode": 0,
+      "durationMs": 3892,
+      "counts": {
+        "tests": [
+          69
+        ],
+        "pass": [
+          69
+        ],
+        "fail": [
+          0
+        ],
+        "skipped": [
+          0
+        ]
+      },
+      "logPath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1g\\cross-industry.txt",
+      "sha256": "a823f944aa20cba9f5fcbd71d15f738fc5a54883a0c0b5ae8ef6683ca4411cf0"
+    },
+    {
+      "name": "e1f-workflow",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "--import",
+        "tsx",
+        "--test",
+        "--test-reporter=tap",
+        "--test-concurrency=1",
+        "packages\\visual-workflow\\tests\\analysis-direction-suggestion.test.ts",
+        "packages\\visual-workflow\\tests\\architectural-integration.test.ts",
+        "packages\\visual-workflow\\tests\\architectural-language.test.ts",
+        "packages\\visual-workflow\\tests\\architectural-refinement.test.ts",
+        "packages\\visual-workflow\\tests\\architecture-commercial-layer.test.ts",
+        "packages\\visual-workflow\\tests\\art-direction-authority.test.ts",
+        "packages\\visual-workflow\\tests\\art-direction-route.test.ts",
+        "packages\\visual-workflow\\tests\\automatic-design-proposal.test.ts",
+        "packages\\visual-workflow\\tests\\commercial-attribute.test.ts",
+        "packages\\visual-workflow\\tests\\cross-zone-operation-scope.test.ts",
+        "packages\\visual-workflow\\tests\\design-decision-fidelity.test.js",
+        "packages\\visual-workflow\\tests\\design-direction-editor.test.ts",
+        "packages\\visual-workflow\\tests\\explicit-spatial-layout.test.ts",
+        "packages\\visual-workflow\\tests\\fig2-fig3-spatial-direction.test.ts",
+        "packages\\visual-workflow\\tests\\generation-baseline-lock.test.ts",
+        "packages\\visual-workflow\\tests\\methodology\\acceptance.test.mjs",
+        "packages\\visual-workflow\\tests\\methodology\\custom-compatibility.test.ts",
+        "packages\\visual-workflow\\tests\\project-design-direction.test.ts",
+        "packages\\visual-workflow\\tests\\project-details-editing.test.ts",
+        "packages\\visual-workflow\\tests\\restaurant-knowledge\\compile.test.ts",
+        "packages\\visual-workflow\\tests\\restaurant-knowledge\\field-lineage.test.ts",
+        "packages\\visual-workflow\\tests\\restaurant-knowledge\\ftt-fidelity.test.ts",
+        "packages\\visual-workflow\\tests\\restaurant-knowledge\\ftt-final-design.test.ts",
+        "packages\\visual-workflow\\tests\\restaurant-knowledge\\knowledge.test.js",
+        "packages\\visual-workflow\\tests\\restaurant-knowledge\\shadow-compile.test.ts",
+        "packages\\visual-workflow\\tests\\restaurant-knowledge\\shadow.test.ts",
+        "packages\\visual-workflow\\tests\\restaurant-knowledge\\spatial-semantics\\evidence-boundaries.test.ts",
+        "packages\\visual-workflow\\tests\\restaurant-knowledge\\spatial-semantics\\separation.test.ts",
+        "packages\\visual-workflow\\tests\\restaurant-knowledge\\two-dispatch-guard\\guard.test.mjs",
+        "packages\\visual-workflow\\tests\\restaurant-knowledge\\two-dispatch-guard\\integration.test.ts",
+        "packages\\visual-workflow\\tests\\restaurant-knowledge\\two-dispatch-guard\\transport.test.mjs",
+        "packages\\visual-workflow\\tests\\scene-authority-repair.test.ts",
+        "packages\\visual-workflow\\tests\\scene-decision-fidelity.test.ts",
+        "packages\\visual-workflow\\tests\\spatial-quality.test.ts",
+        "packages\\visual-workflow\\tests\\validation-policy.test.js",
+        "packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts"
+      ],
+      "exitCode": 1,
+      "durationMs": 34812,
+      "counts": {
+        "tests": [
+          370
+        ],
+        "pass": [
+          360
+        ],
+        "fail": [
+          10
+        ],
+        "skipped": [
+          0
+        ]
+      },
+      "logPath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1g\\e1f-workflow.txt",
+      "sha256": "a0642474652ba53abb431468bc48702a3761ae4423f54f5fdc05620588167b07"
+    },
+    {
+      "name": "guard-transport",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "--import",
+        "tsx",
+        "--test",
+        "--test-reporter=tap",
+        "--test-concurrency=1",
+        "packages/visual-workflow/tests/restaurant-knowledge/two-dispatch-guard/guard.test.mjs",
+        "packages/visual-workflow/tests/restaurant-knowledge/two-dispatch-guard/transport.test.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 3853,
+      "counts": {
+        "tests": [
+          46
+        ],
+        "pass": [
+          46
+        ],
+        "fail": [
+          0
+        ],
+        "skipped": [
+          0
+        ]
+      },
+      "logPath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1g\\guard-transport.txt",
+      "sha256": "9852783b527b2d197590c3557a75d0e9045934aa1aa95937e26aa966ae7dc92b"
+    },
+    {
+      "name": "current-flows",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "run",
+        "verify:current-flows"
+      ],
+      "exitCode": 1,
+      "durationMs": 1830,
+      "counts": {
+        "tests": [
+          2
+        ],
+        "pass": [
+          2
+        ],
+        "fail": [
+          0
+        ],
+        "skipped": [
+          0
+        ]
+      },
+      "logPath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1g\\current-flows.txt",
+      "sha256": "2e0effd6543a6486a5ab2384a5c106abc50fcce004e08d650b6649d4dd5e3532"
+    },
+    {
+      "name": "repo",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "run",
+        "repo:verify"
+      ],
+      "exitCode": 1,
+      "durationMs": 2019,
+      "counts": {
+        "tests": [],
+        "pass": [],
+        "fail": [],
+        "skipped": []
+      },
+      "logPath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1g\\repo.txt",
+      "sha256": "91c38cc0e69c1c77b93b0c4dc59030aa081cc8c3bb52213fe49a86d1688b3d88"
+    },
+    {
+      "name": "golden",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "run",
+        "golden:test"
+      ],
+      "exitCode": 0,
+      "durationMs": 629,
+      "counts": {
+        "tests": [],
+        "pass": [],
+        "fail": [],
+        "skipped": []
+      },
+      "logPath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1g\\golden.txt",
+      "sha256": "effbe1522354f6b3e1a4a3053a6bbfd15c600d2de7be614ae7a5123cceac16ed"
+    },
+    {
+      "name": "review",
+      "source": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified",
+      "exitCode": 1,
+      "counts": {
+        "tests": 46,
+        "pass": 23,
+        "fail": 23
+      },
+      "durationMs": 1332,
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "--import",
+        "tsx",
+        "--test",
+        "--test-reporter=tap",
+        "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/independent-review.test.ts"
+      ],
+      "logPath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1g\\review.txt",
+      "sha256": "061e0d1b8453e807ac854e252bfaf27f3b4a2c688a15423e3d6e0aff4b1480d1"
+    },
+    {
+      "name": "baseline",
+      "source": "E:/Masterpiece-OS-RKS-02E1F-Baseline-ff1",
+      "exitCode": 1,
+      "counts": {
+        "tests": 46,
+        "pass": 20,
+        "fail": 26
+      },
+      "durationMs": 984,
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "--import",
+        "tsx",
+        "--test",
+        "--test-reporter=tap",
+        "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/independent-review.test.ts"
+      ],
+      "logPath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1g\\baseline.txt",
+      "sha256": "a36db3b5e42b75de3b4dc3b9f8dba654c9a787caa834676e75d642b2c694bd6e"
+    }
+  ],
+  "workflowFailures": [
+    "read-only existing report RPC supplies suggestions for missing directions without creating any decision files",
+    "public operations verify the approved implementation before registration, compilation, generation and Logo composition",
+    "baseline lock prevents input/model/code drift and old tasks; other projects remain independent, zero network",
+    "guarded public web operations save, confirm, compile, generate, reopen and invalidate on an analysis request",
+    "explicit details save persists identity, retains artifacts and requires new analysis/confirmation without calling models",
+    "formal create/import/analyze via injected provider succeeds with exactly two fake HTTP responses",
+    "formal UVU parse path does not retry after invalid JSON",
+    "formal spatial semantic repair is blocked; existing semantic gate still fails",
+    "formal structured decision repair catches errors but cannot obtain a third dispatch",
+    "formal report validation is not bypassed by two-call budget logic"
+  ],
+  "rootPriorEvidence": {
+    "note": "Root suites were not rerun in E1G. E1F committed evidence compared the same review implementation with ff1f076; both had 1697 pass and the same four failures.",
+    "report": "../rks-02e1f-evidence-boundaries/regression-results.json",
+    "sha256": "e1bea3d71289900af1e4d6d51635f8f9d55206e58a5d90701e6da56d14742fcd"
+  },
+  "auditProbeCorrection": {
+    "initialReview": {
+      "pass": 22,
+      "fail": 24
+    },
+    "initialBaseline": {
+      "pass": 19,
+      "fail": 27
+    },
+    "text": "staff operating equipment; lotus represents happiness",
+    "reason": "Explicit semicolon separates an independent brand proposition. Moving it to brandRoleManifestation is permitted and does not make it functional. Initial audit expectation was incorrect; only this newly added audit case was corrected. Production and pre-existing assertions were never changed.",
+    "initialRuns": [
+      {
+        "name": "review",
+        "source": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified",
+        "exitCode": 1,
+        "counts": {
+          "tests": 46,
+          "pass": 22,
+          "fail": 24
+        },
+        "durationMs": 1140,
+        "command": [
+          "C:\\Program Files\\nodejs\\node.exe",
+          "--import",
+          "tsx",
+          "--test",
+          "--test-reporter=tap",
+          "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/independent-review.test.ts"
+        ],
+        "logPath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1g\\review-initial.txt",
+        "sha256": "bbfe3a3ca97cc814890a598e53ed4576c05c35885778a209aeb8dcea9d280054"
+      },
+      {
+        "name": "baseline",
+        "source": "E:/Masterpiece-OS-RKS-02E1F-Baseline-ff1",
+        "exitCode": 1,
+        "counts": {
+          "tests": 46,
+          "pass": 19,
+          "fail": 27
+        },
+        "durationMs": 1017,
+        "command": [
+          "C:\\Program Files\\nodejs\\node.exe",
+          "--import",
+          "tsx",
+          "--test",
+          "--test-reporter=tap",
+          "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/independent-review.test.ts"
+        ],
+        "logPath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1g\\baseline-initial.txt",
+        "sha256": "750b4dbf05fdd59baef108325e34d651250f5535a9d7e2618377a6990d38c2f1"
+      }
+    ],
+    "initialEvidence": [
+      {
+        "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1g\\review-initial.txt",
+        "sha256": "bbfe3a3ca97cc814890a598e53ed4576c05c35885778a209aeb8dcea9d280054"
+      },
+      {
+        "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1g\\review-initial.json",
+        "sha256": "22b8289a42a2a79180726b71d8dffb036a9c8944080601c259071d218a2957ea"
+      },
+      {
+        "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1g\\baseline-initial.txt",
+        "sha256": "750b4dbf05fdd59baef108325e34d651250f5535a9d7e2618377a6990d38c2f1"
+      },
+      {
+        "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1g\\baseline-initial.json",
+        "sha256": "ecf39f7ccc628fb5d89cdb96871a239a75c426425b2c21c64f8a5e85781286d7"
+      }
+    ]
+  },
+  "postReportRepositoryGate": {
+    "exitCode": 1,
+    "command": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+      "run",
+      "repo:verify"
+    ],
+    "logPath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\rks-02e1g\\post-report-repo.txt",
+    "sha256": "91c38cc0e69c1c77b93b0c4dc59030aa081cc8c3bb52213fe49a86d1688b3d88"
+  }
+}

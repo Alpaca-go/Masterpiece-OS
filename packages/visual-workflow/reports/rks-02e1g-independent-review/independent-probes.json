@@ -1,0 +1,2487 @@
+{
+  "review": "28a42491a91036c5da8bedc163c3e2683a95fa8c",
+  "base": "ff1f076dfada89268393b6624d5294b4254506a3",
+  "networkAttempts": 0,
+  "baselineNetworkAttempts": 0,
+  "records": [
+    {
+      "id": 1,
+      "kind": "semantic",
+      "text": "Only if Logo and staff operating equipment",
+      "expected": "block",
+      "beforeGate": "block",
+      "afterGate": "pass",
+      "changes": [
+        {
+          "field": "mustBeVisible",
+          "index": 0,
+          "original": "Only if Logo and staff operating equipment",
+          "retained": [
+            "staff operating equipment"
+          ],
+          "routedTo": "brandRoleManifestation",
+          "brand": [
+            "Only if Logo"
+          ],
+          "method": "explicit_clause_separation",
+          "evidenceFragments": [
+            {
+              "sourceFragment": "Only if Logo",
+              "value": "Only if Logo",
+              "kind": "brand",
+              "analysis": {
+                "classification": "decorative_identity",
+                "classificationReason": "existing_decorative_identity_rule",
+                "motifHits": [
+                  "logo"
+                ],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            },
+            {
+              "sourceFragment": "staff operating equipment",
+              "value": "staff operating equipment",
+              "kind": "functional",
+              "analysis": {
+                "classification": "functional",
+                "classificationReason": "visible_device_operation",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "retained": [
+        "staff operating equipment"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": false,
+      "baseline": {
+        "kind": "semantic",
+        "text": "Only if Logo and staff operating equipment",
+        "expected": "block",
+        "beforeGate": "block",
+        "afterGate": "pass",
+        "changes": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "original": "Only if Logo and staff operating equipment",
+            "retained": [
+              "staff operating equipment"
+            ],
+            "routedTo": "brandRoleManifestation",
+            "brand": [
+              "Only if Logo"
+            ],
+            "method": "explicit_clause_separation",
+            "evidenceFragments": [
+              {
+                "sourceFragment": "Only if Logo",
+                "value": "Only if Logo",
+                "kind": "brand"
+              },
+              {
+                "sourceFragment": "staff operating equipment",
+                "value": "staff operating equipment",
+                "kind": "functional"
+              }
+            ]
+          }
+        ],
+        "unresolved": [],
+        "retained": [
+          "staff operating equipment"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": false
+      },
+      "comparison": "persistent_failure"
+    },
+    {
+      "id": 2,
+      "kind": "semantic",
+      "text": "If Logo and staff operating equipment",
+      "expected": "block",
+      "beforeGate": "block",
+      "afterGate": "pass",
+      "changes": [
+        {
+          "field": "mustBeVisible",
+          "index": 0,
+          "original": "If Logo and staff operating equipment",
+          "retained": [
+            "staff operating equipment"
+          ],
+          "routedTo": "brandRoleManifestation",
+          "brand": [
+            "If Logo"
+          ],
+          "method": "explicit_clause_separation",
+          "evidenceFragments": [
+            {
+              "sourceFragment": "If Logo",
+              "value": "If Logo",
+              "kind": "brand",
+              "analysis": {
+                "classification": "decorative_identity",
+                "classificationReason": "existing_decorative_identity_rule",
+                "motifHits": [
+                  "logo"
+                ],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            },
+            {
+              "sourceFragment": "staff operating equipment",
+              "value": "staff operating equipment",
+              "kind": "functional",
+              "analysis": {
+                "classification": "functional",
+                "classificationReason": "visible_device_operation",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "retained": [
+        "staff operating equipment"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": false,
+      "baseline": {
+        "kind": "semantic",
+        "text": "If Logo and staff operating equipment",
+        "expected": "block",
+        "beforeGate": "block",
+        "afterGate": "pass",
+        "changes": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "original": "If Logo and staff operating equipment",
+            "retained": [
+              "staff operating equipment"
+            ],
+            "routedTo": "brandRoleManifestation",
+            "brand": [
+              "If Logo"
+            ],
+            "method": "explicit_clause_separation",
+            "evidenceFragments": [
+              {
+                "sourceFragment": "If Logo",
+                "value": "If Logo",
+                "kind": "brand"
+              },
+              {
+                "sourceFragment": "staff operating equipment",
+                "value": "staff operating equipment",
+                "kind": "functional"
+              }
+            ]
+          }
+        ],
+        "unresolved": [],
+        "retained": [
+          "staff operating equipment"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": false
+      },
+      "comparison": "persistent_failure"
+    },
+    {
+      "id": 3,
+      "kind": "semantic",
+      "text": "未确认Logo和员工操作设备",
+      "expected": "block",
+      "beforeGate": "block",
+      "afterGate": "pass",
+      "changes": [
+        {
+          "field": "mustBeVisible",
+          "index": 0,
+          "original": "未确认Logo和员工操作设备",
+          "retained": [
+            "员工操作设备"
+          ],
+          "routedTo": "brandRoleManifestation",
+          "brand": [
+            "未确认Logo"
+          ],
+          "method": "explicit_clause_separation",
+          "evidenceFragments": [
+            {
+              "sourceFragment": "未确认Logo",
+              "value": "未确认Logo",
+              "kind": "brand",
+              "analysis": {
+                "classification": "decorative_identity",
+                "classificationReason": "existing_decorative_identity_rule",
+                "motifHits": [
+                  "logo"
+                ],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            },
+            {
+              "sourceFragment": "员工操作设备",
+              "value": "员工操作设备",
+              "kind": "functional",
+              "analysis": {
+                "classification": "functional",
+                "classificationReason": "visible_device_operation",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "retained": [
+        "员工操作设备"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": false,
+      "baseline": {
+        "kind": "semantic",
+        "text": "未确认Logo和员工操作设备",
+        "expected": "block",
+        "beforeGate": "block",
+        "afterGate": "pass",
+        "changes": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "original": "未确认Logo和员工操作设备",
+            "retained": [
+              "员工操作设备"
+            ],
+            "routedTo": "brandRoleManifestation",
+            "brand": [
+              "未确认Logo"
+            ],
+            "method": "explicit_clause_separation",
+            "evidenceFragments": [
+              {
+                "sourceFragment": "未确认Logo",
+                "value": "未确认Logo",
+                "kind": "brand"
+              },
+              {
+                "sourceFragment": "员工操作设备",
+                "value": "员工操作设备",
+                "kind": "functional"
+              }
+            ]
+          }
+        ],
+        "unresolved": [],
+        "retained": [
+          "员工操作设备"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": false
+      },
+      "comparison": "persistent_failure"
+    },
+    {
+      "id": 4,
+      "kind": "semantic",
+      "text": "如果出现Logo和员工操作设备",
+      "expected": "block",
+      "beforeGate": "block",
+      "afterGate": "pass",
+      "changes": [
+        {
+          "field": "mustBeVisible",
+          "index": 0,
+          "original": "如果出现Logo和员工操作设备",
+          "retained": [
+            "员工操作设备"
+          ],
+          "routedTo": "brandRoleManifestation",
+          "brand": [
+            "如果出现Logo"
+          ],
+          "method": "explicit_clause_separation",
+          "evidenceFragments": [
+            {
+              "sourceFragment": "如果出现Logo",
+              "value": "如果出现Logo",
+              "kind": "brand",
+              "analysis": {
+                "classification": "decorative_identity",
+                "classificationReason": "existing_decorative_identity_rule",
+                "motifHits": [
+                  "logo"
+                ],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            },
+            {
+              "sourceFragment": "员工操作设备",
+              "value": "员工操作设备",
+              "kind": "functional",
+              "analysis": {
+                "classification": "functional",
+                "classificationReason": "visible_device_operation",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "retained": [
+        "员工操作设备"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": false,
+      "baseline": {
+        "kind": "semantic",
+        "text": "如果出现Logo和员工操作设备",
+        "expected": "block",
+        "beforeGate": "block",
+        "afterGate": "pass",
+        "changes": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "original": "如果出现Logo和员工操作设备",
+            "retained": [
+              "员工操作设备"
+            ],
+            "routedTo": "brandRoleManifestation",
+            "brand": [
+              "如果出现Logo"
+            ],
+            "method": "explicit_clause_separation",
+            "evidenceFragments": [
+              {
+                "sourceFragment": "如果出现Logo",
+                "value": "如果出现Logo",
+                "kind": "brand"
+              },
+              {
+                "sourceFragment": "员工操作设备",
+                "value": "员工操作设备",
+                "kind": "functional"
+              }
+            ]
+          }
+        ],
+        "unresolved": [],
+        "retained": [
+          "员工操作设备"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": false
+      },
+      "comparison": "persistent_failure"
+    },
+    {
+      "id": 5,
+      "kind": "semantic",
+      "text": "如果有Logo and staff operating equipment",
+      "expected": "block",
+      "beforeGate": "block",
+      "afterGate": "pass",
+      "changes": [
+        {
+          "field": "mustBeVisible",
+          "index": 0,
+          "original": "如果有Logo and staff operating equipment",
+          "retained": [
+            "staff operating equipment"
+          ],
+          "routedTo": "brandRoleManifestation",
+          "brand": [
+            "如果有Logo"
+          ],
+          "method": "explicit_clause_separation",
+          "evidenceFragments": [
+            {
+              "sourceFragment": "如果有Logo",
+              "value": "如果有Logo",
+              "kind": "brand",
+              "analysis": {
+                "classification": "decorative_identity",
+                "classificationReason": "existing_decorative_identity_rule",
+                "motifHits": [
+                  "logo"
+                ],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            },
+            {
+              "sourceFragment": "staff operating equipment",
+              "value": "staff operating equipment",
+              "kind": "functional",
+              "analysis": {
+                "classification": "functional",
+                "classificationReason": "visible_device_operation",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "retained": [
+        "staff operating equipment"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": false,
+      "baseline": {
+        "kind": "semantic",
+        "text": "如果有Logo and staff operating equipment",
+        "expected": "block",
+        "beforeGate": "block",
+        "afterGate": "pass",
+        "changes": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "original": "如果有Logo and staff operating equipment",
+            "retained": [
+              "staff operating equipment"
+            ],
+            "routedTo": "brandRoleManifestation",
+            "brand": [
+              "如果有Logo"
+            ],
+            "method": "explicit_clause_separation",
+            "evidenceFragments": [
+              {
+                "sourceFragment": "如果有Logo",
+                "value": "如果有Logo",
+                "kind": "brand"
+              },
+              {
+                "sourceFragment": "staff operating equipment",
+                "value": "staff operating equipment",
+                "kind": "functional"
+              }
+            ]
+          }
+        ],
+        "unresolved": [],
+        "retained": [
+          "staff operating equipment"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": false
+      },
+      "comparison": "persistent_failure"
+    },
+    {
+      "id": 6,
+      "kind": "semantic",
+      "text": "reception equipment of it",
+      "expected": "block",
+      "beforeGate": "pass",
+      "afterGate": "pass",
+      "changes": [],
+      "unresolved": [],
+      "retained": [
+        "reception equipment of it"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": false,
+      "baseline": {
+        "kind": "semantic",
+        "text": "reception equipment of it",
+        "expected": "block",
+        "beforeGate": "pass",
+        "afterGate": "pass",
+        "changes": [],
+        "unresolved": [],
+        "retained": [
+          "reception equipment of it"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": false
+      },
+      "comparison": "persistent_failure"
+    },
+    {
+      "id": 7,
+      "kind": "semantic",
+      "text": "equipment near it",
+      "expected": "block",
+      "beforeGate": "pass",
+      "afterGate": "pass",
+      "changes": [],
+      "unresolved": [],
+      "retained": [
+        "equipment near it"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": false,
+      "baseline": {
+        "kind": "semantic",
+        "text": "equipment near it",
+        "expected": "block",
+        "beforeGate": "pass",
+        "afterGate": "pass",
+        "changes": [],
+        "unresolved": [],
+        "retained": [
+          "equipment near it"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": false
+      },
+      "comparison": "persistent_failure"
+    },
+    {
+      "id": 8,
+      "kind": "semantic",
+      "text": "reception counter and with it",
+      "expected": "block",
+      "beforeGate": "pass",
+      "afterGate": "pass",
+      "changes": [],
+      "unresolved": [],
+      "retained": [
+        "reception counter and with it"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": false,
+      "baseline": {
+        "kind": "semantic",
+        "text": "reception counter and with it",
+        "expected": "block",
+        "beforeGate": "pass",
+        "afterGate": "pass",
+        "changes": [],
+        "unresolved": [],
+        "retained": [
+          "reception counter and with it"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": false
+      },
+      "comparison": "persistent_failure"
+    },
+    {
+      "id": 9,
+      "kind": "semantic",
+      "text": "Logo and equipment near it",
+      "expected": "block",
+      "beforeGate": "block",
+      "afterGate": "pass",
+      "changes": [
+        {
+          "field": "mustBeVisible",
+          "index": 0,
+          "original": "Logo and equipment near it",
+          "retained": [
+            "equipment near it"
+          ],
+          "routedTo": "brandRoleManifestation",
+          "brand": [
+            "Logo"
+          ],
+          "method": "explicit_clause_separation",
+          "evidenceFragments": [
+            {
+              "sourceFragment": "Logo",
+              "value": "Logo",
+              "kind": "brand",
+              "analysis": {
+                "classification": "decorative_identity",
+                "classificationReason": "existing_decorative_identity_rule",
+                "motifHits": [
+                  "logo"
+                ],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            },
+            {
+              "sourceFragment": "equipment near it",
+              "value": "equipment near it",
+              "kind": "functional",
+              "analysis": {
+                "classification": "ambiguous",
+                "classificationReason": "unresolved_visible_requirement",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "retained": [
+        "equipment near it"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": false,
+      "baseline": {
+        "kind": "semantic",
+        "text": "Logo and equipment near it",
+        "expected": "block",
+        "beforeGate": "block",
+        "afterGate": "pass",
+        "changes": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "original": "Logo and equipment near it",
+            "retained": [
+              "equipment near it"
+            ],
+            "routedTo": "brandRoleManifestation",
+            "brand": [
+              "Logo"
+            ],
+            "method": "explicit_clause_separation",
+            "evidenceFragments": [
+              {
+                "sourceFragment": "Logo",
+                "value": "Logo",
+                "kind": "brand"
+              },
+              {
+                "sourceFragment": "equipment near it",
+                "value": "equipment near it",
+                "kind": "functional"
+              }
+            ]
+          }
+        ],
+        "unresolved": [],
+        "retained": [
+          "equipment near it"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": false
+      },
+      "comparison": "persistent_failure"
+    },
+    {
+      "id": 10,
+      "kind": "semantic",
+      "text": "staff operating equipment; staff not using equipment",
+      "expected": "block",
+      "beforeGate": "block",
+      "afterGate": "block",
+      "changes": [],
+      "unresolved": [
+        {
+          "field": "mustBeVisible",
+          "index": 0,
+          "reason": "retained_fragment_failed_validation",
+          "finding": {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "mustBeVisible",
+            "path": "mediaTranslations.spatial.mustBeVisible[0]",
+            "classification": "ambiguous",
+            "reason": "complete_visible_evidence_required",
+            "analysis": {
+              "classification": "ambiguous",
+              "classificationReason": "unresolved_visible_requirement",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        }
+      ],
+      "retained": [
+        "staff operating equipment; staff not using equipment"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": true,
+      "baseline": {
+        "kind": "semantic",
+        "text": "staff operating equipment; staff not using equipment",
+        "expected": "block",
+        "beforeGate": "block",
+        "afterGate": "block",
+        "changes": [],
+        "unresolved": [],
+        "retained": [
+          "staff operating equipment; staff not using equipment"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": true
+      },
+      "comparison": "preserved_pass"
+    },
+    {
+      "id": 11,
+      "kind": "semantic",
+      "text": "staff operating equipment；员工尚未操作设备",
+      "expected": "block",
+      "beforeGate": "block",
+      "afterGate": "block",
+      "changes": [],
+      "unresolved": [
+        {
+          "field": "mustBeVisible",
+          "index": 0,
+          "reason": "retained_fragment_failed_validation",
+          "finding": {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "mustBeVisible",
+            "path": "mediaTranslations.spatial.mustBeVisible[0]",
+            "classification": "ambiguous",
+            "reason": "complete_visible_evidence_required",
+            "analysis": {
+              "classification": "ambiguous",
+              "classificationReason": "unresolved_visible_requirement",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        }
+      ],
+      "retained": [
+        "staff operating equipment；员工尚未操作设备"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": true,
+      "baseline": {
+        "kind": "semantic",
+        "text": "staff operating equipment；员工尚未操作设备",
+        "expected": "block",
+        "beforeGate": "pass",
+        "afterGate": "pass",
+        "changes": [],
+        "unresolved": [],
+        "retained": [
+          "staff operating equipment；员工尚未操作设备"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": false
+      },
+      "comparison": "improved"
+    },
+    {
+      "id": 12,
+      "kind": "semantic",
+      "text": "staff operating equipment and 员工没有使用设备",
+      "expected": "block",
+      "beforeGate": "block",
+      "afterGate": "block",
+      "changes": [],
+      "unresolved": [
+        {
+          "field": "mustBeVisible",
+          "index": 0,
+          "reason": "retained_fragment_failed_validation",
+          "finding": {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "mustBeVisible",
+            "path": "mediaTranslations.spatial.mustBeVisible[0]",
+            "classification": "ambiguous",
+            "reason": "complete_visible_evidence_required",
+            "analysis": {
+              "classification": "ambiguous",
+              "classificationReason": "unresolved_visible_requirement",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        }
+      ],
+      "retained": [
+        "staff operating equipment and 员工没有使用设备"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": true,
+      "baseline": {
+        "kind": "semantic",
+        "text": "staff operating equipment and 员工没有使用设备",
+        "expected": "block",
+        "beforeGate": "pass",
+        "afterGate": "pass",
+        "changes": [],
+        "unresolved": [],
+        "retained": [
+          "staff operating equipment and 员工没有使用设备"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": false
+      },
+      "comparison": "improved"
+    },
+    {
+      "id": 13,
+      "kind": "semantic",
+      "text": "员工操作设备; staff may be operating equipment",
+      "expected": "block",
+      "beforeGate": "block",
+      "afterGate": "block",
+      "changes": [],
+      "unresolved": [
+        {
+          "field": "mustBeVisible",
+          "index": 0,
+          "reason": "retained_fragment_failed_validation",
+          "finding": {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "mustBeVisible",
+            "path": "mediaTranslations.spatial.mustBeVisible[0]",
+            "classification": "ambiguous",
+            "reason": "complete_visible_evidence_required",
+            "analysis": {
+              "classification": "ambiguous",
+              "classificationReason": "unresolved_visible_requirement",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        }
+      ],
+      "retained": [
+        "员工操作设备; staff may be operating equipment"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": true,
+      "baseline": {
+        "kind": "semantic",
+        "text": "员工操作设备; staff may be operating equipment",
+        "expected": "block",
+        "beforeGate": "pass",
+        "afterGate": "pass",
+        "changes": [],
+        "unresolved": [],
+        "retained": [
+          "员工操作设备; staff may be operating equipment"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": false
+      },
+      "comparison": "improved"
+    },
+    {
+      "id": 14,
+      "kind": "semantic",
+      "text": "staff operating equipment; if customers arrive",
+      "expected": "block",
+      "beforeGate": "block",
+      "afterGate": "block",
+      "changes": [],
+      "unresolved": [
+        {
+          "field": "mustBeVisible",
+          "index": 0,
+          "reason": "retained_fragment_failed_validation",
+          "finding": {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "mustBeVisible",
+            "path": "mediaTranslations.spatial.mustBeVisible[0]",
+            "classification": "ambiguous",
+            "reason": "complete_visible_evidence_required",
+            "analysis": {
+              "classification": "ambiguous",
+              "classificationReason": "unresolved_visible_requirement",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        }
+      ],
+      "retained": [
+        "staff operating equipment; if customers arrive"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": true,
+      "baseline": {
+        "kind": "semantic",
+        "text": "staff operating equipment; if customers arrive",
+        "expected": "block",
+        "beforeGate": "pass",
+        "afterGate": "pass",
+        "changes": [],
+        "unresolved": [],
+        "retained": [
+          "staff operating equipment; if customers arrive"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": false
+      },
+      "comparison": "improved"
+    },
+    {
+      "id": 15,
+      "kind": "semantic",
+      "text": "staff operating equipment and enjoying cosmic essence",
+      "expected": "block",
+      "beforeGate": "block",
+      "afterGate": "block",
+      "changes": [],
+      "unresolved": [
+        {
+          "field": "mustBeVisible",
+          "index": 0,
+          "reason": "retained_fragment_failed_validation",
+          "finding": {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "mustBeVisible",
+            "path": "mediaTranslations.spatial.mustBeVisible[0]",
+            "classification": "ambiguous",
+            "reason": "complete_visible_evidence_required",
+            "analysis": {
+              "classification": "ambiguous",
+              "classificationReason": "unresolved_visible_requirement",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        }
+      ],
+      "retained": [
+        "staff operating equipment and enjoying cosmic essence"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": true,
+      "baseline": {
+        "kind": "semantic",
+        "text": "staff operating equipment and enjoying cosmic essence",
+        "expected": "block",
+        "beforeGate": "pass",
+        "afterGate": "pass",
+        "changes": [],
+        "unresolved": [],
+        "retained": [
+          "staff operating equipment and enjoying cosmic essence"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": false
+      },
+      "comparison": "improved"
+    },
+    {
+      "id": 16,
+      "kind": "semantic",
+      "text": "员工使用设备并象征品牌未来",
+      "expected": "block",
+      "beforeGate": "block",
+      "afterGate": "block",
+      "changes": [],
+      "unresolved": [
+        {
+          "field": "mustBeVisible",
+          "index": 0,
+          "original": "员工使用设备并象征品牌未来",
+          "reason": "inseparable_or_insufficient_functional_evidence"
+        }
+      ],
+      "retained": [
+        "员工使用设备并象征品牌未来"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": true,
+      "baseline": {
+        "kind": "semantic",
+        "text": "员工使用设备并象征品牌未来",
+        "expected": "block",
+        "beforeGate": "block",
+        "afterGate": "block",
+        "changes": [],
+        "unresolved": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "original": "员工使用设备并象征品牌未来",
+            "reason": "no_remaining_functional_evidence"
+          }
+        ],
+        "retained": [
+          "员工使用设备并象征品牌未来"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": true
+      },
+      "comparison": "preserved_pass"
+    },
+    {
+      "id": 17,
+      "kind": "semantic",
+      "text": "Logo and staff operating equipment; staff not using equipment",
+      "expected": "block",
+      "beforeGate": "block",
+      "afterGate": "block",
+      "changes": [],
+      "unresolved": [
+        {
+          "field": "mustBeVisible",
+          "index": 0,
+          "original": "Logo and staff operating equipment; staff not using equipment",
+          "reason": "inseparable_or_insufficient_functional_evidence"
+        }
+      ],
+      "retained": [
+        "Logo and staff operating equipment; staff not using equipment"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": true,
+      "baseline": {
+        "kind": "semantic",
+        "text": "Logo and staff operating equipment; staff not using equipment",
+        "expected": "block",
+        "beforeGate": "block",
+        "afterGate": "block",
+        "changes": [],
+        "unresolved": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "original": "Logo and staff operating equipment; staff not using equipment",
+            "reason": "inseparable_or_insufficient_functional_evidence"
+          }
+        ],
+        "retained": [
+          "Logo and staff operating equipment; staff not using equipment"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": true
+      },
+      "comparison": "preserved_pass"
+    },
+    {
+      "id": 18,
+      "kind": "semantic",
+      "text": "staff operating equipment if the store opens",
+      "expected": "block",
+      "beforeGate": "block",
+      "afterGate": "block",
+      "changes": [],
+      "unresolved": [
+        {
+          "field": "mustBeVisible",
+          "index": 0,
+          "reason": "retained_fragment_failed_validation",
+          "finding": {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "mustBeVisible",
+            "path": "mediaTranslations.spatial.mustBeVisible[0]",
+            "classification": "architectural",
+            "reason": "complete_visible_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "classificationReason": "existing_architectural_rule",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        }
+      ],
+      "retained": [
+        "staff operating equipment if the store opens"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": true,
+      "baseline": {
+        "kind": "semantic",
+        "text": "staff operating equipment if the store opens",
+        "expected": "block",
+        "beforeGate": "pass",
+        "afterGate": "pass",
+        "changes": [],
+        "unresolved": [],
+        "retained": [
+          "staff operating equipment if the store opens"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": false
+      },
+      "comparison": "improved"
+    },
+    {
+      "id": 19,
+      "kind": "semantic",
+      "text": "设备旁的员工 not operating equipment",
+      "expected": "block",
+      "beforeGate": "block",
+      "afterGate": "block",
+      "changes": [],
+      "unresolved": [
+        {
+          "field": "mustBeVisible",
+          "index": 0,
+          "reason": "retained_fragment_failed_validation",
+          "finding": {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "mustBeVisible",
+            "path": "mediaTranslations.spatial.mustBeVisible[0]",
+            "classification": "ambiguous",
+            "reason": "complete_visible_evidence_required",
+            "analysis": {
+              "classification": "ambiguous",
+              "classificationReason": "unresolved_visible_requirement",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        }
+      ],
+      "retained": [
+        "设备旁的员工 not operating equipment"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": true,
+      "baseline": {
+        "kind": "semantic",
+        "text": "设备旁的员工 not operating equipment",
+        "expected": "block",
+        "beforeGate": "block",
+        "afterGate": "block",
+        "changes": [],
+        "unresolved": [],
+        "retained": [
+          "设备旁的员工 not operating equipment"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": true
+      },
+      "comparison": "preserved_pass"
+    },
+    {
+      "id": 20,
+      "kind": "semantic",
+      "text": "reception counter; staff do not serve customers",
+      "expected": "block",
+      "beforeGate": "block",
+      "afterGate": "block",
+      "changes": [],
+      "unresolved": [
+        {
+          "field": "mustBeVisible",
+          "index": 0,
+          "reason": "retained_fragment_failed_validation",
+          "finding": {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "mustBeVisible",
+            "path": "mediaTranslations.spatial.mustBeVisible[0]",
+            "classification": "architectural",
+            "reason": "complete_visible_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "classificationReason": "existing_architectural_rule",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        }
+      ],
+      "retained": [
+        "reception counter; staff do not serve customers"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": true,
+      "baseline": {
+        "kind": "semantic",
+        "text": "reception counter; staff do not serve customers",
+        "expected": "block",
+        "beforeGate": "pass",
+        "afterGate": "pass",
+        "changes": [],
+        "unresolved": [],
+        "retained": [
+          "reception counter; staff do not serve customers"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": false
+      },
+      "comparison": "improved"
+    },
+    {
+      "id": 21,
+      "kind": "semantic",
+      "text": "reception counter and equipment",
+      "expected": "block",
+      "beforeGate": "block",
+      "afterGate": "block",
+      "changes": [],
+      "unresolved": [
+        {
+          "field": "mustBeVisible",
+          "index": 0,
+          "reason": "retained_fragment_failed_validation",
+          "finding": {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "mustBeVisible",
+            "path": "mediaTranslations.spatial.mustBeVisible[0]",
+            "classification": "architectural",
+            "reason": "complete_visible_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "classificationReason": "existing_architectural_rule",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        }
+      ],
+      "retained": [
+        "reception counter and equipment"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": true,
+      "baseline": {
+        "kind": "semantic",
+        "text": "reception counter and equipment",
+        "expected": "block",
+        "beforeGate": "pass",
+        "afterGate": "pass",
+        "changes": [],
+        "unresolved": [],
+        "retained": [
+          "reception counter and equipment"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": false
+      },
+      "comparison": "improved"
+    },
+    {
+      "id": 22,
+      "kind": "semantic",
+      "text": "Reception counter with a usable staff approach and not usable by visitors",
+      "expected": "block",
+      "beforeGate": "block",
+      "afterGate": "block",
+      "changes": [],
+      "unresolved": [
+        {
+          "field": "mustBeVisible",
+          "index": 0,
+          "reason": "retained_fragment_failed_validation",
+          "finding": {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "mustBeVisible",
+            "path": "mediaTranslations.spatial.mustBeVisible[0]",
+            "classification": "architectural",
+            "reason": "complete_visible_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "classificationReason": "existing_architectural_rule",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        }
+      ],
+      "retained": [
+        "Reception counter with a usable staff approach and not usable by visitors"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": true,
+      "baseline": {
+        "kind": "semantic",
+        "text": "Reception counter with a usable staff approach and not usable by visitors",
+        "expected": "block",
+        "beforeGate": "pass",
+        "afterGate": "pass",
+        "changes": [],
+        "unresolved": [],
+        "retained": [
+          "Reception counter with a usable staff approach and not usable by visitors"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": false
+      },
+      "comparison": "improved"
+    },
+    {
+      "id": 23,
+      "kind": "semantic",
+      "text": "staff operating equipment and serving customers",
+      "expected": "pass",
+      "beforeGate": "block",
+      "afterGate": "block",
+      "changes": [],
+      "unresolved": [
+        {
+          "field": "mustBeVisible",
+          "index": 0,
+          "reason": "retained_fragment_failed_validation",
+          "finding": {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "mustBeVisible",
+            "path": "mediaTranslations.spatial.mustBeVisible[0]",
+            "classification": "ambiguous",
+            "reason": "complete_visible_evidence_required",
+            "analysis": {
+              "classification": "ambiguous",
+              "classificationReason": "unresolved_visible_requirement",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        }
+      ],
+      "retained": [
+        "staff operating equipment and serving customers"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": false,
+      "baseline": {
+        "kind": "semantic",
+        "text": "staff operating equipment and serving customers",
+        "expected": "pass",
+        "beforeGate": "pass",
+        "afterGate": "pass",
+        "changes": [],
+        "unresolved": [],
+        "retained": [
+          "staff operating equipment and serving customers"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": true
+      },
+      "comparison": "introduced_regression"
+    },
+    {
+      "id": 24,
+      "kind": "semantic",
+      "text": "顾客在入口查看菜单",
+      "expected": "pass",
+      "beforeGate": "block",
+      "afterGate": "block",
+      "changes": [],
+      "unresolved": [
+        {
+          "field": "mustBeVisible",
+          "index": 0,
+          "reason": "retained_fragment_failed_validation",
+          "finding": {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "mustBeVisible",
+            "path": "mediaTranslations.spatial.mustBeVisible[0]",
+            "classification": "architectural",
+            "reason": "complete_visible_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "classificationReason": "existing_architectural_rule",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        }
+      ],
+      "retained": [
+        "顾客在入口查看菜单"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": false,
+      "baseline": {
+        "kind": "semantic",
+        "text": "顾客在入口查看菜单",
+        "expected": "pass",
+        "beforeGate": "pass",
+        "afterGate": "pass",
+        "changes": [],
+        "unresolved": [],
+        "retained": [
+          "顾客在入口查看菜单"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": true
+      },
+      "comparison": "introduced_regression"
+    },
+    {
+      "id": 25,
+      "kind": "semantic",
+      "text": "员工在柜台为顾客办理入住",
+      "expected": "pass",
+      "beforeGate": "block",
+      "afterGate": "block",
+      "changes": [],
+      "unresolved": [
+        {
+          "field": "mustBeVisible",
+          "index": 0,
+          "reason": "retained_fragment_failed_validation",
+          "finding": {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "mustBeVisible",
+            "path": "mediaTranslations.spatial.mustBeVisible[0]",
+            "classification": "ambiguous",
+            "reason": "complete_visible_evidence_required",
+            "analysis": {
+              "classification": "ambiguous",
+              "classificationReason": "unresolved_visible_requirement",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        }
+      ],
+      "retained": [
+        "员工在柜台为顾客办理入住"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": false,
+      "baseline": {
+        "kind": "semantic",
+        "text": "员工在柜台为顾客办理入住",
+        "expected": "pass",
+        "beforeGate": "pass",
+        "afterGate": "pass",
+        "changes": [],
+        "unresolved": [],
+        "retained": [
+          "员工在柜台为顾客办理入住"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": true
+      },
+      "comparison": "introduced_regression"
+    },
+    {
+      "id": 26,
+      "kind": "semantic",
+      "text": "工作人员使用收银机收款",
+      "expected": "pass",
+      "beforeGate": "block",
+      "afterGate": "block",
+      "changes": [],
+      "unresolved": [
+        {
+          "field": "mustBeVisible",
+          "index": 0,
+          "reason": "retained_fragment_failed_validation",
+          "finding": {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "mustBeVisible",
+            "path": "mediaTranslations.spatial.mustBeVisible[0]",
+            "classification": "ambiguous",
+            "reason": "complete_visible_evidence_required",
+            "analysis": {
+              "classification": "ambiguous",
+              "classificationReason": "unresolved_visible_requirement",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        }
+      ],
+      "retained": [
+        "工作人员使用收银机收款"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": false,
+      "baseline": {
+        "kind": "semantic",
+        "text": "工作人员使用收银机收款",
+        "expected": "pass",
+        "beforeGate": "pass",
+        "afterGate": "pass",
+        "changes": [],
+        "unresolved": [],
+        "retained": [
+          "工作人员使用收银机收款"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": true
+      },
+      "comparison": "introduced_regression"
+    },
+    {
+      "id": 27,
+      "kind": "semantic",
+      "text": "Customers paying at the checkout counter",
+      "expected": "pass",
+      "beforeGate": "block",
+      "afterGate": "block",
+      "changes": [],
+      "unresolved": [
+        {
+          "field": "mustBeVisible",
+          "index": 0,
+          "reason": "retained_fragment_failed_validation",
+          "finding": {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "mustBeVisible",
+            "path": "mediaTranslations.spatial.mustBeVisible[0]",
+            "classification": "ambiguous",
+            "reason": "complete_visible_evidence_required",
+            "analysis": {
+              "classification": "ambiguous",
+              "classificationReason": "unresolved_visible_requirement",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        }
+      ],
+      "retained": [
+        "Customers paying at the checkout counter"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": false,
+      "baseline": {
+        "kind": "semantic",
+        "text": "Customers paying at the checkout counter",
+        "expected": "pass",
+        "beforeGate": "pass",
+        "afterGate": "pass",
+        "changes": [],
+        "unresolved": [],
+        "retained": [
+          "Customers paying at the checkout counter"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": true
+      },
+      "comparison": "introduced_regression"
+    },
+    {
+      "id": 28,
+      "kind": "semantic",
+      "text": "餐桌位于就餐区",
+      "expected": "pass",
+      "beforeGate": "block",
+      "afterGate": "block",
+      "changes": [],
+      "unresolved": [
+        {
+          "field": "mustBeVisible",
+          "index": 0,
+          "reason": "retained_fragment_failed_validation",
+          "finding": {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "mustBeVisible",
+            "path": "mediaTranslations.spatial.mustBeVisible[0]",
+            "classification": "architectural",
+            "reason": "complete_visible_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "classificationReason": "existing_architectural_rule",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        }
+      ],
+      "retained": [
+        "餐桌位于就餐区"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": false,
+      "baseline": {
+        "kind": "semantic",
+        "text": "餐桌位于就餐区",
+        "expected": "pass",
+        "beforeGate": "pass",
+        "afterGate": "pass",
+        "changes": [],
+        "unresolved": [],
+        "retained": [
+          "餐桌位于就餐区"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": true
+      },
+      "comparison": "introduced_regression"
+    },
+    {
+      "id": 29,
+      "kind": "semantic",
+      "text": "取餐台位于点餐区旁",
+      "expected": "pass",
+      "beforeGate": "block",
+      "afterGate": "block",
+      "changes": [],
+      "unresolved": [
+        {
+          "field": "mustBeVisible",
+          "index": 0,
+          "reason": "retained_fragment_failed_validation",
+          "finding": {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "mustBeVisible",
+            "path": "mediaTranslations.spatial.mustBeVisible[0]",
+            "classification": "architectural",
+            "reason": "complete_visible_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "classificationReason": "existing_architectural_rule",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        }
+      ],
+      "retained": [
+        "取餐台位于点餐区旁"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": false,
+      "baseline": {
+        "kind": "semantic",
+        "text": "取餐台位于点餐区旁",
+        "expected": "pass",
+        "beforeGate": "pass",
+        "afterGate": "pass",
+        "changes": [],
+        "unresolved": [],
+        "retained": [
+          "取餐台位于点餐区旁"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": true
+      },
+      "comparison": "introduced_regression"
+    },
+    {
+      "id": 30,
+      "kind": "semantic",
+      "text": "Menu at the service counter",
+      "expected": "pass",
+      "beforeGate": "block",
+      "afterGate": "block",
+      "changes": [],
+      "unresolved": [
+        {
+          "field": "mustBeVisible",
+          "index": 0,
+          "reason": "retained_fragment_failed_validation",
+          "finding": {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "mustBeVisible",
+            "path": "mediaTranslations.spatial.mustBeVisible[0]",
+            "classification": "ambiguous",
+            "reason": "complete_visible_evidence_required",
+            "analysis": {
+              "classification": "ambiguous",
+              "classificationReason": "unresolved_visible_requirement",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        }
+      ],
+      "retained": [
+        "Menu at the service counter"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": false,
+      "baseline": {
+        "kind": "semantic",
+        "text": "Menu at the service counter",
+        "expected": "pass",
+        "beforeGate": "pass",
+        "afterGate": "pass",
+        "changes": [],
+        "unresolved": [],
+        "retained": [
+          "Menu at the service counter"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": true
+      },
+      "comparison": "introduced_regression"
+    },
+    {
+      "id": 31,
+      "kind": "semantic",
+      "text": "staff operating equipment；员工使用设备",
+      "expected": "pass",
+      "beforeGate": "pass",
+      "afterGate": "pass",
+      "changes": [],
+      "unresolved": [],
+      "retained": [
+        "staff operating equipment；员工使用设备"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": true,
+      "baseline": {
+        "kind": "semantic",
+        "text": "staff operating equipment；员工使用设备",
+        "expected": "pass",
+        "beforeGate": "pass",
+        "afterGate": "pass",
+        "changes": [],
+        "unresolved": [],
+        "retained": [
+          "staff operating equipment；员工使用设备"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": true
+      },
+      "comparison": "preserved_pass"
+    },
+    {
+      "id": 32,
+      "kind": "semantic",
+      "text": "staff serving customers; guests checking in",
+      "expected": "pass",
+      "beforeGate": "pass",
+      "afterGate": "pass",
+      "changes": [],
+      "unresolved": [],
+      "retained": [
+        "staff serving customers; guests checking in"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": true,
+      "baseline": {
+        "kind": "semantic",
+        "text": "staff serving customers; guests checking in",
+        "expected": "pass",
+        "beforeGate": "pass",
+        "afterGate": "pass",
+        "changes": [],
+        "unresolved": [],
+        "retained": [
+          "staff serving customers; guests checking in"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": true
+      },
+      "comparison": "preserved_pass"
+    },
+    {
+      "id": 33,
+      "kind": "semantic",
+      "text": "Reception counter with a usable staff and visitor approach",
+      "expected": "pass",
+      "beforeGate": "pass",
+      "afterGate": "pass",
+      "changes": [],
+      "unresolved": [],
+      "retained": [
+        "Reception counter with a usable staff and visitor approach"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": true,
+      "baseline": {
+        "kind": "semantic",
+        "text": "Reception counter with a usable staff and visitor approach",
+        "expected": "pass",
+        "beforeGate": "pass",
+        "afterGate": "pass",
+        "changes": [],
+        "unresolved": [],
+        "retained": [
+          "Reception counter with a usable staff and visitor approach"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": true
+      },
+      "comparison": "preserved_pass"
+    },
+    {
+      "id": 34,
+      "kind": "semantic",
+      "text": "入口处的菜单",
+      "expected": "pass",
+      "beforeGate": "pass",
+      "afterGate": "pass",
+      "changes": [],
+      "unresolved": [],
+      "retained": [
+        "入口处的菜单"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": true,
+      "baseline": {
+        "kind": "semantic",
+        "text": "入口处的菜单",
+        "expected": "pass",
+        "beforeGate": "pass",
+        "afterGate": "pass",
+        "changes": [],
+        "unresolved": [],
+        "retained": [
+          "入口处的菜单"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": true
+      },
+      "comparison": "preserved_pass"
+    },
+    {
+      "id": 35,
+      "kind": "semantic",
+      "text": "staff operating equipment; lotus represents happiness",
+      "expected": "pass",
+      "beforeGate": "block",
+      "afterGate": "pass",
+      "changes": [
+        {
+          "field": "mustBeVisible",
+          "index": 0,
+          "original": "staff operating equipment; lotus represents happiness",
+          "retained": [
+            "staff operating equipment"
+          ],
+          "routedTo": "brandRoleManifestation",
+          "brand": [
+            "lotus represents happiness"
+          ],
+          "method": "explicit_clause_separation",
+          "evidenceFragments": [
+            {
+              "sourceFragment": "staff operating equipment",
+              "value": "staff operating equipment",
+              "kind": "functional",
+              "analysis": {
+                "classification": "functional",
+                "classificationReason": "visible_device_operation",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            },
+            {
+              "sourceFragment": "lotus represents happiness",
+              "value": "lotus represents happiness",
+              "kind": "brand",
+              "analysis": {
+                "classification": "brand_motif",
+                "classificationReason": "existing_brand_motif_rule",
+                "motifHits": [
+                  "lotus"
+                ],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "retained": [
+        "staff operating equipment"
+      ],
+      "inputUnchanged": true,
+      "repeatIdentical": true,
+      "meets": true,
+      "baseline": {
+        "kind": "semantic",
+        "text": "staff operating equipment; lotus represents happiness",
+        "expected": "pass",
+        "beforeGate": "block",
+        "afterGate": "pass",
+        "changes": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "original": "staff operating equipment; lotus represents happiness",
+            "retained": [
+              "staff operating equipment"
+            ],
+            "routedTo": "brandRoleManifestation",
+            "brand": [
+              "lotus represents happiness"
+            ],
+            "method": "explicit_clause_separation",
+            "evidenceFragments": [
+              {
+                "sourceFragment": "staff operating equipment",
+                "value": "staff operating equipment",
+                "kind": "functional"
+              },
+              {
+                "sourceFragment": "lotus represents happiness",
+                "value": "lotus represents happiness",
+                "kind": "brand"
+              }
+            ]
+          }
+        ],
+        "unresolved": [],
+        "retained": [
+          "staff operating equipment"
+        ],
+        "inputUnchanged": true,
+        "repeatIdentical": true,
+        "meets": true
+      },
+      "comparison": "preserved_pass"
+    },
+    {
+      "id": 36,
+      "kind": "completion",
+      "field": "mustBeVisible",
+      "text": "Only if Logo and staff operating equipment",
+      "expected": "failed",
+      "status": "ready",
+      "calls": 0,
+      "unresolvedFields": [],
+      "retained": [
+        "staff operating equipment",
+        "service point"
+      ],
+      "inputUnchanged": true,
+      "factsUnchanged": true,
+      "meets": false,
+      "baseline": {
+        "kind": "completion",
+        "field": "mustBeVisible",
+        "text": "Only if Logo and staff operating equipment",
+        "expected": "failed",
+        "status": "ready",
+        "calls": 0,
+        "unresolvedFields": [],
+        "retained": [
+          "staff operating equipment",
+          "service point"
+        ],
+        "inputUnchanged": true,
+        "factsUnchanged": true,
+        "meets": false
+      },
+      "comparison": "persistent_failure"
+    },
+    {
+      "id": 37,
+      "kind": "completion",
+      "field": "mustBeVisible",
+      "text": "未确认Logo和员工操作设备",
+      "expected": "failed",
+      "status": "ready",
+      "calls": 0,
+      "unresolvedFields": [],
+      "retained": [
+        "员工操作设备",
+        "service point"
+      ],
+      "inputUnchanged": true,
+      "factsUnchanged": true,
+      "meets": false,
+      "baseline": {
+        "kind": "completion",
+        "field": "mustBeVisible",
+        "text": "未确认Logo和员工操作设备",
+        "expected": "failed",
+        "status": "ready",
+        "calls": 0,
+        "unresolvedFields": [],
+        "retained": [
+          "员工操作设备",
+          "service point"
+        ],
+        "inputUnchanged": true,
+        "factsUnchanged": true,
+        "meets": false
+      },
+      "comparison": "persistent_failure"
+    },
+    {
+      "id": 38,
+      "kind": "completion",
+      "field": "mustBeVisible",
+      "text": "equipment near it",
+      "expected": "failed",
+      "status": "ready",
+      "calls": 0,
+      "unresolvedFields": [],
+      "retained": [
+        "equipment near it",
+        "service point"
+      ],
+      "inputUnchanged": true,
+      "factsUnchanged": true,
+      "meets": false,
+      "baseline": {
+        "kind": "completion",
+        "field": "mustBeVisible",
+        "text": "equipment near it",
+        "expected": "failed",
+        "status": "ready",
+        "calls": 0,
+        "unresolvedFields": [],
+        "retained": [
+          "equipment near it",
+          "service point"
+        ],
+        "inputUnchanged": true,
+        "factsUnchanged": true,
+        "meets": false
+      },
+      "comparison": "persistent_failure"
+    },
+    {
+      "id": 39,
+      "kind": "completion",
+      "field": "functionalRelationships",
+      "text": "staff operating equipment and enjoying cosmic essence",
+      "expected": "failed",
+      "status": "ready",
+      "calls": 0,
+      "unresolvedFields": [],
+      "retained": [
+        "staff operating equipment and enjoying cosmic essence"
+      ],
+      "inputUnchanged": true,
+      "factsUnchanged": true,
+      "meets": false,
+      "baseline": {
+        "kind": "completion",
+        "field": "functionalRelationships",
+        "text": "staff operating equipment and enjoying cosmic essence",
+        "expected": "failed",
+        "status": "ready",
+        "calls": 0,
+        "unresolvedFields": [],
+        "retained": [
+          "staff operating equipment and enjoying cosmic essence"
+        ],
+        "inputUnchanged": true,
+        "factsUnchanged": true,
+        "meets": false
+      },
+      "comparison": "persistent_failure"
+    },
+    {
+      "id": 40,
+      "kind": "completion",
+      "field": "functionalNetwork",
+      "text": "员工尚未操作设备",
+      "expected": "failed",
+      "status": "ready",
+      "calls": 0,
+      "unresolvedFields": [],
+      "retained": [
+        "员工尚未操作设备",
+        "guests enter through arrival zone, see service point, continue to consultation",
+        "service flow loops guests back to waiting before exit"
+      ],
+      "inputUnchanged": true,
+      "factsUnchanged": true,
+      "meets": false,
+      "baseline": {
+        "kind": "completion",
+        "field": "functionalNetwork",
+        "text": "员工尚未操作设备",
+        "expected": "failed",
+        "status": "ready",
+        "calls": 0,
+        "unresolvedFields": [],
+        "retained": [
+          "员工尚未操作设备",
+          "guests enter through arrival zone, see service point, continue to consultation",
+          "service flow loops guests back to waiting before exit"
+        ],
+        "inputUnchanged": true,
+        "factsUnchanged": true,
+        "meets": false
+      },
+      "comparison": "persistent_failure"
+    },
+    {
+      "id": 41,
+      "kind": "completion",
+      "field": "sceneProgram",
+      "text": "If staff operating equipment",
+      "expected": "failed",
+      "status": "ready",
+      "calls": 0,
+      "unresolvedFields": [],
+      "retained": [
+        "If staff operating equipment",
+        "service",
+        "consultation"
+      ],
+      "inputUnchanged": true,
+      "factsUnchanged": true,
+      "meets": false,
+      "baseline": {
+        "kind": "completion",
+        "field": "sceneProgram",
+        "text": "If staff operating equipment",
+        "expected": "failed",
+        "status": "ready",
+        "calls": 0,
+        "unresolvedFields": [],
+        "retained": [
+          "If staff operating equipment",
+          "service",
+          "consultation"
+        ],
+        "inputUnchanged": true,
+        "factsUnchanged": true,
+        "meets": false
+      },
+      "comparison": "persistent_failure"
+    },
+    {
+      "id": 42,
+      "kind": "source-state",
+      "status": "requires_confirmation",
+      "industry": {
+        "value": "unknown",
+        "source": "source_document",
+        "evidenceRefs": [
+          "document:industry"
+        ],
+        "confidence": 0.9,
+        "status": "unknown"
+      },
+      "calls": 0,
+      "inputUnchanged": true,
+      "meets": true,
+      "baseline": {
+        "kind": "source-state",
+        "status": "requires_confirmation",
+        "industry": {
+          "value": "unknown",
+          "source": "source_document",
+          "evidenceRefs": [
+            "document:industry"
+          ],
+          "confidence": 0.9,
+          "status": "unknown"
+        },
+        "calls": 0,
+        "inputUnchanged": true,
+        "meets": true
+      },
+      "comparison": "preserved_pass"
+    },
+    {
+      "id": 43,
+      "kind": "unresolved",
+      "status": "failed",
+      "calls": 0,
+      "preservedInArtifact": true,
+      "returnedUnresolvedFields": [],
+      "meets": true,
+      "baseline": {
+        "kind": "unresolved",
+        "status": "failed",
+        "calls": 0,
+        "preservedInArtifact": false,
+        "returnedUnresolvedFields": [],
+        "meets": false
+      },
+      "comparison": "improved"
+    },
+    {
+      "id": 44,
+      "kind": "compatibility-characterization",
+      "status": "ready",
+      "semanticModelCalls": 1,
+      "retained": [
+        "staff operating equipment"
+      ],
+      "scope": "Characterization only. No current production callsite omits the deterministic callback.",
+      "baseline": {
+        "kind": "compatibility-characterization",
+        "status": "ready",
+        "semanticModelCalls": 1,
+        "retained": [
+          "staff operating equipment"
+        ],
+        "scope": "Characterization only. No current production callsite omits the deterministic callback."
+      },
+      "comparison": "characterization"
+    },
+    {
+      "id": 45,
+      "kind": "dispatch",
+      "scenario": "A-no-third-attempt",
+      "sent": 2,
+      "completionStatus": "failed",
+      "completionModelCalls": 0,
+      "blocked": [],
+      "ledgerStatus": "terminated",
+      "meets": true,
+      "baseline": {
+        "kind": "dispatch",
+        "scenario": "A-no-third-attempt",
+        "sent": 2,
+        "completionStatus": "failed",
+        "completionModelCalls": 1,
+        "blocked": [
+          "DISPATCH_LIMIT"
+        ],
+        "ledgerStatus": "terminated",
+        "meets": false
+      },
+      "comparison": "improved"
+    },
+    {
+      "id": 46,
+      "kind": "dispatch",
+      "scenario": "B-attempt-blocked",
+      "sent": 2,
+      "blocked": [
+        "DISPATCH_LIMIT"
+      ],
+      "ledgerStatus": "terminated",
+      "meets": true,
+      "baseline": {
+        "kind": "dispatch",
+        "scenario": "B-attempt-blocked",
+        "sent": 2,
+        "blocked": [
+          "DISPATCH_LIMIT"
+        ],
+        "ledgerStatus": "terminated",
+        "meets": true
+      },
+      "comparison": "preserved_pass"
+    }
+  ]
+}

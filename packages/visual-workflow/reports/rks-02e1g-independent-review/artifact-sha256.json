@@ -1,0 +1,37 @@
+{
+  "algorithm": "SHA256 of file bytes; manifest excludes itself",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "63f16937ecc7b714f107539b8de56c36be83b60255a196e448d0895258c7fa5c"
+    },
+    {
+      "path": "e1e-recheck.json",
+      "sha256": "a4b1d3d58a361a62341ddc3a57d2ca0304bf26f604a0fd556859f983beab02ea"
+    },
+    {
+      "path": "historical-replay.json",
+      "sha256": "6c773beada12141d344c36bb7e76651364cffa763d734865c8fb2f0dd69a43b1"
+    },
+    {
+      "path": "independent-probes.json",
+      "sha256": "a3d71b5ca5647a046da747485f5bf55a223ba215648007d6c4393df91565e2f7"
+    },
+    {
+      "path": "integrity-review.json",
+      "sha256": "c2fdad57cefa4f524b2f029aa24fe5dc5d0b95ea4e18f9d59e3b0394edecfb23"
+    },
+    {
+      "path": "preservation.json",
+      "sha256": "66543b43256fd952eb79bb0287410f1383507345de37331849179bcbc3fa059d"
+    },
+    {
+      "path": "test-results.json",
+      "sha256": "c51085c3250e1368735ace1a891caad7c809273666eff4ebb0ee12cd77084d25"
+    },
+    {
+      "path": "../../tests/restaurant-knowledge/spatial-semantics/independent-review.test.ts",
+      "sha256": "468f2e8da5eb454c618f947e8381f346701fa8bde66e59d8dd54395119cfe269"
+    }
+  ]
+}

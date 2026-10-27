@@ -1,0 +1,1285 @@
+{
+  "baselineCommit": "2302aa9fd39af0cee613e98f1e1a54cdd94b741e",
+  "verifiedArchiveArtifacts": 13,
+  "verifiedArchiveReports": 7,
+  "sourcePacketSha256": "a226ddddbd0e21c648fed3d6a4d0fd91d092eafbe3f03c66687298003e8050d3",
+  "sourceFingerprint": "f9864b46dce85ac90f8970d25629176bad2a15748c628ee8d824ac9acd36b22c",
+  "before": {
+    "validation": {
+      "schemaVersion": "1.0",
+      "version": "space-spatial-semantic-gate@1.1.0",
+      "status": "block",
+      "findings": [
+        {
+          "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+          "severity": "block",
+          "field": "functionalNetwork",
+          "path": "mediaTranslations.spatial.functionalNetwork[0]",
+          "classification": "decorative_identity"
+        },
+        {
+          "code": "INVALID_SPACE_MUST_BE_VISIBLE_SEMANTICS",
+          "severity": "block",
+          "field": "mustBeVisible",
+          "path": "mediaTranslations.spatial.mustBeVisible[0]",
+          "classification": "decorative_identity"
+        }
+      ]
+    },
+    "completionStatus": "failed",
+    "rejectedRepairInvocations": 1,
+    "simulatedRefusalOnly": true,
+    "modelResultSupplied": false,
+    "rows": [
+      {
+        "field": "functionalNetwork",
+        "index": 0,
+        "value": "顾客进入→品牌标识吸引→菜单查看→点餐→等候→取餐→就餐→离开",
+        "classification": {
+          "classification": "decorative_identity",
+          "motifHits": [
+            "标识"
+          ],
+          "colorHits": [],
+          "archHits": 0,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": true,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "functionalNetwork",
+        "index": 1,
+        "value": "员工动线：厨房→出餐口→清洁区，与顾客动线最小交叉",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 2,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "functionalNetwork",
+        "index": 2,
+        "value": "外带动线：点餐→等候→取餐→离开，与堂食区域部分分离",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 3,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "functionalRelationships",
+        "index": 0,
+        "value": "入口区与点餐区直接相连，视觉引导清晰",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 3,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "functionalRelationships",
+        "index": 1,
+        "value": "点餐区与等候区相邻，便于顾客停留",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "functionalRelationships",
+        "index": 2,
+        "value": "等候区与就餐区部分分隔，减少干扰",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 2,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "functionalRelationships",
+        "index": 3,
+        "value": "厨房区与出餐口紧密相连，与就餐区部分可见",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "functionalRelationships",
+        "index": 4,
+        "value": "外带取餐区与堂食就餐区部分分离，减少交叉",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "mustBeVisible",
+        "index": 0,
+        "value": "入口处的品牌标识和菜单",
+        "classification": {
+          "classification": "decorative_identity",
+          "classificationReason": "existing_decorative_identity_rule",
+          "motifHits": [
+            "标识"
+          ],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": true,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "mustBeVisible",
+        "index": 1,
+        "value": "点餐区的清晰指示",
+        "classification": {
+          "classification": "architectural",
+          "classificationReason": "existing_architectural_rule",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "mustBeVisible",
+        "index": 2,
+        "value": "就餐区的舒适座椅和桌面",
+        "classification": {
+          "classification": "architectural",
+          "classificationReason": "existing_architectural_rule",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 2,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "mustBeVisible",
+        "index": 3,
+        "value": "厨房区域的部分可见性",
+        "classification": {
+          "classification": "architectural",
+          "classificationReason": "existing_architectural_rule",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 2,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "mustBeVisible",
+        "index": 4,
+        "value": "品牌色彩系统的层次化应用",
+        "classification": {
+          "classification": "architectural",
+          "classificationReason": "existing_architectural_rule",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 2,
+          "propertyHits": 1,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "sceneProgram",
+        "index": 0,
+        "value": "品牌入口：标识、菜单、吸引力",
+        "classification": {
+          "classification": "decorative_identity",
+          "motifHits": [
+            "标识"
+          ],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": true,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "sceneProgram",
+        "index": 1,
+        "value": "点餐区：自助点餐机、人工点餐台、菜单展示",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "sceneProgram",
+        "index": 2,
+        "value": "等候区：座位、品牌影像、取餐提示",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "sceneProgram",
+        "index": 3,
+        "value": "就餐区：桌椅、照明、品牌元素",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "sceneProgram",
+        "index": 4,
+        "value": "厨房区：部分开放、烹饪展示",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "sceneProgram",
+        "index": 5,
+        "value": "外带区：取餐台、包装区",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "brandRoleManifestation",
+        "index": 0,
+        "value": "通过现代几何形态转译圆形冯字标识，作为空间焦点",
+        "classification": {
+          "classification": "decorative_identity",
+          "motifHits": [
+            "标识"
+          ],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": true,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "brandRoleManifestation",
+        "index": 1,
+        "value": "层次化应用红黑配色，以中性色为基底，红色为点缀，黑色为框架",
+        "classification": {
+          "classification": "color_accent",
+          "motifHits": [],
+          "colorHits": [
+            "红",
+            "黑"
+          ],
+          "archHits": 3,
+          "propertyHits": 1,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "brandRoleManifestation",
+        "index": 2,
+        "value": "通过材质和光影表现四川文化特质，而非直接符号堆砌",
+        "classification": {
+          "classification": "brand_motif",
+          "motifHits": [
+            "符号"
+          ],
+          "colorHits": [],
+          "archHits": 0,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "brandRoleManifestation",
+        "index": 3,
+        "value": "产品影像应以艺术化方式融入空间，而非简单放大",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      }
+    ]
+  },
+  "candidate": {
+    "status": "OFFLINE_CANDIDATE_PASS",
+    "completionStatus": "ready",
+    "modelCallCount": 0,
+    "validation": {
+      "schemaVersion": "1.0",
+      "version": "space-spatial-semantic-gate@1.1.0",
+      "status": "pass",
+      "findings": []
+    },
+    "changes": [
+      {
+        "field": "functionalNetwork",
+        "index": 0,
+        "original": "顾客进入→品牌标识吸引→菜单查看→点餐→等候→取餐→就餐→离开",
+        "retained": [
+          "顾客进入→菜单查看→点餐→等候→取餐→就餐→离开"
+        ],
+        "routedTo": "brandRoleManifestation",
+        "brand": [
+          "品牌标识吸引"
+        ],
+        "method": "explicit_clause_separation",
+        "evidenceFragments": [
+          {
+            "sourceFragment": "顾客进入",
+            "value": "顾客进入",
+            "kind": "functional",
+            "analysis": {
+              "classification": "functional",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "sourceFragment": "品牌标识吸引",
+            "value": "品牌标识吸引",
+            "kind": "brand",
+            "analysis": {
+              "classification": "decorative_identity",
+              "motifHits": [
+                "标识"
+              ],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": true,
+              "geometryAction": false
+            }
+          },
+          {
+            "sourceFragment": "菜单查看",
+            "value": "菜单查看",
+            "kind": "functional",
+            "analysis": {
+              "classification": "functional",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "sourceFragment": "点餐",
+            "value": "点餐",
+            "kind": "functional",
+            "analysis": {
+              "classification": "functional",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "sourceFragment": "等候",
+            "value": "等候",
+            "kind": "functional",
+            "analysis": {
+              "classification": "functional",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "sourceFragment": "取餐",
+            "value": "取餐",
+            "kind": "functional",
+            "analysis": {
+              "classification": "functional",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "sourceFragment": "就餐",
+            "value": "就餐",
+            "kind": "functional",
+            "analysis": {
+              "classification": "functional",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "sourceFragment": "离开",
+            "value": "离开",
+            "kind": "functional",
+            "analysis": {
+              "classification": "functional",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        ]
+      },
+      {
+        "field": "mustBeVisible",
+        "index": 0,
+        "original": "入口处的品牌标识和菜单",
+        "retained": [
+          "入口处的菜单"
+        ],
+        "routedTo": "brandRoleManifestation",
+        "brand": [
+          "入口处的品牌标识"
+        ],
+        "method": "explicit_clause_separation",
+        "evidenceFragments": [
+          {
+            "sourceFragment": "入口处的品牌标识",
+            "value": "入口处的品牌标识",
+            "kind": "brand",
+            "analysis": {
+              "classification": "decorative_identity",
+              "classificationReason": "existing_decorative_identity_rule",
+              "motifHits": [
+                "标识"
+              ],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": true,
+              "geometryAction": false
+            }
+          },
+          {
+            "sourceFragment": "菜单",
+            "value": "入口处的菜单",
+            "kind": "functional",
+            "analysis": {
+              "classification": "functional",
+              "classificationReason": "visible_service_artifact",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        ]
+      },
+      {
+        "field": "mustBeVisible",
+        "index": 4,
+        "original": "品牌色彩系统的层次化应用",
+        "retained": [],
+        "routedTo": "brandRoleManifestation",
+        "brand": [
+          "品牌色彩系统的层次化应用"
+        ],
+        "method": "brand_demotion"
+      },
+      {
+        "field": "sceneProgram",
+        "index": 0,
+        "original": "品牌入口：标识、菜单、吸引力",
+        "retained": [
+          "品牌入口：菜单"
+        ],
+        "routedTo": "brandRoleManifestation",
+        "brand": [
+          "品牌入口：标识",
+          "品牌入口：吸引力"
+        ],
+        "method": "explicit_clause_separation",
+        "evidenceFragments": [
+          {
+            "sourceFragment": "品牌入口：标识",
+            "value": "品牌入口：标识",
+            "kind": "brand",
+            "analysis": {
+              "classification": "decorative_identity",
+              "motifHits": [
+                "标识"
+              ],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": true,
+              "geometryAction": false
+            }
+          },
+          {
+            "sourceFragment": "菜单",
+            "value": "品牌入口：菜单",
+            "kind": "functional",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "sourceFragment": "吸引力",
+            "value": "品牌入口：吸引力",
+            "kind": "brand",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        ]
+      },
+      {
+        "field": "sceneProgram",
+        "index": 2,
+        "original": "等候区：座位、品牌影像、取餐提示",
+        "retained": [
+          "等候区：座位",
+          "等候区：取餐提示"
+        ],
+        "routedTo": "brandRoleManifestation",
+        "brand": [
+          "等候区：品牌影像"
+        ],
+        "method": "explicit_clause_separation",
+        "evidenceFragments": [
+          {
+            "sourceFragment": "等候区：座位",
+            "value": "等候区：座位",
+            "kind": "functional",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "sourceFragment": "品牌影像",
+            "value": "等候区：品牌影像",
+            "kind": "brand",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "sourceFragment": "取餐提示",
+            "value": "等候区：取餐提示",
+            "kind": "functional",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        ]
+      },
+      {
+        "field": "sceneProgram",
+        "index": 3,
+        "original": "就餐区：桌椅、照明、品牌元素",
+        "retained": [
+          "就餐区：桌椅",
+          "就餐区：照明"
+        ],
+        "routedTo": "brandRoleManifestation",
+        "brand": [
+          "就餐区：品牌元素"
+        ],
+        "method": "explicit_clause_separation",
+        "evidenceFragments": [
+          {
+            "sourceFragment": "就餐区：桌椅",
+            "value": "就餐区：桌椅",
+            "kind": "functional",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "sourceFragment": "照明",
+            "value": "就餐区：照明",
+            "kind": "functional",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "sourceFragment": "品牌元素",
+            "value": "就餐区：品牌元素",
+            "kind": "brand",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        ]
+      }
+    ],
+    "unresolved": [],
+    "rows": [
+      {
+        "field": "functionalNetwork",
+        "index": 0,
+        "value": "顾客进入→菜单查看→点餐→等候→取餐→就餐→离开",
+        "classification": {
+          "classification": "functional",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 0,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "functionalNetwork",
+        "index": 1,
+        "value": "员工动线：厨房→出餐口→清洁区，与顾客动线最小交叉",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 2,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "functionalNetwork",
+        "index": 2,
+        "value": "外带动线：点餐→等候→取餐→离开，与堂食区域部分分离",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 3,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "functionalRelationships",
+        "index": 0,
+        "value": "入口区与点餐区直接相连，视觉引导清晰",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 3,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "functionalRelationships",
+        "index": 1,
+        "value": "点餐区与等候区相邻，便于顾客停留",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "functionalRelationships",
+        "index": 2,
+        "value": "等候区与就餐区部分分隔，减少干扰",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 2,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "functionalRelationships",
+        "index": 3,
+        "value": "厨房区与出餐口紧密相连，与就餐区部分可见",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "functionalRelationships",
+        "index": 4,
+        "value": "外带取餐区与堂食就餐区部分分离，减少交叉",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "mustBeVisible",
+        "index": 0,
+        "value": "入口处的菜单",
+        "classification": {
+          "classification": "functional",
+          "classificationReason": "visible_service_artifact",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "mustBeVisible",
+        "index": 1,
+        "value": "点餐区的清晰指示",
+        "classification": {
+          "classification": "architectural",
+          "classificationReason": "existing_architectural_rule",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "mustBeVisible",
+        "index": 2,
+        "value": "就餐区的舒适座椅和桌面",
+        "classification": {
+          "classification": "architectural",
+          "classificationReason": "existing_architectural_rule",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 2,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "mustBeVisible",
+        "index": 3,
+        "value": "厨房区域的部分可见性",
+        "classification": {
+          "classification": "architectural",
+          "classificationReason": "existing_architectural_rule",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 2,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "sceneProgram",
+        "index": 0,
+        "value": "品牌入口：菜单",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "sceneProgram",
+        "index": 1,
+        "value": "点餐区：自助点餐机、人工点餐台、菜单展示",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "sceneProgram",
+        "index": 2,
+        "value": "等候区：座位",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "sceneProgram",
+        "index": 3,
+        "value": "等候区：取餐提示",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "sceneProgram",
+        "index": 4,
+        "value": "就餐区：桌椅",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "sceneProgram",
+        "index": 5,
+        "value": "就餐区：照明",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "sceneProgram",
+        "index": 6,
+        "value": "厨房区：部分开放、烹饪展示",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "sceneProgram",
+        "index": 7,
+        "value": "外带区：取餐台、包装区",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "brandRoleManifestation",
+        "index": 0,
+        "value": "通过现代几何形态转译圆形冯字标识，作为空间焦点",
+        "classification": {
+          "classification": "decorative_identity",
+          "motifHits": [
+            "标识"
+          ],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": true,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "brandRoleManifestation",
+        "index": 1,
+        "value": "层次化应用红黑配色，以中性色为基底，红色为点缀，黑色为框架",
+        "classification": {
+          "classification": "color_accent",
+          "motifHits": [],
+          "colorHits": [
+            "红",
+            "黑"
+          ],
+          "archHits": 3,
+          "propertyHits": 1,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "brandRoleManifestation",
+        "index": 2,
+        "value": "通过材质和光影表现四川文化特质，而非直接符号堆砌",
+        "classification": {
+          "classification": "brand_motif",
+          "motifHits": [
+            "符号"
+          ],
+          "colorHits": [],
+          "archHits": 0,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "brandRoleManifestation",
+        "index": 3,
+        "value": "产品影像应以艺术化方式融入空间，而非简单放大",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "brandRoleManifestation",
+        "index": 4,
+        "value": "品牌标识吸引",
+        "classification": {
+          "classification": "decorative_identity",
+          "motifHits": [
+            "标识"
+          ],
+          "colorHits": [],
+          "archHits": 0,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": true,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "brandRoleManifestation",
+        "index": 5,
+        "value": "入口处的品牌标识",
+        "classification": {
+          "classification": "decorative_identity",
+          "motifHits": [
+            "标识"
+          ],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": true,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "brandRoleManifestation",
+        "index": 6,
+        "value": "品牌色彩系统的层次化应用",
+        "classification": {
+          "classification": "brand_motif",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 2,
+          "propertyHits": 1,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "brandRoleManifestation",
+        "index": 7,
+        "value": "品牌入口：标识",
+        "classification": {
+          "classification": "decorative_identity",
+          "motifHits": [
+            "标识"
+          ],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": true,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "brandRoleManifestation",
+        "index": 8,
+        "value": "品牌入口：吸引力",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "brandRoleManifestation",
+        "index": 9,
+        "value": "等候区：品牌影像",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      },
+      {
+        "field": "brandRoleManifestation",
+        "index": 10,
+        "value": "就餐区：品牌元素",
+        "classification": {
+          "classification": "architectural",
+          "motifHits": [],
+          "colorHits": [],
+          "archHits": 1,
+          "propertyHits": 0,
+          "metaphor": false,
+          "accent": false,
+          "geometryAction": false
+        }
+      }
+    ]
+  },
+  "networkAttempts": 0,
+  "candidateModelAttempts": 0,
+  "sourcePacketMutated": false,
+  "formalProjectStateChanged": false,
+  "notFormalAnalysisSuccess": true,
+  "notImageQualityAcceptance": true
+}
