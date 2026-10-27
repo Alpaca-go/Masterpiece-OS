@@ -1,0 +1,1649 @@
+{
+  "networkAttempts": 0,
+  "records": [
+    {
+      "case": "design-direction",
+      "kind": "raw_form_field_grammar_coverage",
+      "validation": {
+        "schemaVersion": "1.0",
+        "version": "space-spatial-semantic-gate@1.1.0",
+        "status": "block",
+        "findings": [
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[0]",
+            "classification": "architectural",
+            "original": "Reception: a usable reception counter connects to waiting area seating through clear visitor circulation.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 3,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalRelationships",
+            "path": "mediaTranslations.spatial.functionalRelationships[0]",
+            "classification": "architectural",
+            "original": "Reception and waiting share readable circulation; preserve the consultation privacy boundary while other room interiors remain off frame.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 4,
+              "propertyHits": 1,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "sceneProgram",
+            "path": "mediaTranslations.spatial.sceneProgram[0]",
+            "classification": "architectural",
+            "original": "接待大厅",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "sceneProgram",
+            "path": "mediaTranslations.spatial.sceneProgram[2]",
+            "classification": "architectural",
+            "original": "候客区",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "case": "architectural-language",
+      "kind": "raw_form_field_grammar_coverage",
+      "validation": {
+        "schemaVersion": "1.0",
+        "version": "space-spatial-semantic-gate@1.1.0",
+        "status": "block",
+        "findings": [
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[0]",
+            "classification": "architectural",
+            "original": "Reception: arrival circulation reaches a usable reception counter and an integrated waiting area with grouped seating and pause space.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 3,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[1]",
+            "classification": "architectural",
+            "original": "Reception: the waiting area and art pause space open into a broad semi-open transition hall with an offset onward access boundary.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 5,
+              "propertyHits": 2,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[2]",
+            "classification": "architectural",
+            "original": "Reception: staff and visitors retain practical onward access without crossing seated guests or blocking the arrival path.",
+            "reason": "negated_scope",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalRelationships",
+            "path": "mediaTranslations.spatial.functionalRelationships[0]",
+            "classification": "architectural",
+            "original": "Reception and waiting share readable circulation; the semi-open transition maintains consultation privacy through offset screened access while other room interiors remain off frame.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 6,
+              "propertyHits": 1,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalRelationships",
+            "path": "mediaTranslations.spatial.functionalRelationships[1]",
+            "classification": "architectural",
+            "original": "Reception: arrival leads to reception service then waiting and art pause then open transition then the privacy boundary.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 4,
+              "propertyHits": 2,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "sceneProgram",
+            "path": "mediaTranslations.spatial.sceneProgram[0]",
+            "classification": "architectural",
+            "original": "接待大厅",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "sceneProgram",
+            "path": "mediaTranslations.spatial.sceneProgram[2]",
+            "classification": "architectural",
+            "original": "候客区",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "sceneProgram",
+            "path": "mediaTranslations.spatial.sceneProgram[3]",
+            "classification": "architectural",
+            "original": "半开放艺术停留与过渡区",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 1,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "case": "architectural-integration",
+      "kind": "raw_form_field_grammar_coverage",
+      "validation": {
+        "schemaVersion": "1.0",
+        "version": "space-spatial-semantic-gate@1.1.0",
+        "status": "block",
+        "findings": [
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[0]",
+            "classification": "architectural",
+            "original": "Reception: the foreground arrival zone opens a clear path toward a usable reception service counter before branching to grouped waiting seats and small tables.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 3,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[1]",
+            "classification": "architectural",
+            "original": "Reception: grouped waiting and art pause share the edge of a continuous architectural sheet system with views through its gaps toward the semi-open transition.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 3,
+              "propertyHits": 2,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[2]",
+            "classification": "architectural",
+            "original": "Reception: the background semi-open transition leads visibly to a staggered screened onward access boundary without blocking the main arrival route.",
+            "reason": "negated_scope",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 5,
+              "propertyHits": 2,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[3]",
+            "classification": "architectural",
+            "original": "Reception: the service sequence is arrival then reception then waiting and art pause then semi-open transition then a staggered privacy boundary; staff access remains practical and separate from seated guests.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 5,
+              "propertyHits": 2,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalRelationships",
+            "path": "mediaTranslations.spatial.functionalRelationships[0]",
+            "classification": "architectural",
+            "original": "Reception and waiting remain visually linked across the translucent architectural interface; the integrated art edge guides circulation toward the visible semi-open transition.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 6,
+              "propertyHits": 2,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalRelationships",
+            "path": "mediaTranslations.spatial.functionalRelationships[1]",
+            "classification": "architectural",
+            "original": "Reception: the semi-open transition maintains a staggered screened access boundary and practical onward circulation; consultation privacy remains protected while other room interiors stay off frame.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 7,
+              "propertyHits": 2,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "sceneProgram",
+            "path": "mediaTranslations.spatial.sceneProgram[0]",
+            "classification": "architectural",
+            "original": "入口到达与通行区",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "sceneProgram",
+            "path": "mediaTranslations.spatial.sceneProgram[1]",
+            "classification": "architectural",
+            "original": "主厅接待服务区",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "sceneProgram",
+            "path": "mediaTranslations.spatial.sceneProgram[2]",
+            "classification": "architectural",
+            "original": "成组候客与艺术停留区",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "sceneProgram",
+            "path": "mediaTranslations.spatial.sceneProgram[3]",
+            "classification": "architectural",
+            "original": "背景半开放过渡区",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 1,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": true
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "sceneProgram",
+            "path": "mediaTranslations.spatial.sceneProgram[4]",
+            "classification": "architectural",
+            "original": "错位私密入口边界",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 1,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "case": "architectural-refinement",
+      "kind": "raw_form_field_grammar_coverage",
+      "validation": {
+        "schemaVersion": "1.0",
+        "version": "space-spatial-semantic-gate@1.1.0",
+        "status": "block",
+        "findings": [
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[0]",
+            "classification": "architectural",
+            "original": "Reception: arrival circulation naturally reaches the visitor service face of a counter integrated with the architectural interface; a usable staff work face and staff access sit behind it.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[1]",
+            "classification": "architectural",
+            "original": "Reception: reception service and a generous grouped waiting area spread laterally across the open main hall, joined by clear visitor circulation rather than a single longitudinal passage.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 3,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[2]",
+            "classification": "architectural",
+            "original": "Reception: waiting seats and small tables face one another for real waiting and conversation, with room to pass around them; some seats stand free of the art edge while remaining visually connected to it.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[3]",
+            "classification": "architectural",
+            "original": "Reception: the visible background semi-open transition progresses through recessed and staggered interfaces to a screened onward access boundary with staff circulation clear of the seated guest area.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 6,
+              "propertyHits": 2,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalRelationships",
+            "path": "mediaTranslations.spatial.functionalRelationships[0]",
+            "classification": "architectural",
+            "original": "Reception and waiting remain visually linked across an open lateral main hall; gaps in the integrated translucent architectural interface reveal the semi-open transition.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 4,
+              "propertyHits": 2,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalRelationships",
+            "path": "mediaTranslations.spatial.functionalRelationships[1]",
+            "classification": "architectural",
+            "original": "Reception: the semi-open transition connects to discreet screened consultation and operational entrances; consultation privacy remains protected while other room interiors stay off frame.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 7,
+              "propertyHits": 1,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "sceneProgram",
+            "path": "mediaTranslations.spatial.sceneProgram[0]",
+            "classification": "architectural",
+            "original": "入口到达与通行区",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "sceneProgram",
+            "path": "mediaTranslations.spatial.sceneProgram[1]",
+            "classification": "architectural",
+            "original": "主厅接待服务区",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "sceneProgram",
+            "path": "mediaTranslations.spatial.sceneProgram[2]",
+            "classification": "architectural",
+            "original": "成组候客与艺术停留区",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "sceneProgram",
+            "path": "mediaTranslations.spatial.sceneProgram[3]",
+            "classification": "architectural",
+            "original": "背景半开放过渡区",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 1,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": true
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "sceneProgram",
+            "path": "mediaTranslations.spatial.sceneProgram[4]",
+            "classification": "architectural",
+            "original": "错位私密入口边界",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 1,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "case": "architecture-commercial-layer",
+      "kind": "raw_form_field_grammar_coverage",
+      "validation": {
+        "schemaVersion": "1.0",
+        "version": "space-spatial-semantic-gate@1.1.0",
+        "status": "block",
+        "findings": [
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[0]",
+            "classification": "architectural",
+            "original": "Reception: arrival first reveals the complete visitor service face, then gives a clear approach to the counter before branching to waiting and a single onward service threshold; a usable staff work face and staff access remain behind the counter for check-in and appointment service.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[1]",
+            "classification": "architectural",
+            "original": "Reception: reception service and a generous grouped waiting area spread laterally across the open main hall, joined by clear visitor circulation rather than a single longitudinal passage.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 3,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[2]",
+            "classification": "architectural",
+            "original": "Reception: one sofa and armchair group faces small tables for waiting and brief conversation, with circulation around the group; the service relationship remains understandable even when no people are present.",
+            "reason": "negated_scope",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[3]",
+            "classification": "architectural",
+            "original": "Reception: one legible semi-open service threshold is reached from reception and waiting; a staggered solid return screens onward access, with staff circulation clear of the seated guest area.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 5,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalRelationships",
+            "path": "mediaTranslations.spatial.functionalRelationships[0]",
+            "classification": "architectural",
+            "original": "Reception and waiting remain visually linked across an open lateral main hall; gaps in the integrated translucent architectural interface reveal the semi-open transition.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 4,
+              "propertyHits": 2,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalRelationships",
+            "path": "mediaTranslations.spatial.functionalRelationships[1]",
+            "classification": "architectural",
+            "original": "Reception: the single semi-open service threshold screens subsequent consultation and care access behind an offset solid interface; consultation privacy remains protected while other room interiors stay off frame.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 5,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "sceneProgram",
+            "path": "mediaTranslations.spatial.sceneProgram[0]",
+            "classification": "architectural",
+            "original": "入口到达与通行区",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "sceneProgram",
+            "path": "mediaTranslations.spatial.sceneProgram[1]",
+            "classification": "architectural",
+            "original": "主厅接待服务区",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "sceneProgram",
+            "path": "mediaTranslations.spatial.sceneProgram[2]",
+            "classification": "architectural",
+            "original": "成组候客与艺术停留区",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "sceneProgram",
+            "path": "mediaTranslations.spatial.sceneProgram[3]",
+            "classification": "architectural",
+            "original": "背景半开放过渡区",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 1,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": true
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "sceneProgram",
+            "path": "mediaTranslations.spatial.sceneProgram[4]",
+            "classification": "architectural",
+            "original": "错位私密入口边界",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 1,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "case": "commercial-attribute",
+      "kind": "raw_form_field_grammar_coverage",
+      "validation": {
+        "schemaVersion": "1.0",
+        "version": "space-spatial-semantic-gate@1.1.0",
+        "status": "block",
+        "findings": [
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[0]",
+            "classification": "architectural",
+            "original": "Reception: arrival circulation naturally reaches the visitor service face of a counter integrated with the architectural interface; a usable staff work face and staff access sit behind it, supporting check-in and appointment service while the visitor approach stays clear.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[1]",
+            "classification": "architectural",
+            "original": "Reception: reception service and a generous grouped waiting area spread laterally across the open main hall, joined by clear visitor circulation rather than a single longitudinal passage.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 3,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[2]",
+            "classification": "architectural",
+            "original": "Reception: waiting seats and small tables face one another for real waiting and conversation, with room to pass around them; some seats stand free of the art edge while remaining visually connected to it, supporting a quiet stay and brief review of service information before the onward handoff.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[3]",
+            "classification": "architectural",
+            "original": "Reception: the visible background semi-open transition progresses through recessed and staggered interfaces to a screened onward access boundary with staff circulation clear of the seated guest area; this is a staff-guided service threshold, easy to locate from reception rather than an empty background passage.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 8,
+              "propertyHits": 2,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalRelationships",
+            "path": "mediaTranslations.spatial.functionalRelationships[0]",
+            "classification": "architectural",
+            "original": "Reception and waiting remain visually linked across an open lateral main hall; gaps in the integrated translucent architectural interface reveal the semi-open transition.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 4,
+              "propertyHits": 2,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalRelationships",
+            "path": "mediaTranslations.spatial.functionalRelationships[1]",
+            "classification": "architectural",
+            "original": "Reception: the semi-open transition connects to discreet screened consultation and operational entrances; consultation privacy remains protected while other room interiors stay off frame.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 7,
+              "propertyHits": 1,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "sceneProgram",
+            "path": "mediaTranslations.spatial.sceneProgram[0]",
+            "classification": "architectural",
+            "original": "入口到达与通行区",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "sceneProgram",
+            "path": "mediaTranslations.spatial.sceneProgram[1]",
+            "classification": "architectural",
+            "original": "主厅接待服务区",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "sceneProgram",
+            "path": "mediaTranslations.spatial.sceneProgram[2]",
+            "classification": "architectural",
+            "original": "成组候客与艺术停留区",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "sceneProgram",
+            "path": "mediaTranslations.spatial.sceneProgram[3]",
+            "classification": "architectural",
+            "original": "背景半开放过渡区",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 1,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": true
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "sceneProgram",
+            "path": "mediaTranslations.spatial.sceneProgram[4]",
+            "classification": "architectural",
+            "original": "错位私密入口边界",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 1,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "case": "fig2-fig3-spatial-direction",
+      "kind": "raw_form_field_grammar_coverage",
+      "validation": {
+        "schemaVersion": "1.0",
+        "version": "space-spatial-semantic-gate@1.1.0",
+        "status": "block",
+        "findings": [
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[0]",
+            "classification": "architectural",
+            "original": "Reception: arrival reveals the complete visitor-facing reception counter and a clear approach, with a usable staff work surface and staff access behind it for check-in and appointment service.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": true
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[1]",
+            "classification": "architectural",
+            "original": "Reception: the complete counter and grouped waiting area connect laterally across the open hall, with generous circulation rather than a narrow central corridor.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 5,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[2]",
+            "classification": "architectural",
+            "original": "Reception: one complete sofa and armchair group faces small tables for sitting and conversation, with space to approach, sit and circulate around the group, understandable without people.",
+            "reason": "negated_scope",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[3]",
+            "classification": "architectural",
+            "original": "Reception: visitors move from the counter or waiting group to a legible semi-open onward service area within the hall, where a small table and paired seats make the next service conversation readable through a transparent or staggered boundary; staff access stays clear of seated guests.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 4,
+              "propertyHits": 2,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalRelationships",
+            "path": "mediaTranslations.spatial.functionalRelationships[0]",
+            "classification": "architectural",
+            "original": "Reception and waiting remain visually connected across the open lateral hall; a restrained translucent partition defines the semi-open onward service area without hiding its table and seating relationship.",
+            "reason": "negated_scope",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 6,
+              "propertyHits": 1,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": true
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalRelationships",
+            "path": "mediaTranslations.spatial.functionalRelationships[1]",
+            "classification": "architectural",
+            "original": "Reception: an offset solid return beyond the semi-open service area protects private care access; treatment activity and private room interiors remain off frame.",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 3,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "sceneProgram",
+            "path": "mediaTranslations.spatial.sceneProgram[0]",
+            "classification": "architectural",
+            "original": "入口到达与清楚的分流区",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "sceneProgram",
+            "path": "mediaTranslations.spatial.sceneProgram[1]",
+            "classification": "architectural",
+            "original": "正式接待与员工工作区",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "sceneProgram",
+            "path": "mediaTranslations.spatial.sceneProgram[2]",
+            "classification": "architectural",
+            "original": "成组候客与短时交流区",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "sceneProgram",
+            "path": "mediaTranslations.spatial.sceneProgram[3]",
+            "classification": "architectural",
+            "original": "主厅内半开放后续服务洽谈区",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "sceneProgram",
+            "path": "mediaTranslations.spatial.sceneProgram[4]",
+            "classification": "architectural",
+            "original": "通向私密服务的受屏蔽过渡边界",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 2,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "case": "custom-preview",
+      "status": "block",
+      "code": "SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK",
+      "findings": [
+        {
+          "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+          "severity": "block",
+          "field": "functionalNetwork",
+          "path": "mediaTranslations.spatial.functionalNetwork[0]",
+          "classification": "architectural",
+          "original": "展示界面连接比较工作台，服务通道位于两侧",
+          "reason": "complete_functional_evidence_required",
+          "analysis": {
+            "classification": "architectural",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 2,
+            "propertyHits": 0,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          }
+        }
+      ]
+    },
+    {
+      "case": "reference-first",
+      "status": "block",
+      "code": "SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK",
+      "findings": [
+        {
+          "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+          "severity": "block",
+          "field": "functionalNetwork",
+          "path": "mediaTranslations.spatial.functionalNetwork[0]",
+          "classification": "architectural",
+          "original": "清晰进入咨询单元的过渡，不经过公共等候层级",
+          "reason": "complete_functional_evidence_required",
+          "analysis": {
+            "classification": "architectural",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 2,
+            "propertyHits": 1,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": true
+          }
+        },
+        {
+          "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+          "severity": "block",
+          "field": "functionalNetwork",
+          "path": "mediaTranslations.spatial.functionalNetwork[1]",
+          "classification": "architectural",
+          "original": "咨询单元内部简洁动线，不穿越公共大厅",
+          "reason": "complete_functional_evidence_required",
+          "analysis": {
+            "classification": "architectural",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 1,
+            "propertyHits": 0,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          }
+        },
+        {
+          "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+          "severity": "block",
+          "field": "functionalNetwork",
+          "path": "mediaTranslations.spatial.functionalNetwork[2]",
+          "classification": "architectural",
+          "original": "半私密到私密边界",
+          "reason": "complete_functional_evidence_required",
+          "analysis": {
+            "classification": "architectural",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 1,
+            "propertyHits": 1,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          }
+        },
+        {
+          "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+          "severity": "block",
+          "field": "functionalNetwork",
+          "path": "mediaTranslations.spatial.functionalNetwork[3]",
+          "classification": "architectural",
+          "original": "与公共接待 / 等候区明确区分",
+          "reason": "complete_functional_evidence_required",
+          "analysis": {
+            "classification": "architectural",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 2,
+            "propertyHits": 0,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          }
+        },
+        {
+          "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+          "severity": "block",
+          "field": "functionalRelationships",
+          "path": "mediaTranslations.spatial.functionalRelationships[0]",
+          "classification": "functional",
+          "original": "consultation is primary",
+          "reason": "complete_functional_evidence_required",
+          "analysis": {
+            "classification": "functional",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 0,
+            "propertyHits": 0,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          }
+        },
+        {
+          "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+          "severity": "block",
+          "field": "functionalRelationships",
+          "path": "mediaTranslations.spatial.functionalRelationships[1]",
+          "classification": "functional",
+          "original": "seating supports 1-to-1 / 1-to-2",
+          "reason": "complete_functional_evidence_required",
+          "analysis": {
+            "classification": "functional",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 0,
+            "propertyHits": 0,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          }
+        },
+        {
+          "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+          "severity": "block",
+          "field": "functionalRelationships",
+          "path": "mediaTranslations.spatial.functionalRelationships[2]",
+          "classification": "architectural",
+          "original": "semi-private boundary supports confidential discussion",
+          "reason": "complete_functional_evidence_required",
+          "analysis": {
+            "classification": "architectural",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 1,
+            "propertyHits": 1,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          }
+        },
+        {
+          "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+          "severity": "block",
+          "field": "functionalRelationships",
+          "path": "mediaTranslations.spatial.functionalRelationships[3]",
+          "classification": "architectural",
+          "original": "enter the consultation unit without a lobby hierarchy",
+          "reason": "negated_scope",
+          "analysis": {
+            "classification": "architectural",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 2,
+            "propertyHits": 0,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          }
+        },
+        {
+          "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+          "severity": "block",
+          "field": "functionalRelationships",
+          "path": "mediaTranslations.spatial.functionalRelationships[4]",
+          "classification": "functional",
+          "original": "information display within advisor-client reach",
+          "reason": "complete_functional_evidence_required",
+          "analysis": {
+            "classification": "functional",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 0,
+            "propertyHits": 0,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          }
+        },
+        {
+          "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+          "severity": "block",
+          "field": "functionalRelationships",
+          "path": "mediaTranslations.spatial.functionalRelationships[5]",
+          "classification": "functional",
+          "original": "lightweight secondary equipment",
+          "reason": "complete_functional_evidence_required",
+          "analysis": {
+            "classification": "functional",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 0,
+            "propertyHits": 0,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          }
+        }
+      ]
+    },
+    {
+      "case": "historical-design-pure-compile",
+      "status": "block",
+      "code": "SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK",
+      "findings": [
+        {
+          "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+          "severity": "block",
+          "field": "functionalNetwork",
+          "path": "mediaTranslations.spatial.functionalNetwork[0]",
+          "classification": "functional",
+          "original": "位置与设置方式待确认",
+          "reason": "conditional_or_unconfirmed_scope",
+          "analysis": {
+            "classification": "functional",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 0,
+            "propertyHits": 0,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          }
+        },
+        {
+          "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+          "severity": "block",
+          "field": "functionalRelationships",
+          "path": "mediaTranslations.spatial.functionalRelationships[0]",
+          "classification": "architectural",
+          "original": "Kitchen preparation connects to service counter; dining tables remain accessible; takeaway handoff keeps a clear route",
+          "reason": "complete_functional_evidence_required",
+          "analysis": {
+            "classification": "architectural",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 1,
+            "propertyHits": 0,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          }
+        }
+      ]
+    },
+    {
+      "case": "B1-shadow-pure-compile",
+      "status": "block",
+      "code": "SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK",
+      "findings": [
+        {
+          "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+          "severity": "block",
+          "field": "functionalRelationships",
+          "path": "mediaTranslations.spatial.functionalRelationships[0]",
+          "classification": "functional",
+          "original": "takeaway handoff keeps a clear route",
+          "reason": "complete_functional_evidence_required",
+          "analysis": {
+            "classification": "functional",
+            "motifHits": [],
+            "colorHits": [],
+            "archHits": 0,
+            "propertyHits": 0,
+            "metaphor": false,
+            "accent": false,
+            "geometryAction": false
+          }
+        }
+      ]
+    }
+  ]
+}

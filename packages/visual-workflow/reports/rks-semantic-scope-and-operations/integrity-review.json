@@ -1,0 +1,59 @@
+{
+  "manifestPath": "packages/visual-workflow/implementation-integrity.json",
+  "manifestBeforeSha256": "85947e556d9467837f7583c106f5f7fec10f65207ed9b2c31b410ae7c2f13bec",
+  "manifestAfterSha256": "85947e556d9467837f7583c106f5f7fec10f65207ed9b2c31b410ae7c2f13bec",
+  "manifestChangedEntries": 0,
+  "drift": [
+    {
+      "path": "src/analysis-decisions/analysis-completion-orchestrator.js",
+      "manifestSha256": "9577c3d59c4d8869cb11e563163f49ad9bc324dda05855a32664f891cf1338ae",
+      "baselineBlobSha256": "012ce13cc950546958f0dcc36e39f4b60c0dd5bb6465a25909ec785e0671d25b",
+      "beforeDiskSha256": "012ce13cc950546958f0dcc36e39f4b60c0dd5bb6465a25909ec785e0671d25b",
+      "afterDiskSha256": "012ce13cc950546958f0dcc36e39f4b60c0dd5bb6465a25909ec785e0671d25b"
+    },
+    {
+      "path": "src/generation-runtime/core/space-generation-core.js",
+      "manifestSha256": "56b85e5b2719da1860cf2f4f1ae9dff4ebcf9af34c8460380fd56e8dc67c1c9a",
+      "baselineBlobSha256": "4dd49955c536f676916cf1a99c0b09ba498f5ed7bc49608e8e8339dbac8cd7d5",
+      "beforeDiskSha256": "4dd49955c536f676916cf1a99c0b09ba498f5ed7bc49608e8e8339dbac8cd7d5",
+      "afterDiskSha256": "4dd49955c536f676916cf1a99c0b09ba498f5ed7bc49608e8e8339dbac8cd7d5"
+    },
+    {
+      "path": "src/generation-runtime/space/semantic/separate-space-semantics.js",
+      "manifestSha256": "9867c041bd560bd968575deb9261f25494603b116e9a7e7ea39c15daeaf799a2",
+      "baselineBlobSha256": "7e9fba30bb8425b61b3a193a20a545b102b37086e13f7872fc14a8931f704e74",
+      "beforeDiskSha256": "7e9fba30bb8425b61b3a193a20a545b102b37086e13f7872fc14a8931f704e74",
+      "afterDiskSha256": "e8615c0cc49176769cc39f9b9393767b318b9de1b28a65e2fce20b869fb2bed0"
+    },
+    {
+      "path": "src/generation-runtime/space/semantic/validate-spatial-semantics.js",
+      "manifestSha256": "ab7b12cdbc4cb9a67b71001e0be38bd4abfaa46b960dcd65558916ab49728288",
+      "baselineBlobSha256": "482efec843a0cdb113c3914fe051fcea1e5a768ec437517636a2ed089c18e81f",
+      "beforeDiskSha256": "482efec843a0cdb113c3914fe051fcea1e5a768ec437517636a2ed089c18e81f",
+      "afterDiskSha256": "ff084eedfeb19d4ae177788fccc2f792cea41ed80cad6d02ab1af1a3dc162932"
+    },
+    {
+      "path": "src/runtime/pipeline-service.js",
+      "manifestSha256": "f8a4fe7344a6c08ce2567277856203cbb88849a264fa5c277051bc6177fb8147",
+      "baselineBlobSha256": "59a61098145fea27f0bfe47f13cd5c4e160af75fea5c70a0859804dbebc95808",
+      "beforeDiskSha256": "59a61098145fea27f0bfe47f13cd5c4e160af75fea5c70a0859804dbebc95808",
+      "afterDiskSha256": "59a61098145fea27f0bfe47f13cd5c4e160af75fea5c70a0859804dbebc95808"
+    }
+  ],
+  "productionChanges": [
+    {
+      "file": "packages/visual-workflow/src/generation-runtime/space/semantic/separate-space-semantics.js",
+      "sha256": "7e9fba30bb8425b61b3a193a20a545b102b37086e13f7872fc14a8931f704e74",
+      "beforeSha256": "7e9fba30bb8425b61b3a193a20a545b102b37086e13f7872fc14a8931f704e74",
+      "afterSha256": "e8615c0cc49176769cc39f9b9393767b318b9de1b28a65e2fce20b869fb2bed0",
+      "authorizedProductionChange": true
+    },
+    {
+      "file": "packages/visual-workflow/src/generation-runtime/space/semantic/validate-spatial-semantics.js",
+      "sha256": "482efec843a0cdb113c3914fe051fcea1e5a768ec437517636a2ed089c18e81f",
+      "beforeSha256": "482efec843a0cdb113c3914fe051fcea1e5a768ec437517636a2ed089c18e81f",
+      "afterSha256": "ff084eedfeb19d4ae177788fccc2f792cea41ed80cad6d02ab1af1a3dc162932",
+      "authorizedProductionChange": true
+    }
+  ]
+}

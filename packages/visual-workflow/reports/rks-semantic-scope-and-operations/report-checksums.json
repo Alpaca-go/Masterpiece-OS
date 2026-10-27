@@ -1,0 +1,73 @@
+{
+  "files": [
+    {
+      "path": "e1e-probes.json",
+      "sizeBytes": 60320,
+      "sha256": "68f81edc38849e76fbf5aa3d3ca4b54dd9a41e883609d8c1305b27ab07fc14e5"
+    },
+    {
+      "path": "failure-attribution.json",
+      "sizeBytes": 95289,
+      "sha256": "ccafe6e8b7d2bf46c3d28a85c188a254c9a74f9ab7d620ed6e1ba6c885659e5c"
+    },
+    {
+      "path": "failure-diagnostics.json",
+      "sizeBytes": 65407,
+      "sha256": "02bf8aa3c8ab3d7e3402595d379d8af3521e5ff0e785c110ef415af18ba4b959"
+    },
+    {
+      "path": "FAILURES.md",
+      "sizeBytes": 12949,
+      "sha256": "177cd1df0ba4689d716eb406968f076ccd8da1aacf82707deeaa01ce257ae5ff"
+    },
+    {
+      "path": "historical-replay.json",
+      "sizeBytes": 37166,
+      "sha256": "6c773beada12141d344c36bb7e76651364cffa763d734865c8fb2f0dd69a43b1"
+    },
+    {
+      "path": "integrity-review.json",
+      "sizeBytes": 3493,
+      "sha256": "6cd3233a2ecbcbdfa23c63b26c0e9d3341708e27e2f64a3d036896f74950de88"
+    },
+    {
+      "path": "production-diff.patch",
+      "sizeBytes": 29172,
+      "sha256": "ebffb1e2184969edb6a616eabb475d8dc8a023fe94f37a8cd34b986308b23fb6"
+    },
+    {
+      "path": "protected-files.json",
+      "sizeBytes": 1227672,
+      "sha256": "75671ea3b808aec69e3a1045bbe14067f9d095a5440e9371a1eb97cd52e49f38"
+    },
+    {
+      "path": "protected-roots.json",
+      "sizeBytes": 31242,
+      "sha256": "9ba76295ed45786f334ee175b7689a6088e59b6909cb0ff6d98b95be83fb8c7a"
+    },
+    {
+      "path": "README.md",
+      "sizeBytes": 16733,
+      "sha256": "f0d4a9e4d0fefdeca3182650ff77a2007cab472dd95b56380b554e72c683074c"
+    },
+    {
+      "path": "source-state-preservation.json",
+      "sizeBytes": 198,
+      "sha256": "a6235ad2bedaac8eb358a495bdb7025ba1e73dc18aba8245a98d8bb2bbec8610"
+    },
+    {
+      "path": "test-cases.json",
+      "sizeBytes": 806043,
+      "sha256": "0de15c93bd16c8cf303f9d50ffbcaea2a8c03d4d18cab212274a0ab9c7eecd6f"
+    },
+    {
+      "path": "test-results.json",
+      "sizeBytes": 29887,
+      "sha256": "b2288629872f229e8da819950a3ce731369b282009f896b297d09c2508b59c94"
+    }
+  ],
+  "newRegressionTest": {
+    "path": "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/scope-and-operations.test.ts",
+    "sha256": "daa5bf5b4246c2e9d8992c89330027e8fe268784706527f2566aceda87974a24"
+  }
+}
