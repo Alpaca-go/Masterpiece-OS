@@ -1,0 +1,71 @@
+import fs from 'node:fs';
+import {networkAttempts} from './network-deny.mjs';
+const root=new URL('../../',import.meta.url);
+const load=p=>import(new URL(p,root));
+const read=p=>JSON.parse(fs.readFileSync(new URL(p,root),'utf8'));
+const base='packages/visual-workflow/';
+const {validateSpatialSemantics:validate,separateSpatialFunctionalSemantics:separate,demoteDecorativeObjectFromFunctionalLayer:demote}=await load(base+'src/generation-runtime/space/semantic/validate-spatial-semantics.js');
+const {adaptSpaceSource:adapt}=await load(base+'src/generation-runtime/space/source-adapter.js');
+const {compileSpacePrompt:compile}=await load(base+'src/generation-runtime/space/compiler.js');
+const {scopeSourceEntries}=await load(base+'src/generation-runtime/space/scene-projection/target-scene-projection.js');
+const {structuredAnalysisPacketFixture:fixture}=await load('tests/runtime-application/analysis-runtime-fixtures.ts');
+const {sceneInput}=await load(base+'tests/scene-authority-cases.ts');
+const {customInput}=await load(base+'tests/methodology/custom-compatibility-fixture.ts');
+const {makeFidelityFixture}=await load(base+'tests/restaurant-knowledge/ftt-fidelity-fixture.ts');
+const {makeFinalDesignFixture}=await load(base+'tests/restaurant-knowledge/ftt-final-design-fixture.ts');
+const {taskFor,scenes}=await load(base+'tests/restaurant-knowledge/ftt-fidelity-comparison.ts');
+const {syntheticCompilePacket}=await load(base+'tests/restaurant-knowledge/shadow-fixtures.ts');
+const fields=['functionalNetwork','functionalRelationships','mustBeVisible','operationConstraints','requiredSpatialElements','sceneProgram'];
+const records=[];
+const clean=v=>String(v).trim().replace(/\s+/gu,' ');
+function trace(id,input,source,precision='exact_fixture_input') {
+  const before=JSON.stringify(input), spatial=input.packet.mediaTranslations.spatial;
+  const r={id,source,precision,task:input.taskContract,sourceProvenance:input.packet.provenance??null,projectFacts:input.packet.projectFacts,
+    rawFields:Object.fromEntries(fields.map(f=>[f,spatial[f]??null])),rawValidation:validate(spatial),
+    separationProbe:separate(spatial),normalizationProbe:Object.fromEntries(fields.map(f=>[f,(spatial[f]??[]).map(v=>({original:v,cleaned:clean(v),demoted:demote(clean(v),f==='sceneProgram'?'functionalNetwork':f)}))]))};
+  try {
+    const l=adapt(input);
+    r.layers={raw:l._raw,bridge:l.architectureFunctionBridge,composition:l.composition,targetSceneProjection:l.targetSceneProjection};
+    r.sceneScope=l.decisionTrace?.sceneScope??[];
+    r.finalGateInput={functionalNetwork:l._raw?.functionalNetwork??[],functionalRelationships:l.architectureFunctionBridge?.operationConstraints??[],mustBeVisible:l.composition?.mustBeVisible??[]};
+    r.finalGate=validate(r.finalGateInput);
+    try {const c=compile(input);r.compiler={status:'pass',note:'pure compile only, no generation task dispatched',promptCharacters:c.finalPrompt.length};}
+    catch(e){r.compiler={status:'block',code:e.code,message:e.message,findings:e.findings??[]};}
+  } catch(e){r.adapter={status:'block',code:e.code,message:e.message};}
+  r.inputUnchanged=JSON.stringify(input)===before;
+  records.push(r);
+}
+for(const name of ['design-direction','architectural-language','architectural-integration','architectural-refinement','architecture-commercial-layer','commercial-attribute','fig2-fig3-spatial-direction']) {
+  const form=read(base+'tests/'+name+'-form.json').fields,p=fixture();
+  for(const [key,from] of Object.entries({sceneProgram:'functionalProgram',functionalNetwork:'functionalNetwork',functionalRelationships:'functionalRelationships',mustBeVisible:'visibleRequirements'}))p.mediaTranslations.spatial[key]=String(form[from]??'').split('\n').map(s=>s.trim()).filter(Boolean);
+  trace(name,{packet:p,taskContract:{projectId:p.projectId,generationBasis:'standard',subtype:'reception',shot:'entrance_view'},projectContext:{}},base+'tests/'+name+'-form.json','four_fields_exact; other_fields_fixture; no_new_confirmation; not_full_service_replay');
+}
+const confirmed=read(base+'reports/jiuzhou-art-direction/project-input.json'),p=fixture();
+p.mediaTranslations.spatial=structuredClone(confirmed.spatialTranslation);
+trace('existing-direction',{packet:p,taskContract:{projectId:p.projectId,generationBasis:'standard',subtype:'reception',shot:'entrance_view'},projectContext:{}},base+'reports/jiuzhou-art-direction/project-input.json','spatial_translation_exact; other_fields_fixture; original_confirmation_metadata_not_promoted');
+trace('custom-preview',customInput(),base+'tests/methodology/custom-compatibility-fixture.ts');
+const fp=fixture();fp.mediaTranslations.spatial.functionalNetwork=['Flowing visitor circulation'];
+trace('flowing-circulation',{packet:fp,taskContract:{generationBasis:'standard'},projectContext:{}},base+'tests/design-decision-fidelity.test.js:108','functionalNetwork_exact; other_fields_fixture');
+const cases=[
+ ['mixed-unknown','entrance','functionalNetwork','店员在入口递交商品；点餐区 → 明档制作区 → 取餐区 → 就餐区；入口 → 未知节点'],
+ ['unsafe-1','entrance','functionalNetwork','点餐制作取餐就餐的完整关系'],
+ ['unsafe-2','entrance','functionalNetwork','入口 → 无法确定的节点'],
+ ['unsafe-3','entrance','functionalNetwork','whole project operating network'],
+ ['kitchen-mixed','entrance','functionalRelationships','入口到达；kitchen connects to dining tables'],
+ ['sightline-1','storefront','functionalNetwork','厨师在厨房制作食品并透过临街橱窗玻璃可见'],
+ ['sightline-2','entrance','functionalNetwork','入口视线可见厨房制作活动'],
+ ['prohibition','storefront','functionalRelationships','Storefront access must not expose kitchen or dining interiors'],
+ ['off-frame','reception','functionalRelationships','treatment activity and private room interiors remain off frame']
+];
+for(const [id,scene,field,text] of cases){const s=sceneInput(scene,[]);s.packet.mediaTranslations.spatial[field]=[text];if(id==='kitchen-mixed')s.packet.mediaTranslations.spatial.peopleBehavior=['staff serving at entrance; chefs cooking in kitchen'];trace(id,{packet:s.packet,taskContract:s.task,projectContext:{}},base+'tests/scene-authority-repair.test.ts');}
+const logo=fixture();logo.mediaTranslations.spatial.sceneProgram=['Logo吸引顾客点餐'];trace('scene-logo',{packet:logo,taskContract:{generationBasis:'standard'},projectContext:{}},base+'tests/restaurant-knowledge/spatial-semantics/evidence-boundaries.test.ts:96');
+trace('reference-first',{packet:fixture(),taskContract:{generationBasis:'reference_first',subtype:'consultation',referenceAssetIds:['explicit-reference']},projectContext:{}},base+'src/generation-runtime/space/scene-projection/target-scene-projection.js:82','same_target_projection_as_historical_case; fixture_source');
+const f=makeFidelityFixture();for(const scene of scenes)for(const group of ['A','B'])trace('fidelity-'+scene.subtype+'-'+group,{packet:structuredClone(f[group]),taskContract:taskFor(f[group],scene),projectContext:{}},base+'tests/restaurant-knowledge/ftt-fidelity-fixture.ts');
+const d=makeFinalDesignFixture();for(const v of d.variants)for(const group of ['A','B'])trace('final-design-'+v.scene.subtype+'-'+group,{packet:structuredClone(v[group]),taskContract:structuredClone(v.task),projectContext:{}},base+'tests/restaurant-knowledge/ftt-final-design-fixture.ts');
+const shadow=syntheticCompilePacket();trace('shadow-base',{packet:shadow,taskContract:{projectId:shadow.projectId,generationBasis:'standard',subtype:'lobby',shot:'entrance_view'},projectContext:{}},base+'tests/restaurant-knowledge/shadow-fixtures.ts');
+const pairs=['员工没有操作设备','入口不得暴露厨房','Only if Logo and staff operating equipment','Logo; staff operating equipment','设备位于它旁边','equipment near it','接待大厅','候客区','形成高效服务动线; 支持多场景消费','如果入口连接厨房；员工操作设备'];
+const semanticProbes=pairs.map(text=>({text,fields:fields.map(field=>({field,validation:validate({[field]:[text]}),separation:separate({[field]:[text]})})),scope:scopeSourceEntries([{text,sourcePath:'mediaTranslations.spatial.functionalNetwork[0]'}],'entrance')}));
+const result={base:'5cd2cd1dfbd9bd5c0608b9972e780d13902a322d',networkAttempts:networkAttempts(),realProviderCalls:0,note:'Read-only in-memory diagnosis. separationProbe and normalizationProbe are separate observations, not a claim the compiler invokes those functions in sequence. No test files executed.',records,semanticProbes};
+if(result.networkAttempts||records.some(r=>!r.inputUnchanged))throw Error('AUDIT_INVARIANT_FAILED');
+fs.writeFileSync(new URL(base+'reports/rks-semantic-field-contract-audit/trace-evidence.json',root),JSON.stringify(result,null,2),{flag:'wx'});
+console.log(JSON.stringify({records:records.length,networkAttempts:result.networkAttempts,inputUnchanged:true}));

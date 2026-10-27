@@ -1,0 +1,40 @@
+import fs from 'node:fs';
+const base='packages/visual-workflow/reports/',out=base+'rks-semantic-field-contract-audit/';
+const read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
+const history=read(base+'rks-semantic-scope-and-operations/failure-attribution.json');
+const traces=[...read(out+'trace-evidence.json').records,...read(out+'trace-supplement.json').records];
+const assignments={
+ 2:['G1','architectural-integration'],3:['G1','architectural-language'],4:['G1','architectural-refinement'],5:['G1','architecture-commercial-layer'],
+ 16:['G1','commercial-attribute'],17:['G2','flowing-circulation'],18:['G1','design-direction'],19:['G1','fig2-fig3-spatial-direction'],
+ 21:['G3','custom-preview'],22:['G3','custom-preview'],23:['G3','custom-preview'],24:['G4','fidelity-entrance-A'],31:['G4','fidelity-entrance-A'],32:['G5','final-design-dining-B'],33:['G6','shadow-proposed'],
+ 34:['C1','scene-logo'],40:['C2','mixed-unknown'],41:['C3','unsafe-1'],42:['C4','unsafe-2'],43:['C5','unsafe-3'],44:['G7','kitchen-mixed'],45:['G8','sightline-1'],46:['G8','sightline-2'],47:['G9','prohibition'],48:['G9','off-frame'],49:['G10','reference-first'],50:['G10','continuation']};
+for(const n of [6,7,8,9,10,11,13,14,15,25,26,27,28])assignments[n]=['G1','existing-direction'];
+const types={G1:'空间节点、建筑空间关系、设计约束',G2:'带用途修饰的动线节点',G3:'空间节点与两侧通行关系',G4:'空间关系及依附于该关系的目的从句',G5:'未知位置命题（须阻断）+合法关系（误拒）',G6:'外带交接与通行设计关系',G7:'到达节点+画外厨房关系',G8:'语义完整的可见性请求；镜头授权仍待审核',G9:'禁止暴露/画外设计约束',G10:'目标程序、容量、隐私与次要设备设计要求',C1:'品牌与经营活动不可分混合句',C2:'合法局部活动+完整依赖网络+未知节点',C3:'未解析的网络概述',C4:'含未知节点的网络',C5:'未解析的全项目网络概述'};
+const expect={G1:'恢复合法方向的编译能力；保持原来源与确认状态；不赋予额外可见性',G2:'保留功能动线，不把 flowing 转成几何操作；保留材料原始索引',G3:'纯预览可编译；不授予镜头或玻璃视线权限',G4:'恢复合法完整关系的依赖投影；28项中的相关断言须真实重跑，不接受残句',G5:'合法关系可识别；未确认位置仍阻断，整体不能承诺 pass',G6:'既有离线方案关系可识别；不确认知识/物业/素材',G7:'仅入口活动/到达留在本镜头，厨房关系不渲染',G8:'保留 review_required、visibilityAuthority=none；不渲染厨房',G9:'原条款仅作 cross_scene_constraint/current_boundary_only；不渲染室内',G10:'目标咨询程序覆盖源餐饮程序；源活动 target_program_replaced，无 owner',C1:'原终态 failed、模型回调0保留；初始 gate pass 须人工迁移',C2:'范围与偏移证据保留，未知不执行；旧正式编译成功断言暂 BLOCK',C3:'保留 review_required 与空输出；正式编译是否失败须人工迁移',C4:'未知节点不能推定；旧正式编译成功断言暂 BLOCK',C5:'保留 review_required 与空输出；正式编译是否失败须人工迁移'};
+const loss={G1:'多数原句保留；分号/逗号部分投影，有跨从句指代风险，逐项见sceneScope。未发现本次分离探针移走否定词。',G2:'无转换丢失，词法/字段覆盖不足。',G3:'custom预览不切句；没有上下文丢失。',G4:'已证实：目的从句与空间对象分离，空实体被当current_shot，最终只有两个残句。',G5:'已证实：未知位置从全店依赖分离并取得current_shot，语义门禁最终挡住；不应修成通过。',G6:'已证实：分号拆分后外带尾句脱离厨房/就餐关系；该尾句本身仍可构成完整设计关系，存在词法覆盖问题。',G7:'厨房子句正确画外；合法到达节点遗留在functionalRelationships，节点被误当完整关系校验。',G8:'无语义内容丢失；投影正确隔离未授权视线，外层原Packet门禁误拒语义类型。',G9:'无禁止范围丢失；投影正确路由边界约束，外层原Packet门禁误拒模态/词法。',G10:'源程序按目标覆盖属预期；系统生成目标句与校验器契约不一致，不是来源事实升级。',C1:'不可安全拆分；原句应保留。',C2:'投影能保留三类审计证据；旧编译允许未知被排除后继续，新门禁阻断整个原Packet。',C3:'不能推定节点，不作独立肯定网络。',C4:'不能推定未知节点，不作独立肯定网络。',C5:'缺少节点与关系，不能补造。'};
+const rows=history.failures.map((h,i)=>{const n=i+1,a=assignments[n];return {failureId:n,title:h.title,historicalStatus:h.status,baselineStatus:h.baseline,historicalAttribution:h.attribution,group:a?.[0]??'B0',traceId:a?.[1]??null,semanticType:types[a?.[0]]??'未到达语义层',originalExpectation:expect[a?.[0]]??'公共入口完整性通过后才可进入业务；现有十项仍FAIL',contextOrScopeLoss:loss[a?.[0]]??'不适用：完整性入口阻断',historicalDiagnostic:h.diagnostic};});
+const counts={};for(const r of rows)counts[r.group]=(counts[r.group]??0)+1;
+if(rows.length!==50||rows.filter(r=>r.group.startsWith('G')).length!==35||rows.filter(r=>r.group.startsWith('C')).length!==5||history.notExecutedDueToFileInitialization.length!==28)throw Error('ACCOUNTING_MISMATCH');
+fs.writeFileSync(out+'case-ledger.json',JSON.stringify({counts,rows,notExecuted:history.notExecutedDueToFileInitialization.map((r,i)=>({title:r.title,baselineStatus:r.status,currentStatus:'not_executed_due_to_file_initialization',file:i<18?'ftt-fidelity.test.ts':'ftt-final-design.test.ts',initialization:i<18?'compareFidelity -> entrance/A -> compileShortChainGeneration -> compileSpacePrompt':'compileFinalDesign -> dining/B -> compileShortChainGeneration -> compileSpacePrompt',traceId:i<18?'fidelity-entrance-A':'final-design-dining-B'}))},null,2),{flag:'wx'});
+const esc=x=>String(x??'').replaceAll('|','\\|').replaceAll('\n','<br>');
+let md='# 逐项追踪附录\n\nBLOCK；仅为本地审计，不是测试通过或生成授权。历史编号严格对应原 FAILURES.md。完整中间数据见 trace-evidence.json、trace-supplement.json；表单探针仅重建四字段，未模拟保存/确认服务，精度在每个条目中标记。\n\n## 50项失败唯一索引（35+5+10）\n\n|历史编号|原用例名|组|追踪ID|原有合法预期|上下文/作用域|\n|---|---|---|---|---|---|\n';
+for(const r of rows)md+=`|${r.failureId}|${esc(r.title)}|${r.group}|${r.traceId??'完整性入口'}|${esc(r.originalExpectation)}|${esc(r.contextOrScopeLoss)}|\n`;
+md+='\n## 28项未展开断言\n\n前18项依赖 ftt-fidelity.test.ts:6 的 compareFidelity()，后10项依赖 ftt-final-design.test.ts:8 的 compileFinalDesign()。历史JSON中的status=pass是基准结果，绝非本次状态。\n\n|#|测试名|共同入口|当前状态|\n|---|---|---|---|\n';
+history.notExecutedDueToFileInitialization.forEach((r,i)=>md+=`|${i+1}|${esc(r.title)}|${i<18?'compareFidelity / entrance A':'compileFinalDesign / dining B'}|未展开|\n`);
+md+='\n## 原文 → 标准化 → 投影 → 校验输入\n\nseparationProbe是直接调用分离器的独立观察。编译器实际没有先调用该分离器；不可把本表当成不存在的串行调用。所有探针输入均未改变。现存事实来源与确认字段原样保留在JSON。\n';
+for(const r of traces){
+ md+=`\n### ${r.id}\n\n来源：${r.source}。精度：${r.precision}。原始 gate=${r.rawValidation.status}；投影 gate=${r.finalGate?.status}；纯编译=${r.compiler?.status}。\n\n`;
+ md+='|原字段/索引|原始字符串|标准化观察|原始校验拒因|\n|---|---|---|---|\n';
+ for(const f of ['functionalNetwork','functionalRelationships','mustBeVisible','operationConstraints','requiredSpatialElements','sceneProgram'])for(const [i,v] of (r.rawFields[f]??[]).entries()){
+ const n=r.normalizationProbe?.[f]?.[i];const finding=r.rawValidation.findings.find(x=>x.path===`mediaTranslations.spatial.${f}[${i}]`);
+ md+=`|${f}[${i}]|${esc(v)}|${n?esc(n.demoted===v?'保留原文':n.demoted===null?'demote返回null（仅观察，见实际投影）':n.demoted):'见实际适配输出，未独立调用demote'}|${finding?.reason??'此项未报错'}|\n`;
+ }
+ md+='\n|投影来源|原文分句及处置|实际currentShotText|边界约束|\n|---|---|---|---|\n';
+ for(const s of r.sceneScope??[])if(/functionalNetwork|operationConstraints|sceneProgram/.test(s.sourcePath))md+=`|${esc(s.sourcePath)}；${esc((s.sourceOrigins??[]).join('; '))}|${esc(s.clauses.map(c=>`[${c.sourceStart},${c.sourceEnd}) ${c.text} => ${c.sceneScope}`).join('\n'))}|${esc(s.currentShotText||'∅')}|${esc(s.boundaryConstraints.map(c=>c.text).join('; ')||'∅')}|\n`;
+ md+='\n|最终校验字段|实际字符串|当前拒因|\n|---|---|---|\n';
+ for(const [f,values] of Object.entries(r.finalGateInput??{}))for(const [i,v]of values.entries()){const finding=r.finalGate.findings.find(x=>x.field===f&&x.path.endsWith(`[${i}]`));md+=`|${f}[${i}]|${esc(v)}|${finding?.reason??'此项未报错'}|\n`;}
+ md+='\n终态：'+(r.compiler?.code??'低层纯编译返回；不等于外层任务可派发')+'。原始Packet校验失败时，标准路径还会在 generation/compile.js:157、:283 的路由门禁阻断；后置门禁报错时外层原始门禁尚未运行。\n';
+}
+fs.writeFileSync(out+'TRACE-AND-CASE-LEDGER.md',md,{flag:'wx'});
+for(const name of ['diagnose','supplement','network-deny','build-annex'])fs.copyFileSync('.codex-smoke/rks-semantic-field-contract-audit/'+name+'.mjs',out+name+'-source.txt',fs.constants.COPYFILE_EXCL);
+console.log(JSON.stringify({counts,records:traces.length,annexBytes:Buffer.byteLength(md)}));

@@ -1,0 +1,35 @@
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+import {networkAttempts} from './network-deny.mjs';
+const root=new URL('../../',import.meta.url),base='packages/visual-workflow/';
+const load=p=>import(new URL(p,root));
+const {structuredAnalysisPacketFixture:fixture}=await load('tests/runtime-application/analysis-runtime-fixtures.ts');
+const {createSpaceContinuationContract:create}=await load(base+'src/generation-runtime/space/continuation/create-continuation-contract.js');
+const {adaptSpaceSource:adapt}=await load(base+'src/generation-runtime/space/source-adapter.js');
+const {validateSpatialSemantics:validate,separateSpatialFunctionalSemantics:separate}=await load(base+'src/generation-runtime/space/semantic/validate-spatial-semantics.js');
+const {compileShortChainGeneration:compile}=await load(base+'src/generation-runtime/generation/compile.js');
+const {resources,fttInput,syntheticCompilePacket}=await load(base+'tests/restaurant-knowledge/shadow-fixtures.ts');
+const {runRestaurantShadowPipeline}=await load(base+'offline/restaurant-knowledge/index.js');
+const records=[];
+function trace(id,packet,task,source) {
+ const before=JSON.stringify({packet,task});const l=adapt({packet,taskContract:task,projectContext:{visualDecisionPacket:packet}});
+ const finalGateInput={functionalNetwork:l._raw.functionalNetwork,functionalRelationships:l.architectureFunctionBridge.operationConstraints,mustBeVisible:l.composition.mustBeVisible};
+ let result;try{compile({projectContext:{visualDecisionPacket:packet},task,model:'doubao-seedream-5-0-pro-260628',now:'2026-10-25T00:00:00.000Z'});result={status:'pass'};}catch(e){result={status:'block',code:e.code,message:e.message,findings:e.findings??e.details??null};}
+ records.push({id,source,precision:'exact_existing_fixture_construction; no_persistence_or_confirmation_api',rawFields:packet.mediaTranslations.spatial,sourceProvenance:packet.provenance,projectFacts:packet.projectFacts,
+ rawValidation:validate(packet.mediaTranslations.spatial),separationProbe:separate(packet.mediaTranslations.spatial),sceneScope:l.decisionTrace.sceneScope??[],layers:{raw:l._raw,bridge:l.architectureFunctionBridge,composition:l.composition},finalGateInput,finalGate:validate(finalGateInput),compiler:result,inputUnchanged:before===JSON.stringify({packet,task})});
+}
+const p=fixture();p.projectFacts.industry.value='Independent service';p.mediaTranslations.spatial.mustBeVisible=['chef preparing food','steam above dishes','customers dining at tables'];
+const task={projectId:p.projectId,deliverableFamily:'space',subtype:'consultation',shot:'entrance_view',count:1,aspectRatio:'16:9',generationBasis:'continuation',referenceAssetIds:['generated-fixture'],logoUsageMode:'post_composite',currentInstruction:'Show the supplied current scene with credible operations.',
+ continuation:create({projectId:p.projectId,confirmedSourceAssetId:'generated-fixture',sourceRunId:'synthetic-source',sourceScene:'dining',targetScene:'consultation',userRequirement:'A private consultation space in the same visual world',confirmedAt:'2026-10-24T00:00:00.000Z'})};
+trace('continuation',p,task,base+'tests/visible-requirement-ownership.test.ts:185');
+const b=syntheticCompilePacket(),input=fttInput(),fingerprint=crypto.createHash('sha256').update(JSON.stringify(b)).digest('hex');input.packet=b;input.analysisFingerprint=fingerprint;input.packetEvidenceRef=`synthetic_common_packet:${fingerprint}`;
+const shadow=runRestaurantShadowPipeline(input,resources),proposed=structuredClone(b),values=v=>v.split('\n').filter(Boolean);
+const hypothesis=field=>shadow.candidateSuggestions.find(x=>x.field===field&&x.knowledgeId==='rks-observation-5').value;
+proposed.mediaTranslations.spatial.spatialConcept=shadow.b1Draft.fields.spatialConcept;
+proposed.mediaTranslations.spatial.functionalRelationships=[...values(shadow.b1Draft.fields.functionalRelationships),...values(hypothesis('functionalRelationships'))];
+proposed.mediaTranslations.spatial.mustBeVisible=values(hypothesis('visibleRequirements'));
+trace('shadow-proposed',proposed,{projectId:b.projectId,taskId:'shadow-synthetic-compare',deliverableFamily:'space',subtype:'lobby',shot:'entrance_view',generationBasis:'standard',count:1,aspectRatio:'16:9',referenceAssetIds:[],logoUsageMode:'post_composite',currentInstruction:'Show the supplied project direction within the current scene boundary.'},base+'tests/restaurant-knowledge/shadow-comparison.ts:17');
+const d={records,networkAttempts:networkAttempts(),realProviderCalls:0,note:'Existing synthetic continuation confirmation data copied literally from test construction; no real confirmation created.'};
+if(d.networkAttempts||records.some(r=>!r.inputUnchanged))throw Error('AUDIT_INVARIANT_FAILED');
+fs.writeFileSync(new URL(base+'reports/rks-semantic-field-contract-audit/trace-supplement.json',root),JSON.stringify(d,null,2),{flag:'wx'});
+console.log(JSON.stringify(records.map(r=>({id:r.id,status:r.compiler.status,code:r.compiler.code,findings:r.finalGate.findings.map(f=>f.original)}))));

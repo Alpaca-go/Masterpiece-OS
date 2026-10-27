@@ -1,0 +1,32 @@
+{
+  "base": "5cd2cd1dfbd9bd5c0608b9972e780d13902a322d",
+  "branch": "fix/rks-semantic-scope-and-operations",
+  "originalTrackedFiles": 3035,
+  "unchanged": 3035,
+  "changed": [],
+  "trackedDiff": "",
+  "gitStatus": "?? packages/visual-workflow/reports/rks-semantic-field-contract-audit/",
+  "implementationIntegritySha256": "85947e556d9467837f7583c106f5f7fec10f65207ed9b2c31b410ae7c2f13bec",
+  "historicalRoots": "All tracked historical report, test, prompt, Golden and integrity files included in 3035-file verification; no existing untracked logs or dependency links were written or removed by this audit.",
+  "auditValidation": {
+    "historicalFailures": 50,
+    "regressionOrMixed": 35,
+    "contractConflicts": 5,
+    "preexistingIntegrity": 10,
+    "targetedFailures": 12,
+    "targetedContractConflicts": 5,
+    "targetedRegressions": 7,
+    "notExecuted": 28,
+    "traceRecords": 36,
+    "semanticProbeStrings": 10,
+    "networkAttempts": 0,
+    "realProviderCalls": 0
+  },
+  "repoVerify": {
+    "exitCode": 1,
+    "contractGuard": "pass",
+    "isolation": "existing implementation integrity drift",
+    "remainingChainedChecks": "not_run"
+  },
+  "commitCreated": false
+}

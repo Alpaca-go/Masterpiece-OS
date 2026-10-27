@@ -1,0 +1,2572 @@
+{
+  "records": [
+    {
+      "id": "continuation",
+      "source": "packages/visual-workflow/tests/visible-requirement-ownership.test.ts:185",
+      "precision": "exact_existing_fixture_construction; no_persistence_or_confirmation_api",
+      "rawFields": {
+        "status": "ready",
+        "spatialConcept": "A clear sequence of service zones",
+        "brandRoleManifestation": [
+          "Visible service steps"
+        ],
+        "signatureSpatialMechanism": [
+          "Layered open frames guide movement"
+        ],
+        "functionalNetwork": [
+          "arrival to consultation to completion",
+          "guests enter through arrival zone, see service point, continue to consultation",
+          "service flow loops guests back to waiting before exit"
+        ],
+        "positiveDifferentiators": [
+          "Service logic is visible"
+        ],
+        "mustBeVisible": [
+          "chef preparing food",
+          "steam above dishes",
+          "customers dining at tables"
+        ],
+        "structureLanguage": [
+          "open frame"
+        ],
+        "materialLanguage": [
+          {
+            "material": "matte metal",
+            "behavior": [
+              "precise edge"
+            ],
+            "brandRole": "makes service order legible",
+            "forbidden": [
+              "mirror finish"
+            ]
+          }
+        ],
+        "lightingLanguage": {
+          "source": [
+            "soft area light"
+          ],
+          "contrast": "low contrast",
+          "interactionWithMaterials": [
+            "soft reflection"
+          ],
+          "forbidden": [
+            "colored effect light"
+          ]
+        },
+        "colorBehavior": {
+          "primary": [
+            {
+              "name": "warm white",
+              "role": "clear base"
+            }
+          ],
+          "secondary": [
+            {
+              "name": "natural wood",
+              "role": "human warmth"
+            }
+          ],
+          "accent": [
+            {
+              "name": "identity black",
+              "role": "precise identity emphasis"
+            }
+          ],
+          "forbidden": [
+            "neon gradient"
+          ]
+        },
+        "brandIntegration": [
+          "identity at arrival"
+        ],
+        "functionalRelationships": [
+          "guest sees service point from arrival"
+        ],
+        "sceneProgram": [
+          "arrival",
+          "service",
+          "consultation"
+        ],
+        "peopleBehavior": [
+          "staff guides guest"
+        ],
+        "functionalExperience": [],
+        "sceneMisreadRisks": []
+      },
+      "sourceProvenance": {
+        "createdFrom": [
+          "project:generic",
+          "asset:motif-1"
+        ],
+        "generatedAt": "2026-01-01T00:00:00.000Z",
+        "modelId": "test-model",
+        "sourceFingerprint": "fingerprint-generic"
+      },
+      "projectFacts": {
+        "brandName": {
+          "value": "Example Brand",
+          "source": "project_record",
+          "evidenceRefs": [
+            "project:brand-name"
+          ],
+          "confidence": 1,
+          "status": "confirmed"
+        },
+        "industry": {
+          "value": "Independent service",
+          "source": "source_document",
+          "evidenceRefs": [
+            "document:industry"
+          ],
+          "confidence": 0.9,
+          "status": "confirmed"
+        },
+        "brandRole": {
+          "value": "A welcoming service destination",
+          "source": "source_document",
+          "evidenceRefs": [
+            "document:brand-role"
+          ],
+          "confidence": 0.9,
+          "status": "confirmed"
+        }
+      },
+      "rawValidation": {
+        "schemaVersion": "1.0",
+        "version": "space-spatial-semantic-gate@1.1.0",
+        "status": "pass",
+        "findings": []
+      },
+      "separationProbe": {
+        "spatial": {
+          "status": "ready",
+          "spatialConcept": "A clear sequence of service zones",
+          "brandRoleManifestation": [
+            "Visible service steps"
+          ],
+          "signatureSpatialMechanism": [
+            "Layered open frames guide movement"
+          ],
+          "functionalNetwork": [
+            "arrival to consultation to completion",
+            "guests enter through arrival zone, see service point, continue to consultation",
+            "service flow loops guests back to waiting before exit"
+          ],
+          "positiveDifferentiators": [
+            "Service logic is visible"
+          ],
+          "mustBeVisible": [
+            "chef preparing food",
+            "steam above dishes",
+            "customers dining at tables"
+          ],
+          "structureLanguage": [
+            "open frame"
+          ],
+          "materialLanguage": [
+            {
+              "material": "matte metal",
+              "behavior": [
+                "precise edge"
+              ],
+              "brandRole": "makes service order legible",
+              "forbidden": [
+                "mirror finish"
+              ]
+            }
+          ],
+          "lightingLanguage": {
+            "source": [
+              "soft area light"
+            ],
+            "contrast": "low contrast",
+            "interactionWithMaterials": [
+              "soft reflection"
+            ],
+            "forbidden": [
+              "colored effect light"
+            ]
+          },
+          "colorBehavior": {
+            "primary": [
+              {
+                "name": "warm white",
+                "role": "clear base"
+              }
+            ],
+            "secondary": [
+              {
+                "name": "natural wood",
+                "role": "human warmth"
+              }
+            ],
+            "accent": [
+              {
+                "name": "identity black",
+                "role": "precise identity emphasis"
+              }
+            ],
+            "forbidden": [
+              "neon gradient"
+            ]
+          },
+          "brandIntegration": [
+            "identity at arrival"
+          ],
+          "functionalRelationships": [
+            "guest sees service point from arrival"
+          ],
+          "sceneProgram": [
+            "arrival",
+            "service",
+            "consultation"
+          ],
+          "peopleBehavior": [
+            "staff guides guest"
+          ],
+          "functionalExperience": [],
+          "sceneMisreadRisks": []
+        },
+        "changes": [],
+        "unresolved": [],
+        "validation": {
+          "schemaVersion": "1.0",
+          "version": "space-spatial-semantic-gate@1.1.0",
+          "status": "pass",
+          "findings": []
+        },
+        "evidence": [
+          {
+            "field": "functionalNetwork",
+            "index": 0,
+            "value": "arrival to consultation to completion",
+            "analysis": {
+              "classification": "functional",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "pass"
+          },
+          {
+            "field": "functionalNetwork",
+            "index": 1,
+            "value": "guests enter through arrival zone, see service point, continue to consultation",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "pass"
+          },
+          {
+            "field": "functionalNetwork",
+            "index": 2,
+            "value": "service flow loops guests back to waiting before exit",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "pass"
+          },
+          {
+            "field": "functionalRelationships",
+            "index": 0,
+            "value": "guest sees service point from arrival",
+            "analysis": {
+              "classification": "functional",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "pass"
+          },
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "value": "chef preparing food",
+            "analysis": {
+              "classification": "functional",
+              "classificationReason": "visible_actor_activity",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "pass"
+          },
+          {
+            "field": "mustBeVisible",
+            "index": 1,
+            "value": "steam above dishes",
+            "analysis": {
+              "classification": "functional",
+              "classificationReason": "visible_effect_carrier_relation",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "pass"
+          },
+          {
+            "field": "mustBeVisible",
+            "index": 2,
+            "value": "customers dining at tables",
+            "analysis": {
+              "classification": "functional",
+              "classificationReason": "visible_actor_activity",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "pass"
+          },
+          {
+            "field": "sceneProgram",
+            "index": 0,
+            "value": "arrival",
+            "analysis": {
+              "classification": "functional",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "pass"
+          },
+          {
+            "field": "sceneProgram",
+            "index": 1,
+            "value": "service",
+            "analysis": {
+              "classification": "functional",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "pass"
+          },
+          {
+            "field": "sceneProgram",
+            "index": 2,
+            "value": "consultation",
+            "analysis": {
+              "classification": "functional",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "pass"
+          }
+        ]
+      },
+      "sceneScope": [],
+      "layers": {
+        "raw": {
+          "functionalNetwork": [
+            "清晰进入咨询单元的过渡，不经过公共等候层级",
+            "咨询单元内部简洁动线，不穿越公共大厅",
+            "半私密到私密边界",
+            "与公共接待 / 等候区明确区分"
+          ],
+          "sceneProgram": [
+            "1 对 1 / 1 对 2 专业咨询",
+            "产品 / 服务信息展示与说明",
+            "轻量专业咨询操作"
+          ],
+          "brandRoleManifestation": [
+            "Visible service steps",
+            "identity at arrival",
+            "Service logic is visible",
+            "Turn service clarity into a spatial and material system"
+          ],
+          "signatureSpatialMechanism": [
+            "Layered open frames guide movement"
+          ],
+          "mustBeVisible": [
+            "chef preparing food",
+            "steam above dishes",
+            "customers dining at tables"
+          ],
+          "positiveDifferentiators": [
+            "较小尺度、人尺度咨询单元",
+            "非大堂级尺度",
+            "咨询过程所需的桌面与座位关系",
+            "信息展示与咨询动作可达"
+          ]
+        },
+        "bridge": {
+          "commercialPurpose": "咨询室",
+          "spatialTranslation": [
+            "1 对 1 / 1 对 2 专业咨询",
+            "产品 / 服务信息展示与说明",
+            "轻量专业咨询操作",
+            "咨询桌或低桌",
+            "2–3 人咨询座位",
+            "半私密或私密边界"
+          ],
+          "operationConstraints": [
+            "consultation is primary",
+            "seating supports 1-to-1 / 1-to-2",
+            "semi-private boundary supports confidential discussion",
+            "enter the consultation unit without a lobby hierarchy",
+            "information display within advisor-client reach",
+            "lightweight secondary equipment"
+          ],
+          "humanExperience": [
+            "半私密到私密边界",
+            "与公共接待 / 等候区明确区分"
+          ],
+          "commercialReality": [
+            "较小尺度、人尺度咨询单元",
+            "非大堂级尺度"
+          ],
+          "conceptDriftGuards": [
+            "咨询过程所需的桌面与座位关系",
+            "信息展示与咨询动作可达",
+            "半私密到私密边界",
+            "与公共接待 / 等候区明确区分"
+          ]
+        },
+        "composition": {
+          "aspectRatio": "16:9",
+          "scene": "咨询室",
+          "mustBeVisible": [
+            "咨询桌或低桌",
+            "2–3 人咨询座位",
+            "半私密或私密边界",
+            "医疗 / 产品信息展示面",
+            "咨询设备或轻量专业设备",
+            "清晰入口与落座关系"
+          ],
+          "positiveDifferentiators": [
+            "较小尺度、人尺度咨询单元",
+            "非大堂级尺度",
+            "咨询过程所需的桌面与座位关系",
+            "信息展示与咨询动作可达"
+          ],
+          "viewStrategy": "human_scale_consultation_view",
+          "artisticFocus": []
+        }
+      },
+      "finalGateInput": {
+        "functionalNetwork": [
+          "清晰进入咨询单元的过渡，不经过公共等候层级",
+          "咨询单元内部简洁动线，不穿越公共大厅",
+          "半私密到私密边界",
+          "与公共接待 / 等候区明确区分"
+        ],
+        "functionalRelationships": [
+          "consultation is primary",
+          "seating supports 1-to-1 / 1-to-2",
+          "semi-private boundary supports confidential discussion",
+          "enter the consultation unit without a lobby hierarchy",
+          "information display within advisor-client reach",
+          "lightweight secondary equipment"
+        ],
+        "mustBeVisible": [
+          "咨询桌或低桌",
+          "2–3 人咨询座位",
+          "半私密或私密边界",
+          "医疗 / 产品信息展示面",
+          "咨询设备或轻量专业设备",
+          "清晰入口与落座关系"
+        ]
+      },
+      "finalGate": {
+        "schemaVersion": "1.0",
+        "version": "space-spatial-semantic-gate@1.1.0",
+        "status": "block",
+        "findings": [
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[0]",
+            "classification": "architectural",
+            "original": "清晰进入咨询单元的过渡，不经过公共等候层级",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 1,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": true
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[1]",
+            "classification": "architectural",
+            "original": "咨询单元内部简洁动线，不穿越公共大厅",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[2]",
+            "classification": "architectural",
+            "original": "半私密到私密边界",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 1,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[3]",
+            "classification": "architectural",
+            "original": "与公共接待 / 等候区明确区分",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalRelationships",
+            "path": "mediaTranslations.spatial.functionalRelationships[0]",
+            "classification": "functional",
+            "original": "consultation is primary",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "functional",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalRelationships",
+            "path": "mediaTranslations.spatial.functionalRelationships[1]",
+            "classification": "functional",
+            "original": "seating supports 1-to-1 / 1-to-2",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "functional",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalRelationships",
+            "path": "mediaTranslations.spatial.functionalRelationships[2]",
+            "classification": "architectural",
+            "original": "semi-private boundary supports confidential discussion",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 1,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalRelationships",
+            "path": "mediaTranslations.spatial.functionalRelationships[3]",
+            "classification": "architectural",
+            "original": "enter the consultation unit without a lobby hierarchy",
+            "reason": "negated_scope",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalRelationships",
+            "path": "mediaTranslations.spatial.functionalRelationships[4]",
+            "classification": "functional",
+            "original": "information display within advisor-client reach",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "functional",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalRelationships",
+            "path": "mediaTranslations.spatial.functionalRelationships[5]",
+            "classification": "functional",
+            "original": "lightweight secondary equipment",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "functional",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        ]
+      },
+      "compiler": {
+        "status": "block",
+        "code": "SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK",
+        "message": "SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+        "findings": [
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[0]",
+            "classification": "architectural",
+            "original": "清晰进入咨询单元的过渡，不经过公共等候层级",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 1,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": true
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[1]",
+            "classification": "architectural",
+            "original": "咨询单元内部简洁动线，不穿越公共大厅",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[2]",
+            "classification": "architectural",
+            "original": "半私密到私密边界",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 1,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalNetwork",
+            "path": "mediaTranslations.spatial.functionalNetwork[3]",
+            "classification": "architectural",
+            "original": "与公共接待 / 等候区明确区分",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalRelationships",
+            "path": "mediaTranslations.spatial.functionalRelationships[0]",
+            "classification": "functional",
+            "original": "consultation is primary",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "functional",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalRelationships",
+            "path": "mediaTranslations.spatial.functionalRelationships[1]",
+            "classification": "functional",
+            "original": "seating supports 1-to-1 / 1-to-2",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "functional",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalRelationships",
+            "path": "mediaTranslations.spatial.functionalRelationships[2]",
+            "classification": "architectural",
+            "original": "semi-private boundary supports confidential discussion",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 1,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalRelationships",
+            "path": "mediaTranslations.spatial.functionalRelationships[3]",
+            "classification": "architectural",
+            "original": "enter the consultation unit without a lobby hierarchy",
+            "reason": "negated_scope",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalRelationships",
+            "path": "mediaTranslations.spatial.functionalRelationships[4]",
+            "classification": "functional",
+            "original": "information display within advisor-client reach",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "functional",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalRelationships",
+            "path": "mediaTranslations.spatial.functionalRelationships[5]",
+            "classification": "functional",
+            "original": "lightweight secondary equipment",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "functional",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        ]
+      },
+      "inputUnchanged": true
+    },
+    {
+      "id": "shadow-proposed",
+      "source": "packages/visual-workflow/tests/restaurant-knowledge/shadow-comparison.ts:17",
+      "precision": "exact_existing_fixture_construction; no_persistence_or_confirmation_api",
+      "rawFields": {
+        "status": "ready",
+        "spatialConcept": "四川特色小吃、跷脚牛肉；社区临街特色小馆，亲民堂食、兼顾外带；四川地域特色与市井烟火气。",
+        "brandRoleManifestation": [
+          "Visible service steps"
+        ],
+        "signatureSpatialMechanism": [
+          "Layered open frames guide movement"
+        ],
+        "functionalNetwork": [
+          "arrival to consultation to completion",
+          "guests enter through arrival zone, see service point, continue to consultation",
+          "service flow loops guests back to waiting before exit"
+        ],
+        "positiveDifferentiators": [
+          "Service logic is visible"
+        ],
+        "mustBeVisible": [
+          "chef preparing food",
+          "steam above dishes",
+          "customers dining at tables"
+        ],
+        "structureLanguage": [
+          "open frame"
+        ],
+        "materialLanguage": [
+          {
+            "material": "浅色木材",
+            "behavior": [
+              "温暖触感",
+              "自然纹理"
+            ],
+            "brandRole": "营造亲切、自然的就餐氛围，平衡红色的热烈",
+            "forbidden": [
+              "深色沉重木材",
+              "高光烤漆木"
+            ]
+          },
+          {
+            "material": "红色金属/塑料",
+            "behavior": [
+              "高反射（金属）",
+              "哑光（塑料）"
+            ],
+            "brandRole": "品牌色载体，用于招牌、装饰件、灯笼",
+            "forbidden": [
+              "暗红色",
+              "粉紅色"
+            ]
+          },
+          {
+            "material": "浅色石材/瓷砖",
+            "behavior": [
+              "耐用",
+              "易清洁",
+              "漫反射"
+            ],
+            "brandRole": "地面和墙面基础，提供明亮背景",
+            "forbidden": [
+              "深色大理石",
+              "复杂花纹砖"
+            ]
+          }
+        ],
+        "lightingLanguage": {
+          "source": [
+            "暖黄光（3000K-3500K）",
+            "重点照明（射灯）"
+          ],
+          "contrast": "整体明亮，食物区域高亮，形成视觉焦点。",
+          "interactionWithMaterials": [
+            "暖光打在木材上显温馨",
+            "射灯照亮砂锅食物，强调热气和色泽"
+          ],
+          "forbidden": [
+            "冷白光",
+            "昏暗灯光",
+            "彩色霓虹灯（除Logo外）"
+          ]
+        },
+        "colorBehavior": {
+          "primary": [
+            {
+              "name": "warm white",
+              "role": "clear base"
+            }
+          ],
+          "secondary": [
+            {
+              "name": "natural wood",
+              "role": "human warmth"
+            }
+          ],
+          "accent": [
+            {
+              "name": "identity black",
+              "role": "precise identity emphasis"
+            }
+          ],
+          "forbidden": [
+            "neon gradient"
+          ]
+        },
+        "brandIntegration": [
+          "identity at arrival"
+        ],
+        "functionalRelationships": [
+          "厨房、顾客、餐桌与服务活动之间保持合理关系。",
+          "Kitchen preparation connects to service counter; dining tables remain accessible; takeaway handoff keeps a clear route"
+        ],
+        "sceneProgram": [
+          "arrival",
+          "service",
+          "consultation"
+        ],
+        "peopleBehavior": [
+          "staff guides guest"
+        ],
+        "functionalExperience": [],
+        "sceneMisreadRisks": []
+      },
+      "sourceProvenance": {
+        "createdFrom": [
+          "project:generic",
+          "asset:motif-1"
+        ],
+        "generatedAt": "2026-01-01T00:00:00.000Z",
+        "modelId": "test-model",
+        "sourceFingerprint": "fingerprint-generic"
+      },
+      "projectFacts": {
+        "brandName": {
+          "value": "Example Brand",
+          "source": "project_record",
+          "evidenceRefs": [
+            "project:brand-name"
+          ],
+          "confidence": 1,
+          "status": "confirmed"
+        },
+        "industry": {
+          "value": "Restaurant",
+          "source": "source_document",
+          "evidenceRefs": [
+            "document:industry"
+          ],
+          "confidence": 0.9,
+          "status": "confirmed"
+        },
+        "brandRole": {
+          "value": "A welcoming service destination",
+          "source": "source_document",
+          "evidenceRefs": [
+            "document:brand-role"
+          ],
+          "confidence": 0.9,
+          "status": "confirmed"
+        }
+      },
+      "rawValidation": {
+        "schemaVersion": "1.0",
+        "version": "space-spatial-semantic-gate@1.1.0",
+        "status": "block",
+        "findings": [
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalRelationships",
+            "path": "mediaTranslations.spatial.functionalRelationships[0]",
+            "classification": "functional",
+            "original": "厨房、顾客、餐桌与服务活动之间保持合理关系。",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "functional",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          },
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalRelationships",
+            "path": "mediaTranslations.spatial.functionalRelationships[1]",
+            "classification": "architectural",
+            "original": "Kitchen preparation connects to service counter; dining tables remain accessible; takeaway handoff keeps a clear route",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        ]
+      },
+      "separationProbe": {
+        "spatial": {
+          "status": "ready",
+          "spatialConcept": "四川特色小吃、跷脚牛肉；社区临街特色小馆，亲民堂食、兼顾外带；四川地域特色与市井烟火气。",
+          "brandRoleManifestation": [
+            "Visible service steps"
+          ],
+          "signatureSpatialMechanism": [
+            "Layered open frames guide movement"
+          ],
+          "functionalNetwork": [
+            "arrival to consultation to completion",
+            "guests enter through arrival zone, see service point, continue to consultation",
+            "service flow loops guests back to waiting before exit"
+          ],
+          "positiveDifferentiators": [
+            "Service logic is visible"
+          ],
+          "mustBeVisible": [
+            "chef preparing food",
+            "steam above dishes",
+            "customers dining at tables"
+          ],
+          "structureLanguage": [
+            "open frame"
+          ],
+          "materialLanguage": [
+            {
+              "material": "浅色木材",
+              "behavior": [
+                "温暖触感",
+                "自然纹理"
+              ],
+              "brandRole": "营造亲切、自然的就餐氛围，平衡红色的热烈",
+              "forbidden": [
+                "深色沉重木材",
+                "高光烤漆木"
+              ]
+            },
+            {
+              "material": "红色金属/塑料",
+              "behavior": [
+                "高反射（金属）",
+                "哑光（塑料）"
+              ],
+              "brandRole": "品牌色载体，用于招牌、装饰件、灯笼",
+              "forbidden": [
+                "暗红色",
+                "粉紅色"
+              ]
+            },
+            {
+              "material": "浅色石材/瓷砖",
+              "behavior": [
+                "耐用",
+                "易清洁",
+                "漫反射"
+              ],
+              "brandRole": "地面和墙面基础，提供明亮背景",
+              "forbidden": [
+                "深色大理石",
+                "复杂花纹砖"
+              ]
+            }
+          ],
+          "lightingLanguage": {
+            "source": [
+              "暖黄光（3000K-3500K）",
+              "重点照明（射灯）"
+            ],
+            "contrast": "整体明亮，食物区域高亮，形成视觉焦点。",
+            "interactionWithMaterials": [
+              "暖光打在木材上显温馨",
+              "射灯照亮砂锅食物，强调热气和色泽"
+            ],
+            "forbidden": [
+              "冷白光",
+              "昏暗灯光",
+              "彩色霓虹灯（除Logo外）"
+            ]
+          },
+          "colorBehavior": {
+            "primary": [
+              {
+                "name": "warm white",
+                "role": "clear base"
+              }
+            ],
+            "secondary": [
+              {
+                "name": "natural wood",
+                "role": "human warmth"
+              }
+            ],
+            "accent": [
+              {
+                "name": "identity black",
+                "role": "precise identity emphasis"
+              }
+            ],
+            "forbidden": [
+              "neon gradient"
+            ]
+          },
+          "brandIntegration": [
+            "identity at arrival"
+          ],
+          "functionalRelationships": [
+            "厨房、顾客、餐桌与服务活动之间保持合理关系。",
+            "Kitchen preparation connects to service counter; dining tables remain accessible; takeaway handoff keeps a clear route"
+          ],
+          "sceneProgram": [
+            "arrival",
+            "service",
+            "consultation"
+          ],
+          "peopleBehavior": [
+            "staff guides guest"
+          ],
+          "functionalExperience": [],
+          "sceneMisreadRisks": []
+        },
+        "changes": [],
+        "unresolved": [
+          {
+            "field": "functionalRelationships",
+            "index": 0,
+            "original": "厨房、顾客、餐桌与服务活动之间保持合理关系。",
+            "reason": "retained_fragment_failed_validation",
+            "finding": {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "functionalRelationships",
+              "path": "mediaTranslations.spatial.functionalRelationships[0]",
+              "classification": "functional",
+              "original": "厨房、顾客、餐桌与服务活动之间保持合理关系。",
+              "reason": "complete_functional_evidence_required",
+              "analysis": {
+                "classification": "functional",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          },
+          {
+            "field": "functionalRelationships",
+            "index": 1,
+            "original": "Kitchen preparation connects to service counter; dining tables remain accessible; takeaway handoff keeps a clear route",
+            "reason": "retained_fragment_failed_validation",
+            "finding": {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "functionalRelationships",
+              "path": "mediaTranslations.spatial.functionalRelationships[1]",
+              "classification": "architectural",
+              "original": "Kitchen preparation connects to service counter; dining tables remain accessible; takeaway handoff keeps a clear route",
+              "reason": "complete_functional_evidence_required",
+              "analysis": {
+                "classification": "architectural",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 1,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          }
+        ],
+        "validation": {
+          "schemaVersion": "1.0",
+          "version": "space-spatial-semantic-gate@1.1.0",
+          "status": "block",
+          "findings": [
+            {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "functionalRelationships",
+              "path": "mediaTranslations.spatial.functionalRelationships[0]",
+              "classification": "functional",
+              "original": "厨房、顾客、餐桌与服务活动之间保持合理关系。",
+              "reason": "complete_functional_evidence_required",
+              "analysis": {
+                "classification": "functional",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            },
+            {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "functionalRelationships",
+              "path": "mediaTranslations.spatial.functionalRelationships[1]",
+              "classification": "architectural",
+              "original": "Kitchen preparation connects to service counter; dining tables remain accessible; takeaway handoff keeps a clear route",
+              "reason": "complete_functional_evidence_required",
+              "analysis": {
+                "classification": "architectural",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 1,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "field": "functionalNetwork",
+            "index": 0,
+            "value": "arrival to consultation to completion",
+            "analysis": {
+              "classification": "functional",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "pass"
+          },
+          {
+            "field": "functionalNetwork",
+            "index": 1,
+            "value": "guests enter through arrival zone, see service point, continue to consultation",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "pass"
+          },
+          {
+            "field": "functionalNetwork",
+            "index": 2,
+            "value": "service flow loops guests back to waiting before exit",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "pass"
+          },
+          {
+            "field": "functionalRelationships",
+            "index": 0,
+            "value": "厨房、顾客、餐桌与服务活动之间保持合理关系。",
+            "analysis": {
+              "classification": "functional",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "block"
+          },
+          {
+            "field": "functionalRelationships",
+            "index": 1,
+            "value": "Kitchen preparation connects to service counter; dining tables remain accessible; takeaway handoff keeps a clear route",
+            "analysis": {
+              "classification": "architectural",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "block"
+          },
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "value": "chef preparing food",
+            "analysis": {
+              "classification": "functional",
+              "classificationReason": "visible_actor_activity",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "pass"
+          },
+          {
+            "field": "mustBeVisible",
+            "index": 1,
+            "value": "steam above dishes",
+            "analysis": {
+              "classification": "functional",
+              "classificationReason": "visible_effect_carrier_relation",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "pass"
+          },
+          {
+            "field": "mustBeVisible",
+            "index": 2,
+            "value": "customers dining at tables",
+            "analysis": {
+              "classification": "functional",
+              "classificationReason": "visible_actor_activity",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "pass"
+          },
+          {
+            "field": "sceneProgram",
+            "index": 0,
+            "value": "arrival",
+            "analysis": {
+              "classification": "functional",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "pass"
+          },
+          {
+            "field": "sceneProgram",
+            "index": 1,
+            "value": "service",
+            "analysis": {
+              "classification": "functional",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "pass"
+          },
+          {
+            "field": "sceneProgram",
+            "index": 2,
+            "value": "consultation",
+            "analysis": {
+              "classification": "functional",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "pass"
+          }
+        ]
+      },
+      "sceneScope": [
+        {
+          "text": "arrival",
+          "sourcePath": "mediaTranslations.spatial.sceneProgram[0]",
+          "sourceContainer": "mediaTranslations.spatial.sceneProgram",
+          "sourceOrigins": [
+            "mediaTranslations.spatial.sceneProgram[0]"
+          ],
+          "sceneScope": "current_shot",
+          "clauses": [
+            {
+              "text": "arrival",
+              "sourceStart": 0,
+              "sourceEnd": 7,
+              "entities": [],
+              "nodes": [],
+              "sceneScope": "current_shot",
+              "visibilityAuthority": "current_shot"
+            }
+          ],
+          "detectedScenes": [],
+          "currentShotText": "arrival",
+          "boundaryConstraints": [],
+          "offFrameEntities": [],
+          "reviewRequiredClauses": [],
+          "evidenceClass": "system_inference",
+          "scopeReason": "source_compatible_with_shot"
+        },
+        {
+          "text": "service",
+          "sourcePath": "mediaTranslations.spatial.sceneProgram[1]",
+          "sourceContainer": "mediaTranslations.spatial.sceneProgram",
+          "sourceOrigins": [
+            "mediaTranslations.spatial.sceneProgram[1]"
+          ],
+          "sceneScope": "current_shot",
+          "clauses": [
+            {
+              "text": "service",
+              "sourceStart": 0,
+              "sourceEnd": 7,
+              "entities": [],
+              "nodes": [],
+              "sceneScope": "current_shot",
+              "visibilityAuthority": "current_shot"
+            }
+          ],
+          "detectedScenes": [],
+          "currentShotText": "service",
+          "boundaryConstraints": [],
+          "offFrameEntities": [],
+          "reviewRequiredClauses": [],
+          "evidenceClass": "system_inference",
+          "scopeReason": "source_compatible_with_shot"
+        },
+        {
+          "text": "consultation",
+          "sourcePath": "mediaTranslations.spatial.sceneProgram[2]",
+          "sourceContainer": "mediaTranslations.spatial.sceneProgram",
+          "sourceOrigins": [
+            "mediaTranslations.spatial.sceneProgram[2]"
+          ],
+          "sceneScope": "off_frame_dependency",
+          "clauses": [
+            {
+              "text": "consultation",
+              "sourceStart": 0,
+              "sourceEnd": 12,
+              "entities": [
+                {
+                  "scene": "consultation",
+                  "value": "consultation",
+                  "offset": 0
+                }
+              ],
+              "nodes": [],
+              "sceneScope": "off_frame_dependency",
+              "visibilityAuthority": "none"
+            }
+          ],
+          "detectedScenes": [
+            "consultation"
+          ],
+          "currentShotText": "",
+          "boundaryConstraints": [],
+          "offFrameEntities": [
+            {
+              "text": "consultation",
+              "sourceStart": 0,
+              "sourceEnd": 12,
+              "entities": [
+                {
+                  "scene": "consultation",
+                  "value": "consultation",
+                  "offset": 0
+                }
+              ],
+              "nodes": [],
+              "sceneScope": "off_frame_dependency",
+              "visibilityAuthority": "none"
+            }
+          ],
+          "reviewRequiredClauses": [],
+          "evidenceClass": "system_inference",
+          "scopeReason": "foreign_scene_entity"
+        },
+        {
+          "text": "arrival to consultation to completion",
+          "sourcePath": "mediaTranslations.spatial.functionalNetwork[0]",
+          "sourceContainer": "mediaTranslations.spatial.functionalNetwork",
+          "sourceOrigins": [
+            "mediaTranslations.spatial.functionalNetwork[0]"
+          ],
+          "sceneScope": "off_frame_dependency",
+          "clauses": [
+            {
+              "text": "arrival to consultation to completion",
+              "sourceStart": 0,
+              "sourceEnd": 37,
+              "entities": [
+                {
+                  "scene": "consultation",
+                  "value": "consultation",
+                  "offset": 11
+                }
+              ],
+              "nodes": [],
+              "sceneScope": "off_frame_dependency",
+              "visibilityAuthority": "none"
+            }
+          ],
+          "detectedScenes": [
+            "consultation"
+          ],
+          "currentShotText": "",
+          "boundaryConstraints": [],
+          "offFrameEntities": [
+            {
+              "text": "arrival to consultation to completion",
+              "sourceStart": 0,
+              "sourceEnd": 37,
+              "entities": [
+                {
+                  "scene": "consultation",
+                  "value": "consultation",
+                  "offset": 11
+                }
+              ],
+              "nodes": [],
+              "sceneScope": "off_frame_dependency",
+              "visibilityAuthority": "none"
+            }
+          ],
+          "reviewRequiredClauses": [],
+          "evidenceClass": "system_inference",
+          "scopeReason": "foreign_scene_entity"
+        },
+        {
+          "text": "guests enter through arrival zone, see service point, continue to consultation",
+          "sourcePath": "mediaTranslations.spatial.functionalNetwork[1]",
+          "sourceContainer": "mediaTranslations.spatial.functionalNetwork",
+          "sourceOrigins": [
+            "mediaTranslations.spatial.functionalNetwork[1]"
+          ],
+          "sceneScope": "current_shot",
+          "clauses": [
+            {
+              "text": "guests enter through arrival zone",
+              "sourceStart": 0,
+              "sourceEnd": 33,
+              "entities": [],
+              "nodes": [],
+              "sceneScope": "current_shot",
+              "visibilityAuthority": "current_shot"
+            },
+            {
+              "text": "see service point",
+              "sourceStart": 35,
+              "sourceEnd": 52,
+              "entities": [],
+              "nodes": [],
+              "sceneScope": "current_shot",
+              "visibilityAuthority": "current_shot"
+            },
+            {
+              "text": "continue to consultation",
+              "sourceStart": 54,
+              "sourceEnd": 78,
+              "entities": [
+                {
+                  "scene": "consultation",
+                  "value": "consultation",
+                  "offset": 12
+                }
+              ],
+              "nodes": [],
+              "sceneScope": "off_frame_dependency",
+              "visibilityAuthority": "none"
+            }
+          ],
+          "detectedScenes": [
+            "consultation"
+          ],
+          "currentShotText": "guests enter through arrival zone; see service point",
+          "boundaryConstraints": [],
+          "offFrameEntities": [
+            {
+              "text": "continue to consultation",
+              "sourceStart": 54,
+              "sourceEnd": 78,
+              "entities": [
+                {
+                  "scene": "consultation",
+                  "value": "consultation",
+                  "offset": 12
+                }
+              ],
+              "nodes": [],
+              "sceneScope": "off_frame_dependency",
+              "visibilityAuthority": "none"
+            }
+          ],
+          "reviewRequiredClauses": [],
+          "evidenceClass": "system_inference",
+          "scopeReason": "source_compatible_with_shot"
+        },
+        {
+          "text": "service flow loops guests back to waiting before exit",
+          "sourcePath": "mediaTranslations.spatial.functionalNetwork[2]",
+          "sourceContainer": "mediaTranslations.spatial.functionalNetwork",
+          "sourceOrigins": [
+            "mediaTranslations.spatial.functionalNetwork[2]"
+          ],
+          "sceneScope": "current_shot",
+          "clauses": [
+            {
+              "text": "service flow loops guests back to waiting before exit",
+              "sourceStart": 0,
+              "sourceEnd": 53,
+              "entities": [
+                {
+                  "scene": "reception",
+                  "value": "waiting",
+                  "offset": 34
+                }
+              ],
+              "nodes": [],
+              "sceneScope": "current_shot",
+              "visibilityAuthority": "current_shot"
+            }
+          ],
+          "detectedScenes": [
+            "reception"
+          ],
+          "currentShotText": "service flow loops guests back to waiting before exit",
+          "boundaryConstraints": [],
+          "offFrameEntities": [],
+          "reviewRequiredClauses": [],
+          "evidenceClass": "system_inference",
+          "scopeReason": "source_compatible_with_shot"
+        },
+        {
+          "text": "Service logic is visible",
+          "sourcePath": "mediaTranslations.spatial.positiveDifferentiators[0]",
+          "sourceContainer": "mediaTranslations.spatial.positiveDifferentiators",
+          "sourceOrigins": [
+            "mediaTranslations.spatial.positiveDifferentiators[0]"
+          ],
+          "sceneScope": "current_shot",
+          "clauses": [
+            {
+              "text": "Service logic is visible",
+              "sourceStart": 0,
+              "sourceEnd": 24,
+              "entities": [],
+              "nodes": [],
+              "sceneScope": "current_shot",
+              "visibilityAuthority": "current_shot"
+            }
+          ],
+          "detectedScenes": [],
+          "currentShotText": "Service logic is visible",
+          "boundaryConstraints": [],
+          "offFrameEntities": [],
+          "reviewRequiredClauses": [],
+          "evidenceClass": "system_inference",
+          "scopeReason": "source_compatible_with_shot"
+        },
+        {
+          "text": "chef preparing food",
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[0]",
+          "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+          "sourceOrigins": [
+            "mediaTranslations.spatial.mustBeVisible[0]"
+          ],
+          "sceneScope": "current_shot",
+          "clauses": [
+            {
+              "text": "chef preparing food",
+              "sourceStart": 0,
+              "sourceEnd": 19,
+              "entities": [],
+              "nodes": [],
+              "sceneScope": "current_shot",
+              "visibilityAuthority": "current_shot"
+            }
+          ],
+          "detectedScenes": [],
+          "currentShotText": "chef preparing food",
+          "boundaryConstraints": [],
+          "offFrameEntities": [],
+          "reviewRequiredClauses": [],
+          "evidenceClass": "system_inference",
+          "scopeReason": "source_compatible_with_shot"
+        },
+        {
+          "text": "steam above dishes",
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[1]",
+          "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+          "sourceOrigins": [
+            "mediaTranslations.spatial.mustBeVisible[1]"
+          ],
+          "sceneScope": "current_shot",
+          "clauses": [
+            {
+              "text": "steam above dishes",
+              "sourceStart": 0,
+              "sourceEnd": 18,
+              "entities": [],
+              "nodes": [],
+              "sceneScope": "current_shot",
+              "visibilityAuthority": "current_shot"
+            }
+          ],
+          "detectedScenes": [],
+          "currentShotText": "steam above dishes",
+          "boundaryConstraints": [],
+          "offFrameEntities": [],
+          "reviewRequiredClauses": [],
+          "evidenceClass": "system_inference",
+          "scopeReason": "source_compatible_with_shot"
+        },
+        {
+          "text": "customers dining at tables",
+          "sourcePath": "mediaTranslations.spatial.mustBeVisible[2]",
+          "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+          "sourceOrigins": [
+            "mediaTranslations.spatial.mustBeVisible[2]"
+          ],
+          "sceneScope": "off_frame_dependency",
+          "clauses": [
+            {
+              "text": "customers dining at tables",
+              "sourceStart": 0,
+              "sourceEnd": 26,
+              "entities": [
+                {
+                  "scene": "dining",
+                  "value": "dining",
+                  "offset": 10
+                }
+              ],
+              "nodes": [],
+              "sceneScope": "off_frame_dependency",
+              "visibilityAuthority": "none"
+            }
+          ],
+          "detectedScenes": [
+            "dining"
+          ],
+          "currentShotText": "",
+          "boundaryConstraints": [],
+          "offFrameEntities": [
+            {
+              "text": "customers dining at tables",
+              "sourceStart": 0,
+              "sourceEnd": 26,
+              "entities": [
+                {
+                  "scene": "dining",
+                  "value": "dining",
+                  "offset": 10
+                }
+              ],
+              "nodes": [],
+              "sceneScope": "off_frame_dependency",
+              "visibilityAuthority": "none"
+            }
+          ],
+          "reviewRequiredClauses": [],
+          "evidenceClass": "system_inference",
+          "scopeReason": "foreign_scene_entity"
+        },
+        {
+          "text": "Visible service steps",
+          "sourcePath": "derived.architectureFunctionBridge.spatialTranslation[0]",
+          "sourceContainer": "architectureFunctionBridge.spatialTranslation",
+          "sourceOrigins": [
+            "mediaTranslations.spatial.brandRoleManifestation[0]"
+          ],
+          "sceneScope": "current_shot",
+          "clauses": [
+            {
+              "text": "Visible service steps",
+              "sourceStart": 0,
+              "sourceEnd": 21,
+              "entities": [],
+              "nodes": [],
+              "sceneScope": "current_shot",
+              "visibilityAuthority": "current_shot"
+            }
+          ],
+          "detectedScenes": [],
+          "currentShotText": "Visible service steps",
+          "boundaryConstraints": [],
+          "offFrameEntities": [],
+          "reviewRequiredClauses": [],
+          "evidenceClass": "system_inference",
+          "scopeReason": "source_compatible_with_shot"
+        },
+        {
+          "text": "arrival to consultation to completion",
+          "sourcePath": "derived.architectureFunctionBridge.spatialTranslation[1]",
+          "sourceContainer": "architectureFunctionBridge.spatialTranslation",
+          "sourceOrigins": [
+            "mediaTranslations.spatial.functionalNetwork[0]"
+          ],
+          "sceneScope": "off_frame_dependency",
+          "clauses": [
+            {
+              "text": "arrival to consultation to completion",
+              "sourceStart": 0,
+              "sourceEnd": 37,
+              "entities": [
+                {
+                  "scene": "consultation",
+                  "value": "consultation",
+                  "offset": 11
+                }
+              ],
+              "nodes": [],
+              "sceneScope": "off_frame_dependency",
+              "visibilityAuthority": "none"
+            }
+          ],
+          "detectedScenes": [
+            "consultation"
+          ],
+          "currentShotText": "",
+          "boundaryConstraints": [],
+          "offFrameEntities": [
+            {
+              "text": "arrival to consultation to completion",
+              "sourceStart": 0,
+              "sourceEnd": 37,
+              "entities": [
+                {
+                  "scene": "consultation",
+                  "value": "consultation",
+                  "offset": 11
+                }
+              ],
+              "nodes": [],
+              "sceneScope": "off_frame_dependency",
+              "visibilityAuthority": "none"
+            }
+          ],
+          "reviewRequiredClauses": [],
+          "evidenceClass": "system_inference",
+          "scopeReason": "foreign_scene_entity"
+        },
+        {
+          "text": "guests enter through arrival zone, see service point, continue to consultation",
+          "sourcePath": "derived.architectureFunctionBridge.spatialTranslation[2]",
+          "sourceContainer": "architectureFunctionBridge.spatialTranslation",
+          "sourceOrigins": [
+            "mediaTranslations.spatial.functionalNetwork[1]"
+          ],
+          "sceneScope": "current_shot",
+          "clauses": [
+            {
+              "text": "guests enter through arrival zone",
+              "sourceStart": 0,
+              "sourceEnd": 33,
+              "entities": [],
+              "nodes": [],
+              "sceneScope": "current_shot",
+              "visibilityAuthority": "current_shot"
+            },
+            {
+              "text": "see service point",
+              "sourceStart": 35,
+              "sourceEnd": 52,
+              "entities": [],
+              "nodes": [],
+              "sceneScope": "current_shot",
+              "visibilityAuthority": "current_shot"
+            },
+            {
+              "text": "continue to consultation",
+              "sourceStart": 54,
+              "sourceEnd": 78,
+              "entities": [
+                {
+                  "scene": "consultation",
+                  "value": "consultation",
+                  "offset": 12
+                }
+              ],
+              "nodes": [],
+              "sceneScope": "off_frame_dependency",
+              "visibilityAuthority": "none"
+            }
+          ],
+          "detectedScenes": [
+            "consultation"
+          ],
+          "currentShotText": "guests enter through arrival zone; see service point",
+          "boundaryConstraints": [],
+          "offFrameEntities": [
+            {
+              "text": "continue to consultation",
+              "sourceStart": 54,
+              "sourceEnd": 78,
+              "entities": [
+                {
+                  "scene": "consultation",
+                  "value": "consultation",
+                  "offset": 12
+                }
+              ],
+              "nodes": [],
+              "sceneScope": "off_frame_dependency",
+              "visibilityAuthority": "none"
+            }
+          ],
+          "reviewRequiredClauses": [],
+          "evidenceClass": "system_inference",
+          "scopeReason": "source_compatible_with_shot"
+        },
+        {
+          "text": "service flow loops guests back to waiting before exit",
+          "sourcePath": "derived.architectureFunctionBridge.spatialTranslation[3]",
+          "sourceContainer": "architectureFunctionBridge.spatialTranslation",
+          "sourceOrigins": [
+            "mediaTranslations.spatial.functionalNetwork[2]"
+          ],
+          "sceneScope": "current_shot",
+          "clauses": [
+            {
+              "text": "service flow loops guests back to waiting before exit",
+              "sourceStart": 0,
+              "sourceEnd": 53,
+              "entities": [
+                {
+                  "scene": "reception",
+                  "value": "waiting",
+                  "offset": 34
+                }
+              ],
+              "nodes": [],
+              "sceneScope": "current_shot",
+              "visibilityAuthority": "current_shot"
+            }
+          ],
+          "detectedScenes": [
+            "reception"
+          ],
+          "currentShotText": "service flow loops guests back to waiting before exit",
+          "boundaryConstraints": [],
+          "offFrameEntities": [],
+          "reviewRequiredClauses": [],
+          "evidenceClass": "system_inference",
+          "scopeReason": "source_compatible_with_shot"
+        },
+        {
+          "text": "厨房、顾客、餐桌与服务活动之间保持合理关系。",
+          "sourcePath": "derived.architectureFunctionBridge.operationConstraints[0]",
+          "sourceContainer": "architectureFunctionBridge.operationConstraints",
+          "sourceOrigins": [
+            "mediaTranslations.spatial.functionalRelationships[0]"
+          ],
+          "sceneScope": "off_frame_dependency",
+          "clauses": [
+            {
+              "text": "厨房、顾客、餐桌与服务活动之间保持合理关系",
+              "sourceStart": 0,
+              "sourceEnd": 21,
+              "entities": [
+                {
+                  "scene": "dining",
+                  "value": "厨房",
+                  "offset": 0
+                }
+              ],
+              "nodes": [],
+              "sceneScope": "off_frame_dependency",
+              "visibilityAuthority": "none"
+            }
+          ],
+          "detectedScenes": [
+            "dining"
+          ],
+          "currentShotText": "",
+          "boundaryConstraints": [],
+          "offFrameEntities": [
+            {
+              "text": "厨房、顾客、餐桌与服务活动之间保持合理关系",
+              "sourceStart": 0,
+              "sourceEnd": 21,
+              "entities": [
+                {
+                  "scene": "dining",
+                  "value": "厨房",
+                  "offset": 0
+                }
+              ],
+              "nodes": [],
+              "sceneScope": "off_frame_dependency",
+              "visibilityAuthority": "none"
+            }
+          ],
+          "reviewRequiredClauses": [],
+          "evidenceClass": "system_inference",
+          "scopeReason": "foreign_scene_entity"
+        },
+        {
+          "text": "Kitchen preparation connects to service counter; dining tables remain accessible; takeaway handoff keeps a clear route",
+          "sourcePath": "derived.architectureFunctionBridge.operationConstraints[1]",
+          "sourceContainer": "architectureFunctionBridge.operationConstraints",
+          "sourceOrigins": [
+            "mediaTranslations.spatial.functionalRelationships[1]"
+          ],
+          "sceneScope": "current_shot",
+          "clauses": [
+            {
+              "text": "Kitchen preparation connects to service counter",
+              "sourceStart": 0,
+              "sourceEnd": 47,
+              "entities": [
+                {
+                  "scene": "dining",
+                  "value": "Kitchen",
+                  "offset": 0
+                }
+              ],
+              "nodes": [],
+              "sceneScope": "off_frame_dependency",
+              "visibilityAuthority": "none"
+            },
+            {
+              "text": "dining tables remain accessible",
+              "sourceStart": 49,
+              "sourceEnd": 80,
+              "entities": [
+                {
+                  "scene": "dining",
+                  "value": "dining",
+                  "offset": 0
+                }
+              ],
+              "nodes": [],
+              "sceneScope": "off_frame_dependency",
+              "visibilityAuthority": "none"
+            },
+            {
+              "text": "takeaway handoff keeps a clear route",
+              "sourceStart": 82,
+              "sourceEnd": 118,
+              "entities": [],
+              "nodes": [],
+              "sceneScope": "current_shot",
+              "visibilityAuthority": "current_shot"
+            }
+          ],
+          "detectedScenes": [
+            "dining"
+          ],
+          "currentShotText": "takeaway handoff keeps a clear route",
+          "boundaryConstraints": [],
+          "offFrameEntities": [
+            {
+              "text": "Kitchen preparation connects to service counter",
+              "sourceStart": 0,
+              "sourceEnd": 47,
+              "entities": [
+                {
+                  "scene": "dining",
+                  "value": "Kitchen",
+                  "offset": 0
+                }
+              ],
+              "nodes": [],
+              "sceneScope": "off_frame_dependency",
+              "visibilityAuthority": "none"
+            },
+            {
+              "text": "dining tables remain accessible",
+              "sourceStart": 49,
+              "sourceEnd": 80,
+              "entities": [
+                {
+                  "scene": "dining",
+                  "value": "dining",
+                  "offset": 0
+                }
+              ],
+              "nodes": [],
+              "sceneScope": "off_frame_dependency",
+              "visibilityAuthority": "none"
+            }
+          ],
+          "reviewRequiredClauses": [],
+          "evidenceClass": "system_inference",
+          "scopeReason": "source_compatible_with_shot"
+        },
+        {
+          "text": "staff guides guest",
+          "sourcePath": "derived.architectureFunctionBridge.humanExperience[0]",
+          "sourceContainer": "architectureFunctionBridge.humanExperience",
+          "sourceOrigins": [
+            "mediaTranslations.spatial.peopleBehavior[0]"
+          ],
+          "sceneScope": "current_shot",
+          "clauses": [
+            {
+              "text": "staff guides guest",
+              "sourceStart": 0,
+              "sourceEnd": 18,
+              "entities": [],
+              "nodes": [],
+              "sceneScope": "current_shot",
+              "visibilityAuthority": "current_shot"
+            }
+          ],
+          "detectedScenes": [],
+          "currentShotText": "staff guides guest",
+          "boundaryConstraints": [],
+          "offFrameEntities": [],
+          "reviewRequiredClauses": [],
+          "evidenceClass": "system_inference",
+          "scopeReason": "source_compatible_with_shot"
+        },
+        {
+          "text": "identity at arrival",
+          "sourcePath": "derived.architectureFunctionBridge.humanExperience[1]",
+          "sourceContainer": "architectureFunctionBridge.humanExperience",
+          "sourceOrigins": [],
+          "sceneScope": "current_shot",
+          "clauses": [
+            {
+              "text": "identity at arrival",
+              "sourceStart": 0,
+              "sourceEnd": 19,
+              "entities": [],
+              "nodes": [],
+              "sceneScope": "current_shot",
+              "visibilityAuthority": "current_shot"
+            }
+          ],
+          "detectedScenes": [],
+          "currentShotText": "identity at arrival",
+          "boundaryConstraints": [],
+          "offFrameEntities": [],
+          "reviewRequiredClauses": [],
+          "evidenceClass": "system_inference",
+          "scopeReason": "source_compatible_with_shot"
+        },
+        {
+          "text": "Service logic is visible",
+          "sourcePath": "derived.architectureFunctionBridge.commercialReality[0]",
+          "sourceContainer": "architectureFunctionBridge.commercialReality",
+          "sourceOrigins": [
+            "mediaTranslations.spatial.positiveDifferentiators[0]"
+          ],
+          "sceneScope": "current_shot",
+          "clauses": [
+            {
+              "text": "Service logic is visible",
+              "sourceStart": 0,
+              "sourceEnd": 24,
+              "entities": [],
+              "nodes": [],
+              "sceneScope": "current_shot",
+              "visibilityAuthority": "current_shot"
+            }
+          ],
+          "detectedScenes": [],
+          "currentShotText": "Service logic is visible",
+          "boundaryConstraints": [],
+          "offFrameEntities": [],
+          "reviewRequiredClauses": [],
+          "evidenceClass": "system_inference",
+          "scopeReason": "source_compatible_with_shot"
+        },
+        {
+          "text": "Visible service steps",
+          "sourcePath": "derived.brandSanitization.lines[0]",
+          "sourceContainer": "brandSanitization.lines",
+          "sourceOrigins": [
+            "mediaTranslations.spatial.brandRoleManifestation[0]"
+          ],
+          "sceneScope": "current_shot",
+          "clauses": [
+            {
+              "text": "Visible service steps",
+              "sourceStart": 0,
+              "sourceEnd": 21,
+              "entities": [],
+              "nodes": [],
+              "sceneScope": "current_shot",
+              "visibilityAuthority": "current_shot"
+            }
+          ],
+          "detectedScenes": [],
+          "currentShotText": "Visible service steps",
+          "boundaryConstraints": [],
+          "offFrameEntities": [],
+          "reviewRequiredClauses": [],
+          "evidenceClass": "system_inference",
+          "scopeReason": "source_compatible_with_shot"
+        },
+        {
+          "text": "identity at arrival",
+          "sourcePath": "derived.brandSanitization.lines[1]",
+          "sourceContainer": "brandSanitization.lines",
+          "sourceOrigins": [],
+          "sceneScope": "current_shot",
+          "clauses": [
+            {
+              "text": "identity at arrival",
+              "sourceStart": 0,
+              "sourceEnd": 19,
+              "entities": [],
+              "nodes": [],
+              "sceneScope": "current_shot",
+              "visibilityAuthority": "current_shot"
+            }
+          ],
+          "detectedScenes": [],
+          "currentShotText": "identity at arrival",
+          "boundaryConstraints": [],
+          "offFrameEntities": [],
+          "reviewRequiredClauses": [],
+          "evidenceClass": "system_inference",
+          "scopeReason": "source_compatible_with_shot"
+        },
+        {
+          "text": "Service logic is visible",
+          "sourcePath": "derived.brandSanitization.lines[2]",
+          "sourceContainer": "brandSanitization.lines",
+          "sourceOrigins": [
+            "mediaTranslations.spatial.positiveDifferentiators[0]"
+          ],
+          "sceneScope": "current_shot",
+          "clauses": [
+            {
+              "text": "Service logic is visible",
+              "sourceStart": 0,
+              "sourceEnd": 24,
+              "entities": [],
+              "nodes": [],
+              "sceneScope": "current_shot",
+              "visibilityAuthority": "current_shot"
+            }
+          ],
+          "detectedScenes": [],
+          "currentShotText": "Service logic is visible",
+          "boundaryConstraints": [],
+          "offFrameEntities": [],
+          "reviewRequiredClauses": [],
+          "evidenceClass": "system_inference",
+          "scopeReason": "source_compatible_with_shot"
+        }
+      ],
+      "layers": {
+        "raw": {
+          "functionalNetwork": [
+            "guests enter through arrival zone; see service point",
+            "service flow loops guests back to waiting before exit"
+          ],
+          "sceneProgram": [
+            "arrival",
+            "service"
+          ],
+          "brandRoleManifestation": [
+            "Visible service steps",
+            "identity at arrival",
+            "Service logic is visible"
+          ],
+          "signatureSpatialMechanism": [
+            "Layered open frames guide movement"
+          ],
+          "mustBeVisible": [
+            "chef preparing food",
+            "steam above dishes",
+            "customers dining at tables"
+          ],
+          "positiveDifferentiators": [
+            "Service logic is visible"
+          ]
+        },
+        "bridge": {
+          "commercialPurpose": "A welcoming service destination",
+          "spatialTranslation": [
+            "Visible service steps",
+            "guests enter through arrival zone; see service point",
+            "service flow loops guests back to waiting before exit"
+          ],
+          "operationConstraints": [
+            "takeaway handoff keeps a clear route"
+          ],
+          "humanExperience": [
+            "staff guides guest",
+            "identity at arrival"
+          ],
+          "commercialReality": [
+            "Service logic is visible"
+          ],
+          "conceptDriftGuards": [
+            "generic decoration"
+          ],
+          "crossSceneConstraints": []
+        },
+        "composition": {
+          "aspectRatio": "16:9",
+          "mustBeVisible": [
+            "chef preparing food",
+            "steam above dishes"
+          ],
+          "positiveDifferentiators": [
+            "Service logic is visible"
+          ],
+          "artisticFocus": []
+        }
+      },
+      "finalGateInput": {
+        "functionalNetwork": [
+          "guests enter through arrival zone; see service point",
+          "service flow loops guests back to waiting before exit"
+        ],
+        "functionalRelationships": [
+          "takeaway handoff keeps a clear route"
+        ],
+        "mustBeVisible": [
+          "chef preparing food",
+          "steam above dishes"
+        ]
+      },
+      "finalGate": {
+        "schemaVersion": "1.0",
+        "version": "space-spatial-semantic-gate@1.1.0",
+        "status": "block",
+        "findings": [
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalRelationships",
+            "path": "mediaTranslations.spatial.functionalRelationships[0]",
+            "classification": "functional",
+            "original": "takeaway handoff keeps a clear route",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "functional",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        ]
+      },
+      "compiler": {
+        "status": "block",
+        "code": "SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK",
+        "message": "SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+        "findings": [
+          {
+            "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+            "severity": "block",
+            "field": "functionalRelationships",
+            "path": "mediaTranslations.spatial.functionalRelationships[0]",
+            "classification": "functional",
+            "original": "takeaway handoff keeps a clear route",
+            "reason": "complete_functional_evidence_required",
+            "analysis": {
+              "classification": "functional",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            }
+          }
+        ]
+      },
+      "inputUnchanged": true
+    }
+  ],
+  "networkAttempts": 0,
+  "realProviderCalls": 0,
+  "note": "Existing synthetic continuation confirmation data copied literally from test construction; no real confirmation created."
+}
