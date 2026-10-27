@@ -198,7 +198,12 @@ function recognizeUnit(value, field) {
   if (explicitObjectUseEvidence(text)) return {type:'relation', basis:'explicit_object_use_relation'};
   if (explicitSpatialRelationship(text)) return {type:/(?:\b(?:with|beside|across|behind|within|near|facing|revealing)\b)/iu.test(text) ? 'relation' : 'node', basis:'explicit_spatial_requirement'};
   if (explicitVisibleCarrier(text)) return {type:/位于|设在|放置在/u.test(text) ? 'relation' : 'node', basis:'explicit_visible_carrier'};
-  if (typedNode(text)) return {type:'node', basis:'named_functional_node'};
+  if (typedNode(text)) {
+    // Generic carriers need their own complete visibility evidence. Their node
+    // type remains valid in program/network fields; it is not shot permission.
+    if (field === 'mustBeVisible' && /\b(?:equipment|tables?|chairs?|seating|worktable|counter)$/iu.test(text)) return null;
+    return {type:'node', basis:'named_functional_node'};
+  }
   if (completeRelation(text)) return {type:'relation', basis:'complete_spatial_relation'};
   const existing = functionalRequirementEvidence(text, field);
   if (existing) return {type:existing === 'named_functional_node' || existing === 'scoped_scene_program' ? 'node' : 'relation', basis:existing};
