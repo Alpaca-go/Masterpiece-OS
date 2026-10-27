@@ -1,0 +1,33 @@
+{
+  "algorithm": "SHA256 of file bytes; excludes this manifest",
+  "files": [
+    {
+      "file": "README.md",
+      "sha256": "256bb4c8c7169d47789c951bd7125c8ee795862095c76f2caa7928ff954a589d"
+    },
+    {
+      "file": "historical-replay.json",
+      "sha256": "6c773beada12141d344c36bb7e76651364cffa763d734865c8fb2f0dd69a43b1"
+    },
+    {
+      "file": "preservation.json",
+      "sha256": "1afc348589cdfe48a5ae9da33f47cb19f87e7f188ebc2539d387ae9d8cb23157"
+    },
+    {
+      "file": "probe-comparison.json",
+      "sha256": "24206e955ca2997ab37910d10433316f13809e3c04807fd7103354b52d612858"
+    },
+    {
+      "file": "production-diff.patch",
+      "sha256": "65a4b17f1cfeb2ebd5e22c712d02308579d6b1725d6bdb39f908efd7ed9784ed"
+    },
+    {
+      "file": "production-hashes.json",
+      "sha256": "2efe61fda8e40e354a0a4beafd9ad7e531c197b110fed755e318afb28aaec09e"
+    },
+    {
+      "file": "regression-results.json",
+      "sha256": "e1bea3d71289900af1e4d6d51635f8f9d55206e58a5d90701e6da56d14742fcd"
+    }
+  ]
+}

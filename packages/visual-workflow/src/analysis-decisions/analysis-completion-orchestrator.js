@@ -98,7 +98,7 @@ async function completeStructuredAnalysis(input) {
   let finalIssues = [];
   let finalStatus = "failed";
   input.onProgress?.("validation");
-  const initialSufficiency = evaluateDeliverableSufficiency({
+  let initialSufficiency = evaluateDeliverableSufficiency({
     packet,
     deliverable: input.deliverable,
     execution
@@ -107,6 +107,46 @@ async function completeStructuredAnalysis(input) {
     "initial-validation.json",
     initialSufficiency
   ));
+  // Schema/source/sufficiency assessment happens first. If the caller supplies
+  // the pure spatial repair, run it before ANY optional repair-model batch.
+  // A local failure or unresolved semantic remainder cannot be sent to a model
+  // to manufacture evidence. This does not affect the earlier DCD/UVU requests.
+  let semanticBlocked = false;
+  let semanticChecked = false;
+  async function checkSpatialDeterministically(phase) {
+    let validation;
+    try {
+      validation = input.validateFinalPacket(packet);
+      if (!['pass', 'block'].includes(validation?.status)) throw new Error('INVALID_SEMANTIC_VALIDATION');
+      await persist(input.persistence, store => store.saveRuntimeArtifact(
+        semanticChecked ? 'spatial-semantic-validation.final.json' : 'spatial-semantic-validation.initial.json', validation));
+      semanticChecked = true;
+      // Also inspect fields (for example sceneProgram) outside the final gate.
+      // A reported unresolved clause is blocking even if that gate passes.
+      {
+        const repaired = await input.repairFinalPacketDeterministically({packet:structuredClone(packet),findings:validation.findings});
+        if (!isRecord(repaired?.packet)) throw new Error('INVALID_DETERMINISTIC_PACKET');
+        packet = repaired.packet;
+        validation = input.validateFinalPacket(packet);
+        if (!['pass', 'block'].includes(validation?.status)) throw new Error('INVALID_SEMANTIC_VALIDATION');
+        semanticBlocked = validation.status !== 'pass' || (repaired.unresolved?.length ?? 0) > 0;
+        await persist(input.persistence, store => store.saveRuntimeArtifact(
+          phase === 'before_optional_model_repair' ? 'spatial-semantic-validation.repaired.json' : 'spatial-semantic-validation.final-repaired.json', {
+          ...validation,status:semanticBlocked?'block':'pass',phase,method:'deterministic_semantic_separation',
+          changes:repaired.changes ?? [],unresolved:repaired.unresolved ?? [],evidence:repaired.evidence ?? []
+        }));
+      }
+    } catch (error) {
+      semanticBlocked = true;
+      accumulator.errors.push(safeError(Object.assign(error instanceof Error ? error : new Error(String(error)),
+        {code:'ANALYSIS_SPATIAL_SEMANTICS_INVALID'})));
+    }
+  }
+  if (input.deliverable === 'space' && input.validateFinalPacket && input.repairFinalPacketDeterministically
+    && initialSufficiency.status !== 'failed' && isRecord(packet.mediaTranslations?.spatial)) {
+    await checkSpatialDeterministically('before_optional_model_repair');
+    initialSufficiency = evaluateDeliverableSufficiency({packet,deliverable:input.deliverable,execution});
+  }
   finalIssues = initialSufficiency.issues;
   const initialActionable = initialSufficiency.issues.some((issue) => issue.severity === "repairable" || issue.severity === "defaultable" || issue.repairStrategy === "deterministic");
   if (initialSufficiency.status === "ready") {
@@ -118,7 +158,7 @@ async function completeStructuredAnalysis(input) {
   } else if (!initialActionable && initialSufficiency.status === "requires_confirmation") {
     finalStatus = "requires_confirmation";
   }
-  for (let attempt = 1; initialActionable && attempt <= MAX_REPAIR_ATTEMPTS; attempt += 1) {
+  for (let attempt = 1; initialActionable && !semanticBlocked && attempt <= MAX_REPAIR_ATTEMPTS; attempt += 1) {
     attempts = attempt;
     input.onProgress?.("validation");
     let sufficiency = evaluateDeliverableSufficiency({
@@ -160,6 +200,10 @@ async function completeStructuredAnalysis(input) {
     if (plan.aiBatches.length) input.onProgress?.("repairing");
     let attemptApplied = false;
     for (const batch of plan.aiBatches) {
+      if (semanticChecked) {
+        await checkSpatialDeterministically('before_structured_repair_batch');
+        if (semanticBlocked) break;
+      }
       try {
         const result = await runStructuredRepair({
           batch,
@@ -230,57 +274,44 @@ async function completeStructuredAnalysis(input) {
       break;
     }
   }
-  if (input.deliverable === "space" && (finalStatus === "ready" || finalStatus === "ready_with_warnings") && input.validateFinalPacket) {
-    let semanticValidation = input.validateFinalPacket(packet);
-    await persist(input.persistence, (store) => store.saveRuntimeArtifact(
-      "spatial-semantic-validation.initial.json",
-      semanticValidation
-    ));
-    let deterministicFailed = false;
-    if (semanticValidation.status === "block" && input.repairFinalPacketDeterministically) {
-      try {
-        const repaired = await input.repairFinalPacketDeterministically({packet,findings:semanticValidation.findings});
-        packet = repaired.packet;
-        semanticValidation = input.validateFinalPacket(packet);
-        await persist(input.persistence, store => store.saveRuntimeArtifact('spatial-semantic-validation.repaired.json', {
-          ...semanticValidation,method:'deterministic_semantic_separation',
-          changes:repaired.changes ?? [],unresolved:repaired.unresolved ?? []
-        }));
-      } catch (error) {
-        deterministicFailed = true;
-        semanticValidation = {status:'block',findings:semanticValidation.findings};
-        accumulator.errors.push(safeError(Object.assign(error instanceof Error ? error : new Error(String(error)),
-          {code:'ANALYSIS_SPATIAL_SEMANTICS_INVALID'})));
+  if (!semanticBlocked && input.deliverable === "space" && (finalStatus === "ready" || finalStatus === "ready_with_warnings") && input.validateFinalPacket) {
+    if (input.repairFinalPacketDeterministically) {
+      await checkSpatialDeterministically('after_structured_repair');
+    } else {
+      // Compatibility for callers that do not supply deterministic semantics.
+      let semanticValidation = input.validateFinalPacket(packet);
+      await persist(input.persistence, (store) => store.saveRuntimeArtifact(
+        "spatial-semantic-validation.initial.json",
+        semanticValidation
+      ));
+      if (semanticValidation.status === "block" && input.repairInvalidFinalPacket) {
+        input.onProgress?.("repairing");
+        try {
+          modelCallCount += 1;
+          packet = await input.repairInvalidFinalPacket({
+            packet,
+            findings: semanticValidation.findings
+          });
+          semanticValidation = input.validateFinalPacket(packet);
+          await persist(input.persistence, (store) => store.saveRuntimeArtifact(
+            "spatial-semantic-validation.repaired.json",
+            semanticValidation
+          ));
+        } catch (error) {
+          accumulator.errors.push(safeError(Object.assign(
+            error instanceof Error ? error : new Error(String(error)),
+            { code: "ANALYSIS_SPATIAL_SEMANTICS_INVALID" }
+          )));
+          semanticValidation = { status: "block", findings: semanticValidation.findings };
+        }
       }
+      semanticBlocked = semanticValidation.status !== 'pass';
     }
-    if (!deterministicFailed && semanticValidation.status === "block" && input.repairInvalidFinalPacket) {
-      input.onProgress?.("repairing");
-      try {
-        modelCallCount += 1;
-        packet = await input.repairInvalidFinalPacket({
-          packet,
-          findings: semanticValidation.findings
-        });
-        semanticValidation = input.validateFinalPacket(packet);
-        await persist(input.persistence, (store) => store.saveRuntimeArtifact(
-          "spatial-semantic-validation.repaired.json",
-          semanticValidation
-        ));
-      } catch (error) {
-        accumulator.errors.push(safeError(Object.assign(
-          error instanceof Error ? error : new Error(String(error)),
-          { code: "ANALYSIS_SPATIAL_SEMANTICS_INVALID" }
-        )));
-        semanticValidation = { status: "block", findings: semanticValidation.findings };
-      }
-    }
-    if (semanticValidation.status === "block") {
-      finalStatus = "failed";
-      accumulator.errors.push({
-        code: "ANALYSIS_SPATIAL_SEMANTICS_INVALID",
-        message: "Spatial functional semantics remained invalid after targeted repair."
-      });
-    }
+  }
+  if (semanticBlocked) {
+    finalStatus = 'failed';
+    accumulator.errors.push({code:'ANALYSIS_SPATIAL_SEMANTICS_INVALID',
+      message:'Spatial functional semantics remained unresolved; model repair cannot supply missing evidence.'});
   }
   // Semantic repair can delete unsafe entries. Recheck sufficiency on the
   // resulting packet rather than trusting the pre-cleanup ready status.

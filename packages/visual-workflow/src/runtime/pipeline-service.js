@@ -348,7 +348,7 @@ function createPipelineService(projects, readCredentials, readSettings, emitProg
             const separation=separateSpatialFunctionalSemantics(packet.mediaTranslations?.spatial ?? {});
             const next=structuredClone(packet);
             next.mediaTranslations.spatial=separation.spatial;
-            return {packet:next,changes:separation.changes,unresolved:separation.unresolved};
+            return {packet:next,changes:separation.changes,unresolved:separation.unresolved,evidence:separation.evidence};
           },
           repairInvalidFinalPacket: async ({ packet, findings }) => {
             const current = packet;

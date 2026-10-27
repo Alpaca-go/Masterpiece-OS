@@ -34,12 +34,57 @@ function findingCode(field, classification) {
   }
   return "INVALID_SPACE_FUNCTIONAL_SEMANTICS";
 }
+// A small compositional grammar for physical design requirements. Every noun
+// phrase and relation is consumed; unknown predicates/tails cannot inherit a
+// carrier's permission. This describes supplied requirements, not source truth.
+function explicitSpatialRelationship(value) {
+  const text = String(value).trim().replace(/[.!]$/u, '').toLowerCase();
+  if (text.length > 1200) return false;
+  const determiner = '(?:(?:a|an|the|one|two|each|its|at least one|one or two|at most one|a small amount of|these) )?';
+  const modifiers = '(?:(?:staff and visitor|visitor and staff|reception and waiting|transparent, translucent or staggered|recessed and staggered|appropriately weighted|counter-to-waiting|conversation|curtain-like|single|blank|adjacent|closed|ordered|secondary|operational|functional|private|care|pearlescent|reception|service|consultation|waiting|arrival|visitor|staff|customer|payment|collection|comparison|equipment|pack|fitting|work|handoff|privacy|access|onward|transition|entrance|dining|retail|foreground|background|main|small|large|clear|usable|accessible|reachable|complete|entire|distinct|separate|independent|discreet|offset|screened|staggered|recessed|open|semi-open|lateral|visible|readable|legible|integrated|translucent|transparent|solid|curved|continuous|architectural|building|generous|grouped|paired|quiet|fine|thin|spaced|local|sparse|flat|clean|unlettered|real|office|neutral|warm|light|timber|restrained)(?:,? ))*';
+  const noun = '(?:counter|worktops?|worktable|tables?|chairs?|seats?|seating|sofa and armchair (?:waiting )?group|sofa|armchair|group|area|zone|hall|space|approach|access|circulation|route|boundary|threshold|transition|entrances?|interface|partition|partitions|sheet interface|surfaces?|face|faces|gaps|sections|layers|edges|ceiling surfaces|wall panel|wall|return|platform|equipment|device|tablet|desk card|booklet|water tray|direction plaque|direction carrier|identity carrier|identity surface|building|art focus|pause space|waiting area seating|room interiors|interiors|sightlines|curve relationships|layering|upholstery|details|arrival|sheets|service cues|service accessory|carriers|areas)';
+  const base = determiner + modifiers + noun;
+  const group = base + '(?:(?:, | and | or )' + base + ')*';
+  const relation = '(?:with|beside|around|across|behind|within|outside|near|on|of|to|from|toward|containing|facing|connected to|integrated with|integrated into|grouped around|continuing toward|screened by|readable from|visible from|revealing|revealing space behind|reserved as|unobstructed by)';
+  const qualifier = '(?:partly free-standing|facing one another|facing each other|remain visible|are readable|without showing room interiors|without crossing the entrance|unobstructed|with circulation clear around it|with circulation around it|with clear circulation around the group|with onward room interiors hidden|rather than hidden in a corner)';
+  // Optional accessories are only adjuncts to an already complete spatial unit.
+  // They cannot establish the subject's visibility or become operation evidence.
+  const adjunct = '(?:(?:a|one) small unlettered desk card is optional and secondary|at most one small service accessory may be included|a small blank direction carrier may sit on the threshold interface|service cues stay subordinate and may be reduced to protect the open hall|the service surface remains mostly clear|one closed unlettered service booklet and a small water tray make the stay readable|these sparse service details remain secondary to the building and the pearlescent art|private care interiors stay screened|small operational carriers remain subordinate to the complete functional areas)';
+  const tail = '(?:(?:,? | and )' + relation + ' (?:' + group + '|it)|(?:,? | and )' + qualifier + '|; ' + adjunct + ')';
+  // A spatial purpose or a complete relation is mandatory. A bare furniture or
+  // equipment noun (including a sequence of adjectives) is never sufficient.
+  // A second bare device/furniture noun cannot borrow the first subject's use.
+  // Coordinated structural clauses may name their own boundary or circulation;
+  // object groups are otherwise only allowed under an explicit relation.
+  const structuralNoun = '(?:circulation|route|zone|threshold|transition|boundary|partitions|surfaces|sightlines|curve relationships|ceiling surfaces)';
+  const subject = base + '(?:(?:, | and | or )' + determiner + modifiers + structuralNoun + ')*';
+  const complete = new RegExp('^' + subject + tail + '*$', 'u');
+  const qualifiedSubject = /^(?:(?:a|an|the|one|two|one or two) )?(?:(?:clear|open|lateral|foreground|complete|reachable|small|flat|clean|unlettered|legible|restrained|continuous|architectural)[:,]? )*(?:reception|consultation|waiting|visitor circulation|entrance arrival|identity surface|curve relationships|sofa and armchair waiting group)\b/u.test(text);
+  const positioned = /\b(?:beside|across|behind|within|outside|near|connected to|integrated with|integrated into|grouped around|continuing toward|screened by)\b/u.test(text);
+  return (qualifiedSubject || positioned) && complete.test(text);
+}
 function explicitVisibleCarrier(value) {
-  const text=String(value).trim();
-  if (/\b(?:maybe|might|could|wish|dream|unknown|unresolved|no|not|without)\b|也许|可能|希望|未知|待定|象征|灵魂|禁止|不得|无需/iu.test(text)) return false;
-  if (/^(?:(?:a|an|the|visible)\s+)?(?:staff|employees?|workers?|operators?|customers?|guests?|visitors?|clerks?|chefs?|technicians?)\b|^(?:厨师|店员|员工|顾客|客人|访客|工作人员|技师|操作员)/iu.test(text)) return false;
-  return /^(?:arrival|service|checkout|pickup)\s+(?:point|counter|area|zone)[.!]?$/iu.test(text)
-    || /\b(?:table|worktable|chairs?|seats?|seating|counter|equipment|scanner|terminal|pots?)\b|桌|座位|座椅|设备|扫描仪|终端|砂锅/iu.test(text);
+  const text = String(value).trim();
+  if (explicitSpatialRelationship(text)) return true;
+  // Bounded noun phrases: a named use/location must qualify the object. These
+  // are supplied design requirements, not proof the object exists on site.
+  const purpose = String.raw`(?:arrival|service|checkout|pickup|reception|consultation|treatment|waiting(?:\s+area)?|dining|display|retail)`;
+  if (new RegExp(`^(?:(?:a|an|the)\\s+)?${purpose}\\s+(?:point|counter|area|zone|desk|table|chairs?|seats?|seating|equipment|scanner|terminal)[.!]?$`, 'iu').test(text)) return true;
+  const location = '(?:入口(?:处)?|点餐区|服务区|柜台|等候区|就餐区|厨房(?:区域|区)?|咨询区|明档)';
+  const object = '(?:菜单|价目表|咨询设备|专业设备|座位|座椅|桌椅|桌面|餐桌|取餐台|点餐台|砂锅)';
+  if (new RegExp(`^${location}(?:内|处)?的(?:舒适)?${object}(?:(?:和|与|、)${object})?(?:/热气)?[。！]?$`, 'u').test(text)) return true;
+  return /^(?:咨询桌或低桌|(?:\d+(?:[–—-]\d+)?\s*人)?咨询座位|咨询设备或轻量专业设备)[。！]?$/u.test(text)
+    || /^(?:点餐|服务|取餐)区的清晰指示[。！]?$/u.test(text)
+    || /^(?:厨房|操作)(?:区|区域)的部分可见性[。！]?$/u.test(text)
+    || /^(?:半私密或私密边界|(?:医疗\s*\/\s*)?产品信息展示面|清晰入口与落座关系)[。！]?$/u.test(text)
+    || /^(?:privacy partitions|open kitchen|(?:complex |thin |layered |curved |translucent )*(?:ceiling surfaces|partitions|wall surfaces))[.!]?$/iu.test(text);
+}
+function visibleRequirementAllowed(value, analysis) {
+  // In particular, ambiguous motif + architecture may NEVER use carrier fallback.
+  if (analysis.motifHits.length || analysis.colorHits.length || analysis.metaphor
+    || GRAPHIC_IDENTITY.test(value)
+    || [SEMANTIC_CLASS.DECORATIVE_IDENTITY, SEMANTIC_CLASS.DECORATIVE_OBJECT, SEMANTIC_CLASS.BRAND_MOTIF].includes(analysis.classification)) return false;
+  return analysis.classification === SEMANTIC_CLASS.FUNCTIONAL || explicitVisibleCarrier(value);
 }
 function validateSpatialSemantics(spatial = {}) {
   const findings = [];
@@ -47,12 +92,10 @@ function validateSpatialSemantics(spatial = {}) {
     for (const [index, value] of list(spatial?.[field]).entries()) {
       const analysis = classifyPhrase(value, field);
       const graphicIdentity = GRAPHIC_IDENTITY.test(value);
-      // A supplied physical carrier is sufficient for analysis validation, but
-      // does not change the renderer's existing scope/ownership classification.
-      if (!graphicIdentity && field==='mustBeVisible' && analysis.classification===SEMANTIC_CLASS.AMBIGUOUS
-        && explicitVisibleCarrier(value)) continue;
-      if (!graphicIdentity && !BLOCKED_CLASSES.has(analysis.classification)) continue;
-      if (analysis.classification === SEMANTIC_CLASS.DECORATIVE_OBJECT && isSubordinateDecorativeObject(value)) {
+      const visible = field === 'mustBeVisible';
+      if (visible && visibleRequirementAllowed(value, analysis)) continue;
+      if (!visible && !graphicIdentity && !BLOCKED_CLASSES.has(analysis.classification)) continue;
+      if (!visible && analysis.classification === SEMANTIC_CLASS.DECORATIVE_OBJECT && isSubordinateDecorativeObject(value)) {
         continue;
       }
       const classification = analysis.classification === SEMANTIC_CLASS.DECORATIVE_OBJECT ? SEMANTIC_CLASS.DECORATIVE_OBJECT : graphicIdentity ? "graphic_identity" : analysis.classification;
@@ -61,7 +104,8 @@ function validateSpatialSemantics(spatial = {}) {
         severity: "block",
         field,
         path: `mediaTranslations.spatial.${field}[${index}]`,
-        classification
+        classification,
+        ...(visible ? {reason: 'complete_visible_evidence_required', analysis} : {})
       });
     }
   }
@@ -82,14 +126,21 @@ function separateSpatialFunctionalSemantics(spatial = {}) {
   const brand = list(spatial.brandRoleManifestation);
   const brandClasses = new Set([SEMANTIC_CLASS.DECORATIVE_IDENTITY, SEMANTIC_CLASS.BRAND_MOTIF,
     SEMANTIC_CLASS.DECORATIVE_OBJECT, SEMANTIC_CLASS.COLOR_ACCENT, SEMANTIC_CLASS.COLOR_GEOMETRY]);
-  const operation = /菜单|价目表|进入|离开|到达|点餐|等候|取餐|用餐|就餐|厨房|出餐|清洁|外带|座位|座椅|桌面|桌椅|照明|通道|通行|动线|服务|接待|办理|操作|查看|\b(?:menu|arrival|entry|entrance|exit|waiting|counter|seating|reception|service|access|circulation|checkout|payment|staff|customers?|guests?|equipment)\b/iu;
+  // A veto on demotion, never a positive permission: inseparable styled
+  // equipment/furniture must not disappear into the brand layer either.
+  const operation = /菜单|价目表|进入|离开|到达|点餐|等候|取餐|用餐|就餐|厨房|出餐|清洁|外带|座位|座椅|桌|设备|柜台|砂锅|照明|通道|通行|动线|服务|接待|办理|操作|查看|\b(?:menu|arrival|entry|entrance|exit|waiting|counter|tables?|desks?|chairs?|seats?|seating|reception|service|access|circulation|checkout|payment|staff|customers?|guests?|equipment|scanner|terminal)\b/iu;
   const brandExpression = /品牌(?:标识|符号|色彩|配色|影像|元素|内容|视觉|形象)|brand\s+(?:identity|colou?r|palette|visual|imagery|content)|^吸引力$/iu;
+  function functionalFragment(text) {
+    const steps = text.split(/\s*(?:→|->|⇒)\s*/u);
+    if (steps.length > 1) return steps.every(functionalFragment);
+    const unit = text.replace(/^(?:品牌入口|入口|点餐区|等候区|就餐区|厨房区|外带区|服务区|咨询区)[:：]\s*/u, '');
+    return /^(?:(?:顾客|客人)?(?:进入|离开|到达)|菜单(?:查看|展示)?|价目表|点餐|等候|取餐(?:提示)?|用餐|就餐|厨房|出餐|清洁|外带|座位|座椅|桌椅|桌面|照明|通道|通行|接待|咨询设备|arrival|entry|entrance|exit|waiting|counter|seating|reception|service|access|circulation|checkout|payment|menu)[。.!！]?$/iu.test(unit);
+  }
   function kind(text, field) {
     const analysis = classifyPhrase(text, field);
     if (brandClasses.has(analysis.classification) || brandExpression.test(text)) return 'brand';
-    if (field==='mustBeVisible' && [SEMANTIC_CLASS.AMBIGUOUS,SEMANTIC_CLASS.ARCHITECTURAL].includes(analysis.classification)
-      && explicitVisibleCarrier(text)) return 'functional';
-    if ((operation.test(text) || analysis.classificationReason?.startsWith('visible_'))
+    if (field === 'mustBeVisible') return visibleRequirementAllowed(text, analysis) ? 'functional' : 'unresolved';
+    if (functionalFragment(text)
       && [SEMANTIC_CLASS.FUNCTIONAL,SEMANTIC_CLASS.ARCHITECTURAL].includes(analysis.classification)) return 'functional';
     return 'unresolved';
   }
@@ -104,7 +155,7 @@ function separateSpatialFunctionalSemantics(spatial = {}) {
         || parts[0]?.match(/^(.+?(?:处|区域|区)(?:的)?)(?=.+)/u)?.[1] || '' : '';
       const classified = parts.map((part,i) => {
         const value = prefix && i>0 ? prefix+part : part;
-        return {sourceFragment:part,value,kind:kind(part,field)==='brand'?'brand':kind(value,field)};
+        return {sourceFragment:part,value,kind:kind(part,field)==='brand'?'brand':kind(value,field),analysis:classifyPhrase(value,field)};
       });
       const functional = classified.filter(p=>p.kind==='functional');
       const decorative = classified.filter(p=>p.kind==='brand');
@@ -133,7 +184,20 @@ function separateSpatialFunctionalSemantics(spatial = {}) {
     });
   }
   if(changes.length) next.brandRoleManifestation=brand;
-  return {spatial:next,changes,unresolved};
+  // Validate all retained values again, not only the clauses we changed. Never
+  // discard a failed remainder or turn an unresolved result into a clean packet.
+  const validation = validateSpatialSemantics(next);
+  for (const finding of validation.findings) {
+    if (!unresolved.some(item => item.field === finding.field && item.index === Number(finding.path.match(/\[(\d+)\]$/u)?.[1]))) {
+      unresolved.push({field:finding.field,index:Number(finding.path.match(/\[(\d+)\]$/u)?.[1]),reason:'retained_fragment_failed_validation',finding});
+    }
+  }
+  const evidence = ['functionalNetwork','functionalRelationships','mustBeVisible','sceneProgram'].flatMap(field =>
+    list(next[field]).map((value,index) => ({field,index,value,analysis:classifyPhrase(value,field),
+      semanticOnly:true,sourceConfirmation:'unchanged',
+      validation:validation.findings.some(f => f.field === field && f.path.endsWith(`[${index}]`)) ? 'block'
+        : field === 'sceneProgram' ? 'separation_only' : 'pass'})));
+  return {spatial:next,changes,unresolved,validation,evidence};
 }
 function normalizeSpatialFunctionalValue(value, field) {
   const text = String(value ?? "").trim();

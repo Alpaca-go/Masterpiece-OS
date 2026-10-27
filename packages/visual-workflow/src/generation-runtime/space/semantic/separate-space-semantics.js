@@ -60,19 +60,46 @@ const FUNCTIONAL_PROVENANCE_FIELDS = /* @__PURE__ */ new Set([
 // fallback. Recognize actor + concrete activity or physical effect + carrier
 // relationships across service industries. These rules never infer a scene.
 function visibleOperationEvidence(text) {
-  if (/\b(?:maybe|might|could|wish|dream|symbolic|metaphor|imaginary)\b|也许|可能|希望|象征|意境|灵魂/iu.test(text)) return null;
-  if (/\b(?:no|not|without)\b|禁止|不得|无需|不(?:操作|使用)/iu.test(text)) return null;
-  const actor = /^(?:(?:a|an|the|visible)\s+)?(?:staff|employees?|workers?|operators?|customers?|guests?|visitors?|clerks?|chefs?|receptionists?|attendants?|technicians?|servers?)\s+(?:(?:is|are)\s+)?(?:preparing|cooking|serving|dining|eating|browsing|selecting|paying|checking\s+in|greeting|guiding|assisting|handing|packing|carrying|cleaning|consulting)\b\s+\S/iu;
-  const actorCjk = /^(?:可见的?)?(?:厨师|店员|员工|服务员|顾客|客人|旅客|访客|接待员|工作人员|客户|技师).{0,16}(?:备餐|烹饪|制作|用餐|就餐|点餐|选购|挑选|结账|办理入住|迎接|引导|接待|协助|递交|打包|搬运|清洁|咨询)/u;
-  if (actor.test(text) || actorCjk.test(text)) return "visible_actor_activity";
-  const deviceOperation = /^(?:(?:a|an|the|visible)\s+)?(?:staff|employees?|workers?|operators?|clerks?|technicians?)\s+(?:(?:is|are)\s+)?(?:operating|using)\s+(?:(?:the|a|an)\s+)?(?:cash\s+register|payment\s+terminal|scanner|machine|equipment)\b/iu;
-  const deviceOperationCjk = /^(?:可见的?)?(?:店员|员工|工作人员|技师|操作员).{0,12}(?:操作|使用).{0,8}(?:收银机|收银台|支付终端|扫描仪|检测设备|机器|设备)/u;
-  if (deviceOperation.test(text) || deviceOperationCjk.test(text)) return 'visible_device_operation';
+  // This recognizes a supplied affirmative proposition, NOT its truth or source
+  // confirmation. Every operand and optional location consumes the whole unit.
+  const whole = pattern => new RegExp(`^(?:${pattern})[。.!！]?$`, 'iu').test(text);
+  const actor = String.raw`(?:(?:a|an|the|visible)\s+)?(?:staff|employees?|workers?|operators?|customers?|guests?|visitors?|clerks?|chefs?|receptionists?|attendants?|technicians?|servers?)\s+(?:(?:is|are)\s+)?`;
+  const place = String.raw`(?:entrance|reception|storefront|kitchen|tables?|counter|service\s+(?:area|counter)|retail\s+area|treatment\s+room|dining\s+area)`;
+  const location = String.raw`(?:\s+(?:at|in)\s+(?:the\s+)?${place})?(?:\s+visible\s+through\s+(?:storefront|entrance)\s+glazing)?`;
+  const activity = String.raw`(?:preparing\s+(?:food|dishes|equipment)|cooking\s+(?:food|dishes)|serving\s+(?:food|drinks|customers|guests)|(?:dining|eating)(?:\s+food)?|(?:browsing|selecting)\s+(?:products|merchandise|exhibits)|paying(?:\s+for\s+(?:food|products|merchandise))?|checking\s+in|(?:greeting|guiding|assisting)\s+(?:visitors|guests|customers)|handing\s+(?:parcels|food|drinks|products)\s+to\s+(?:visitors|guests|customers)|(?:packing|carrying)\s+(?:parcels|food|products)|cleaning\s+(?:tables|equipment|surfaces)|consulting\s+(?:staff|customers))`;
+  const actorCjk = String.raw`(?:可见的?)?(?:厨师|店员|员工|服务员|顾客|客人|旅客|访客|接待员|工作人员|客户|技师|操作员)`;
+  const placeCjk = String.raw`(?:入口|餐桌|柜台|厨房|就餐区|点餐区|等候区|门头室外|临街外侧|接待区|咨询区|工作台)`;
+  const prefixCjk = String.raw`(?:正在|正|在${placeCjk}(?:旁|前|内)?)?`;
+  const activityCjk = String.raw`(?:备餐|烹饪(?:食品|食物|菜品)?|制作(?:食品|食物|菜品|饮品)|用餐|就餐|点餐|(?:选购|挑选)(?:商品|产品)|结账|办理入住|(?:迎接|引导|接待|协助)(?:顾客|客人|访客)|(?:为(?:顾客|客人))?(?:递交|打包|搬运)(?:商品|包裹|食品|饮品)|清洁(?:餐桌|台面|设备)|咨询)`;
+  if (whole(`${actor}${activity}${location}`) || whole(`${actorCjk}${prefixCjk}${activityCjk}`)) return 'visible_actor_activity';
+  const device = String.raw`(?:cash\s+register|payment\s+terminal|scanner|machine|equipment)`;
+  if (whole(`${actor}(?:operating|using)\\s+(?:(?:the|a|an)\\s+)?${device}${location}`)
+    || whole(`${actorCjk}${prefixCjk}(?:操作|使用)(?:收银机|收银台|支付终端|扫描仪|检测设备|机器|设备)`)) return 'visible_device_operation';
   if (/^(?:(?:入口|入口处|点餐区|服务区|柜台)(?:的|处的)?\s*)?(?:菜单|价目表)(?:展示|查看|显示)?[。.!！]?$/u.test(text)
     || /^(?:(?:a|the)\s+)?(?:menu|price\s+list)(?:\s+(?:display|at\s+the\s+entrance))?[.!]?$/iu.test(text)) return 'visible_service_artifact';
-  const effect = /^(?:visible\s+|hot\s+)?(?:steam|mist|foam|water|condensation|spray|bubbles)\s+(?:(?:rising|flowing|forming|emerging)\s+)?(?:above|over|from|on|into|in)\s+(?:(?:the|a|an)\s+)?(?:dishes|food|cups?|bowls?|trays?|products?|basins?|sinks?|glass|surfaces?|drinks?)\b/iu;
-  const effectCjk = /(?:菜品|食物|餐盘|杯|碗|托盘|商品|水槽|水池|玻璃|表面|饮品)(?:上方|上|中|内|表面).{0,6}(?:蒸汽|热气|水流|水汽|泡沫|水雾|气泡)|^(?:蒸汽|热气|水流|水汽|泡沫|水雾|气泡)(?:从|在|于).{0,12}(?:菜品|食物|餐盘|杯|碗|水槽|水池|玻璃|表面|饮品)/u;
-  return effect.test(text) || effectCjk.test(text) ? "visible_effect_carrier_relation" : null;
+  const effect = String.raw`(?:visible\s+|hot\s+)?(?:steam|mist|foam|water|condensation|spray|bubbles)\s+(?:(?:rising|flowing|forming|emerging)\s+)?(?:above|over|from|on|into|in)\s+(?:(?:the|a|an)\s+)?(?:dishes|food|cups?|bowls?|trays?|products?|basins?|sinks?|glass|surfaces?|drinks?)`;
+  const carrierCjk = '(?:菜品|食物|餐盘|杯|碗|托盘|商品|水槽|水池|玻璃|表面|饮品)';
+  const effectCjk = '(?:蒸汽|热气|水流|水汽|泡沫|水雾|气泡)';
+  if (whole(`${effect}${location}`) || whole(`${carrierCjk}(?:上方|上|中|内|表面)(?:升起|冒出|流动的|可见)?${effectCjk}`)
+    || whole(`${effectCjk}(?:从|在|于)${carrierCjk}(?:上方|上|中|内|表面)?(?:升起|冒出|流出)?`)) return 'visible_effect_carrier_relation';
+  // Explicit semicolon boundaries may combine evidenced operations and scoped
+  // room/boundary statements. No unknown tail inherits the first clause's grant.
+  const clauses = text.split(/[;；]/u).map(s => s.trim());
+  if (clauses.length > 1 && clauses.every(clause => clause && (visibleOperationEvidence(clause)
+    || /^(?:treatment|consultation|service) room contains (?:procedure beds|equipment)[.!]?$/iu.test(clause)
+    || /^(?:reception|arrival|service) access to (?:treatment|consultation) protects privacy[.!]?$/iu.test(clause)))
+    && clauses.some(clause => visibleOperationEvidence(clause))) return 'visible_actor_activity';
+  return null;
+}
+function explicitObjectUseEvidence(text) {
+  return /^(?:(?:two|paired)\s+)?(?:accessible\s+)?chairs?\s+face\s+each\s+other\s+across\s+(?:a|the)\s+(?:comparison\s+)?(?:work)?table[.!]?$/iu.test(text)
+    || /^(?:an?\s+)?(?:independent\s+)?(?:comparison\s+)?worktable\s+separates\s+two\s+(?:accessible\s+)?chairs\s+facing\s+each\s+other\s+across\s+the\s+table[.!]?$/iu.test(text)
+    || /^(?:service|reception) counter with an accessible staff side and customer handoff side(?: in (?:dining|service|reception) area)?[.!]?$/iu.test(text)
+    || /^(?:wooden )?(?:dining|consultation) table and chairs with accessible service aisle on both sides(?: in (?:dining|consultation) area)?[.!]?$/iu.test(text)
+    || /^(?:a|an) (?:pack|equipment) fitting platform and an independent comparison worktable are readable; two accessible chairs face each other across the worktable[.!]?$/iu.test(text)
+    || /^separate (?:payment|service) and collection worktops remain visible, with a clear customer approach to each and an unobstructed entrance[.!]?$/iu.test(text)
+    || /^two chairs sit on the same side of the (?:comparison )?worktable facing the same direction[.!]?$/iu.test(text)
+    || /^两侧座椅隔台相向[，,]各自可进出[。！]?$/u.test(text);
 }
 function classifyPhrase(rawPhrase, sourceField = "") {
   const text = norm(rawPhrase);
@@ -118,7 +145,7 @@ function classifyPhrase(rawPhrase, sourceField = "") {
     classification = SEMANTIC_CLASS.BRAND_MOTIF;
   } else if (hasColor && !geometryAction) {
     classification = SEMANTIC_CLASS.COLOR_ACCENT;
-  } else if (field === 'mustBeVisible' && /\b(?:table|worktable|worktop|chair|seat|platform|counter|shelf|shelves|aisle)\b|台面|座椅|座位|货架|通道/iu.test(text) && /\b(?:across|facing|face|side|accessible|access|separates?|around|opposing)\b|相向|对侧|两侧|朝向|通行|进出|分隔/iu.test(text)) {
+  } else if (field === 'mustBeVisible' && explicitObjectUseEvidence(text)) {
     // Explicit object-use relationships retain their functional field authority.
     // Identity, motif, decoration and color checks above still take precedence.
     classification = SEMANTIC_CLASS.FUNCTIONAL;

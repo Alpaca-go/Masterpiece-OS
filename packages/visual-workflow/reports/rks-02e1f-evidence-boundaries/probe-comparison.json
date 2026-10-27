@@ -1,0 +1,1803 @@
+{
+  "base": "ff1f076dfada89268393b6624d5294b4254506a3",
+  "rows": [
+    {
+      "text": "equipment conveying happiness",
+      "expected": "block",
+      "beforeGate": "pass",
+      "afterGate": "block",
+      "requirementMet": true,
+      "classification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "afterSeparationGate": "block",
+      "separation": {
+        "spatial": {
+          "mustBeVisible": [
+            "equipment conveying happiness"
+          ]
+        },
+        "changes": [],
+        "unresolved": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "reason": "retained_fragment_failed_validation",
+            "finding": {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "mustBeVisible",
+              "path": "mediaTranslations.spatial.mustBeVisible[0]",
+              "classification": "ambiguous",
+              "reason": "complete_visible_evidence_required",
+              "analysis": {
+                "classification": "ambiguous",
+                "classificationReason": "unresolved_visible_requirement",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          }
+        ],
+        "validation": {
+          "schemaVersion": "1.0",
+          "version": "space-spatial-semantic-gate@1.1.0",
+          "status": "block",
+          "findings": [
+            {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "mustBeVisible",
+              "path": "mediaTranslations.spatial.mustBeVisible[0]",
+              "classification": "ambiguous",
+              "reason": "complete_visible_evidence_required",
+              "analysis": {
+                "classification": "ambiguous",
+                "classificationReason": "unresolved_visible_requirement",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "value": "equipment conveying happiness",
+            "analysis": {
+              "classification": "ambiguous",
+              "classificationReason": "unresolved_visible_requirement",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "block"
+          }
+        ]
+      }
+    },
+    {
+      "text": "砂锅传递幸福感",
+      "expected": "block",
+      "beforeGate": "pass",
+      "afterGate": "block",
+      "requirementMet": true,
+      "classification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "afterSeparationGate": "block",
+      "separation": {
+        "spatial": {
+          "mustBeVisible": [
+            "砂锅传递幸福感"
+          ]
+        },
+        "changes": [],
+        "unresolved": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "reason": "retained_fragment_failed_validation",
+            "finding": {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "mustBeVisible",
+              "path": "mediaTranslations.spatial.mustBeVisible[0]",
+              "classification": "ambiguous",
+              "reason": "complete_visible_evidence_required",
+              "analysis": {
+                "classification": "ambiguous",
+                "classificationReason": "unresolved_visible_requirement",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          }
+        ],
+        "validation": {
+          "schemaVersion": "1.0",
+          "version": "space-spatial-semantic-gate@1.1.0",
+          "status": "block",
+          "findings": [
+            {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "mustBeVisible",
+              "path": "mediaTranslations.spatial.mustBeVisible[0]",
+              "classification": "ambiguous",
+              "reason": "complete_visible_evidence_required",
+              "analysis": {
+                "classification": "ambiguous",
+                "classificationReason": "unresolved_visible_requirement",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "value": "砂锅传递幸福感",
+            "analysis": {
+              "classification": "ambiguous",
+              "classificationReason": "unresolved_visible_requirement",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "block"
+          }
+        ]
+      }
+    },
+    {
+      "text": "设备自动治愈顾客",
+      "expected": "block",
+      "beforeGate": "pass",
+      "afterGate": "block",
+      "requirementMet": true,
+      "classification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "afterSeparationGate": "block",
+      "separation": {
+        "spatial": {
+          "mustBeVisible": [
+            "设备自动治愈顾客"
+          ]
+        },
+        "changes": [],
+        "unresolved": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "reason": "retained_fragment_failed_validation",
+            "finding": {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "mustBeVisible",
+              "path": "mediaTranslations.spatial.mustBeVisible[0]",
+              "classification": "ambiguous",
+              "reason": "complete_visible_evidence_required",
+              "analysis": {
+                "classification": "ambiguous",
+                "classificationReason": "unresolved_visible_requirement",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          }
+        ],
+        "validation": {
+          "schemaVersion": "1.0",
+          "version": "space-spatial-semantic-gate@1.1.0",
+          "status": "block",
+          "findings": [
+            {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "mustBeVisible",
+              "path": "mediaTranslations.spatial.mustBeVisible[0]",
+              "classification": "ambiguous",
+              "reason": "complete_visible_evidence_required",
+              "analysis": {
+                "classification": "ambiguous",
+                "classificationReason": "unresolved_visible_requirement",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "value": "设备自动治愈顾客",
+            "analysis": {
+              "classification": "ambiguous",
+              "classificationReason": "unresolved_visible_requirement",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "block"
+          }
+        ]
+      }
+    },
+    {
+      "text": "在设备旁员工畅想未来",
+      "expected": "block",
+      "beforeGate": "pass",
+      "afterGate": "block",
+      "requirementMet": true,
+      "classification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "afterSeparationGate": "block",
+      "separation": {
+        "spatial": {
+          "mustBeVisible": [
+            "在设备旁员工畅想未来"
+          ]
+        },
+        "changes": [],
+        "unresolved": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "reason": "retained_fragment_failed_validation",
+            "finding": {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "mustBeVisible",
+              "path": "mediaTranslations.spatial.mustBeVisible[0]",
+              "classification": "ambiguous",
+              "reason": "complete_visible_evidence_required",
+              "analysis": {
+                "classification": "ambiguous",
+                "classificationReason": "unresolved_visible_requirement",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          }
+        ],
+        "validation": {
+          "schemaVersion": "1.0",
+          "version": "space-spatial-semantic-gate@1.1.0",
+          "status": "block",
+          "findings": [
+            {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "mustBeVisible",
+              "path": "mediaTranslations.spatial.mustBeVisible[0]",
+              "classification": "ambiguous",
+              "reason": "complete_visible_evidence_required",
+              "analysis": {
+                "classification": "ambiguous",
+                "classificationReason": "unresolved_visible_requirement",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "value": "在设备旁员工畅想未来",
+            "analysis": {
+              "classification": "ambiguous",
+              "classificationReason": "unresolved_visible_requirement",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "block"
+          }
+        ]
+      }
+    },
+    {
+      "text": "petal curved counter",
+      "expected": "block",
+      "beforeGate": "pass",
+      "afterGate": "block",
+      "requirementMet": true,
+      "classification": {
+        "classification": "ambiguous",
+        "classificationReason": "existing_ambiguous_rule",
+        "motifHits": [
+          "petal"
+        ],
+        "colorHits": [],
+        "archHits": 2,
+        "propertyHits": 2,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "afterSeparationGate": "block",
+      "separation": {
+        "spatial": {
+          "mustBeVisible": [
+            "petal curved counter"
+          ]
+        },
+        "changes": [],
+        "unresolved": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "reason": "retained_fragment_failed_validation",
+            "finding": {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "mustBeVisible",
+              "path": "mediaTranslations.spatial.mustBeVisible[0]",
+              "classification": "ambiguous",
+              "reason": "complete_visible_evidence_required",
+              "analysis": {
+                "classification": "ambiguous",
+                "classificationReason": "existing_ambiguous_rule",
+                "motifHits": [
+                  "petal"
+                ],
+                "colorHits": [],
+                "archHits": 2,
+                "propertyHits": 2,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          }
+        ],
+        "validation": {
+          "schemaVersion": "1.0",
+          "version": "space-spatial-semantic-gate@1.1.0",
+          "status": "block",
+          "findings": [
+            {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "mustBeVisible",
+              "path": "mediaTranslations.spatial.mustBeVisible[0]",
+              "classification": "ambiguous",
+              "reason": "complete_visible_evidence_required",
+              "analysis": {
+                "classification": "ambiguous",
+                "classificationReason": "existing_ambiguous_rule",
+                "motifHits": [
+                  "petal"
+                ],
+                "colorHits": [],
+                "archHits": 2,
+                "propertyHits": 2,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "value": "petal curved counter",
+            "analysis": {
+              "classification": "ambiguous",
+              "classificationReason": "existing_ambiguous_rule",
+              "motifHits": [
+                "petal"
+              ],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 2,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "block"
+          }
+        ]
+      }
+    },
+    {
+      "text": "lotus layered table",
+      "expected": "block",
+      "beforeGate": "pass",
+      "afterGate": "block",
+      "requirementMet": true,
+      "classification": {
+        "classification": "ambiguous",
+        "classificationReason": "existing_ambiguous_rule",
+        "motifHits": [
+          "lotus"
+        ],
+        "colorHits": [],
+        "archHits": 2,
+        "propertyHits": 2,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "afterSeparationGate": "block",
+      "separation": {
+        "spatial": {
+          "mustBeVisible": [
+            "lotus layered table"
+          ]
+        },
+        "changes": [],
+        "unresolved": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "reason": "retained_fragment_failed_validation",
+            "finding": {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "mustBeVisible",
+              "path": "mediaTranslations.spatial.mustBeVisible[0]",
+              "classification": "ambiguous",
+              "reason": "complete_visible_evidence_required",
+              "analysis": {
+                "classification": "ambiguous",
+                "classificationReason": "existing_ambiguous_rule",
+                "motifHits": [
+                  "lotus"
+                ],
+                "colorHits": [],
+                "archHits": 2,
+                "propertyHits": 2,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          }
+        ],
+        "validation": {
+          "schemaVersion": "1.0",
+          "version": "space-spatial-semantic-gate@1.1.0",
+          "status": "block",
+          "findings": [
+            {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "mustBeVisible",
+              "path": "mediaTranslations.spatial.mustBeVisible[0]",
+              "classification": "ambiguous",
+              "reason": "complete_visible_evidence_required",
+              "analysis": {
+                "classification": "ambiguous",
+                "classificationReason": "existing_ambiguous_rule",
+                "motifHits": [
+                  "lotus"
+                ],
+                "colorHits": [],
+                "archHits": 2,
+                "propertyHits": 2,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "value": "lotus layered table",
+            "analysis": {
+              "classification": "ambiguous",
+              "classificationReason": "existing_ambiguous_rule",
+              "motifHits": [
+                "lotus"
+              ],
+              "colorHits": [],
+              "archHits": 2,
+              "propertyHits": 2,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "block"
+          }
+        ]
+      }
+    },
+    {
+      "text": "花瓣曲线桌",
+      "expected": "block",
+      "beforeGate": "pass",
+      "afterGate": "block",
+      "requirementMet": true,
+      "classification": {
+        "classification": "ambiguous",
+        "classificationReason": "existing_ambiguous_rule",
+        "motifHits": [
+          "花瓣"
+        ],
+        "colorHits": [],
+        "archHits": 1,
+        "propertyHits": 1,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "afterSeparationGate": "block",
+      "separation": {
+        "spatial": {
+          "mustBeVisible": [
+            "花瓣曲线桌"
+          ]
+        },
+        "changes": [],
+        "unresolved": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "reason": "retained_fragment_failed_validation",
+            "finding": {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "mustBeVisible",
+              "path": "mediaTranslations.spatial.mustBeVisible[0]",
+              "classification": "ambiguous",
+              "reason": "complete_visible_evidence_required",
+              "analysis": {
+                "classification": "ambiguous",
+                "classificationReason": "existing_ambiguous_rule",
+                "motifHits": [
+                  "花瓣"
+                ],
+                "colorHits": [],
+                "archHits": 1,
+                "propertyHits": 1,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          }
+        ],
+        "validation": {
+          "schemaVersion": "1.0",
+          "version": "space-spatial-semantic-gate@1.1.0",
+          "status": "block",
+          "findings": [
+            {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "mustBeVisible",
+              "path": "mediaTranslations.spatial.mustBeVisible[0]",
+              "classification": "ambiguous",
+              "reason": "complete_visible_evidence_required",
+              "analysis": {
+                "classification": "ambiguous",
+                "classificationReason": "existing_ambiguous_rule",
+                "motifHits": [
+                  "花瓣"
+                ],
+                "colorHits": [],
+                "archHits": 1,
+                "propertyHits": 1,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "value": "花瓣曲线桌",
+            "analysis": {
+              "classification": "ambiguous",
+              "classificationReason": "existing_ambiguous_rule",
+              "motifHits": [
+                "花瓣"
+              ],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 1,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "block"
+          }
+        ]
+      }
+    },
+    {
+      "text": "Logo and equipment conveying happiness",
+      "expected": "block",
+      "beforeGate": "block",
+      "afterGate": "block",
+      "requirementMet": true,
+      "classification": {
+        "classification": "decorative_identity",
+        "classificationReason": "existing_decorative_identity_rule",
+        "motifHits": [
+          "logo"
+        ],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "afterSeparationGate": "block",
+      "separation": {
+        "spatial": {
+          "mustBeVisible": [
+            "Logo and equipment conveying happiness"
+          ]
+        },
+        "changes": [],
+        "unresolved": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "original": "Logo and equipment conveying happiness",
+            "reason": "inseparable_or_insufficient_functional_evidence"
+          }
+        ],
+        "validation": {
+          "schemaVersion": "1.0",
+          "version": "space-spatial-semantic-gate@1.1.0",
+          "status": "block",
+          "findings": [
+            {
+              "code": "INVALID_SPACE_MUST_BE_VISIBLE_SEMANTICS",
+              "severity": "block",
+              "field": "mustBeVisible",
+              "path": "mediaTranslations.spatial.mustBeVisible[0]",
+              "classification": "decorative_identity",
+              "reason": "complete_visible_evidence_required",
+              "analysis": {
+                "classification": "decorative_identity",
+                "classificationReason": "existing_decorative_identity_rule",
+                "motifHits": [
+                  "logo"
+                ],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "value": "Logo and equipment conveying happiness",
+            "analysis": {
+              "classification": "decorative_identity",
+              "classificationReason": "existing_decorative_identity_rule",
+              "motifHits": [
+                "logo"
+              ],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "block"
+          }
+        ]
+      }
+    },
+    {
+      "text": "staff operating equipment and enjoying cosmic essence",
+      "expected": "block",
+      "beforeGate": "pass",
+      "afterGate": "block",
+      "requirementMet": true,
+      "classification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "afterSeparationGate": "block",
+      "separation": {
+        "spatial": {
+          "mustBeVisible": [
+            "staff operating equipment and enjoying cosmic essence"
+          ]
+        },
+        "changes": [],
+        "unresolved": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "reason": "retained_fragment_failed_validation",
+            "finding": {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "mustBeVisible",
+              "path": "mediaTranslations.spatial.mustBeVisible[0]",
+              "classification": "ambiguous",
+              "reason": "complete_visible_evidence_required",
+              "analysis": {
+                "classification": "ambiguous",
+                "classificationReason": "unresolved_visible_requirement",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          }
+        ],
+        "validation": {
+          "schemaVersion": "1.0",
+          "version": "space-spatial-semantic-gate@1.1.0",
+          "status": "block",
+          "findings": [
+            {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "mustBeVisible",
+              "path": "mediaTranslations.spatial.mustBeVisible[0]",
+              "classification": "ambiguous",
+              "reason": "complete_visible_evidence_required",
+              "analysis": {
+                "classification": "ambiguous",
+                "classificationReason": "unresolved_visible_requirement",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "value": "staff operating equipment and enjoying cosmic essence",
+            "analysis": {
+              "classification": "ambiguous",
+              "classificationReason": "unresolved_visible_requirement",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "block"
+          }
+        ]
+      }
+    },
+    {
+      "text": "员工操作设备并畅想未来",
+      "expected": "block",
+      "beforeGate": "pass",
+      "afterGate": "block",
+      "requirementMet": true,
+      "classification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "afterSeparationGate": "block",
+      "separation": {
+        "spatial": {
+          "mustBeVisible": [
+            "员工操作设备并畅想未来"
+          ]
+        },
+        "changes": [],
+        "unresolved": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "reason": "retained_fragment_failed_validation",
+            "finding": {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "mustBeVisible",
+              "path": "mediaTranslations.spatial.mustBeVisible[0]",
+              "classification": "ambiguous",
+              "reason": "complete_visible_evidence_required",
+              "analysis": {
+                "classification": "ambiguous",
+                "classificationReason": "unresolved_visible_requirement",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          }
+        ],
+        "validation": {
+          "schemaVersion": "1.0",
+          "version": "space-spatial-semantic-gate@1.1.0",
+          "status": "block",
+          "findings": [
+            {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "mustBeVisible",
+              "path": "mediaTranslations.spatial.mustBeVisible[0]",
+              "classification": "ambiguous",
+              "reason": "complete_visible_evidence_required",
+              "analysis": {
+                "classification": "ambiguous",
+                "classificationReason": "unresolved_visible_requirement",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "value": "员工操作设备并畅想未来",
+            "analysis": {
+              "classification": "ambiguous",
+              "classificationReason": "unresolved_visible_requirement",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "block"
+          }
+        ]
+      }
+    },
+    {
+      "text": "员工没有使用设备",
+      "expected": "block",
+      "beforeGate": "pass",
+      "afterGate": "block",
+      "requirementMet": true,
+      "classification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "afterSeparationGate": "block",
+      "separation": {
+        "spatial": {
+          "mustBeVisible": [
+            "员工没有使用设备"
+          ]
+        },
+        "changes": [],
+        "unresolved": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "reason": "retained_fragment_failed_validation",
+            "finding": {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "mustBeVisible",
+              "path": "mediaTranslations.spatial.mustBeVisible[0]",
+              "classification": "ambiguous",
+              "reason": "complete_visible_evidence_required",
+              "analysis": {
+                "classification": "ambiguous",
+                "classificationReason": "unresolved_visible_requirement",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          }
+        ],
+        "validation": {
+          "schemaVersion": "1.0",
+          "version": "space-spatial-semantic-gate@1.1.0",
+          "status": "block",
+          "findings": [
+            {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "mustBeVisible",
+              "path": "mediaTranslations.spatial.mustBeVisible[0]",
+              "classification": "ambiguous",
+              "reason": "complete_visible_evidence_required",
+              "analysis": {
+                "classification": "ambiguous",
+                "classificationReason": "unresolved_visible_requirement",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "value": "员工没有使用设备",
+            "analysis": {
+              "classification": "ambiguous",
+              "classificationReason": "unresolved_visible_requirement",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "block"
+          }
+        ]
+      }
+    },
+    {
+      "text": "员工不会操作设备",
+      "expected": "block",
+      "beforeGate": "pass",
+      "afterGate": "block",
+      "requirementMet": true,
+      "classification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "afterSeparationGate": "block",
+      "separation": {
+        "spatial": {
+          "mustBeVisible": [
+            "员工不会操作设备"
+          ]
+        },
+        "changes": [],
+        "unresolved": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "reason": "retained_fragment_failed_validation",
+            "finding": {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "mustBeVisible",
+              "path": "mediaTranslations.spatial.mustBeVisible[0]",
+              "classification": "ambiguous",
+              "reason": "complete_visible_evidence_required",
+              "analysis": {
+                "classification": "ambiguous",
+                "classificationReason": "unresolved_visible_requirement",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          }
+        ],
+        "validation": {
+          "schemaVersion": "1.0",
+          "version": "space-spatial-semantic-gate@1.1.0",
+          "status": "block",
+          "findings": [
+            {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "mustBeVisible",
+              "path": "mediaTranslations.spatial.mustBeVisible[0]",
+              "classification": "ambiguous",
+              "reason": "complete_visible_evidence_required",
+              "analysis": {
+                "classification": "ambiguous",
+                "classificationReason": "unresolved_visible_requirement",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "value": "员工不会操作设备",
+            "analysis": {
+              "classification": "ambiguous",
+              "classificationReason": "unresolved_visible_requirement",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "block"
+          }
+        ]
+      }
+    },
+    {
+      "text": "员工尚未操作设备",
+      "expected": "block",
+      "beforeGate": "pass",
+      "afterGate": "block",
+      "requirementMet": true,
+      "classification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "afterSeparationGate": "block",
+      "separation": {
+        "spatial": {
+          "mustBeVisible": [
+            "员工尚未操作设备"
+          ]
+        },
+        "changes": [],
+        "unresolved": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "reason": "retained_fragment_failed_validation",
+            "finding": {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "mustBeVisible",
+              "path": "mediaTranslations.spatial.mustBeVisible[0]",
+              "classification": "ambiguous",
+              "reason": "complete_visible_evidence_required",
+              "analysis": {
+                "classification": "ambiguous",
+                "classificationReason": "unresolved_visible_requirement",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          }
+        ],
+        "validation": {
+          "schemaVersion": "1.0",
+          "version": "space-spatial-semantic-gate@1.1.0",
+          "status": "block",
+          "findings": [
+            {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "mustBeVisible",
+              "path": "mediaTranslations.spatial.mustBeVisible[0]",
+              "classification": "ambiguous",
+              "reason": "complete_visible_evidence_required",
+              "analysis": {
+                "classification": "ambiguous",
+                "classificationReason": "unresolved_visible_requirement",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "value": "员工尚未操作设备",
+            "analysis": {
+              "classification": "ambiguous",
+              "classificationReason": "unresolved_visible_requirement",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "block"
+          }
+        ]
+      }
+    },
+    {
+      "text": "staff operating equipment",
+      "expected": "pass",
+      "beforeGate": "pass",
+      "afterGate": "pass",
+      "requirementMet": true,
+      "classification": {
+        "classification": "functional",
+        "classificationReason": "visible_device_operation",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "afterSeparationGate": "pass",
+      "separation": {
+        "spatial": {
+          "mustBeVisible": [
+            "staff operating equipment"
+          ]
+        },
+        "changes": [],
+        "unresolved": [],
+        "validation": {
+          "schemaVersion": "1.0",
+          "version": "space-spatial-semantic-gate@1.1.0",
+          "status": "pass",
+          "findings": []
+        },
+        "evidence": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "value": "staff operating equipment",
+            "analysis": {
+              "classification": "functional",
+              "classificationReason": "visible_device_operation",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "pass"
+          }
+        ]
+      }
+    },
+    {
+      "text": "Waiting area seating",
+      "expected": "pass",
+      "beforeGate": "pass",
+      "afterGate": "pass",
+      "requirementMet": true,
+      "classification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "afterSeparationGate": "pass",
+      "separation": {
+        "spatial": {
+          "mustBeVisible": [
+            "Waiting area seating"
+          ]
+        },
+        "changes": [],
+        "unresolved": [],
+        "validation": {
+          "schemaVersion": "1.0",
+          "version": "space-spatial-semantic-gate@1.1.0",
+          "status": "pass",
+          "findings": []
+        },
+        "evidence": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "value": "Waiting area seating",
+            "analysis": {
+              "classification": "ambiguous",
+              "classificationReason": "unresolved_visible_requirement",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "pass"
+          }
+        ]
+      }
+    },
+    {
+      "text": "入口处的菜单",
+      "expected": "pass",
+      "beforeGate": "pass",
+      "afterGate": "pass",
+      "requirementMet": true,
+      "classification": {
+        "classification": "functional",
+        "classificationReason": "visible_service_artifact",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 1,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "afterSeparationGate": "pass",
+      "separation": {
+        "spatial": {
+          "mustBeVisible": [
+            "入口处的菜单"
+          ]
+        },
+        "changes": [],
+        "unresolved": [],
+        "validation": {
+          "schemaVersion": "1.0",
+          "version": "space-spatial-semantic-gate@1.1.0",
+          "status": "pass",
+          "findings": []
+        },
+        "evidence": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "value": "入口处的菜单",
+            "analysis": {
+              "classification": "functional",
+              "classificationReason": "visible_service_artifact",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 1,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "pass"
+          }
+        ]
+      }
+    },
+    {
+      "text": "Logo吸引顾客点餐",
+      "expected": "block",
+      "beforeGate": "block",
+      "afterGate": "block",
+      "requirementMet": true,
+      "classification": {
+        "classification": "decorative_identity",
+        "classificationReason": "existing_decorative_identity_rule",
+        "motifHits": [
+          "logo"
+        ],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "afterSeparationGate": "block",
+      "separation": {
+        "spatial": {
+          "mustBeVisible": [
+            "Logo吸引顾客点餐"
+          ]
+        },
+        "changes": [],
+        "unresolved": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "original": "Logo吸引顾客点餐",
+            "reason": "inseparable_or_insufficient_functional_evidence"
+          }
+        ],
+        "validation": {
+          "schemaVersion": "1.0",
+          "version": "space-spatial-semantic-gate@1.1.0",
+          "status": "block",
+          "findings": [
+            {
+              "code": "INVALID_SPACE_MUST_BE_VISIBLE_SEMANTICS",
+              "severity": "block",
+              "field": "mustBeVisible",
+              "path": "mediaTranslations.spatial.mustBeVisible[0]",
+              "classification": "decorative_identity",
+              "reason": "complete_visible_evidence_required",
+              "analysis": {
+                "classification": "decorative_identity",
+                "classificationReason": "existing_decorative_identity_rule",
+                "motifHits": [
+                  "logo"
+                ],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "value": "Logo吸引顾客点餐",
+            "analysis": {
+              "classification": "decorative_identity",
+              "classificationReason": "existing_decorative_identity_rule",
+              "motifHits": [
+                "logo"
+              ],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "block"
+          }
+        ]
+      }
+    },
+    {
+      "text": "staff not operating equipment",
+      "expected": "block",
+      "beforeGate": "block",
+      "afterGate": "block",
+      "requirementMet": true,
+      "classification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "afterSeparationGate": "block",
+      "separation": {
+        "spatial": {
+          "mustBeVisible": [
+            "staff not operating equipment"
+          ]
+        },
+        "changes": [],
+        "unresolved": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "reason": "retained_fragment_failed_validation",
+            "finding": {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "mustBeVisible",
+              "path": "mediaTranslations.spatial.mustBeVisible[0]",
+              "classification": "ambiguous",
+              "reason": "complete_visible_evidence_required",
+              "analysis": {
+                "classification": "ambiguous",
+                "classificationReason": "unresolved_visible_requirement",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          }
+        ],
+        "validation": {
+          "schemaVersion": "1.0",
+          "version": "space-spatial-semantic-gate@1.1.0",
+          "status": "block",
+          "findings": [
+            {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "mustBeVisible",
+              "path": "mediaTranslations.spatial.mustBeVisible[0]",
+              "classification": "ambiguous",
+              "reason": "complete_visible_evidence_required",
+              "analysis": {
+                "classification": "ambiguous",
+                "classificationReason": "unresolved_visible_requirement",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "value": "staff not operating equipment",
+            "analysis": {
+              "classification": "ambiguous",
+              "classificationReason": "unresolved_visible_requirement",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "block"
+          }
+        ]
+      }
+    },
+    {
+      "text": "unresolved rendezvous",
+      "expected": "block",
+      "beforeGate": "block",
+      "afterGate": "block",
+      "requirementMet": true,
+      "classification": {
+        "classification": "ambiguous",
+        "classificationReason": "unresolved_visible_requirement",
+        "motifHits": [],
+        "colorHits": [],
+        "archHits": 0,
+        "propertyHits": 0,
+        "metaphor": false,
+        "accent": false,
+        "geometryAction": false
+      },
+      "afterSeparationGate": "block",
+      "separation": {
+        "spatial": {
+          "mustBeVisible": [
+            "unresolved rendezvous"
+          ]
+        },
+        "changes": [],
+        "unresolved": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "reason": "retained_fragment_failed_validation",
+            "finding": {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "mustBeVisible",
+              "path": "mediaTranslations.spatial.mustBeVisible[0]",
+              "classification": "ambiguous",
+              "reason": "complete_visible_evidence_required",
+              "analysis": {
+                "classification": "ambiguous",
+                "classificationReason": "unresolved_visible_requirement",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          }
+        ],
+        "validation": {
+          "schemaVersion": "1.0",
+          "version": "space-spatial-semantic-gate@1.1.0",
+          "status": "block",
+          "findings": [
+            {
+              "code": "INVALID_SPACE_FUNCTIONAL_SEMANTICS",
+              "severity": "block",
+              "field": "mustBeVisible",
+              "path": "mediaTranslations.spatial.mustBeVisible[0]",
+              "classification": "ambiguous",
+              "reason": "complete_visible_evidence_required",
+              "analysis": {
+                "classification": "ambiguous",
+                "classificationReason": "unresolved_visible_requirement",
+                "motifHits": [],
+                "colorHits": [],
+                "archHits": 0,
+                "propertyHits": 0,
+                "metaphor": false,
+                "accent": false,
+                "geometryAction": false
+              }
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "field": "mustBeVisible",
+            "index": 0,
+            "value": "unresolved rendezvous",
+            "analysis": {
+              "classification": "ambiguous",
+              "classificationReason": "unresolved_visible_requirement",
+              "motifHits": [],
+              "colorHits": [],
+              "archHits": 0,
+              "propertyHits": 0,
+              "metaphor": false,
+              "accent": false,
+              "geometryAction": false
+            },
+            "semanticOnly": true,
+            "sourceConfirmation": "unchanged",
+            "validation": "block"
+          }
+        ]
+      }
+    }
+  ],
+  "beforeUnsafeCompletion": {
+    "status": "ready",
+    "expected": "failed",
+    "requirementMet": false,
+    "events": [
+      "deterministic"
+    ],
+    "modelCalls": 0,
+    "mustBeVisible": [
+      "equipment conveying happiness"
+    ],
+    "inputUnchanged": true
+  },
+  "afterUnsafeCompletion": {
+    "status": "failed",
+    "expected": "failed",
+    "requirementMet": true,
+    "events": [
+      "deterministic"
+    ],
+    "modelCalls": 0,
+    "mustBeVisible": [
+      "Logo and equipment conveying happiness"
+    ],
+    "inputUnchanged": true
+  },
+  "ordering": {
+    "events": [
+      "deterministic-semantic"
+    ],
+    "status": "failed",
+    "note": "This probe deliberately returns an unresolved semantic packet and therefore blocks before structured repair. The new regression test separately checks a successful six-clause separation followed by optional structured repair."
+  }
+}
