@@ -69,6 +69,18 @@ function propositionScope(value) {
   if (/\b(?:not|never|no|neither|nor|without|cannot)\b|\b(?:isn|aren|wasn|weren|don|doesn|didn|won|wouldn|can|couldn|shouldn)['’]t\b|没有|不会|尚未|未曾|并非|不是|不曾|不使用|不操作/u.test(text)) return 'negated_scope';
   return null;
 }
+// Modality describes the supplied wording, never its truth or confirmation.
+// A prohibition marker is only a candidate: the field gate must still prove a
+// complete constraint. Conditional scope takes precedence over that candidate.
+function propositionModality(value) {
+  const text = norm(value);
+  if (/\b(?:unconfirmed|uncertain|unknown)\b|未确认|尚未确认|待确认|不确定|未知/u.test(text)) return 'unconfirmed';
+  const scope = propositionScope(text);
+  if (scope === 'conditional_or_unconfirmed_scope') return 'conditional';
+  if (/\b(?:must not|shall not|should not|do not|cannot)\b|不得|不可|不应|禁止/u.test(text)
+    || /\b(?:remain|remains|stay|stays) off frame\b/u.test(text)) return 'prohibition';
+  return scope === 'negated_scope' ? 'negative_observation' : 'affirmative';
+}
 // A mixed visibility field needs positive evidence, not a brand/functional
 // fallback. Recognize actor + concrete activity or physical effect + carrier
 // relationships across service industries. These rules never infer a scene.
@@ -241,6 +253,7 @@ function separateSpaceSemantics(items) {
 }
 export {
   propositionScope,
+  propositionModality,
   visibleOperationEvidence,
   explicitObjectUseEvidence,
   isExplicitLayoutPhrase,

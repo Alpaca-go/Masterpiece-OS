@@ -1,0 +1,358 @@
+diff --git a/packages/visual-workflow/src/generation-runtime/space/semantic/separate-space-semantics.js b/packages/visual-workflow/src/generation-runtime/space/semantic/separate-space-semantics.js
+index c507c5dd..851d40a4 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/semantic/separate-space-semantics.js
++++ b/packages/visual-workflow/src/generation-runtime/space/semantic/separate-space-semantics.js
+@@ -69,6 +69,18 @@ function propositionScope(value) {
+   if (/\b(?:not|never|no|neither|nor|without|cannot)\b|\b(?:isn|aren|wasn|weren|don|doesn|didn|won|wouldn|can|couldn|shouldn)['’]t\b|没有|不会|尚未|未曾|并非|不是|不曾|不使用|不操作/u.test(text)) return 'negated_scope';
+   return null;
+ }
++// Modality describes the supplied wording, never its truth or confirmation.
++// A prohibition marker is only a candidate: the field gate must still prove a
++// complete constraint. Conditional scope takes precedence over that candidate.
++function propositionModality(value) {
++  const text = norm(value);
++  if (/\b(?:unconfirmed|uncertain|unknown)\b|未确认|尚未确认|待确认|不确定|未知/u.test(text)) return 'unconfirmed';
++  const scope = propositionScope(text);
++  if (scope === 'conditional_or_unconfirmed_scope') return 'conditional';
++  if (/\b(?:must not|shall not|should not|do not|cannot)\b|不得|不可|不应|禁止/u.test(text)
++    || /\b(?:remain|remains|stay|stays) off frame\b/u.test(text)) return 'prohibition';
++  return scope === 'negated_scope' ? 'negative_observation' : 'affirmative';
++}
+ // A mixed visibility field needs positive evidence, not a brand/functional
+ // fallback. Recognize actor + concrete activity or physical effect + carrier
+ // relationships across service industries. These rules never infer a scene.
+@@ -241,6 +253,7 @@ function separateSpaceSemantics(items) {
+ }
+ export {
+   propositionScope,
++  propositionModality,
+   visibleOperationEvidence,
+   explicitObjectUseEvidence,
+   isExplicitLayoutPhrase,
+diff --git a/packages/visual-workflow/src/generation-runtime/space/semantic/validate-spatial-semantics.js b/packages/visual-workflow/src/generation-runtime/space/semantic/validate-spatial-semantics.js
+index f048e43d..f6436460 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/semantic/validate-spatial-semantics.js
++++ b/packages/visual-workflow/src/generation-runtime/space/semantic/validate-spatial-semantics.js
+@@ -1,4 +1,4 @@
+-import { classifyPhrase, SEMANTIC_CLASS, propositionScope, visibleOperationEvidence, explicitObjectUseEvidence } from "./separate-space-semantics.js";
++import { classifyPhrase, SEMANTIC_CLASS, propositionScope, propositionModality, visibleOperationEvidence, explicitObjectUseEvidence } from "./separate-space-semantics.js";
+ const SPATIAL_SEMANTIC_GATE_VERSION = "space-spatial-semantic-gate@1.1.0";
+ const FUNCTIONAL_FIELDS = Object.freeze([
+   "functionalNetwork",
+@@ -85,14 +85,6 @@ function explicitVisibleCarrier(value) {
+     || /^(?:半私密或私密边界|(?:医疗\s*\/\s*)?产品信息展示面|清晰入口与落座关系)[。！]?$/u.test(text)
+     || /^(?:privacy partitions|open kitchen|(?:complex |thin |layered |curved |translucent )*(?:ceiling surfaces|partitions|wall surfaces))[.!]?$/iu.test(text);
+ }
+-function visibleRequirementAllowed(value, analysis) {
+-  // In particular, ambiguous motif + architecture may NEVER use carrier fallback.
+-  if (analysis.motifHits.length || analysis.colorHits.length || analysis.metaphor
+-    || GRAPHIC_IDENTITY.test(value)
+-    || [SEMANTIC_CLASS.DECORATIVE_IDENTITY, SEMANTIC_CLASS.DECORATIVE_OBJECT, SEMANTIC_CLASS.BRAND_MOTIF].includes(analysis.classification)) return false;
+-  if (propositionScope(value)) return false;
+-  return Boolean(visibleOperationEvidence(String(value).toLowerCase().trim()) || explicitObjectUseEvidence(value) || explicitVisibleCarrier(value));
+-}
+ // Typed nodes and relations for the non-visibility field contracts. Source-field
+ // provenance and architectural keywords are classifications, never permissions.
+ function functionalRequirementEvidence(value, field) {
+@@ -139,25 +131,151 @@ function functionalRequirementEvidence(value, field) {
+     || whole('保持(?:入口|出口|通道|动线)(?:畅通|清晰)'))) return 'operational_constraint';
+   return null;
+ }
+-function validateSpatialSemantics(spatial = {}) {
++// Field permissions do not confer source truth, confirmation or shot authority.
++// Bare nodes in a relationship/constraint need parent context from the caller;
++// this gate never reconstructs a parent discarded by a projection adapter.
++const FIELD_TYPES = Object.freeze({
++  functionalNetwork: Object.freeze(['node', 'activity', 'relation', 'constraint', 'visibility_request']),
++  functionalRelationships: Object.freeze(['relation', 'constraint', 'visibility_request']),
++  mustBeVisible: Object.freeze(['node', 'activity', 'relation', 'visibility_request']),
++  operationConstraints: Object.freeze(['relation', 'constraint', 'visibility_request']),
++  requiredSpatialElements: Object.freeze(['node', 'relation', 'constraint', 'visibility_request']),
++  sceneProgram: Object.freeze(['node', 'activity', 'relation', 'constraint', 'visibility_request'])
++});
++const NODE_EN = '(?:(?:the|a|an) )?(?:(?:food preparation|takeaway packaging|waiting area|private room|semi-private|semi-open|lightweight|secondary|flowing|clear|usable|readable|accessible|grouped|open|public|private|staff|visitor|customer|arrival|reception|waiting|service|consultation|treatment|dining|kitchen|retail|display|comparison|takeaway|storefront|entrance|privacy|main|lateral|transition) ){0,8}(?:entrance|entry|exit|arrival|reception|waiting|service|consultation|treatment|kitchen|counter|tables?|chairs?|seating|worktable|area|zone|hall|room|interiors|circulation|route|access|boundary|threshold|transition|handoff|preparation|activity|equipment|information display)';
++const NODE_ROLE_ZH = '(?:入口|接待|候客|等候|咨询|点餐|取餐|就餐|外带|厨房|服务|比较|展示|艺术|到达|通行|停留|过渡|后续|洽谈|员工工作|短时交流|局部服务)';
++const NODE_ZH = `(?:(?:半开放|半私密|私密|公共|正式|成组|清晰|两侧|主厅内|受屏蔽)){0,3}(?:${NODE_ROLE_ZH}{1,3}(?:与${NODE_ROLE_ZH}{1,3}){0,2})?(?:入口|出口|大厅|区|厨房|界面|通道|动线|路径|座位|座椅|餐桌|菜单|价目表|柜台|工作台|边界)`;
++function matches(text, pattern) {
++  return new RegExp(`^(?:${pattern})$`, 'iu').test(text);
++}
++function typedNode(text) {
++  return matches(text, NODE_EN) || matches(text, NODE_ZH);
++}
++function completeConstraint(text) {
++  const group = `${NODE_EN}(?: (?:and|or) ${NODE_EN})*`;
++  if (matches(text, `${NODE_EN} (?:must not|shall not|should not|cannot) (?:expose|block|obstruct) ${group}`)
++    || matches(text, `(?:do not|never) (?:expose|block|obstruct) ${group}`)
++    || matches(text, `${group} (?:remain|remains|stay|stays) off frame`)
++    || matches(text, `${NODE_ZH}(?:不得|不可|不应)(?:暴露|遮挡|堵塞)${NODE_ZH}`)
++    || matches(text, `禁止(?:暴露|遮挡|堵塞)${NODE_ZH}`)) return 'prohibition';
++  if (matches(text, `(?:keep|maintain) ${NODE_EN} (?:clear|unobstructed|accessible)`)
++    || matches(text, `${NODE_EN} (?:keeps?|maintains?) ${NODE_EN}`)
++    || matches(text, `${NODE_EN} (?:remain|remains|stay|stays) (?:accessible|clear|unobstructed)`)
++    || matches(text, `${NODE_EN} is (?:primary|secondary)`)
++    || matches(text, `${NODE_EN} supports (?:confidential discussion|1-to-1 / 1-to-2)`)
++    || matches(text, 'preserve (?:visitor|customer|patient|consultation) privacy(?: boundary)?')
++    || matches(text, `保持${NODE_ZH}(?:畅通|清晰)`)) return 'affirmative';
++  return null;
++}
++function completeRelation(text) {
++  const group = `${NODE_EN}(?: (?:and|or) ${NODE_EN})*`;
++  return matches(text, `${group} (?:connects? to|leads? to|is adjacent to|is separated from|share|shares|remain visually linked across|remains visually linked across) ${group}(?: through ${NODE_EN})?`)
++    || matches(text, `${NODE_EN} (?:within|beside|near|across|behind) ${NODE_EN}`)
++    || matches(text, `${NODE_ZH}(?:连接|邻接|毗邻)${NODE_ZH}`)
++    || matches(text, `${NODE_ZH}(?:位于|设在)${NODE_ZH}(?:旁|内|前|后|两侧)?`)
++    || matches(text, `${NODE_ZH}(?:位于|设在)两侧`);
++}
++function visibilityRequest(text) {
++  const match = text.match(/^(.+?)(?:并)?透过((?:临街)?(?:橱窗)?玻璃|橱窗)可见$/u);
++  return Boolean(match && visibleOperationEvidence(match[1]))
++    || matches(text, `${NODE_ZH}视线可见${NODE_ZH}(?:制作活动|服务活动)`);
++}
++function sourceSpan(original, text, offset = 0) {
++  const start = original.indexOf(text, offset);
++  return {start, end:start + text.length};
++}
++// Consume the complete unit before trying independent clauses. Delimiters alone
++// never terminate conditional/negative scope, and unknown tails remain failures.
++function recognizeUnit(value, field) {
++  const text = value.trim().replace(/[。.!！]$/u, '');
++  const constraint = completeConstraint(text);
++  if (constraint) return {type:'constraint', modality:constraint, basis:'complete_design_constraint'};
++  const modality = propositionModality(value);
++  if (!['affirmative','prohibition'].includes(modality)) return null;
++  if (visibilityRequest(text)) return {type:'visibility_request', basis:'explicit_sightline_request'};
++  const activity = visibleOperationEvidence(text.toLowerCase());
++  if (activity) return {type:activity === 'visible_service_artifact' ? 'node' : 'activity', basis:activity};
++  if (explicitObjectUseEvidence(text)) return {type:'relation', basis:'explicit_object_use_relation'};
++  if (explicitSpatialRelationship(text)) return {type:/(?:\b(?:with|beside|across|behind|within|near|facing|revealing)\b)/iu.test(text) ? 'relation' : 'node', basis:'explicit_spatial_requirement'};
++  if (explicitVisibleCarrier(text)) return {type:/位于|设在|放置在/u.test(text) ? 'relation' : 'node', basis:'explicit_visible_carrier'};
++  if (typedNode(text)) return {type:'node', basis:'named_functional_node'};
++  if (completeRelation(text)) return {type:'relation', basis:'complete_spatial_relation'};
++  const existing = functionalRequirementEvidence(text, field);
++  if (existing) return {type:existing === 'named_functional_node' || existing === 'scoped_scene_program' ? 'node' : 'relation', basis:existing};
++  // A declared scene prefix scopes the supplied body, never an invented actor.
++  const prefix = text.match(/^([^:：]+)[:：]\s*(.+)$/u);
++  if (prefix && typedNode(prefix[1])) {
++    const body = recognizeUnit(prefix[2], field);
++    if (body) return {...body, basis:'explicit_scene_scope', scopedBy:prefix[1]};
++  }
++  const parts = text.split(/[;；，]/u).map(s=>s.trim());
++  if (parts.length > 1 && parts.every(Boolean)) {
++    const units = parts.map(part=>recognizeUnit(part,field));
++    if (units.every(unit=>unit && FIELD_TYPES[field]?.includes(unit.type))) {
++      let cursor=0;
++      const clauses=parts.map((part,i)=>{const range=sourceSpan(value,part,cursor);cursor=range.end;return {...units[i],text:part,...range};});
++      return {type:units.every(u=>u.type===units[0].type) ? units[0].type : 'relation',
++        types:[...new Set(units.map(u=>u.type))],basis:'complete_independent_clauses',clauses};
++    }
++  }
++  return null;
++}
++function spatialSemanticEvidence(value, field, index = 0, source = null) {
++  const original=typeof value === 'string' ? value : structuredClone(value);
++  const path=`mediaTranslations.spatial.${field}[${index}]`;
++  const parent={original,field,index,start:0,end:typeof value === 'string' ? value.length : 0};
++  const modality=typeof value === 'string' ? propositionModality(value) : 'unconfirmed';
++  const result={original,value:original,field,index,path,parent,source:source == null ? {kind:'source_field',path,confirmation:'unspecified'} : structuredClone(source),
++    semanticOnly:true,sourceConfirmation:'unchanged',type:'unresolved',types:['unresolved'],modality,
++    validation:'block',reason:null,clauses:[]};
++  if (typeof value !== 'string' || !value.trim()) return {...result,reason:'invalid_semantic_unit'};
++  if (value.length > 4000) return {...result,reason:'semantic_unit_too_long'};
++  const analysis=classifyPhrase(value,field);
++  result.analysis=analysis;
++  if (['conditional','unconfirmed','negative_observation'].includes(modality)) {
++    const negativeActivity=modality==='negative_observation' && (/^(?:员工|店员|工作人员|操作员)(?:没有|不会|尚未|未曾)(?:使用|操作)(?:设备|收银机|支付终端)[。！]?$/u.test(value)
++      || /^(?:staff|employees|workers) (?:are not |not |never )(?:operating|using) (?:equipment|a cash register|a payment terminal)[.!]?$/iu.test(value));
++    return {...result,...negativeActivity?{type:'activity',types:['activity']}:{},
++      reason:modality === 'negative_observation' ? 'negated_scope' : 'conditional_or_unconfirmed_scope'};
++  }
++  const visible=field === 'mustBeVisible';
++  const blocked=GRAPHIC_IDENTITY.test(value) || (visible
++    ? analysis.motifHits.length || analysis.colorHits.length || analysis.metaphor
++      || [SEMANTIC_CLASS.DECORATIVE_IDENTITY,SEMANTIC_CLASS.DECORATIVE_OBJECT,SEMANTIC_CLASS.BRAND_MOTIF].includes(analysis.classification)
++    : BLOCKED_CLASSES.has(analysis.classification));
++  if (blocked) return {...result,reason:'non_functional_semantics'};
++  const unit=recognizeUnit(value,field);
++  if (!unit) return {...result,reason:visible ? 'complete_visible_evidence_required' : 'complete_functional_evidence_required'};
++  const types=unit.types??[unit.type];
++  const clauses=(unit.clauses??[{...unit,text:value.trim(),...sourceSpan(value,value.trim())}])
++    .map(clause=>({...clause,modality:clause.modality??modality,parent:{...parent}}));
++  const allowed=types.every(type=>FIELD_TYPES[field]?.includes(type));
++  return {...result,...unit,types,clauses,modality:unit.modality??modality,
++    validation:allowed ? 'pass' : 'block',reason:allowed ? null : 'semantic_type_not_allowed_in_field'};
++}
++function validateSpatialSemantics(spatial = {}, sources = {}) {
+   const findings = [];
++  const evidence = [];
+   for (const field of FUNCTIONAL_FIELDS) {
+     if (!Object.hasOwn(spatial, field)) continue;
+     if (!Array.isArray(spatial[field])) {
+-      findings.push({code:'INVALID_SPACE_FUNCTIONAL_SEMANTICS',severity:'block',field,path:`mediaTranslations.spatial.${field}`,original:spatial[field],reason:'invalid_field_shape'});
++      const typed={...spatialSemanticEvidence(spatial[field],field,null,sources[field]),reason:'invalid_field_shape',type:'unresolved',types:['unresolved'],validation:'block'};
++      evidence.push(typed);
++      findings.push({code:'INVALID_SPACE_FUNCTIONAL_SEMANTICS',severity:'block',field,path:`mediaTranslations.spatial.${field}`,original:spatial[field],reason:'invalid_field_shape',evidence:typed});
+       continue;
+     }
+     for (const [index, value] of spatial[field].entries()) {
+       if (typeof value !== 'string' || !value.trim()) {
+-        findings.push({code:'INVALID_SPACE_FUNCTIONAL_SEMANTICS',severity:'block',field,path:`mediaTranslations.spatial.${field}[${index}]`,original:value,reason:'invalid_semantic_unit'});
++        const typed=spatialSemanticEvidence(value,field,index,sources[field]?.[index]);
++        evidence.push(typed);
++        findings.push({code:'INVALID_SPACE_FUNCTIONAL_SEMANTICS',severity:'block',field,path:`mediaTranslations.spatial.${field}[${index}]`,original:value,reason:'invalid_semantic_unit',evidence:typed});
+         continue;
+       }
+-      const analysis = classifyPhrase(value, field);
++      const typed = spatialSemanticEvidence(value, field, index, sources[field]?.[index]);
++      evidence.push(typed);
++      const analysis = typed.analysis ?? classifyPhrase(value,field);
+       const graphicIdentity = GRAPHIC_IDENTITY.test(value);
+-      const visible = field === 'mustBeVisible';
+-      if (visible && visibleRequirementAllowed(value, analysis)) continue;
+-      const evidence = !visible && !graphicIdentity && !BLOCKED_CLASSES.has(analysis.classification) && functionalRequirementEvidence(value, field);
+-      if (evidence) continue;
++      if (typed.validation === 'pass') continue;
+       const classification = analysis.classification === SEMANTIC_CLASS.DECORATIVE_OBJECT ? SEMANTIC_CLASS.DECORATIVE_OBJECT : graphicIdentity ? "graphic_identity" : analysis.classification;
+       findings.push({
+         code: findingCode(field, analysis.classification),
+@@ -166,7 +284,7 @@ function validateSpatialSemantics(spatial = {}) {
+         path: `mediaTranslations.spatial.${field}[${index}]`,
+         classification,
+         original:value,
+-        reason: propositionScope(value) || (visible ? 'complete_visible_evidence_required' : 'complete_functional_evidence_required'), analysis
++        reason: typed.reason, analysis, evidence:typed
+       });
+     }
+   }
+@@ -174,16 +292,17 @@ function validateSpatialSemantics(spatial = {}) {
+     schemaVersion: "1.0",
+     version: SPATIAL_SEMANTIC_GATE_VERSION,
+     status: findings.length ? "block" : "pass",
+-    findings
++    findings, evidence
+   };
+ }
+ // Separate only explicit source clauses. Never remove a keyword from inside
+ // an inseparable proposition, invent a node, or promote a brand clause to a
+ // functional requirement. The original spatial object is never mutated.
+-function separateSpatialFunctionalSemantics(spatial = {}) {
++function separateSpatialFunctionalSemantics(spatial = {}, sources = {}) {
+   const next = structuredClone(spatial);
+   const changes = [];
+   const unresolved = [];
++  const origins = {};
+   const brand = list(spatial.brandRoleManifestation);
+   const brandClasses = new Set([SEMANTIC_CLASS.DECORATIVE_IDENTITY, SEMANTIC_CLASS.BRAND_MOTIF,
+     SEMANTIC_CLASS.DECORATIVE_OBJECT, SEMANTIC_CLASS.COLOR_ACCENT, SEMANTIC_CLASS.COLOR_GEOMETRY]);
+@@ -191,26 +310,21 @@ function separateSpatialFunctionalSemantics(spatial = {}) {
+   // equipment/furniture must not disappear into the brand layer either.
+   const operation = /菜单|价目表|进入|离开|到达|点餐|等候|取餐|用餐|就餐|厨房|出餐|清洁|外带|座位|座椅|桌|设备|柜台|砂锅|照明|通道|通行|动线|服务|接待|办理|操作|查看|\b(?:menu|arrival|entry|entrance|exit|waiting|counter|tables?|desks?|chairs?|seats?|seating|reception|service|access|circulation|checkout|payment|staff|customers?|guests?|equipment|scanner|terminal)\b/iu;
+   const brandExpression = /品牌(?:标识|符号|色彩|配色|影像|元素|内容|视觉|形象)|brand\s+(?:identity|colou?r|palette|visual|imagery|content)|^吸引力$/iu;
+-  function functionalFragment(text) {
+-    const steps = text.split(/\s*(?:→|->|⇒)\s*/u);
+-    if (steps.length > 1) return steps.every(functionalFragment);
+-    const unit = text.replace(/^(?:品牌入口|入口|点餐区|等候区|就餐区|厨房区|外带区|服务区|咨询区)[:：]\s*/u, '');
+-    return /^(?:(?:顾客|客人)?(?:进入|离开|到达)|菜单(?:查看|展示)?|价目表|点餐|等候|取餐(?:提示)?|用餐|就餐|厨房|出餐|清洁|外带|座位|座椅|桌椅|桌面|照明|通道|通行|接待|咨询设备|arrival|entry|entrance|exit|waiting|counter|seating|reception|service|access|circulation|checkout|payment|menu)[。.!！]?$/iu.test(unit);
+-  }
+   function kind(text, field) {
+-    if (propositionScope(text)) return 'unresolved';
++    const typed=spatialSemanticEvidence(text,field);
++    if (typed.validation === 'pass') return 'functional';
++    if (typed.modality !== 'affirmative') return 'unresolved';
+     const analysis = classifyPhrase(text, field);
+     if (brandClasses.has(analysis.classification) || brandExpression.test(text)) return 'brand';
+-    if (field === 'mustBeVisible') return visibleRequirementAllowed(text, analysis) ? 'functional' : 'unresolved';
+-    if ((functionalFragment(text) || functionalRequirementEvidence(text, field))
+-      && !BLOCKED_CLASSES.has(analysis.classification)) return 'functional';
+     return 'unresolved';
+   }
+   for (const field of FUNCTIONAL_FIELDS) {
+     if (!Array.isArray(spatial[field])) continue;
++    origins[field]=[];
+     const candidates = spatial[field].map((text,index) => {
+-      if (typeof text !== 'string' || !text.trim() || propositionScope(text)) {
+-        unresolved.push({field,index,original:text,reason:typeof text === 'string' ? propositionScope(text) || 'invalid_semantic_unit' : 'invalid_semantic_unit'});
++      const typed=spatialSemanticEvidence(text,field,index,sources[field]?.[index]);
++      if (typeof text !== 'string' || !text.trim() || ['conditional','unconfirmed','negative_observation'].includes(typed.modality)) {
++        unresolved.push({field,index,original:text,reason:typed.reason,evidence:typed});
+         return {index,text,retained:[text],brand:[],split:false};
+       }
+       if (kind(text,field) !== 'brand') return {index,text,retained:[text],brand:[],split:false};
+@@ -219,7 +333,9 @@ function separateSpatialFunctionalSemantics(spatial = {}) {
+       // Only an explicit location prefix can be shared by coordinated items.
+       const prefix = !arrow ? parts[0]?.match(/^(.+?[:：]\s*)/u)?.[1]
+         || parts[0]?.match(/^(.+?(?:处|区域|区)(?:的)?)(?=.+)/u)?.[1] || '' : '';
++      let cursor=0;
+       const classified = parts.map((part,i) => {
++        const range=sourceSpan(text,part,cursor);cursor=range.end;
+         const value = prefix && i>0 ? prefix+part : part;
+         const brandPart = kind(part,field)==='brand';
+         const content = i===0 && prefix ? part.slice(prefix.length) : part;
+@@ -227,7 +343,10 @@ function separateSpatialFunctionalSemantics(spatial = {}) {
+         // predicate. Such a clause cannot be discarded as independent decor.
+         const mixedPredicate = operation.test(content)
+           || /\b(?:serving|preparing|operating|using|cleaning|checking|paying|dining|reading|viewing|assisting|browsing|cooking|guiding)\b|烹饪|收款|办理|制作/iu.test(content);
+-        return {sourceFragment:part,value,kind:brandPart ? mixedPredicate ? 'unresolved' : 'brand' : kind(value,field),analysis:classifyPhrase(value,field)};
++        return {sourceFragment:part,sourceRange:range,parent:{original:text,field,index,start:0,end:text.length},
++          ...(prefix && i>0 ? {sharedPrefix:{text:prefix,...sourceSpan(text,prefix)}} : {}),
++          value,kind:brandPart ? mixedPredicate ? 'unresolved' : 'brand' : kind(value,field),analysis:classifyPhrase(value,field),
++          evidence:spatialSemanticEvidence(value,field,index,sources[field]?.[index])};
+       });
+       const functional = classified.filter(p=>p.kind==='functional');
+       const decorative = classified.filter(p=>p.kind==='brand');
+@@ -243,32 +362,38 @@ function separateSpatialFunctionalSemantics(spatial = {}) {
+     // Demotion alone must never empty a field and manufacture a passing packet.
+     const hasFunctional = candidates.some(c=>c.retained.some(v=>typeof v === 'string' && kind(v,field)==='functional'));
+     next[field] = candidates.flatMap(c=> {
+-      if (!c.brand.length) return c.retained;
++      const keep=values=>{for(const value of values)origins[field].push({index:c.index,original:c.text,value,fragments:c.evidenceFragments??[]});return values;};
++      if (!c.brand.length) return keep(c.retained);
+       if (!hasFunctional) {
+         unresolved.push({field,index:c.index,original:c.text,reason:'no_remaining_functional_evidence'});
+-        return [c.text];
++        return keep([c.text]);
+       }
+       for (const text of c.brand) if (!brand.includes(text)) brand.push(text);
+       changes.push({field,index:c.index,original:c.text,retained:c.retained,
+         routedTo:'brandRoleManifestation',brand:c.brand,method:c.split?'explicit_clause_separation':'brand_demotion',
++          sourceEvidence:spatialSemanticEvidence(c.text,field,c.index,sources[field]?.[c.index]),
+         ...c.evidenceFragments?{evidenceFragments:c.evidenceFragments}:{}});
+-      return c.retained;
++      return keep(c.retained);
+     });
+   }
+   if(changes.length) next.brandRoleManifestation=brand;
+   // Validate all retained values again, not only the clauses we changed. Never
+   // discard a failed remainder or turn an unresolved result into a clean packet.
+-  const validation = validateSpatialSemantics(next);
++  const retainedSources=Object.fromEntries(FUNCTIONAL_FIELDS.map(field=>[field,origins[field]?.map(origin=>sources[field]?.[origin.index]) ?? sources[field]]));
++  const validation = validateSpatialSemantics(next,retainedSources);
+   for (const finding of validation.findings) {
+     if (!unresolved.some(item => item.field === finding.field && item.index === Number(finding.path.match(/\[(\d+)\]$/u)?.[1]))) {
+       unresolved.push({field:finding.field,index:Number(finding.path.match(/\[(\d+)\]$/u)?.[1]),original:finding.original,reason:'retained_fragment_failed_validation',finding});
+     }
+   }
+-  const evidence = FUNCTIONAL_FIELDS.flatMap(field =>
+-    (Array.isArray(next[field]) ? next[field] : []).map((value,index) => ({field,index,value,analysis:classifyPhrase(value,field),
+-      semanticOnly:true,sourceConfirmation:'unchanged',
+-      validation:validation.findings.some(f => f.field === field && f.path.endsWith(`[${index}]`)) ? 'block'
+-        : 'pass'})));
++  const evidence = validation.evidence.map(item=>{
++    const origin=origins[item.field]?.[item.index];
++    if(!origin)return item;
++    return {...item,outputIndex:item.index,index:origin.index,original:origin.original,
++      path:`mediaTranslations.spatial.${item.field}[${origin.index}]`,
++      parent:{original:origin.original,field:item.field,index:origin.index,start:0,end:typeof origin.original==='string'?origin.original.length:0},
++      sourceFragments:origin.fragments};
++  });
+   return {spatial:next,changes,unresolved,validation,evidence};
+ }
+ function normalizeSpatialFunctionalValue(value, field) {
+@@ -331,6 +456,8 @@ function normalizeFunctionalHardConstraint(value, field) {
+   return demoteDecorativeObjectFromFunctionalLayer(value, field);
+ }
+ export {
++  FIELD_TYPES,
++  spatialSemanticEvidence,
+   SPATIAL_SEMANTIC_GATE_VERSION,
+   demoteDecorativeObjectFromFunctionalLayer,
+   normalizeFunctionalHardConstraint,

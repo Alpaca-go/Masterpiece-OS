@@ -1,0 +1,678 @@
+{
+  "label": "after-targeted",
+  "suite": "targeted",
+  "args": [
+    "--import",
+    "tsx",
+    "--test",
+    "--test-reporter=tap",
+    "--test-concurrency=1",
+    "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/evidence-boundaries.test.ts",
+    "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/separation.test.ts",
+    "packages/visual-workflow/tests/spatial-quality.test.ts",
+    "packages/visual-workflow/tests/visible-requirement-ownership.test.ts",
+    "packages/visual-workflow/tests/scene-authority-repair.test.ts",
+    "packages/visual-workflow/tests/scene-decision-fidelity.test.ts",
+    "packages/visual-workflow/tests/cross-zone-operation-scope.test.ts",
+    "packages/visual-workflow/tests/automatic-design-proposal.test.ts",
+    "packages/visual-workflow/tests/methodology/acceptance.test.mjs"
+  ],
+  "exitCode": 1,
+  "durationMs": 7135,
+  "counts": {
+    "tests": 159,
+    "pass": 150,
+    "fail": 9,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "cases": [
+    {
+      "title": "default model request asks for automatic proposals while retaining evidence and unknown-fact boundaries",
+      "status": "pass"
+    },
+    {
+      "title": "model output keeps scoped colors, composition and proposal provenance through normalization and autofill",
+      "status": "pass"
+    },
+    {
+      "title": "invalid scope or claimed confirmation cannot acquire proposal authority",
+      "status": "pass"
+    },
+    {
+      "title": "functional relation recognition does not grant authority to identity, motifs or color geometry",
+      "status": "pass"
+    },
+    {
+      "title": "automatic suggestion can be confirmed without field rewriting and reaches actual offline image adapter",
+      "status": "pass"
+    },
+    {
+      "title": "cross-zone relationship remains a current boundary constraint: Reception circulation connects to treatment through a screened access route",
+      "status": "pass"
+    },
+    {
+      "title": "cross-zone relationship remains a current boundary constraint: Reception waiting must not expose consultation conversations",
+      "status": "pass"
+    },
+    {
+      "title": "cross-zone relationship remains a current boundary constraint: Recovery return traffic must avoid the reception queue",
+      "status": "pass"
+    },
+    {
+      "title": "cross-zone relationship remains a current boundary constraint: Reception is adjacent to consultation with an acoustic privacy boundary",
+      "status": "pass"
+    },
+    {
+      "title": "cross-zone relationship remains a current boundary constraint: 接待区到治疗区的患者动线与员工通道分离",
+      "status": "pass"
+    },
+    {
+      "title": "cross-zone relationship remains a current boundary constraint: 接待区与治疗区之间应保持隔声边界",
+      "status": "pass"
+    },
+    {
+      "title": "cross-zone relationship remains a current boundary constraint: 咨询区入口不得从接待座位直接看到，保护隐私",
+      "status": "pass"
+    },
+    {
+      "title": "cross-zone relationship remains a current boundary constraint: 恢复区返回人流不得与接待候客队列交叉",
+      "status": "pass"
+    },
+    {
+      "title": "foreign interior remains off frame: Treatment room contains procedure beds",
+      "status": "pass"
+    },
+    {
+      "title": "foreign interior remains off frame: Consultation room furniture and display walls",
+      "status": "pass"
+    },
+    {
+      "title": "foreign interior remains off frame: Recovery room equipped with lounge beds",
+      "status": "pass"
+    },
+    {
+      "title": "foreign interior remains off frame: 治疗室内有诊疗设备",
+      "status": "pass"
+    },
+    {
+      "title": "mixed clauses preserve the local operational relation without granting interior visibility",
+      "status": "pass"
+    },
+    {
+      "title": "a foreign-only privacy statement is retained only in an operational source context",
+      "status": "pass"
+    },
+    {
+      "title": "formal compiler retains legitimate relationships once without exposing foreign interiors or mutating input",
+      "status": "pass"
+    },
+    {
+      "title": "bakery-methodology: current-project relations and scope reach suggestion and compiler without mutation",
+      "status": "pass"
+    },
+    {
+      "title": "outdoor-methodology: current-project relations and scope reach suggestion and compiler without mutation",
+      "status": "pass"
+    },
+    {
+      "title": "insufficient evidence remains absent rather than acquiring another project decision",
+      "status": "pass"
+    },
+    {
+      "title": "brand or industry renaming alone does not change functional decisions or invent artwork",
+      "status": "pass"
+    },
+    {
+      "title": "relationship mutation is preserved as a change, not accepted on object counts",
+      "status": "pass"
+    },
+    {
+      "title": "historical P7a formal and provider prompts retain their recorded text hashes",
+      "status": "pass"
+    },
+    {
+      "title": "E1E blocking expectation: equipment conveying happiness",
+      "status": "pass"
+    },
+    {
+      "title": "E1E blocking expectation: 砂锅传递幸福感",
+      "status": "pass"
+    },
+    {
+      "title": "E1E blocking expectation: 设备自动治愈顾客",
+      "status": "pass"
+    },
+    {
+      "title": "E1E blocking expectation: 在设备旁员工畅想未来",
+      "status": "pass"
+    },
+    {
+      "title": "E1E blocking expectation: petal curved counter",
+      "status": "pass"
+    },
+    {
+      "title": "E1E blocking expectation: lotus layered table",
+      "status": "pass"
+    },
+    {
+      "title": "E1E blocking expectation: 花瓣曲线桌",
+      "status": "pass"
+    },
+    {
+      "title": "E1E blocking expectation: Logo and equipment conveying happiness",
+      "status": "pass"
+    },
+    {
+      "title": "E1E blocking expectation: staff operating equipment and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "E1E blocking expectation: 员工操作设备并畅想未来",
+      "status": "pass"
+    },
+    {
+      "title": "E1E blocking expectation: 员工没有使用设备",
+      "status": "pass"
+    },
+    {
+      "title": "E1E blocking expectation: 员工不会操作设备",
+      "status": "pass"
+    },
+    {
+      "title": "E1E blocking expectation: 员工尚未操作设备",
+      "status": "pass"
+    },
+    {
+      "title": "E1E blocking expectation: staff operating equipment",
+      "status": "pass"
+    },
+    {
+      "title": "E1E blocking expectation: Waiting area seating",
+      "status": "pass"
+    },
+    {
+      "title": "E1E blocking expectation: 入口处的菜单",
+      "status": "pass"
+    },
+    {
+      "title": "E1E blocking expectation: Logo吸引顾客点餐",
+      "status": "pass"
+    },
+    {
+      "title": "E1E blocking expectation: staff not operating equipment",
+      "status": "pass"
+    },
+    {
+      "title": "E1E blocking expectation: unresolved rendezvous",
+      "status": "pass"
+    },
+    {
+      "title": "the E1E mixed visibility defect cannot become ready or call optional repair models",
+      "status": "pass"
+    },
+    {
+      "title": "complete positive units reject unrecognized tails, negation, wishes, identity and color",
+      "status": "fail",
+      "diagnostic": "not ok 47 - complete positive units reject unrecognized tails, negation, wishes, identity and color\n  ---\n  duration_ms: 23.102\n  type: 'test'\n  location: 'E:\\\\Masterpiece-OS-Main-Publish-20261015-Verified\\\\packages\\\\visual-workflow\\\\tests\\\\restaurant-knowledge\\\\spatial-semantics\\\\evidence-boundaries.test.ts:1:3051'\n  failureType: 'testCodeFailure'\n  error: |-\n    equipment\n    \n    'pass' !== 'block'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'block'\n  actual: 'pass'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\restaurant-knowledge\\spatial-semantics\\evidence-boundaries.test.ts:55:55)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1397:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:969:18)\n    Test.postRun (node:internal/test_runner/test:1537:19)\n    Test.run (node:internal/test_runner/test:1462:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)\n  ...\n# Subtest: pure brand demotion is not permission to render a decorative object as a visible function\n"
+    },
+    {
+      "title": "pure brand demotion is not permission to render a decorative object as a visible function",
+      "status": "pass"
+    },
+    {
+      "title": "approved architectural requirements consume every clause and reject appended unknown or negative predicates",
+      "status": "pass"
+    },
+    {
+      "title": "safe separation precedes structured model batches without filling missing material evidence",
+      "status": "pass"
+    },
+    {
+      "title": "unresolved clauses outside the visible field cannot be hidden by a passing final gate",
+      "status": "fail",
+      "diagnostic": "not ok 51 - unresolved clauses outside the visible field cannot be hidden by a passing final gate\n  ---\n  duration_ms: 2.784\n  type: 'test'\n  location: 'E:\\\\Masterpiece-OS-Main-Publish-20261015-Verified\\\\packages\\\\visual-workflow\\\\tests\\\\restaurant-knowledge\\\\spatial-semantics\\\\evidence-boundaries.test.ts:1:7453'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'block' !== 'pass'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'pass'\n  actual: 'block'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\restaurant-knowledge\\spatial-semantics\\evidence-boundaries.test.ts:98:10)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1397:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:969:18)\n    Test.postRun (node:internal/test_runner/test:1537:19)\n    Test.run (node:internal/test_runner/test:1462:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)\n  ...\n# Subtest: local validator exception before optional repair uses zero model calls\n"
+    },
+    {
+      "title": "local validator exception before optional repair uses zero model calls",
+      "status": "pass"
+    },
+    {
+      "title": "local separator exception before optional repair uses zero model calls",
+      "status": "pass"
+    },
+    {
+      "title": "local repaired-persistence exception before optional repair uses zero model calls",
+      "status": "pass"
+    },
+    {
+      "title": "unknown source facts still require confirmation after safe local semantic separation",
+      "status": "pass"
+    },
+    {
+      "title": "corrupt packet shape fails before optional model callbacks",
+      "status": "pass"
+    },
+    {
+      "title": "targeted semantic regression uses zero network primitives",
+      "status": "pass"
+    },
+    {
+      "title": "archived mixed records remain rejected as whole phrases; only evidenced clauses are separated",
+      "status": "pass"
+    },
+    {
+      "title": "mixed scene nodes preserve menu, seating, lighting and pickup; brand imagery has a separate owner",
+      "status": "pass"
+    },
+    {
+      "title": "deterministic separation runs before any optional model repair, revalidates and keeps input packet immutable",
+      "status": "pass"
+    },
+    {
+      "title": "dedicated visible evidence retains actual activity: 厨师正在备餐",
+      "status": "pass"
+    },
+    {
+      "title": "dedicated visible evidence retains actual activity: 顾客在餐桌用餐",
+      "status": "pass"
+    },
+    {
+      "title": "dedicated visible evidence retains actual activity: 店员为顾客打包商品",
+      "status": "pass"
+    },
+    {
+      "title": "dedicated visible evidence retains actual activity: 员工操作收银机",
+      "status": "pass"
+    },
+    {
+      "title": "dedicated visible evidence retains actual activity: 操作员使用检测设备",
+      "status": "pass"
+    },
+    {
+      "title": "dedicated visible evidence retains actual activity: staff operating a cash register",
+      "status": "pass"
+    },
+    {
+      "title": "dedicated visible evidence retains actual activity: technicians using equipment",
+      "status": "pass"
+    },
+    {
+      "title": "dedicated visible evidence retains actual activity: guests checking in at reception",
+      "status": "pass"
+    },
+    {
+      "title": "existing concrete visible carriers keep renderer ownership while analysis uses positive carrier evidence",
+      "status": "pass"
+    },
+    {
+      "title": "payment equipment is not a silver color declaration; explicit silver finish still remains styling",
+      "status": "pass"
+    },
+    {
+      "title": "unknown, decorative or negated visibility gets no functional grant: unresolved rendezvous",
+      "status": "pass"
+    },
+    {
+      "title": "unknown, decorative or negated visibility gets no functional grant: customers enjoying the cosmic essence at tables",
+      "status": "pass"
+    },
+    {
+      "title": "unknown, decorative or negated visibility gets no functional grant: maybe staff operating equipment",
+      "status": "pass"
+    },
+    {
+      "title": "unknown, decorative or negated visibility gets no functional grant: staff not operating equipment",
+      "status": "pass"
+    },
+    {
+      "title": "unknown, decorative or negated visibility gets no functional grant: 文字招牌与标语",
+      "status": "pass"
+    },
+    {
+      "title": "unknown, decorative or negated visibility gets no functional grant: Logo wordmark",
+      "status": "pass"
+    },
+    {
+      "title": "unknown, decorative or negated visibility gets no functional grant: 品牌色彩系统的层次化应用",
+      "status": "pass"
+    },
+    {
+      "title": "unknown, decorative or negated visibility gets no functional grant: 品牌标识→未知愿景",
+      "status": "pass"
+    },
+    {
+      "title": "inseparable or unknown mixed clauses stay blocked; word deletion is not a repair",
+      "status": "pass"
+    },
+    {
+      "title": "pure brand data cannot empty required fields to earn a pass or invent functions",
+      "status": "pass"
+    },
+    {
+      "title": "missing source functions remain missing after separation",
+      "status": "pass"
+    },
+    {
+      "title": "a failed deterministic callback cannot fall through to a model call",
+      "status": "pass"
+    },
+    {
+      "title": "non-food service sequence is separated without adding a room or changing service content",
+      "status": "pass"
+    },
+    {
+      "title": "motif, sculpture and color geometry cannot acquire functional or architectural authority",
+      "status": "pass"
+    },
+    {
+      "title": "all targeted tests used zero network primitives",
+      "status": "pass"
+    },
+    {
+      "title": "storefront/front preserves explicit requester, exterior program and exact camera through formal and Provider prompts",
+      "status": "pass"
+    },
+    {
+      "title": "all public subtype/shot choices have resolved authority or explicitly fail closed",
+      "status": "pass"
+    },
+    {
+      "title": "exterior default camera uses exterior authority: legacy_project_default",
+      "status": "pass"
+    },
+    {
+      "title": "exterior default camera uses exterior authority: target_scene_default",
+      "status": "pass"
+    },
+    {
+      "title": "unknown targets cannot turn an unresolved visible requirement into executable content",
+      "status": "pass"
+    },
+    {
+      "title": "complete functional dependencies are preserved without acquiring shot visibility: 点餐区 → 明档制作区 → 取餐区 → 就餐区",
+      "status": "pass"
+    },
+    {
+      "title": "complete functional dependencies are preserved without acquiring shot visibility: ordering area -> food preparation area -> pickup area -> dining area",
+      "status": "pass"
+    },
+    {
+      "title": "source clauses retain exact ranges and mixed local/dependency/review dispositions",
+      "status": "fail",
+      "diagnostic": "not ok 93 - source clauses retain exact ranges and mixed local/dependency/review dispositions\n  ---\n  duration_ms: 9.2792\n  type: 'test'\n  location: 'E:\\\\Masterpiece-OS-Main-Publish-20261015-Verified\\\\packages\\\\visual-workflow\\\\tests\\\\scene-authority-repair.test.ts:1:4794'\n  failureType: 'testCodeFailure'\n  error: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID: formal Space generation route failed closed.'\n  code: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID'\n  stack: |-\n    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:24:23)\n    assertSpaceGenerationRouteIntegrity (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:85:35)\n    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:283:21)\n    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)\n    compileScene (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-cases.ts:26:18)\n    TestContext.<anonymous> (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:74:56)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1397:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:969:18)\n    Test.postRun (node:internal/test_runner/test:1537:19)\n  ...\n# Subtest: unsafe networks stay reviewable: 点餐制作取餐就餐的完整关系\n"
+    },
+    {
+      "title": "unsafe networks stay reviewable: 点餐制作取餐就餐的完整关系",
+      "status": "fail",
+      "diagnostic": "not ok 94 - unsafe networks stay reviewable: 点餐制作取餐就餐的完整关系\n  ---\n  duration_ms: 19.2457\n  type: 'test'\n  location: 'E:\\\\Masterpiece-OS-Main-Publish-20261015-Verified\\\\packages\\\\visual-workflow\\\\tests\\\\scene-authority-repair.test.ts:1:5848'\n  failureType: 'testCodeFailure'\n  error: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID: formal Space generation route failed closed.'\n  code: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID'\n  stack: |-\n    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:24:23)\n    assertSpaceGenerationRouteIntegrity (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:85:35)\n    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:283:21)\n    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)\n    compileScene (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-cases.ts:26:18)\n    TestContext.<anonymous> (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:83:16)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1397:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:969:18)\n    Test.postRun (node:internal/test_runner/test:1537:19)\n  ...\n# Subtest: unsafe networks stay reviewable: 入口 → 无法确定的节点\n"
+    },
+    {
+      "title": "unsafe networks stay reviewable: 入口 → 无法确定的节点",
+      "status": "fail",
+      "diagnostic": "not ok 95 - unsafe networks stay reviewable: 入口 → 无法确定的节点\n  ---\n  duration_ms: 10.0642\n  type: 'test'\n  location: 'E:\\\\Masterpiece-OS-Main-Publish-20261015-Verified\\\\packages\\\\visual-workflow\\\\tests\\\\scene-authority-repair.test.ts:1:5848'\n  failureType: 'testCodeFailure'\n  error: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID: formal Space generation route failed closed.'\n  code: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID'\n  stack: |-\n    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:24:23)\n    assertSpaceGenerationRouteIntegrity (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:85:35)\n    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:283:21)\n    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)\n    compileScene (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-cases.ts:26:18)\n    TestContext.<anonymous> (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:83:16)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1397:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:969:18)\n    Test.postRun (node:internal/test_runner/test:1537:19)\n  ...\n# Subtest: unsafe networks stay reviewable: whole project operating network\n"
+    },
+    {
+      "title": "unsafe networks stay reviewable: whole project operating network",
+      "status": "fail",
+      "diagnostic": "not ok 96 - unsafe networks stay reviewable: whole project operating network\n  ---\n  duration_ms: 9.891\n  type: 'test'\n  location: 'E:\\\\Masterpiece-OS-Main-Publish-20261015-Verified\\\\packages\\\\visual-workflow\\\\tests\\\\scene-authority-repair.test.ts:1:5848'\n  failureType: 'testCodeFailure'\n  error: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID: formal Space generation route failed closed.'\n  code: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID'\n  stack: |-\n    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:24:23)\n    assertSpaceGenerationRouteIntegrity (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:85:35)\n    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:283:21)\n    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)\n    compileScene (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-cases.ts:26:18)\n    TestContext.<anonymous> (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:83:16)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1397:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:969:18)\n    Test.postRun (node:internal/test_runner/test:1537:19)\n  ...\n# Subtest: kitchen relationships cannot inherit a boundary authority merely from their container or another entrance clause\n"
+    },
+    {
+      "title": "kitchen relationships cannot inherit a boundary authority merely from their container or another entrance clause",
+      "status": "fail",
+      "diagnostic": "not ok 97 - kitchen relationships cannot inherit a boundary authority merely from their container or another entrance clause\n  ---\n  duration_ms: 14.5368\n  type: 'test'\n  location: 'E:\\\\Masterpiece-OS-Main-Publish-20261015-Verified\\\\packages\\\\visual-workflow\\\\tests\\\\scene-authority-repair.test.ts:1:6202'\n  failureType: 'testCodeFailure'\n  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'\n  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'\n  stack: |-\n    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)\n    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)\n    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)\n    compileScene (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-cases.ts:26:18)\n    TestContext.<anonymous> (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:93:16)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1397:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:969:18)\n    Test.postRun (node:internal/test_runner/test:1537:19)\n    Test.run (node:internal/test_runner/test:1462:12)\n  ...\n# Subtest: dining operations and Chinese actors remain visible with exactly one rendered owner\n"
+    },
+    {
+      "title": "dining operations and Chinese actors remain visible with exactly one rendered owner",
+      "status": "pass"
+    },
+    {
+      "title": "unlocated storefront activity requires review: chef preparing food",
+      "status": "pass"
+    },
+    {
+      "title": "unlocated storefront activity requires review: steam above dishes",
+      "status": "pass"
+    },
+    {
+      "title": "interior sightline request awaits a reviewed interface: chef preparing food in kitchen visible through storefront glazing",
+      "status": "pass"
+    },
+    {
+      "title": "interior sightline request awaits a reviewed interface: 厨师在厨房制作食品并透过临街橱窗玻璃可见",
+      "status": "pass"
+    },
+    {
+      "title": "interior sightline request awaits a reviewed interface: 入口视线可见厨房制作活动",
+      "status": "pass"
+    },
+    {
+      "title": "an exterior prohibition protects interior privacy as a boundary, never as a rendered interior",
+      "status": "pass"
+    },
+    {
+      "title": "cross-project exterior projection follows sources, not industry: 临街外带档口",
+      "status": "pass"
+    },
+    {
+      "title": "cross-project exterior projection follows sources, not industry: 现代连锁快餐",
+      "status": "pass"
+    },
+    {
+      "title": "cross-project exterior projection follows sources, not industry: 社区咖啡馆",
+      "status": "pass"
+    },
+    {
+      "title": "cross-project exterior projection follows sources, not industry: 日本料理餐厅",
+      "status": "pass"
+    },
+    {
+      "title": "cross-project exterior projection follows sources, not industry: 零售商店",
+      "status": "pass"
+    },
+    {
+      "title": "cross-project exterior projection follows sources, not industry: 旅宿服务",
+      "status": "pass"
+    },
+    {
+      "title": "other established commercial scene authorities retain their own local activities",
+      "status": "pass"
+    },
+    {
+      "title": "negative project guards are preserved even when they name a foreign exterior",
+      "status": "pass"
+    },
+    {
+      "title": "explicit off-frame operational prohibitions remain boundary-only",
+      "status": "pass"
+    },
+    {
+      "title": "artistic focus is composed once and remains distinct from operations",
+      "status": "pass"
+    },
+    {
+      "title": "optional artwork stays optional and a source without art does not acquire an installation",
+      "status": "pass"
+    },
+    {
+      "title": "single reception shot keeps other program nodes in the trace rather than displaying their interiors",
+      "status": "pass"
+    },
+    {
+      "title": "scene projection preserves trace and does not translate a color or transparency keyword into new geometry",
+      "status": "pass"
+    },
+    {
+      "title": "gallery character passes sanitization while identity text remains protected",
+      "status": "pass"
+    },
+    {
+      "title": "source-scoped decisions occur once instead of being repeated through strategy/form/organization",
+      "status": "pass"
+    },
+    {
+      "title": "unconfirmed color scopes and ratios remain proposals without mandatory large-area authority",
+      "status": "pass"
+    },
+    {
+      "title": "brand names and stored brand keys cannot auto-select architecture examples",
+      "status": "pass"
+    },
+    {
+      "title": "explicit optional examples require scene and mechanism compatibility and cannot outrank the project",
+      "status": "pass"
+    },
+    {
+      "title": "Medical aesthetics: formal route retains complex architecture and explicit strong color without manufacturing art",
+      "status": "pass"
+    },
+    {
+      "title": "Hospitality: formal route retains complex architecture and explicit strong color without manufacturing art",
+      "status": "pass"
+    },
+    {
+      "title": "Restaurant: formal route retains complex architecture and explicit strong color without manufacturing art",
+      "status": "pass"
+    },
+    {
+      "title": "source scopes retain provenance and unknown scenes remain explicitly unresolved",
+      "status": "pass"
+    },
+    {
+      "title": "Packet and source adapter reject empty functional data even with a stale ready flag",
+      "status": "pass"
+    },
+    {
+      "title": "blank string arrays cannot satisfy spatial decision repair",
+      "status": "pass"
+    },
+    {
+      "title": "stale ready packet cannot compile when all functional entries are removed by cleanup",
+      "status": "pass"
+    },
+    {
+      "title": "semantic cleanup cannot erase required data and still complete analysis",
+      "status": "pass"
+    },
+    {
+      "title": "explicit material installation survives in brand layer, outside the functional and architectural layers",
+      "status": "pass"
+    },
+    {
+      "title": "installation preservation retains identity protection without inventing gradient area authority",
+      "status": "pass"
+    },
+    {
+      "title": "ordinary hospitality space needs no art object and packaging is unaffected",
+      "status": "pass"
+    },
+    {
+      "title": "visible operations have one actual execution owner: lobby/default",
+      "status": "pass"
+    },
+    {
+      "title": "visible operations have one actual execution owner: lobby/entrance_view",
+      "status": "pass"
+    },
+    {
+      "title": "visible operations have one actual execution owner: lobby/three_quarter_wide",
+      "status": "pass"
+    },
+    {
+      "title": "visible operations have one actual execution owner: dining/default",
+      "status": "pass"
+    },
+    {
+      "title": "visible operations have one actual execution owner: dining/entrance_view",
+      "status": "pass"
+    },
+    {
+      "title": "visible operations have one actual execution owner: dining/three_quarter_wide",
+      "status": "pass"
+    },
+    {
+      "title": "bilingual activity/effect has functional evidence and ownership: 厨师正在备餐",
+      "status": "pass"
+    },
+    {
+      "title": "bilingual activity/effect has functional evidence and ownership: 菜品上方升起热气",
+      "status": "pass"
+    },
+    {
+      "title": "bilingual activity/effect has functional evidence and ownership: 顾客在餐桌用餐",
+      "status": "pass"
+    },
+    {
+      "title": "bilingual activity/effect has functional evidence and ownership: 店员为顾客打包商品",
+      "status": "pass"
+    },
+    {
+      "title": "bilingual activity/effect has functional evidence and ownership: customers browsing products",
+      "status": "pass"
+    },
+    {
+      "title": "bilingual activity/effect has functional evidence and ownership: staff handing parcels to visitors",
+      "status": "pass"
+    },
+    {
+      "title": "bilingual activity/effect has functional evidence and ownership: guests checking in at reception",
+      "status": "pass"
+    },
+    {
+      "title": "bilingual activity/effect has functional evidence and ownership: receptionist greeting visitors",
+      "status": "pass"
+    },
+    {
+      "title": "bilingual activity/effect has functional evidence and ownership: water flowing into the basin",
+      "status": "pass"
+    },
+    {
+      "title": "de-duplication retains an actual rendered owner, not mere raw membership; original indices survive",
+      "status": "pass"
+    },
+    {
+      "title": "foreign operations cannot re-enter through the brand branch after scope rejection",
+      "status": "pass"
+    },
+    {
+      "title": "an activity also supplied in a signature source has one rendered visible owner",
+      "status": "pass"
+    },
+    {
+      "title": "brand duplicate is removed only after the current visible owner exists",
+      "status": "pass"
+    },
+    {
+      "title": "a prohibitive list never receives credit as the positive visible execution owner",
+      "status": "pass"
+    },
+    {
+      "title": "unknown or wishful fragments stay reviewable without becoming a hard operating requirement",
+      "status": "pass"
+    },
+    {
+      "title": "identity, motif, color, decoration and architecture retain distinct semantic routes",
+      "status": "pass"
+    },
+    {
+      "title": "mixed clauses retain only the local activity and boundary, with foreign interiors rejected in trace",
+      "status": "pass"
+    },
+    {
+      "title": "sourceMap reflects actual renderer ownership, not a broad promise of preservation",
+      "status": "pass"
+    },
+    {
+      "title": "reference-first target program still replaces source operations instead of inheriting standard fallback",
+      "status": "fail",
+      "diagnostic": "not ok 158 - reference-first target program still replaces source operations instead of inheriting standard fallback\n  ---\n  duration_ms: 26.2841\n  type: 'test'\n  location: 'E:\\\\Masterpiece-OS-Main-Publish-20261015-Verified\\\\packages\\\\visual-workflow\\\\tests\\\\visible-requirement-ownership.test.ts:1:9665'\n  failureType: 'testCodeFailure'\n  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'\n  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'\n  stack: |-\n    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)\n    TestContext.<anonymous> (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:175:18)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1397:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:969:18)\n    Test.postRun (node:internal/test_runner/test:1537:19)\n    Test.run (node:internal/test_runner/test:1462:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)\n  ...\n# Subtest: continuation keeps the target program authoritative and does not expose source dining operations\n"
+    },
+    {
+      "title": "continuation keeps the target program authoritative and does not expose source dining operations",
+      "status": "fail",
+      "diagnostic": "not ok 159 - continuation keeps the target program authoritative and does not expose source dining operations\n  ---\n  duration_ms: 22.3478\n  type: 'test'\n  location: 'E:\\\\Masterpiece-OS-Main-Publish-20261015-Verified\\\\packages\\\\visual-workflow\\\\tests\\\\visible-requirement-ownership.test.ts:1:10338'\n  failureType: 'testCodeFailure'\n  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'\n  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'\n  stack: |-\n    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)\n    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)\n    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)\n    TestContext.<anonymous> (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:190:18)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1397:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:969:18)\n    Test.postRun (node:internal/test_runner/test:1537:19)\n    Test.run (node:internal/test_runner/test:1462:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)\n  ...\n1..159\n# tests 159\n# suites 0\n# pass 150\n# fail 9\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 7066.8631\n"
+    }
+  ],
+  "log": "packages/visual-workflow/reports/rks-field-semantics-stage-one/after-targeted.txt",
+  "sha256": "ed6965ff36493e670602ca50f606be7e271ed01dffc8d5086b8ff64c61b73cd4"
+}

@@ -1,0 +1,1108 @@
+TAP version 13
+# Subtest: default model request asks for automatic proposals while retaining evidence and unknown-fact boundaries
+ok 1 - default model request asks for automatic proposals while retaining evidence and unknown-fact boundaries
+  ---
+  duration_ms: 1.1482
+  type: 'test'
+  ...
+# Subtest: model output keeps scoped colors, composition and proposal provenance through normalization and autofill
+ok 2 - model output keeps scoped colors, composition and proposal provenance through normalization and autofill
+  ---
+  duration_ms: 16.4427
+  type: 'test'
+  ...
+# Subtest: invalid scope or claimed confirmation cannot acquire proposal authority
+ok 3 - invalid scope or claimed confirmation cannot acquire proposal authority
+  ---
+  duration_ms: 1.1373
+  type: 'test'
+  ...
+# Subtest: functional relation recognition does not grant authority to identity, motifs or color geometry
+ok 4 - functional relation recognition does not grant authority to identity, motifs or color geometry
+  ---
+  duration_ms: 33.7639
+  type: 'test'
+  ...
+# {"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"efd81a41-f8b4-48e9-9ec0-663070ac1d6d","taskId":"vnext-task-381ddeb7-d212-4d9a-9b96-ac553a9799f3","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7243,"compileDurationMs":119.563}
+# Subtest: automatic suggestion can be confirmed without field rewriting and reaches actual offline image adapter
+ok 5 - automatic suggestion can be confirmed without field rewriting and reaches actual offline image adapter
+  ---
+  duration_ms: 302.5944
+  type: 'test'
+  ...
+# Subtest: cross-zone relationship remains a current boundary constraint: Reception circulation connects to treatment through a screened access route
+ok 6 - cross-zone relationship remains a current boundary constraint: Reception circulation connects to treatment through a screened access route
+  ---
+  duration_ms: 4.2569
+  type: 'test'
+  ...
+# Subtest: cross-zone relationship remains a current boundary constraint: Reception waiting must not expose consultation conversations
+ok 7 - cross-zone relationship remains a current boundary constraint: Reception waiting must not expose consultation conversations
+  ---
+  duration_ms: 0.934
+  type: 'test'
+  ...
+# Subtest: cross-zone relationship remains a current boundary constraint: Recovery return traffic must avoid the reception queue
+ok 8 - cross-zone relationship remains a current boundary constraint: Recovery return traffic must avoid the reception queue
+  ---
+  duration_ms: 0.2164
+  type: 'test'
+  ...
+# Subtest: cross-zone relationship remains a current boundary constraint: Reception is adjacent to consultation with an acoustic privacy boundary
+ok 9 - cross-zone relationship remains a current boundary constraint: Reception is adjacent to consultation with an acoustic privacy boundary
+  ---
+  duration_ms: 0.1455
+  type: 'test'
+  ...
+# Subtest: cross-zone relationship remains a current boundary constraint: 接待区到治疗区的患者动线与员工通道分离
+ok 10 - cross-zone relationship remains a current boundary constraint: 接待区到治疗区的患者动线与员工通道分离
+  ---
+  duration_ms: 1.7159
+  type: 'test'
+  ...
+# Subtest: cross-zone relationship remains a current boundary constraint: 接待区与治疗区之间应保持隔声边界
+ok 11 - cross-zone relationship remains a current boundary constraint: 接待区与治疗区之间应保持隔声边界
+  ---
+  duration_ms: 0.1707
+  type: 'test'
+  ...
+# Subtest: cross-zone relationship remains a current boundary constraint: 咨询区入口不得从接待座位直接看到，保护隐私
+ok 12 - cross-zone relationship remains a current boundary constraint: 咨询区入口不得从接待座位直接看到，保护隐私
+  ---
+  duration_ms: 0.4505
+  type: 'test'
+  ...
+# Subtest: cross-zone relationship remains a current boundary constraint: 恢复区返回人流不得与接待候客队列交叉
+ok 13 - cross-zone relationship remains a current boundary constraint: 恢复区返回人流不得与接待候客队列交叉
+  ---
+  duration_ms: 0.2286
+  type: 'test'
+  ...
+# Subtest: foreign interior remains off frame: Treatment room contains procedure beds
+ok 14 - foreign interior remains off frame: Treatment room contains procedure beds
+  ---
+  duration_ms: 0.4329
+  type: 'test'
+  ...
+# Subtest: foreign interior remains off frame: Consultation room furniture and display walls
+ok 15 - foreign interior remains off frame: Consultation room furniture and display walls
+  ---
+  duration_ms: 0.3349
+  type: 'test'
+  ...
+# Subtest: foreign interior remains off frame: Recovery room equipped with lounge beds
+ok 16 - foreign interior remains off frame: Recovery room equipped with lounge beds
+  ---
+  duration_ms: 0.1303
+  type: 'test'
+  ...
+# Subtest: foreign interior remains off frame: 治疗室内有诊疗设备
+ok 17 - foreign interior remains off frame: 治疗室内有诊疗设备
+  ---
+  duration_ms: 0.1464
+  type: 'test'
+  ...
+# Subtest: mixed clauses preserve the local operational relation without granting interior visibility
+ok 18 - mixed clauses preserve the local operational relation without granting interior visibility
+  ---
+  duration_ms: 1.1942
+  type: 'test'
+  ...
+# Subtest: a foreign-only privacy statement is retained only in an operational source context
+ok 19 - a foreign-only privacy statement is retained only in an operational source context
+  ---
+  duration_ms: 0.2806
+  type: 'test'
+  ...
+# Subtest: formal compiler retains legitimate relationships once without exposing foreign interiors or mutating input
+ok 20 - formal compiler retains legitimate relationships once without exposing foreign interiors or mutating input
+  ---
+  duration_ms: 160.9116
+  type: 'test'
+  ...
+# Subtest: bakery-methodology: current-project relations and scope reach suggestion and compiler without mutation
+ok 21 - bakery-methodology: current-project relations and scope reach suggestion and compiler without mutation
+  ---
+  duration_ms: 144.9014
+  type: 'test'
+  ...
+# Subtest: outdoor-methodology: current-project relations and scope reach suggestion and compiler without mutation
+ok 22 - outdoor-methodology: current-project relations and scope reach suggestion and compiler without mutation
+  ---
+  duration_ms: 11.3543
+  type: 'test'
+  ...
+# Subtest: insufficient evidence remains absent rather than acquiring another project decision
+ok 23 - insufficient evidence remains absent rather than acquiring another project decision
+  ---
+  duration_ms: 0.7055
+  type: 'test'
+  ...
+# Subtest: brand or industry renaming alone does not change functional decisions or invent artwork
+ok 24 - brand or industry renaming alone does not change functional decisions or invent artwork
+  ---
+  duration_ms: 10.7974
+  type: 'test'
+  ...
+# Subtest: relationship mutation is preserved as a change, not accepted on object counts
+ok 25 - relationship mutation is preserved as a change, not accepted on object counts
+  ---
+  duration_ms: 24.2177
+  type: 'test'
+  ...
+# Subtest: historical P7a formal and provider prompts retain their recorded text hashes
+ok 26 - historical P7a formal and provider prompts retain their recorded text hashes
+  ---
+  duration_ms: 0.8204
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: equipment conveying happiness
+ok 27 - E1E blocking expectation: equipment conveying happiness
+  ---
+  duration_ms: 107.8629
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: 砂锅传递幸福感
+ok 28 - E1E blocking expectation: 砂锅传递幸福感
+  ---
+  duration_ms: 62.1962
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: 设备自动治愈顾客
+ok 29 - E1E blocking expectation: 设备自动治愈顾客
+  ---
+  duration_ms: 5.2595
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: 在设备旁员工畅想未来
+ok 30 - E1E blocking expectation: 在设备旁员工畅想未来
+  ---
+  duration_ms: 1.0327
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: petal curved counter
+ok 31 - E1E blocking expectation: petal curved counter
+  ---
+  duration_ms: 2.4585
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: lotus layered table
+ok 32 - E1E blocking expectation: lotus layered table
+  ---
+  duration_ms: 2.2008
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: 花瓣曲线桌
+ok 33 - E1E blocking expectation: 花瓣曲线桌
+  ---
+  duration_ms: 1.8753
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: Logo and equipment conveying happiness
+ok 34 - E1E blocking expectation: Logo and equipment conveying happiness
+  ---
+  duration_ms: 9.3704
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: staff operating equipment and enjoying cosmic essence
+ok 35 - E1E blocking expectation: staff operating equipment and enjoying cosmic essence
+  ---
+  duration_ms: 5.1962
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: 员工操作设备并畅想未来
+ok 36 - E1E blocking expectation: 员工操作设备并畅想未来
+  ---
+  duration_ms: 1.0228
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: 员工没有使用设备
+ok 37 - E1E blocking expectation: 员工没有使用设备
+  ---
+  duration_ms: 1.4141
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: 员工不会操作设备
+ok 38 - E1E blocking expectation: 员工不会操作设备
+  ---
+  duration_ms: 1.0972
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: 员工尚未操作设备
+ok 39 - E1E blocking expectation: 员工尚未操作设备
+  ---
+  duration_ms: 0.8182
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: staff operating equipment
+ok 40 - E1E blocking expectation: staff operating equipment
+  ---
+  duration_ms: 2.0805
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: Waiting area seating
+ok 41 - E1E blocking expectation: Waiting area seating
+  ---
+  duration_ms: 9.4277
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: 入口处的菜单
+ok 42 - E1E blocking expectation: 入口处的菜单
+  ---
+  duration_ms: 1.8234
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: Logo吸引顾客点餐
+ok 43 - E1E blocking expectation: Logo吸引顾客点餐
+  ---
+  duration_ms: 4.1792
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: staff not operating equipment
+ok 44 - E1E blocking expectation: staff not operating equipment
+  ---
+  duration_ms: 1.8664
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: unresolved rendezvous
+ok 45 - E1E blocking expectation: unresolved rendezvous
+  ---
+  duration_ms: 5.522
+  type: 'test'
+  ...
+# Subtest: the E1E mixed visibility defect cannot become ready or call optional repair models
+ok 46 - the E1E mixed visibility defect cannot become ready or call optional repair models
+  ---
+  duration_ms: 34.2734
+  type: 'test'
+  ...
+# Subtest: complete positive units reject unrecognized tails, negation, wishes, identity and color
+not ok 47 - complete positive units reject unrecognized tails, negation, wishes, identity and color
+  ---
+  duration_ms: 23.102
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\restaurant-knowledge\\spatial-semantics\\evidence-boundaries.test.ts:1:3051'
+  failureType: 'testCodeFailure'
+  error: |-
+    equipment
+    
+    'pass' !== 'block'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'block'
+  actual: 'pass'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\restaurant-knowledge\spatial-semantics\evidence-boundaries.test.ts:55:55)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: pure brand demotion is not permission to render a decorative object as a visible function
+ok 48 - pure brand demotion is not permission to render a decorative object as a visible function
+  ---
+  duration_ms: 0.5913
+  type: 'test'
+  ...
+# Subtest: approved architectural requirements consume every clause and reject appended unknown or negative predicates
+ok 49 - approved architectural requirements consume every clause and reject appended unknown or negative predicates
+  ---
+  duration_ms: 70.3546
+  type: 'test'
+  ...
+# Subtest: safe separation precedes structured model batches without filling missing material evidence
+ok 50 - safe separation precedes structured model batches without filling missing material evidence
+  ---
+  duration_ms: 166.2781
+  type: 'test'
+  ...
+# Subtest: unresolved clauses outside the visible field cannot be hidden by a passing final gate
+not ok 51 - unresolved clauses outside the visible field cannot be hidden by a passing final gate
+  ---
+  duration_ms: 2.784
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\restaurant-knowledge\\spatial-semantics\\evidence-boundaries.test.ts:1:7453'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    'block' !== 'pass'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'pass'
+  actual: 'block'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\restaurant-knowledge\spatial-semantics\evidence-boundaries.test.ts:98:10)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: local validator exception before optional repair uses zero model calls
+ok 52 - local validator exception before optional repair uses zero model calls
+  ---
+  duration_ms: 0.6832
+  type: 'test'
+  ...
+# Subtest: local separator exception before optional repair uses zero model calls
+ok 53 - local separator exception before optional repair uses zero model calls
+  ---
+  duration_ms: 7.7476
+  type: 'test'
+  ...
+# Subtest: local repaired-persistence exception before optional repair uses zero model calls
+ok 54 - local repaired-persistence exception before optional repair uses zero model calls
+  ---
+  duration_ms: 61.6801
+  type: 'test'
+  ...
+# Subtest: unknown source facts still require confirmation after safe local semantic separation
+ok 55 - unknown source facts still require confirmation after safe local semantic separation
+  ---
+  duration_ms: 60.1537
+  type: 'test'
+  ...
+# Subtest: corrupt packet shape fails before optional model callbacks
+ok 56 - corrupt packet shape fails before optional model callbacks
+  ---
+  duration_ms: 0.3674
+  type: 'test'
+  ...
+# Subtest: targeted semantic regression uses zero network primitives
+ok 57 - targeted semantic regression uses zero network primitives
+  ---
+  duration_ms: 0.1354
+  type: 'test'
+  ...
+# Subtest: archived mixed records remain rejected as whole phrases; only evidenced clauses are separated
+ok 58 - archived mixed records remain rejected as whole phrases; only evidenced clauses are separated
+  ---
+  duration_ms: 255.3502
+  type: 'test'
+  ...
+# Subtest: mixed scene nodes preserve menu, seating, lighting and pickup; brand imagery has a separate owner
+ok 59 - mixed scene nodes preserve menu, seating, lighting and pickup; brand imagery has a separate owner
+  ---
+  duration_ms: 77.5009
+  type: 'test'
+  ...
+# Subtest: deterministic separation runs before any optional model repair, revalidates and keeps input packet immutable
+ok 60 - deterministic separation runs before any optional model repair, revalidates and keeps input packet immutable
+  ---
+  duration_ms: 109.9646
+  type: 'test'
+  ...
+# Subtest: dedicated visible evidence retains actual activity: 厨师正在备餐
+ok 61 - dedicated visible evidence retains actual activity: 厨师正在备餐
+  ---
+  duration_ms: 0.5338
+  type: 'test'
+  ...
+# Subtest: dedicated visible evidence retains actual activity: 顾客在餐桌用餐
+ok 62 - dedicated visible evidence retains actual activity: 顾客在餐桌用餐
+  ---
+  duration_ms: 0.5367
+  type: 'test'
+  ...
+# Subtest: dedicated visible evidence retains actual activity: 店员为顾客打包商品
+ok 63 - dedicated visible evidence retains actual activity: 店员为顾客打包商品
+  ---
+  duration_ms: 0.4811
+  type: 'test'
+  ...
+# Subtest: dedicated visible evidence retains actual activity: 员工操作收银机
+ok 64 - dedicated visible evidence retains actual activity: 员工操作收银机
+  ---
+  duration_ms: 0.4875
+  type: 'test'
+  ...
+# Subtest: dedicated visible evidence retains actual activity: 操作员使用检测设备
+ok 65 - dedicated visible evidence retains actual activity: 操作员使用检测设备
+  ---
+  duration_ms: 0.4438
+  type: 'test'
+  ...
+# Subtest: dedicated visible evidence retains actual activity: staff operating a cash register
+ok 66 - dedicated visible evidence retains actual activity: staff operating a cash register
+  ---
+  duration_ms: 17.84
+  type: 'test'
+  ...
+# Subtest: dedicated visible evidence retains actual activity: technicians using equipment
+ok 67 - dedicated visible evidence retains actual activity: technicians using equipment
+  ---
+  duration_ms: 0.5812
+  type: 'test'
+  ...
+# Subtest: dedicated visible evidence retains actual activity: guests checking in at reception
+ok 68 - dedicated visible evidence retains actual activity: guests checking in at reception
+  ---
+  duration_ms: 0.702
+  type: 'test'
+  ...
+# Subtest: existing concrete visible carriers keep renderer ownership while analysis uses positive carrier evidence
+ok 69 - existing concrete visible carriers keep renderer ownership while analysis uses positive carrier evidence
+  ---
+  duration_ms: 11.7791
+  type: 'test'
+  ...
+# Subtest: payment equipment is not a silver color declaration; explicit silver finish still remains styling
+ok 70 - payment equipment is not a silver color declaration; explicit silver finish still remains styling
+  ---
+  duration_ms: 0.6075
+  type: 'test'
+  ...
+# Subtest: unknown, decorative or negated visibility gets no functional grant: unresolved rendezvous
+ok 71 - unknown, decorative or negated visibility gets no functional grant: unresolved rendezvous
+  ---
+  duration_ms: 22.6491
+  type: 'test'
+  ...
+# Subtest: unknown, decorative or negated visibility gets no functional grant: customers enjoying the cosmic essence at tables
+ok 72 - unknown, decorative or negated visibility gets no functional grant: customers enjoying the cosmic essence at tables
+  ---
+  duration_ms: 0.805
+  type: 'test'
+  ...
+# Subtest: unknown, decorative or negated visibility gets no functional grant: maybe staff operating equipment
+ok 73 - unknown, decorative or negated visibility gets no functional grant: maybe staff operating equipment
+  ---
+  duration_ms: 0.2776
+  type: 'test'
+  ...
+# Subtest: unknown, decorative or negated visibility gets no functional grant: staff not operating equipment
+ok 74 - unknown, decorative or negated visibility gets no functional grant: staff not operating equipment
+  ---
+  duration_ms: 0.7014
+  type: 'test'
+  ...
+# Subtest: unknown, decorative or negated visibility gets no functional grant: 文字招牌与标语
+ok 75 - unknown, decorative or negated visibility gets no functional grant: 文字招牌与标语
+  ---
+  duration_ms: 0.3362
+  type: 'test'
+  ...
+# Subtest: unknown, decorative or negated visibility gets no functional grant: Logo wordmark
+ok 76 - unknown, decorative or negated visibility gets no functional grant: Logo wordmark
+  ---
+  duration_ms: 0.3143
+  type: 'test'
+  ...
+# Subtest: unknown, decorative or negated visibility gets no functional grant: 品牌色彩系统的层次化应用
+ok 77 - unknown, decorative or negated visibility gets no functional grant: 品牌色彩系统的层次化应用
+  ---
+  duration_ms: 0.3123
+  type: 'test'
+  ...
+# Subtest: unknown, decorative or negated visibility gets no functional grant: 品牌标识→未知愿景
+ok 78 - unknown, decorative or negated visibility gets no functional grant: 品牌标识→未知愿景
+  ---
+  duration_ms: 0.2411
+  type: 'test'
+  ...
+# Subtest: inseparable or unknown mixed clauses stay blocked; word deletion is not a repair
+ok 79 - inseparable or unknown mixed clauses stay blocked; word deletion is not a repair
+  ---
+  duration_ms: 5.6857
+  type: 'test'
+  ...
+# Subtest: pure brand data cannot empty required fields to earn a pass or invent functions
+ok 80 - pure brand data cannot empty required fields to earn a pass or invent functions
+  ---
+  duration_ms: 4.9118
+  type: 'test'
+  ...
+# Subtest: missing source functions remain missing after separation
+ok 81 - missing source functions remain missing after separation
+  ---
+  duration_ms: 0.1576
+  type: 'test'
+  ...
+# Subtest: a failed deterministic callback cannot fall through to a model call
+ok 82 - a failed deterministic callback cannot fall through to a model call
+  ---
+  duration_ms: 8.5922
+  type: 'test'
+  ...
+# Subtest: non-food service sequence is separated without adding a room or changing service content
+ok 83 - non-food service sequence is separated without adding a room or changing service content
+  ---
+  duration_ms: 9.8828
+  type: 'test'
+  ...
+# Subtest: motif, sculpture and color geometry cannot acquire functional or architectural authority
+ok 84 - motif, sculpture and color geometry cannot acquire functional or architectural authority
+  ---
+  duration_ms: 3.9249
+  type: 'test'
+  ...
+# Subtest: all targeted tests used zero network primitives
+ok 85 - all targeted tests used zero network primitives
+  ---
+  duration_ms: 0.0944
+  type: 'test'
+  ...
+# Subtest: storefront/front preserves explicit requester, exterior program and exact camera through formal and Provider prompts
+ok 86 - storefront/front preserves explicit requester, exterior program and exact camera through formal and Provider prompts
+  ---
+  duration_ms: 245.8952
+  type: 'test'
+  ...
+# Subtest: all public subtype/shot choices have resolved authority or explicitly fail closed
+ok 87 - all public subtype/shot choices have resolved authority or explicitly fail closed
+  ---
+  duration_ms: 678.3537
+  type: 'test'
+  ...
+# Subtest: exterior default camera uses exterior authority: legacy_project_default
+ok 88 - exterior default camera uses exterior authority: legacy_project_default
+  ---
+  duration_ms: 15.1701
+  type: 'test'
+  ...
+# Subtest: exterior default camera uses exterior authority: target_scene_default
+ok 89 - exterior default camera uses exterior authority: target_scene_default
+  ---
+  duration_ms: 14.7734
+  type: 'test'
+  ...
+# Subtest: unknown targets cannot turn an unresolved visible requirement into executable content
+ok 90 - unknown targets cannot turn an unresolved visible requirement into executable content
+  ---
+  duration_ms: 29.7362
+  type: 'test'
+  ...
+# Subtest: complete functional dependencies are preserved without acquiring shot visibility: 点餐区 → 明档制作区 → 取餐区 → 就餐区
+ok 91 - complete functional dependencies are preserved without acquiring shot visibility: 点餐区 → 明档制作区 → 取餐区 → 就餐区
+  ---
+  duration_ms: 12.1057
+  type: 'test'
+  ...
+# Subtest: complete functional dependencies are preserved without acquiring shot visibility: ordering area -> food preparation area -> pickup area -> dining area
+ok 92 - complete functional dependencies are preserved without acquiring shot visibility: ordering area -> food preparation area -> pickup area -> dining area
+  ---
+  duration_ms: 11.6993
+  type: 'test'
+  ...
+# Subtest: source clauses retain exact ranges and mixed local/dependency/review dispositions
+not ok 93 - source clauses retain exact ranges and mixed local/dependency/review dispositions
+  ---
+  duration_ms: 9.2792
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:4794'
+  failureType: 'testCodeFailure'
+  error: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID: formal Space generation route failed closed.'
+  code: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:24:23)
+    assertSpaceGenerationRouteIntegrity (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:85:35)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:283:21)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:74:56)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+  ...
+# Subtest: unsafe networks stay reviewable: 点餐制作取餐就餐的完整关系
+not ok 94 - unsafe networks stay reviewable: 点餐制作取餐就餐的完整关系
+  ---
+  duration_ms: 19.2457
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:5848'
+  failureType: 'testCodeFailure'
+  error: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID: formal Space generation route failed closed.'
+  code: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:24:23)
+    assertSpaceGenerationRouteIntegrity (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:85:35)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:283:21)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:83:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+  ...
+# Subtest: unsafe networks stay reviewable: 入口 → 无法确定的节点
+not ok 95 - unsafe networks stay reviewable: 入口 → 无法确定的节点
+  ---
+  duration_ms: 10.0642
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:5848'
+  failureType: 'testCodeFailure'
+  error: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID: formal Space generation route failed closed.'
+  code: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:24:23)
+    assertSpaceGenerationRouteIntegrity (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:85:35)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:283:21)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:83:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+  ...
+# Subtest: unsafe networks stay reviewable: whole project operating network
+not ok 96 - unsafe networks stay reviewable: whole project operating network
+  ---
+  duration_ms: 9.891
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:5848'
+  failureType: 'testCodeFailure'
+  error: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID: formal Space generation route failed closed.'
+  code: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:24:23)
+    assertSpaceGenerationRouteIntegrity (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:85:35)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:283:21)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:83:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+  ...
+# Subtest: kitchen relationships cannot inherit a boundary authority merely from their container or another entrance clause
+not ok 97 - kitchen relationships cannot inherit a boundary authority merely from their container or another entrance clause
+  ---
+  duration_ms: 14.5368
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:6202'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:93:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+  ...
+# Subtest: dining operations and Chinese actors remain visible with exactly one rendered owner
+ok 98 - dining operations and Chinese actors remain visible with exactly one rendered owner
+  ---
+  duration_ms: 33.7554
+  type: 'test'
+  ...
+# Subtest: unlocated storefront activity requires review: chef preparing food
+ok 99 - unlocated storefront activity requires review: chef preparing food
+  ---
+  duration_ms: 12.7889
+  type: 'test'
+  ...
+# Subtest: unlocated storefront activity requires review: steam above dishes
+ok 100 - unlocated storefront activity requires review: steam above dishes
+  ---
+  duration_ms: 12.6786
+  type: 'test'
+  ...
+# Subtest: interior sightline request awaits a reviewed interface: chef preparing food in kitchen visible through storefront glazing
+ok 101 - interior sightline request awaits a reviewed interface: chef preparing food in kitchen visible through storefront glazing
+  ---
+  duration_ms: 10.5047
+  type: 'test'
+  ...
+# Subtest: interior sightline request awaits a reviewed interface: 厨师在厨房制作食品并透过临街橱窗玻璃可见
+ok 102 - interior sightline request awaits a reviewed interface: 厨师在厨房制作食品并透过临街橱窗玻璃可见
+  ---
+  duration_ms: 9.9718
+  type: 'test'
+  ...
+# Subtest: interior sightline request awaits a reviewed interface: 入口视线可见厨房制作活动
+ok 103 - interior sightline request awaits a reviewed interface: 入口视线可见厨房制作活动
+  ---
+  duration_ms: 9.4457
+  type: 'test'
+  ...
+# Subtest: an exterior prohibition protects interior privacy as a boundary, never as a rendered interior
+ok 104 - an exterior prohibition protects interior privacy as a boundary, never as a rendered interior
+  ---
+  duration_ms: 11.6459
+  type: 'test'
+  ...
+# Subtest: cross-project exterior projection follows sources, not industry: 临街外带档口
+ok 105 - cross-project exterior projection follows sources, not industry: 临街外带档口
+  ---
+  duration_ms: 14.1529
+  type: 'test'
+  ...
+# Subtest: cross-project exterior projection follows sources, not industry: 现代连锁快餐
+ok 106 - cross-project exterior projection follows sources, not industry: 现代连锁快餐
+  ---
+  duration_ms: 14.294
+  type: 'test'
+  ...
+# Subtest: cross-project exterior projection follows sources, not industry: 社区咖啡馆
+ok 107 - cross-project exterior projection follows sources, not industry: 社区咖啡馆
+  ---
+  duration_ms: 14.2254
+  type: 'test'
+  ...
+# Subtest: cross-project exterior projection follows sources, not industry: 日本料理餐厅
+ok 108 - cross-project exterior projection follows sources, not industry: 日本料理餐厅
+  ---
+  duration_ms: 15.9122
+  type: 'test'
+  ...
+# Subtest: cross-project exterior projection follows sources, not industry: 零售商店
+ok 109 - cross-project exterior projection follows sources, not industry: 零售商店
+  ---
+  duration_ms: 14.7305
+  type: 'test'
+  ...
+# Subtest: cross-project exterior projection follows sources, not industry: 旅宿服务
+ok 110 - cross-project exterior projection follows sources, not industry: 旅宿服务
+  ---
+  duration_ms: 14.2814
+  type: 'test'
+  ...
+# Subtest: other established commercial scene authorities retain their own local activities
+ok 111 - other established commercial scene authorities retain their own local activities
+  ---
+  duration_ms: 42.7499
+  type: 'test'
+  ...
+# Subtest: negative project guards are preserved even when they name a foreign exterior
+ok 112 - negative project guards are preserved even when they name a foreign exterior
+  ---
+  duration_ms: 12.15
+  type: 'test'
+  ...
+# Subtest: explicit off-frame operational prohibitions remain boundary-only
+ok 113 - explicit off-frame operational prohibitions remain boundary-only
+  ---
+  duration_ms: 11.4724
+  type: 'test'
+  ...
+# Subtest: artistic focus is composed once and remains distinct from operations
+ok 114 - artistic focus is composed once and remains distinct from operations
+  ---
+  duration_ms: 150.525
+  type: 'test'
+  ...
+# Subtest: optional artwork stays optional and a source without art does not acquire an installation
+ok 115 - optional artwork stays optional and a source without art does not acquire an installation
+  ---
+  duration_ms: 36.3613
+  type: 'test'
+  ...
+# Subtest: single reception shot keeps other program nodes in the trace rather than displaying their interiors
+ok 116 - single reception shot keeps other program nodes in the trace rather than displaying their interiors
+  ---
+  duration_ms: 20.4564
+  type: 'test'
+  ...
+# Subtest: scene projection preserves trace and does not translate a color or transparency keyword into new geometry
+ok 117 - scene projection preserves trace and does not translate a color or transparency keyword into new geometry
+  ---
+  duration_ms: 18.4596
+  type: 'test'
+  ...
+# Subtest: gallery character passes sanitization while identity text remains protected
+ok 118 - gallery character passes sanitization while identity text remains protected
+  ---
+  duration_ms: 19.5261
+  type: 'test'
+  ...
+# Subtest: source-scoped decisions occur once instead of being repeated through strategy/form/organization
+ok 119 - source-scoped decisions occur once instead of being repeated through strategy/form/organization
+  ---
+  duration_ms: 16.4541
+  type: 'test'
+  ...
+# Subtest: unconfirmed color scopes and ratios remain proposals without mandatory large-area authority
+ok 120 - unconfirmed color scopes and ratios remain proposals without mandatory large-area authority
+  ---
+  duration_ms: 33.0942
+  type: 'test'
+  ...
+# Subtest: brand names and stored brand keys cannot auto-select architecture examples
+ok 121 - brand names and stored brand keys cannot auto-select architecture examples
+  ---
+  duration_ms: 44.1394
+  type: 'test'
+  ...
+# Subtest: explicit optional examples require scene and mechanism compatibility and cannot outrank the project
+ok 122 - explicit optional examples require scene and mechanism compatibility and cannot outrank the project
+  ---
+  duration_ms: 18.7103
+  type: 'test'
+  ...
+# Subtest: Medical aesthetics: formal route retains complex architecture and explicit strong color without manufacturing art
+ok 123 - Medical aesthetics: formal route retains complex architecture and explicit strong color without manufacturing art
+  ---
+  duration_ms: 19.7429
+  type: 'test'
+  ...
+# Subtest: Hospitality: formal route retains complex architecture and explicit strong color without manufacturing art
+ok 124 - Hospitality: formal route retains complex architecture and explicit strong color without manufacturing art
+  ---
+  duration_ms: 20.0201
+  type: 'test'
+  ...
+# Subtest: Restaurant: formal route retains complex architecture and explicit strong color without manufacturing art
+ok 125 - Restaurant: formal route retains complex architecture and explicit strong color without manufacturing art
+  ---
+  duration_ms: 19.6631
+  type: 'test'
+  ...
+# Subtest: source scopes retain provenance and unknown scenes remain explicitly unresolved
+ok 126 - source scopes retain provenance and unknown scenes remain explicitly unresolved
+  ---
+  duration_ms: 0.1828
+  type: 'test'
+  ...
+# Subtest: Packet and source adapter reject empty functional data even with a stale ready flag
+ok 127 - Packet and source adapter reject empty functional data even with a stale ready flag
+  ---
+  duration_ms: 136.7838
+  type: 'test'
+  ...
+# Subtest: blank string arrays cannot satisfy spatial decision repair
+ok 128 - blank string arrays cannot satisfy spatial decision repair
+  ---
+  duration_ms: 1.0527
+  type: 'test'
+  ...
+# Subtest: stale ready packet cannot compile when all functional entries are removed by cleanup
+ok 129 - stale ready packet cannot compile when all functional entries are removed by cleanup
+  ---
+  duration_ms: 10.4988
+  type: 'test'
+  ...
+# Subtest: semantic cleanup cannot erase required data and still complete analysis
+ok 130 - semantic cleanup cannot erase required data and still complete analysis
+  ---
+  duration_ms: 18.2355
+  type: 'test'
+  ...
+# Subtest: explicit material installation survives in brand layer, outside the functional and architectural layers
+ok 131 - explicit material installation survives in brand layer, outside the functional and architectural layers
+  ---
+  duration_ms: 44.0647
+  type: 'test'
+  ...
+# Subtest: installation preservation retains identity protection without inventing gradient area authority
+ok 132 - installation preservation retains identity protection without inventing gradient area authority
+  ---
+  duration_ms: 17.5194
+  type: 'test'
+  ...
+# Subtest: ordinary hospitality space needs no art object and packaging is unaffected
+ok 133 - ordinary hospitality space needs no art object and packaging is unaffected
+  ---
+  duration_ms: 15.2306
+  type: 'test'
+  ...
+# Subtest: visible operations have one actual execution owner: lobby/default
+ok 134 - visible operations have one actual execution owner: lobby/default
+  ---
+  duration_ms: 213.2219
+  type: 'test'
+  ...
+# Subtest: visible operations have one actual execution owner: lobby/entrance_view
+ok 135 - visible operations have one actual execution owner: lobby/entrance_view
+  ---
+  duration_ms: 45.6919
+  type: 'test'
+  ...
+# Subtest: visible operations have one actual execution owner: lobby/three_quarter_wide
+ok 136 - visible operations have one actual execution owner: lobby/three_quarter_wide
+  ---
+  duration_ms: 50.2153
+  type: 'test'
+  ...
+# Subtest: visible operations have one actual execution owner: dining/default
+ok 137 - visible operations have one actual execution owner: dining/default
+  ---
+  duration_ms: 53.9039
+  type: 'test'
+  ...
+# Subtest: visible operations have one actual execution owner: dining/entrance_view
+ok 138 - visible operations have one actual execution owner: dining/entrance_view
+  ---
+  duration_ms: 39.8626
+  type: 'test'
+  ...
+# Subtest: visible operations have one actual execution owner: dining/three_quarter_wide
+ok 139 - visible operations have one actual execution owner: dining/three_quarter_wide
+  ---
+  duration_ms: 38.8737
+  type: 'test'
+  ...
+# Subtest: bilingual activity/effect has functional evidence and ownership: 厨师正在备餐
+ok 140 - bilingual activity/effect has functional evidence and ownership: 厨师正在备餐
+  ---
+  duration_ms: 38.9044
+  type: 'test'
+  ...
+# Subtest: bilingual activity/effect has functional evidence and ownership: 菜品上方升起热气
+ok 141 - bilingual activity/effect has functional evidence and ownership: 菜品上方升起热气
+  ---
+  duration_ms: 18.6242
+  type: 'test'
+  ...
+# Subtest: bilingual activity/effect has functional evidence and ownership: 顾客在餐桌用餐
+ok 142 - bilingual activity/effect has functional evidence and ownership: 顾客在餐桌用餐
+  ---
+  duration_ms: 15.3672
+  type: 'test'
+  ...
+# Subtest: bilingual activity/effect has functional evidence and ownership: 店员为顾客打包商品
+ok 143 - bilingual activity/effect has functional evidence and ownership: 店员为顾客打包商品
+  ---
+  duration_ms: 15.7373
+  type: 'test'
+  ...
+# Subtest: bilingual activity/effect has functional evidence and ownership: customers browsing products
+ok 144 - bilingual activity/effect has functional evidence and ownership: customers browsing products
+  ---
+  duration_ms: 16.9636
+  type: 'test'
+  ...
+# Subtest: bilingual activity/effect has functional evidence and ownership: staff handing parcels to visitors
+ok 145 - bilingual activity/effect has functional evidence and ownership: staff handing parcels to visitors
+  ---
+  duration_ms: 15.9
+  type: 'test'
+  ...
+# Subtest: bilingual activity/effect has functional evidence and ownership: guests checking in at reception
+ok 146 - bilingual activity/effect has functional evidence and ownership: guests checking in at reception
+  ---
+  duration_ms: 15.9952
+  type: 'test'
+  ...
+# Subtest: bilingual activity/effect has functional evidence and ownership: receptionist greeting visitors
+ok 147 - bilingual activity/effect has functional evidence and ownership: receptionist greeting visitors
+  ---
+  duration_ms: 15.3002
+  type: 'test'
+  ...
+# Subtest: bilingual activity/effect has functional evidence and ownership: water flowing into the basin
+ok 148 - bilingual activity/effect has functional evidence and ownership: water flowing into the basin
+  ---
+  duration_ms: 16.2809
+  type: 'test'
+  ...
+# Subtest: de-duplication retains an actual rendered owner, not mere raw membership; original indices survive
+ok 149 - de-duplication retains an actual rendered owner, not mere raw membership; original indices survive
+  ---
+  duration_ms: 21.5966
+  type: 'test'
+  ...
+# Subtest: foreign operations cannot re-enter through the brand branch after scope rejection
+ok 150 - foreign operations cannot re-enter through the brand branch after scope rejection
+  ---
+  duration_ms: 17.311
+  type: 'test'
+  ...
+# Subtest: an activity also supplied in a signature source has one rendered visible owner
+ok 151 - an activity also supplied in a signature source has one rendered visible owner
+  ---
+  duration_ms: 20.1538
+  type: 'test'
+  ...
+# Subtest: brand duplicate is removed only after the current visible owner exists
+ok 152 - brand duplicate is removed only after the current visible owner exists
+  ---
+  duration_ms: 17.8774
+  type: 'test'
+  ...
+# Subtest: a prohibitive list never receives credit as the positive visible execution owner
+ok 153 - a prohibitive list never receives credit as the positive visible execution owner
+  ---
+  duration_ms: 14.9033
+  type: 'test'
+  ...
+# Subtest: unknown or wishful fragments stay reviewable without becoming a hard operating requirement
+ok 154 - unknown or wishful fragments stay reviewable without becoming a hard operating requirement
+  ---
+  duration_ms: 52.6513
+  type: 'test'
+  ...
+# Subtest: identity, motif, color, decoration and architecture retain distinct semantic routes
+ok 155 - identity, motif, color, decoration and architecture retain distinct semantic routes
+  ---
+  duration_ms: 22.3124
+  type: 'test'
+  ...
+# Subtest: mixed clauses retain only the local activity and boundary, with foreign interiors rejected in trace
+ok 156 - mixed clauses retain only the local activity and boundary, with foreign interiors rejected in trace
+  ---
+  duration_ms: 16.2753
+  type: 'test'
+  ...
+# Subtest: sourceMap reflects actual renderer ownership, not a broad promise of preservation
+ok 157 - sourceMap reflects actual renderer ownership, not a broad promise of preservation
+  ---
+  duration_ms: 22.656
+  type: 'test'
+  ...
+# Subtest: reference-first target program still replaces source operations instead of inheriting standard fallback
+not ok 158 - reference-first target program still replaces source operations instead of inheriting standard fallback
+  ---
+  duration_ms: 26.2841
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:1:9665'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\visible-requirement-ownership.test.ts:175:18)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: continuation keeps the target program authoritative and does not expose source dining operations
+not ok 159 - continuation keeps the target program authoritative and does not expose source dining operations
+  ---
+  duration_ms: 22.3478
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:1:10338'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\visible-requirement-ownership.test.ts:190:18)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+1..159
+# tests 159
+# suites 0
+# pass 150
+# fail 9
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7066.8631

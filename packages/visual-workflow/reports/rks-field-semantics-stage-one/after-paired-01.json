@@ -1,0 +1,432 @@
+{
+  "label": "after-paired-01",
+  "suite": "paired",
+  "args": [
+    "--import",
+    "tsx",
+    "--test",
+    "--test-reporter=tap",
+    "--test-concurrency=1",
+    "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/field-contract.test.ts"
+  ],
+  "exitCode": 1,
+  "durationMs": 1518,
+  "counts": {
+    "tests": 101,
+    "pass": 98,
+    "fail": 3,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "cases": [
+    {
+      "title": "field contract functionalNetwork / node",
+      "status": "pass"
+    },
+    {
+      "title": "field contract functionalNetwork / activity",
+      "status": "pass"
+    },
+    {
+      "title": "field contract functionalNetwork / relation",
+      "status": "pass"
+    },
+    {
+      "title": "field contract functionalNetwork / constraint",
+      "status": "pass"
+    },
+    {
+      "title": "field contract functionalNetwork / visibility_request",
+      "status": "pass"
+    },
+    {
+      "title": "field contract functionalRelationships / node",
+      "status": "pass"
+    },
+    {
+      "title": "field contract functionalRelationships / activity",
+      "status": "pass"
+    },
+    {
+      "title": "field contract functionalRelationships / relation",
+      "status": "pass"
+    },
+    {
+      "title": "field contract functionalRelationships / constraint",
+      "status": "pass"
+    },
+    {
+      "title": "field contract functionalRelationships / visibility_request",
+      "status": "pass"
+    },
+    {
+      "title": "field contract mustBeVisible / node",
+      "status": "pass"
+    },
+    {
+      "title": "field contract mustBeVisible / activity",
+      "status": "pass"
+    },
+    {
+      "title": "field contract mustBeVisible / relation",
+      "status": "pass"
+    },
+    {
+      "title": "field contract mustBeVisible / constraint",
+      "status": "pass"
+    },
+    {
+      "title": "field contract mustBeVisible / visibility_request",
+      "status": "pass"
+    },
+    {
+      "title": "field contract operationConstraints / node",
+      "status": "pass"
+    },
+    {
+      "title": "field contract operationConstraints / activity",
+      "status": "pass"
+    },
+    {
+      "title": "field contract operationConstraints / relation",
+      "status": "pass"
+    },
+    {
+      "title": "field contract operationConstraints / constraint",
+      "status": "pass"
+    },
+    {
+      "title": "field contract operationConstraints / visibility_request",
+      "status": "pass"
+    },
+    {
+      "title": "field contract requiredSpatialElements / node",
+      "status": "pass"
+    },
+    {
+      "title": "field contract requiredSpatialElements / activity",
+      "status": "pass"
+    },
+    {
+      "title": "field contract requiredSpatialElements / relation",
+      "status": "pass"
+    },
+    {
+      "title": "field contract requiredSpatialElements / constraint",
+      "status": "pass"
+    },
+    {
+      "title": "field contract requiredSpatialElements / visibility_request",
+      "status": "pass"
+    },
+    {
+      "title": "field contract sceneProgram / node",
+      "status": "pass"
+    },
+    {
+      "title": "field contract sceneProgram / activity",
+      "status": "pass"
+    },
+    {
+      "title": "field contract sceneProgram / relation",
+      "status": "pass"
+    },
+    {
+      "title": "field contract sceneProgram / constraint",
+      "status": "pass"
+    },
+    {
+      "title": "field contract sceneProgram / visibility_request",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope functionalNetwork: 员工没有操作设备",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope functionalNetwork: Only if Logo and staff operating equipment",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope functionalNetwork: 未确认Logo和员工操作设备",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope functionalNetwork: 如果入口连接厨房；员工操作设备",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope functionalNetwork: staff operating equipment; unknown operational tail",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope functionalNetwork: staff operating equipment and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope functionalRelationships: 员工没有操作设备",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope functionalRelationships: Only if Logo and staff operating equipment",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope functionalRelationships: 未确认Logo和员工操作设备",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope functionalRelationships: 如果入口连接厨房；员工操作设备",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope functionalRelationships: staff operating equipment; unknown operational tail",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope functionalRelationships: staff operating equipment and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope mustBeVisible: 员工没有操作设备",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope mustBeVisible: Only if Logo and staff operating equipment",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope mustBeVisible: 未确认Logo和员工操作设备",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope mustBeVisible: 如果入口连接厨房；员工操作设备",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope mustBeVisible: staff operating equipment; unknown operational tail",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope mustBeVisible: staff operating equipment and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope operationConstraints: 员工没有操作设备",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope operationConstraints: Only if Logo and staff operating equipment",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope operationConstraints: 未确认Logo和员工操作设备",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope operationConstraints: 如果入口连接厨房；员工操作设备",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope operationConstraints: staff operating equipment; unknown operational tail",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope operationConstraints: staff operating equipment and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope requiredSpatialElements: 员工没有操作设备",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope requiredSpatialElements: Only if Logo and staff operating equipment",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope requiredSpatialElements: 未确认Logo和员工操作设备",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope requiredSpatialElements: 如果入口连接厨房；员工操作设备",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope requiredSpatialElements: staff operating equipment; unknown operational tail",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope requiredSpatialElements: staff operating equipment and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope sceneProgram: 员工没有操作设备",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope sceneProgram: Only if Logo and staff operating equipment",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope sceneProgram: 未确认Logo和员工操作设备",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope sceneProgram: 如果入口连接厨房；员工操作设备",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope sceneProgram: staff operating equipment; unknown operational tail",
+      "status": "pass"
+    },
+    {
+      "title": "field contract scope sceneProgram: staff operating equipment and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "field contract complete relation or prescription: 入口不得暴露厨房",
+      "status": "pass"
+    },
+    {
+      "title": "field contract complete relation or prescription: treatment activity and private room interiors remain off frame",
+      "status": "pass"
+    },
+    {
+      "title": "field contract complete relation or prescription: preserve visitor privacy",
+      "status": "pass"
+    },
+    {
+      "title": "field contract complete relation or prescription: takeaway handoff keeps a clear route",
+      "status": "pass"
+    },
+    {
+      "title": "field contract complete relation or prescription: consultation is primary",
+      "status": "pass"
+    },
+    {
+      "title": "field contract complete relation or prescription: seating supports 1-to-1 / 1-to-2",
+      "status": "pass"
+    },
+    {
+      "title": "field contract complete relation or prescription: Reception: a usable reception counter connects to waiting area seating through clear visitor circulation.",
+      "status": "pass"
+    },
+    {
+      "title": "field contract complete relation or prescription: Reception and waiting share readable circulation",
+      "status": "pass"
+    },
+    {
+      "title": "field contract complete relation or prescription: Kitchen preparation connects to service counter; dining tables remain accessible; takeaway handoff keeps a clear route",
+      "status": "fail",
+      "diagnostic": "not ok 75 - field contract complete relation or prescription: Kitchen preparation connects to service counter; dining tables remain accessible; takeaway handoff keeps a clear route\n  ---\n  duration_ms: 4.8847\n  type: 'test'\n  location: 'E:\\\\Masterpiece-OS-Main-Publish-20261015-Verified\\\\packages\\\\visual-workflow\\\\tests\\\\restaurant-knowledge\\\\spatial-semantics\\\\field-contract.test.ts:1:4552'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'block' !== 'pass'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'pass'\n  actual: 'block'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\restaurant-knowledge\\spatial-semantics\\field-contract.test.ts:57:63)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1397:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:969:18)\n    Test.postRun (node:internal/test_runner/test:1537:19)\n    Test.run (node:internal/test_runner/test:1462:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)\n  ...\n# Subtest: field contract complete relation or prescription: 厨师在厨房制作食品并透过临街橱窗玻璃可见\n"
+    },
+    {
+      "title": "field contract complete relation or prescription: 厨师在厨房制作食品并透过临街橱窗玻璃可见",
+      "status": "pass"
+    },
+    {
+      "title": "field contract named node without invented action: 候客区",
+      "status": "pass"
+    },
+    {
+      "title": "field contract named node without invented action: 半开放艺术停留与过渡区",
+      "status": "pass"
+    },
+    {
+      "title": "field contract named node without invented action: Flowing visitor circulation",
+      "status": "pass"
+    },
+    {
+      "title": "field contract named node without invented action: 接待区",
+      "status": "pass"
+    },
+    {
+      "title": "field contract named node without invented action: 比较工作台",
+      "status": "pass"
+    },
+    {
+      "title": "field contract unresolved fragment stays closed: equipment near it",
+      "status": "pass"
+    },
+    {
+      "title": "field contract unresolved fragment stays closed: reception counter near it",
+      "status": "pass"
+    },
+    {
+      "title": "field contract unresolved fragment stays closed: equipment behind this",
+      "status": "pass"
+    },
+    {
+      "title": "field contract unresolved fragment stays closed: equipment beside that",
+      "status": "pass"
+    },
+    {
+      "title": "field contract unresolved fragment stays closed: reception counter and with it",
+      "status": "pass"
+    },
+    {
+      "title": "field contract unresolved fragment stays closed: 入口 → 无法确定的节点",
+      "status": "pass"
+    },
+    {
+      "title": "field contract unresolved fragment stays closed: 点餐制作取餐就餐的完整关系",
+      "status": "pass"
+    },
+    {
+      "title": "field contract unresolved fragment stays closed: whole project operating network",
+      "status": "pass"
+    },
+    {
+      "title": "field contract unresolved fragment stays closed: 形成高效服务动线; 支持多场景消费",
+      "status": "pass"
+    },
+    {
+      "title": "field contract unresolved fragment stays closed: 位置与设置方式待确认",
+      "status": "pass"
+    },
+    {
+      "title": "field contract unresolved fragment stays closed: 入口不得",
+      "status": "pass"
+    },
+    {
+      "title": "field contract unresolved fragment stays closed: Storefront access must not expose",
+      "status": "pass"
+    },
+    {
+      "title": "field contract unresolved fragment stays closed: 入口不得暴露厨房 and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "field contract unresolved fragment stays closed: takeaway handoff keeps",
+      "status": "pass"
+    },
+    {
+      "title": "field contract unresolved fragment stays closed: 展示界面连接，服务通道位于它旁边",
+      "status": "pass"
+    },
+    {
+      "title": "field contract source clauses retain exact spans and parent scope without confirmation",
+      "status": "fail",
+      "diagnostic": "not ok 97 - field contract source clauses retain exact spans and parent scope without confirmation\n  ---\n  duration_ms: 1.4342\n  type: 'test'\n  location: 'E:\\\\Masterpiece-OS-Main-Publish-20261015-Verified\\\\packages\\\\visual-workflow\\\\tests\\\\restaurant-knowledge\\\\spatial-semantics\\\\field-contract.test.ts:1:6752'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'block' !== 'pass'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'pass'\n  actual: 'block'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\restaurant-knowledge\\spatial-semantics\\field-contract.test.ts:80:9)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1397:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:969:18)\n    Test.postRun (node:internal/test_runner/test:1537:19)\n    Test.run (node:internal/test_runner/test:1462:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)\n  ...\n# Subtest: field contract brand separation keeps original index, ranges and source evidence\n"
+    },
+    {
+      "title": "field contract brand separation keeps original index, ranges and source evidence",
+      "status": "pass"
+    },
+    {
+      "title": "field contract separator and validator agree for illegal field shapes",
+      "status": "pass"
+    },
+    {
+      "title": "field contract six-field source state cannot become confirmed on completion",
+      "status": "fail",
+      "diagnostic": "not ok 100 - field contract six-field source state cannot become confirmed on completion\n  ---\n  duration_ms: 42.3381\n  type: 'test'\n  location: 'E:\\\\Masterpiece-OS-Main-Publish-20261015-Verified\\\\packages\\\\visual-workflow\\\\tests\\\\restaurant-knowledge\\\\spatial-semantics\\\\field-contract.test.ts:1:8925'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'ready'\n    - 'requires_confirmation'\n         ^\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'requires_confirmation'\n  actual: 'ready'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\restaurant-knowledge\\spatial-semantics\\field-contract.test.ts:113:9)\n    async Test.run (node:internal/test_runner/test:1404:7)\n    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)\n  ...\n# Subtest: field contract observations require no network\n"
+    },
+    {
+      "title": "field contract observations require no network",
+      "status": "pass"
+    }
+  ],
+  "log": "packages/visual-workflow/reports/rks-field-semantics-stage-one/after-paired-01.txt",
+  "sha256": "a80f6ac1971c14fa2e507e22e080a421ffc4209f746a0e71e3127ea9a493f852"
+}

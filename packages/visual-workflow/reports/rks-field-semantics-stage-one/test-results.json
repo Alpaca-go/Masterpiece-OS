@@ -1,0 +1,210 @@
+{
+  "status": "STOPPED_DIRECT_SEMANTIC_REGRESSION",
+  "runs": [
+    {
+      "label": "before-workflow",
+      "suite": "workflow",
+      "args": [
+        "--import",
+        "tsx",
+        "--test",
+        "--test-reporter=tap",
+        "--test-concurrency=1",
+        "packages\\visual-workflow\\tests\\analysis-direction-suggestion.test.ts",
+        "packages\\visual-workflow\\tests\\architectural-integration.test.ts",
+        "packages\\visual-workflow\\tests\\architectural-language.test.ts",
+        "packages\\visual-workflow\\tests\\architectural-refinement.test.ts",
+        "packages\\visual-workflow\\tests\\architecture-commercial-layer.test.ts",
+        "packages\\visual-workflow\\tests\\art-direction-authority.test.ts",
+        "packages\\visual-workflow\\tests\\art-direction-route.test.ts",
+        "packages\\visual-workflow\\tests\\automatic-design-proposal.test.ts",
+        "packages\\visual-workflow\\tests\\commercial-attribute.test.ts",
+        "packages\\visual-workflow\\tests\\cross-zone-operation-scope.test.ts",
+        "packages\\visual-workflow\\tests\\design-decision-fidelity.test.js",
+        "packages\\visual-workflow\\tests\\design-direction-editor.test.ts",
+        "packages\\visual-workflow\\tests\\explicit-spatial-layout.test.ts",
+        "packages\\visual-workflow\\tests\\fig2-fig3-spatial-direction.test.ts",
+        "packages\\visual-workflow\\tests\\generation-baseline-lock.test.ts",
+        "packages\\visual-workflow\\tests\\methodology\\acceptance.test.mjs",
+        "packages\\visual-workflow\\tests\\methodology\\custom-compatibility.test.ts",
+        "packages\\visual-workflow\\tests\\project-design-direction.test.ts",
+        "packages\\visual-workflow\\tests\\project-details-editing.test.ts",
+        "packages\\visual-workflow\\tests\\restaurant-knowledge\\compile.test.ts",
+        "packages\\visual-workflow\\tests\\restaurant-knowledge\\field-lineage.test.ts",
+        "packages\\visual-workflow\\tests\\restaurant-knowledge\\ftt-fidelity.test.ts",
+        "packages\\visual-workflow\\tests\\restaurant-knowledge\\ftt-final-design.test.ts",
+        "packages\\visual-workflow\\tests\\restaurant-knowledge\\knowledge.test.js",
+        "packages\\visual-workflow\\tests\\restaurant-knowledge\\shadow-compile.test.ts",
+        "packages\\visual-workflow\\tests\\restaurant-knowledge\\shadow.test.ts",
+        "packages\\visual-workflow\\tests\\restaurant-knowledge\\spatial-semantics\\evidence-boundaries.test.ts",
+        "packages\\visual-workflow\\tests\\restaurant-knowledge\\spatial-semantics\\independent-review.test.ts",
+        "packages\\visual-workflow\\tests\\restaurant-knowledge\\spatial-semantics\\scope-and-operations.test.ts",
+        "packages\\visual-workflow\\tests\\restaurant-knowledge\\spatial-semantics\\separation.test.ts",
+        "packages\\visual-workflow\\tests\\restaurant-knowledge\\two-dispatch-guard\\guard.test.mjs",
+        "packages\\visual-workflow\\tests\\restaurant-knowledge\\two-dispatch-guard\\integration.test.ts",
+        "packages\\visual-workflow\\tests\\restaurant-knowledge\\two-dispatch-guard\\transport.test.mjs",
+        "packages\\visual-workflow\\tests\\scene-authority-repair.test.ts",
+        "packages\\visual-workflow\\tests\\scene-decision-fidelity.test.ts",
+        "packages\\visual-workflow\\tests\\spatial-quality.test.ts",
+        "packages\\visual-workflow\\tests\\validation-policy.test.js",
+        "packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts"
+      ],
+      "exitCode": 1,
+      "durationMs": 42347,
+      "counts": {
+        "tests": 548,
+        "pass": 498,
+        "fail": 50,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      "log": "packages/visual-workflow/reports/rks-field-semantics-stage-one/before-workflow.txt",
+      "sha256": "6c428b53c4f1a4aef6ec21b2c2089ab593bfc0437dedcec67945a685c3c28bf0"
+    },
+    {
+      "label": "after-paired-01",
+      "suite": "paired",
+      "args": [
+        "--import",
+        "tsx",
+        "--test",
+        "--test-reporter=tap",
+        "--test-concurrency=1",
+        "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/field-contract.test.ts"
+      ],
+      "exitCode": 1,
+      "durationMs": 1518,
+      "counts": {
+        "tests": 101,
+        "pass": 98,
+        "fail": 3,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      "log": "packages/visual-workflow/reports/rks-field-semantics-stage-one/after-paired-01.txt",
+      "sha256": "a80f6ac1971c14fa2e507e22e080a421ffc4209f746a0e71e3127ea9a493f852"
+    },
+    {
+      "label": "after-paired-02",
+      "suite": "paired",
+      "args": [
+        "--import",
+        "tsx",
+        "--test",
+        "--test-reporter=tap",
+        "--test-concurrency=1",
+        "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/field-contract.test.ts"
+      ],
+      "exitCode": 0,
+      "durationMs": 1228,
+      "counts": {
+        "tests": 101,
+        "pass": 101,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      "log": "packages/visual-workflow/reports/rks-field-semantics-stage-one/after-paired-02.txt",
+      "sha256": "75825fe8714ea1c3e7e99ff0a1bf60b482a92f8e0e04ff538719cfae1a5b8d4d"
+    },
+    {
+      "label": "after-e1g",
+      "suite": "e1g",
+      "args": [
+        "--import",
+        "tsx",
+        "--test",
+        "--test-reporter=tap",
+        "--test-concurrency=1",
+        "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/independent-review.test.ts"
+      ],
+      "exitCode": 0,
+      "durationMs": 948,
+      "counts": {
+        "tests": 46,
+        "pass": 46,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      "log": "packages/visual-workflow/reports/rks-field-semantics-stage-one/after-e1g.txt",
+      "sha256": "eae5805744f3b35e0f6578852f5fe93573f3985a472c614820442ac3254007df"
+    },
+    {
+      "label": "after-scope",
+      "suite": "new",
+      "args": [
+        "--import",
+        "tsx",
+        "--test",
+        "--test-reporter=tap",
+        "--test-concurrency=1",
+        "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/scope-and-operations.test.ts"
+      ],
+      "exitCode": 0,
+      "durationMs": 1037,
+      "counts": {
+        "tests": 158,
+        "pass": 158,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      "log": "packages/visual-workflow/reports/rks-field-semantics-stage-one/after-scope.txt",
+      "sha256": "364bd4e07d7864da75ab4461fffbda6b3bfcb950e52c7b9c49637fd8413fe4a8"
+    },
+    {
+      "label": "after-e1e",
+      "suite": "e1e-probes",
+      "args": [
+        "--import",
+        "tsx",
+        "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/integrity-review-probes.mjs",
+        "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\reports\\rks-field-semantics-stage-one\\after-e1e-probes.json"
+      ],
+      "exitCode": 0,
+      "durationMs": 665,
+      "counts": {},
+      "log": "packages/visual-workflow/reports/rks-field-semantics-stage-one/after-e1e.txt",
+      "sha256": "673e475929715d5e86292dc44ff07f89b912238104c7a28a4bef1f7d08625898"
+    },
+    {
+      "label": "after-targeted",
+      "suite": "targeted",
+      "args": [
+        "--import",
+        "tsx",
+        "--test",
+        "--test-reporter=tap",
+        "--test-concurrency=1",
+        "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/evidence-boundaries.test.ts",
+        "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/separation.test.ts",
+        "packages/visual-workflow/tests/spatial-quality.test.ts",
+        "packages/visual-workflow/tests/visible-requirement-ownership.test.ts",
+        "packages/visual-workflow/tests/scene-authority-repair.test.ts",
+        "packages/visual-workflow/tests/scene-decision-fidelity.test.ts",
+        "packages/visual-workflow/tests/cross-zone-operation-scope.test.ts",
+        "packages/visual-workflow/tests/automatic-design-proposal.test.ts",
+        "packages/visual-workflow/tests/methodology/acceptance.test.mjs"
+      ],
+      "exitCode": 1,
+      "durationMs": 7135,
+      "counts": {
+        "tests": 159,
+        "pass": 150,
+        "fail": 9,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      "log": "packages/visual-workflow/reports/rks-field-semantics-stage-one/after-targeted.txt",
+      "sha256": "ed6965ff36493e670602ca50f606be7e271ed01dffc8d5086b8ff64c61b73cd4"
+    }
+  ],
+  "notRun": [
+    "cross-industry post-change",
+    "full workflow post-change",
+    "Golden",
+    "repo:verify",
+    "verify:current-flows"
+  ]
+}

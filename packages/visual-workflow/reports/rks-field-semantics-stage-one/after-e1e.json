@@ -1,0 +1,16 @@
+{
+  "label": "after-e1e",
+  "suite": "e1e-probes",
+  "args": [
+    "--import",
+    "tsx",
+    "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/integrity-review-probes.mjs",
+    "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\reports\\rks-field-semantics-stage-one\\after-e1e-probes.json"
+  ],
+  "exitCode": 0,
+  "durationMs": 665,
+  "counts": {},
+  "cases": [],
+  "log": "packages/visual-workflow/reports/rks-field-semantics-stage-one/after-e1e.txt",
+  "sha256": "673e475929715d5e86292dc44ff07f89b912238104c7a28a4bef1f7d08625898"
+}

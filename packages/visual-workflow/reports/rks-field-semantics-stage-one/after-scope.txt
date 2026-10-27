@@ -1,0 +1,958 @@
+TAP version 13
+# Subtest: scope repair affirmative proposition: staff operating equipment and serving customers
+ok 1 - scope repair affirmative proposition: staff operating equipment and serving customers
+  ---
+  duration_ms: 41.4946
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Only if Logo and staff operating equipment and serving customers
+ok 2 - scope repair rejects extension: Only if Logo and staff operating equipment and serving customers
+  ---
+  duration_ms: 2.1151
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Unless staff operating equipment and serving customers
+ok 3 - scope repair rejects extension: Unless staff operating equipment and serving customers
+  ---
+  duration_ms: 1.0008
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 尚未确认Logo和staff operating equipment and serving customers
+ok 4 - scope repair rejects extension: 尚未确认Logo和staff operating equipment and serving customers
+  ---
+  duration_ms: 3.2971
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: staff operating equipment and serving customers; staff not using equipment
+ok 5 - scope repair rejects extension: staff operating equipment and serving customers; staff not using equipment
+  ---
+  duration_ms: 1.7805
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: staff operating equipment and serving customers and enjoying cosmic essence
+ok 6 - scope repair rejects extension: staff operating equipment and serving customers and enjoying cosmic essence
+  ---
+  duration_ms: 61.736
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: staff operating equipment and serving customers并象征品牌未来
+ok 7 - scope repair rejects extension: staff operating equipment and serving customers并象征品牌未来
+  ---
+  duration_ms: 27.499
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: staff operating equipment and serving customers; unknown operational tail
+ok 8 - scope repair rejects extension: staff operating equipment and serving customers; unknown operational tail
+  ---
+  duration_ms: 1.9174
+  type: 'test'
+  ...
+# Subtest: scope repair affirmative proposition: 顾客在入口查看菜单
+ok 9 - scope repair affirmative proposition: 顾客在入口查看菜单
+  ---
+  duration_ms: 2.1715
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Only if Logo and 顾客在入口查看菜单
+ok 10 - scope repair rejects extension: Only if Logo and 顾客在入口查看菜单
+  ---
+  duration_ms: 1.0636
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Unless 顾客在入口查看菜单
+ok 11 - scope repair rejects extension: Unless 顾客在入口查看菜单
+  ---
+  duration_ms: 0.9712
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 尚未确认Logo和顾客在入口查看菜单
+ok 12 - scope repair rejects extension: 尚未确认Logo和顾客在入口查看菜单
+  ---
+  duration_ms: 0.8444
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 顾客在入口查看菜单; staff not using equipment
+ok 13 - scope repair rejects extension: 顾客在入口查看菜单; staff not using equipment
+  ---
+  duration_ms: 1.2234
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 顾客在入口查看菜单 and enjoying cosmic essence
+ok 14 - scope repair rejects extension: 顾客在入口查看菜单 and enjoying cosmic essence
+  ---
+  duration_ms: 36.1917
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 顾客在入口查看菜单并象征品牌未来
+ok 15 - scope repair rejects extension: 顾客在入口查看菜单并象征品牌未来
+  ---
+  duration_ms: 1.7397
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 顾客在入口查看菜单; unknown operational tail
+ok 16 - scope repair rejects extension: 顾客在入口查看菜单; unknown operational tail
+  ---
+  duration_ms: 1.4922
+  type: 'test'
+  ...
+# Subtest: scope repair affirmative proposition: 员工在柜台为顾客办理入住
+ok 17 - scope repair affirmative proposition: 员工在柜台为顾客办理入住
+  ---
+  duration_ms: 1.0565
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Only if Logo and 员工在柜台为顾客办理入住
+ok 18 - scope repair rejects extension: Only if Logo and 员工在柜台为顾客办理入住
+  ---
+  duration_ms: 0.8115
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Unless 员工在柜台为顾客办理入住
+ok 19 - scope repair rejects extension: Unless 员工在柜台为顾客办理入住
+  ---
+  duration_ms: 0.95
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 尚未确认Logo和员工在柜台为顾客办理入住
+ok 20 - scope repair rejects extension: 尚未确认Logo和员工在柜台为顾客办理入住
+  ---
+  duration_ms: 0.7901
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 员工在柜台为顾客办理入住; staff not using equipment
+ok 21 - scope repair rejects extension: 员工在柜台为顾客办理入住; staff not using equipment
+  ---
+  duration_ms: 0.8518
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 员工在柜台为顾客办理入住 and enjoying cosmic essence
+ok 22 - scope repair rejects extension: 员工在柜台为顾客办理入住 and enjoying cosmic essence
+  ---
+  duration_ms: 5.1199
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 员工在柜台为顾客办理入住并象征品牌未来
+ok 23 - scope repair rejects extension: 员工在柜台为顾客办理入住并象征品牌未来
+  ---
+  duration_ms: 3.3688
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 员工在柜台为顾客办理入住; unknown operational tail
+ok 24 - scope repair rejects extension: 员工在柜台为顾客办理入住; unknown operational tail
+  ---
+  duration_ms: 1.2553
+  type: 'test'
+  ...
+# Subtest: scope repair affirmative proposition: 工作人员使用收银机收款
+ok 25 - scope repair affirmative proposition: 工作人员使用收银机收款
+  ---
+  duration_ms: 0.9571
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Only if Logo and 工作人员使用收银机收款
+ok 26 - scope repair rejects extension: Only if Logo and 工作人员使用收银机收款
+  ---
+  duration_ms: 0.7162
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Unless 工作人员使用收银机收款
+ok 27 - scope repair rejects extension: Unless 工作人员使用收银机收款
+  ---
+  duration_ms: 0.7061
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 尚未确认Logo和工作人员使用收银机收款
+ok 28 - scope repair rejects extension: 尚未确认Logo和工作人员使用收银机收款
+  ---
+  duration_ms: 0.6741
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 工作人员使用收银机收款; staff not using equipment
+ok 29 - scope repair rejects extension: 工作人员使用收银机收款; staff not using equipment
+  ---
+  duration_ms: 0.7372
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 工作人员使用收银机收款 and enjoying cosmic essence
+ok 30 - scope repair rejects extension: 工作人员使用收银机收款 and enjoying cosmic essence
+  ---
+  duration_ms: 4.6357
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 工作人员使用收银机收款并象征品牌未来
+ok 31 - scope repair rejects extension: 工作人员使用收银机收款并象征品牌未来
+  ---
+  duration_ms: 2.6531
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 工作人员使用收银机收款; unknown operational tail
+ok 32 - scope repair rejects extension: 工作人员使用收银机收款; unknown operational tail
+  ---
+  duration_ms: 1.324
+  type: 'test'
+  ...
+# Subtest: scope repair affirmative proposition: Customers paying at the checkout counter
+ok 33 - scope repair affirmative proposition: Customers paying at the checkout counter
+  ---
+  duration_ms: 1.206
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Only if Logo and Customers paying at the checkout counter
+ok 34 - scope repair rejects extension: Only if Logo and Customers paying at the checkout counter
+  ---
+  duration_ms: 0.7846
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Unless Customers paying at the checkout counter
+ok 35 - scope repair rejects extension: Unless Customers paying at the checkout counter
+  ---
+  duration_ms: 1.1393
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 尚未确认Logo和Customers paying at the checkout counter
+ok 36 - scope repair rejects extension: 尚未确认Logo和Customers paying at the checkout counter
+  ---
+  duration_ms: 0.7439
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Customers paying at the checkout counter; staff not using equipment
+ok 37 - scope repair rejects extension: Customers paying at the checkout counter; staff not using equipment
+  ---
+  duration_ms: 0.7718
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Customers paying at the checkout counter and enjoying cosmic essence
+ok 38 - scope repair rejects extension: Customers paying at the checkout counter and enjoying cosmic essence
+  ---
+  duration_ms: 4.674
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Customers paying at the checkout counter并象征品牌未来
+ok 39 - scope repair rejects extension: Customers paying at the checkout counter并象征品牌未来
+  ---
+  duration_ms: 2.8879
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Customers paying at the checkout counter; unknown operational tail
+ok 40 - scope repair rejects extension: Customers paying at the checkout counter; unknown operational tail
+  ---
+  duration_ms: 1.21
+  type: 'test'
+  ...
+# Subtest: scope repair affirmative proposition: 餐桌位于就餐区
+ok 41 - scope repair affirmative proposition: 餐桌位于就餐区
+  ---
+  duration_ms: 1.5219
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Only if Logo and 餐桌位于就餐区
+ok 42 - scope repair rejects extension: Only if Logo and 餐桌位于就餐区
+  ---
+  duration_ms: 0.7016
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Unless 餐桌位于就餐区
+ok 43 - scope repair rejects extension: Unless 餐桌位于就餐区
+  ---
+  duration_ms: 0.693
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 尚未确认Logo和餐桌位于就餐区
+ok 44 - scope repair rejects extension: 尚未确认Logo和餐桌位于就餐区
+  ---
+  duration_ms: 0.7863
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 餐桌位于就餐区; staff not using equipment
+ok 45 - scope repair rejects extension: 餐桌位于就餐区; staff not using equipment
+  ---
+  duration_ms: 0.7303
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 餐桌位于就餐区 and enjoying cosmic essence
+ok 46 - scope repair rejects extension: 餐桌位于就餐区 and enjoying cosmic essence
+  ---
+  duration_ms: 4.9627
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 餐桌位于就餐区并象征品牌未来
+ok 47 - scope repair rejects extension: 餐桌位于就餐区并象征品牌未来
+  ---
+  duration_ms: 1.9733
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 餐桌位于就餐区; unknown operational tail
+ok 48 - scope repair rejects extension: 餐桌位于就餐区; unknown operational tail
+  ---
+  duration_ms: 1.1802
+  type: 'test'
+  ...
+# Subtest: scope repair affirmative proposition: 取餐台位于点餐区旁
+ok 49 - scope repair affirmative proposition: 取餐台位于点餐区旁
+  ---
+  duration_ms: 1.4848
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Only if Logo and 取餐台位于点餐区旁
+ok 50 - scope repair rejects extension: Only if Logo and 取餐台位于点餐区旁
+  ---
+  duration_ms: 0.7269
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Unless 取餐台位于点餐区旁
+ok 51 - scope repair rejects extension: Unless 取餐台位于点餐区旁
+  ---
+  duration_ms: 0.6871
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 尚未确认Logo和取餐台位于点餐区旁
+ok 52 - scope repair rejects extension: 尚未确认Logo和取餐台位于点餐区旁
+  ---
+  duration_ms: 0.6648
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 取餐台位于点餐区旁; staff not using equipment
+ok 53 - scope repair rejects extension: 取餐台位于点餐区旁; staff not using equipment
+  ---
+  duration_ms: 0.7347
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 取餐台位于点餐区旁 and enjoying cosmic essence
+ok 54 - scope repair rejects extension: 取餐台位于点餐区旁 and enjoying cosmic essence
+  ---
+  duration_ms: 4.5799
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 取餐台位于点餐区旁并象征品牌未来
+ok 55 - scope repair rejects extension: 取餐台位于点餐区旁并象征品牌未来
+  ---
+  duration_ms: 1.5812
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 取餐台位于点餐区旁; unknown operational tail
+ok 56 - scope repair rejects extension: 取餐台位于点餐区旁; unknown operational tail
+  ---
+  duration_ms: 1.4482
+  type: 'test'
+  ...
+# Subtest: scope repair affirmative proposition: Menu at the service counter
+ok 57 - scope repair affirmative proposition: Menu at the service counter
+  ---
+  duration_ms: 1.203
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Only if Logo and Menu at the service counter
+ok 58 - scope repair rejects extension: Only if Logo and Menu at the service counter
+  ---
+  duration_ms: 0.7518
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Unless Menu at the service counter
+ok 59 - scope repair rejects extension: Unless Menu at the service counter
+  ---
+  duration_ms: 0.7016
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 尚未确认Logo和Menu at the service counter
+ok 60 - scope repair rejects extension: 尚未确认Logo和Menu at the service counter
+  ---
+  duration_ms: 0.7226
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Menu at the service counter; staff not using equipment
+ok 61 - scope repair rejects extension: Menu at the service counter; staff not using equipment
+  ---
+  duration_ms: 0.7125
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Menu at the service counter and enjoying cosmic essence
+ok 62 - scope repair rejects extension: Menu at the service counter and enjoying cosmic essence
+  ---
+  duration_ms: 4.3402
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Menu at the service counter并象征品牌未来
+ok 63 - scope repair rejects extension: Menu at the service counter并象征品牌未来
+  ---
+  duration_ms: 2.7015
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Menu at the service counter; unknown operational tail
+ok 64 - scope repair rejects extension: Menu at the service counter; unknown operational tail
+  ---
+  duration_ms: 1.2829
+  type: 'test'
+  ...
+# Subtest: scope repair affirmative proposition: employees using a scanner and assisting visitors at reception
+ok 65 - scope repair affirmative proposition: employees using a scanner and assisting visitors at reception
+  ---
+  duration_ms: 1.0031
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Only if Logo and employees using a scanner and assisting visitors at reception
+ok 66 - scope repair rejects extension: Only if Logo and employees using a scanner and assisting visitors at reception
+  ---
+  duration_ms: 0.7591
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Unless employees using a scanner and assisting visitors at reception
+ok 67 - scope repair rejects extension: Unless employees using a scanner and assisting visitors at reception
+  ---
+  duration_ms: 0.7257
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 尚未确认Logo和employees using a scanner and assisting visitors at reception
+ok 68 - scope repair rejects extension: 尚未确认Logo和employees using a scanner and assisting visitors at reception
+  ---
+  duration_ms: 1.0942
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: employees using a scanner and assisting visitors at reception; staff not using equipment
+ok 69 - scope repair rejects extension: employees using a scanner and assisting visitors at reception; staff not using equipment
+  ---
+  duration_ms: 0.9312
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: employees using a scanner and assisting visitors at reception and enjoying cosmic essence
+ok 70 - scope repair rejects extension: employees using a scanner and assisting visitors at reception and enjoying cosmic essence
+  ---
+  duration_ms: 4.5011
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: employees using a scanner and assisting visitors at reception并象征品牌未来
+ok 71 - scope repair rejects extension: employees using a scanner and assisting visitors at reception并象征品牌未来
+  ---
+  duration_ms: 1.9795
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: employees using a scanner and assisting visitors at reception; unknown operational tail
+ok 72 - scope repair rejects extension: employees using a scanner and assisting visitors at reception; unknown operational tail
+  ---
+  duration_ms: 1.3682
+  type: 'test'
+  ...
+# Subtest: scope repair affirmative proposition: guests checking in and paying at the reception counter
+ok 73 - scope repair affirmative proposition: guests checking in and paying at the reception counter
+  ---
+  duration_ms: 0.9366
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Only if Logo and guests checking in and paying at the reception counter
+ok 74 - scope repair rejects extension: Only if Logo and guests checking in and paying at the reception counter
+  ---
+  duration_ms: 0.6998
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Unless guests checking in and paying at the reception counter
+ok 75 - scope repair rejects extension: Unless guests checking in and paying at the reception counter
+  ---
+  duration_ms: 0.7071
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 尚未确认Logo和guests checking in and paying at the reception counter
+ok 76 - scope repair rejects extension: 尚未确认Logo和guests checking in and paying at the reception counter
+  ---
+  duration_ms: 0.8656
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: guests checking in and paying at the reception counter; staff not using equipment
+ok 77 - scope repair rejects extension: guests checking in and paying at the reception counter; staff not using equipment
+  ---
+  duration_ms: 0.7998
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: guests checking in and paying at the reception counter and enjoying cosmic essence
+ok 78 - scope repair rejects extension: guests checking in and paying at the reception counter and enjoying cosmic essence
+  ---
+  duration_ms: 5.3371
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: guests checking in and paying at the reception counter并象征品牌未来
+ok 79 - scope repair rejects extension: guests checking in and paying at the reception counter并象征品牌未来
+  ---
+  duration_ms: 1.8301
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: guests checking in and paying at the reception counter; unknown operational tail
+ok 80 - scope repair rejects extension: guests checking in and paying at the reception counter; unknown operational tail
+  ---
+  duration_ms: 1.1731
+  type: 'test'
+  ...
+# Subtest: scope repair affirmative proposition: staff cleaning equipment and serving drinks
+ok 81 - scope repair affirmative proposition: staff cleaning equipment and serving drinks
+  ---
+  duration_ms: 0.9143
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Only if Logo and staff cleaning equipment and serving drinks
+ok 82 - scope repair rejects extension: Only if Logo and staff cleaning equipment and serving drinks
+  ---
+  duration_ms: 0.6816
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Unless staff cleaning equipment and serving drinks
+ok 83 - scope repair rejects extension: Unless staff cleaning equipment and serving drinks
+  ---
+  duration_ms: 0.6831
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 尚未确认Logo和staff cleaning equipment and serving drinks
+ok 84 - scope repair rejects extension: 尚未确认Logo和staff cleaning equipment and serving drinks
+  ---
+  duration_ms: 0.7168
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: staff cleaning equipment and serving drinks; staff not using equipment
+ok 85 - scope repair rejects extension: staff cleaning equipment and serving drinks; staff not using equipment
+  ---
+  duration_ms: 0.7082
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: staff cleaning equipment and serving drinks and enjoying cosmic essence
+ok 86 - scope repair rejects extension: staff cleaning equipment and serving drinks and enjoying cosmic essence
+  ---
+  duration_ms: 4.4549
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: staff cleaning equipment and serving drinks并象征品牌未来
+ok 87 - scope repair rejects extension: staff cleaning equipment and serving drinks并象征品牌未来
+  ---
+  duration_ms: 4.2502
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: staff cleaning equipment and serving drinks; unknown operational tail
+ok 88 - scope repair rejects extension: staff cleaning equipment and serving drinks; unknown operational tail
+  ---
+  duration_ms: 1.5677
+  type: 'test'
+  ...
+# Subtest: scope repair affirmative proposition: 访客在柜台查看价目表
+ok 89 - scope repair affirmative proposition: 访客在柜台查看价目表
+  ---
+  duration_ms: 1.0282
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Only if Logo and 访客在柜台查看价目表
+ok 90 - scope repair rejects extension: Only if Logo and 访客在柜台查看价目表
+  ---
+  duration_ms: 0.6932
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Unless 访客在柜台查看价目表
+ok 91 - scope repair rejects extension: Unless 访客在柜台查看价目表
+  ---
+  duration_ms: 0.6683
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 尚未确认Logo和访客在柜台查看价目表
+ok 92 - scope repair rejects extension: 尚未确认Logo和访客在柜台查看价目表
+  ---
+  duration_ms: 0.6481
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 访客在柜台查看价目表; staff not using equipment
+ok 93 - scope repair rejects extension: 访客在柜台查看价目表; staff not using equipment
+  ---
+  duration_ms: 0.7157
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 访客在柜台查看价目表 and enjoying cosmic essence
+ok 94 - scope repair rejects extension: 访客在柜台查看价目表 and enjoying cosmic essence
+  ---
+  duration_ms: 4.4309
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 访客在柜台查看价目表并象征品牌未来
+ok 95 - scope repair rejects extension: 访客在柜台查看价目表并象征品牌未来
+  ---
+  duration_ms: 2.5333
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 访客在柜台查看价目表; unknown operational tail
+ok 96 - scope repair rejects extension: 访客在柜台查看价目表; unknown operational tail
+  ---
+  duration_ms: 1.3391
+  type: 'test'
+  ...
+# Subtest: scope repair affirmative proposition: 店员使用支付终端收款
+ok 97 - scope repair affirmative proposition: 店员使用支付终端收款
+  ---
+  duration_ms: 0.9351
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Only if Logo and 店员使用支付终端收款
+ok 98 - scope repair rejects extension: Only if Logo and 店员使用支付终端收款
+  ---
+  duration_ms: 0.6773
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Unless 店员使用支付终端收款
+ok 99 - scope repair rejects extension: Unless 店员使用支付终端收款
+  ---
+  duration_ms: 0.6612
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 尚未确认Logo和店员使用支付终端收款
+ok 100 - scope repair rejects extension: 尚未确认Logo和店员使用支付终端收款
+  ---
+  duration_ms: 0.6465
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 店员使用支付终端收款; staff not using equipment
+ok 101 - scope repair rejects extension: 店员使用支付终端收款; staff not using equipment
+  ---
+  duration_ms: 1.0727
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 店员使用支付终端收款 and enjoying cosmic essence
+ok 102 - scope repair rejects extension: 店员使用支付终端收款 and enjoying cosmic essence
+  ---
+  duration_ms: 4.3345
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 店员使用支付终端收款并象征品牌未来
+ok 103 - scope repair rejects extension: 店员使用支付终端收款并象征品牌未来
+  ---
+  duration_ms: 2.0149
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 店员使用支付终端收款; unknown operational tail
+ok 104 - scope repair rejects extension: 店员使用支付终端收款; unknown operational tail
+  ---
+  duration_ms: 1.1516
+  type: 'test'
+  ...
+# Subtest: scope repair affirmative proposition: 座椅设在等候区内
+ok 105 - scope repair affirmative proposition: 座椅设在等候区内
+  ---
+  duration_ms: 1.3884
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Only if Logo and 座椅设在等候区内
+ok 106 - scope repair rejects extension: Only if Logo and 座椅设在等候区内
+  ---
+  duration_ms: 0.6775
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Unless 座椅设在等候区内
+ok 107 - scope repair rejects extension: Unless 座椅设在等候区内
+  ---
+  duration_ms: 1.0474
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 尚未确认Logo和座椅设在等候区内
+ok 108 - scope repair rejects extension: 尚未确认Logo和座椅设在等候区内
+  ---
+  duration_ms: 0.6702
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 座椅设在等候区内; staff not using equipment
+ok 109 - scope repair rejects extension: 座椅设在等候区内; staff not using equipment
+  ---
+  duration_ms: 0.7193
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 座椅设在等候区内 and enjoying cosmic essence
+ok 110 - scope repair rejects extension: 座椅设在等候区内 and enjoying cosmic essence
+  ---
+  duration_ms: 4.7832
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 座椅设在等候区内并象征品牌未来
+ok 111 - scope repair rejects extension: 座椅设在等候区内并象征品牌未来
+  ---
+  duration_ms: 1.5334
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 座椅设在等候区内; unknown operational tail
+ok 112 - scope repair rejects extension: 座椅设在等候区内; unknown operational tail
+  ---
+  duration_ms: 1.046
+  type: 'test'
+  ...
+# Subtest: scope repair affirmative proposition: price list at the checkout counter
+ok 113 - scope repair affirmative proposition: price list at the checkout counter
+  ---
+  duration_ms: 1.0188
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Only if Logo and price list at the checkout counter
+ok 114 - scope repair rejects extension: Only if Logo and price list at the checkout counter
+  ---
+  duration_ms: 0.6806
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Unless price list at the checkout counter
+ok 115 - scope repair rejects extension: Unless price list at the checkout counter
+  ---
+  duration_ms: 0.6752
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 尚未确认Logo和price list at the checkout counter
+ok 116 - scope repair rejects extension: 尚未确认Logo和price list at the checkout counter
+  ---
+  duration_ms: 0.725
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: price list at the checkout counter; staff not using equipment
+ok 117 - scope repair rejects extension: price list at the checkout counter; staff not using equipment
+  ---
+  duration_ms: 0.7029
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: price list at the checkout counter and enjoying cosmic essence
+ok 118 - scope repair rejects extension: price list at the checkout counter and enjoying cosmic essence
+  ---
+  duration_ms: 4.6851
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: price list at the checkout counter并象征品牌未来
+ok 119 - scope repair rejects extension: price list at the checkout counter并象征品牌未来
+  ---
+  duration_ms: 2.7061
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: price list at the checkout counter; unknown operational tail
+ok 120 - scope repair rejects extension: price list at the checkout counter; unknown operational tail
+  ---
+  duration_ms: 1.2078
+  type: 'test'
+  ...
+# Subtest: scope repair incomplete or negative unit: equipment near it
+ok 121 - scope repair incomplete or negative unit: equipment near it
+  ---
+  duration_ms: 9.3113
+  type: 'test'
+  ...
+# Subtest: scope repair incomplete or negative unit: reception equipment of it
+ok 122 - scope repair incomplete or negative unit: reception equipment of it
+  ---
+  duration_ms: 2.2109
+  type: 'test'
+  ...
+# Subtest: scope repair incomplete or negative unit: reception counter and with it
+ok 123 - scope repair incomplete or negative unit: reception counter and with it
+  ---
+  duration_ms: 2.2181
+  type: 'test'
+  ...
+# Subtest: scope repair incomplete or negative unit: Logo and equipment near it
+ok 124 - scope repair incomplete or negative unit: Logo and equipment near it
+  ---
+  duration_ms: 3.5228
+  type: 'test'
+  ...
+# Subtest: scope repair incomplete or negative unit: equipment behind this
+ok 125 - scope repair incomplete or negative unit: equipment behind this
+  ---
+  duration_ms: 2.0934
+  type: 'test'
+  ...
+# Subtest: scope repair incomplete or negative unit: equipment beside that
+ok 126 - scope repair incomplete or negative unit: equipment beside that
+  ---
+  duration_ms: 2.1214
+  type: 'test'
+  ...
+# Subtest: scope repair incomplete or negative unit: reception counter near it
+ok 127 - scope repair incomplete or negative unit: reception counter near it
+  ---
+  duration_ms: 2.2597
+  type: 'test'
+  ...
+# Subtest: scope repair incomplete or negative unit: staff operating equipment but no customers
+ok 128 - scope repair incomplete or negative unit: staff operating equipment but no customers
+  ---
+  duration_ms: 0.3798
+  type: 'test'
+  ...
+# Subtest: scope repair incomplete or negative unit: 员工没有使用设备
+ok 129 - scope repair incomplete or negative unit: 员工没有使用设备
+  ---
+  duration_ms: 0.3609
+  type: 'test'
+  ...
+# Subtest: scope repair incomplete or negative unit: 员工不会操作设备
+ok 130 - scope repair incomplete or negative unit: 员工不会操作设备
+  ---
+  duration_ms: 0.3375
+  type: 'test'
+  ...
+# Subtest: scope repair incomplete or negative unit: 员工尚未操作设备
+ok 131 - scope repair incomplete or negative unit: 员工尚未操作设备
+  ---
+  duration_ms: 0.6455
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks functionalNetwork: unknown operational clause
+ok 132 - scope repair completion blocks functionalNetwork: unknown operational clause
+  ---
+  duration_ms: 22.2363
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks functionalNetwork: staff operating equipment and enjoying cosmic essence
+ok 133 - scope repair completion blocks functionalNetwork: staff operating equipment and enjoying cosmic essence
+  ---
+  duration_ms: 15.3091
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks functionalNetwork: Only if Logo and staff operating equipment
+ok 134 - scope repair completion blocks functionalNetwork: Only if Logo and staff operating equipment
+  ---
+  duration_ms: 12.1506
+  type: 'test'
+  ...
+# Subtest: scope repair invalid field shape preserved: functionalNetwork
+ok 135 - scope repair invalid field shape preserved: functionalNetwork
+  ---
+  duration_ms: 0.6413
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks functionalRelationships: unknown operational clause
+ok 136 - scope repair completion blocks functionalRelationships: unknown operational clause
+  ---
+  duration_ms: 16.5013
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks functionalRelationships: staff operating equipment and enjoying cosmic essence
+ok 137 - scope repair completion blocks functionalRelationships: staff operating equipment and enjoying cosmic essence
+  ---
+  duration_ms: 18.8754
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks functionalRelationships: Only if Logo and staff operating equipment
+ok 138 - scope repair completion blocks functionalRelationships: Only if Logo and staff operating equipment
+  ---
+  duration_ms: 16.1906
+  type: 'test'
+  ...
+# Subtest: scope repair invalid field shape preserved: functionalRelationships
+ok 139 - scope repair invalid field shape preserved: functionalRelationships
+  ---
+  duration_ms: 0.5294
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks mustBeVisible: unknown operational clause
+ok 140 - scope repair completion blocks mustBeVisible: unknown operational clause
+  ---
+  duration_ms: 15.1302
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks mustBeVisible: staff operating equipment and enjoying cosmic essence
+ok 141 - scope repair completion blocks mustBeVisible: staff operating equipment and enjoying cosmic essence
+  ---
+  duration_ms: 17.764
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks mustBeVisible: Only if Logo and staff operating equipment
+ok 142 - scope repair completion blocks mustBeVisible: Only if Logo and staff operating equipment
+  ---
+  duration_ms: 15.8426
+  type: 'test'
+  ...
+# Subtest: scope repair invalid field shape preserved: mustBeVisible
+ok 143 - scope repair invalid field shape preserved: mustBeVisible
+  ---
+  duration_ms: 0.6599
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks operationConstraints: unknown operational clause
+ok 144 - scope repair completion blocks operationConstraints: unknown operational clause
+  ---
+  duration_ms: 19.06
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks operationConstraints: staff operating equipment and enjoying cosmic essence
+ok 145 - scope repair completion blocks operationConstraints: staff operating equipment and enjoying cosmic essence
+  ---
+  duration_ms: 21.5459
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks operationConstraints: Only if Logo and staff operating equipment
+ok 146 - scope repair completion blocks operationConstraints: Only if Logo and staff operating equipment
+  ---
+  duration_ms: 18.375
+  type: 'test'
+  ...
+# Subtest: scope repair invalid field shape preserved: operationConstraints
+ok 147 - scope repair invalid field shape preserved: operationConstraints
+  ---
+  duration_ms: 0.504
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks requiredSpatialElements: unknown operational clause
+ok 148 - scope repair completion blocks requiredSpatialElements: unknown operational clause
+  ---
+  duration_ms: 18.4311
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks requiredSpatialElements: staff operating equipment and enjoying cosmic essence
+ok 149 - scope repair completion blocks requiredSpatialElements: staff operating equipment and enjoying cosmic essence
+  ---
+  duration_ms: 21.0949
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks requiredSpatialElements: Only if Logo and staff operating equipment
+ok 150 - scope repair completion blocks requiredSpatialElements: Only if Logo and staff operating equipment
+  ---
+  duration_ms: 18.544
+  type: 'test'
+  ...
+# Subtest: scope repair invalid field shape preserved: requiredSpatialElements
+ok 151 - scope repair invalid field shape preserved: requiredSpatialElements
+  ---
+  duration_ms: 0.5038
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks sceneProgram: unknown operational clause
+ok 152 - scope repair completion blocks sceneProgram: unknown operational clause
+  ---
+  duration_ms: 13.9772
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks sceneProgram: staff operating equipment and enjoying cosmic essence
+ok 153 - scope repair completion blocks sceneProgram: staff operating equipment and enjoying cosmic essence
+  ---
+  duration_ms: 16.1549
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks sceneProgram: Only if Logo and staff operating equipment
+ok 154 - scope repair completion blocks sceneProgram: Only if Logo and staff operating equipment
+  ---
+  duration_ms: 14.0178
+  type: 'test'
+  ...
+# Subtest: scope repair invalid field shape preserved: sceneProgram
+ok 155 - scope repair invalid field shape preserved: sceneProgram
+  ---
+  duration_ms: 0.4929
+  type: 'test'
+  ...
+# Subtest: scope repair legacy normalizers retain unknown and conditional tails
+ok 156 - scope repair legacy normalizers retain unknown and conditional tails
+  ---
+  duration_ms: 2.8505
+  type: 'test'
+  ...
+# Subtest: scope repair independent brand statement keeps functional proposition and provenance
+ok 157 - scope repair independent brand statement keeps functional proposition and provenance
+  ---
+  duration_ms: 2.2956
+  type: 'test'
+  ...
+# Subtest: scope repair uses zero network primitives
+ok 158 - scope repair uses zero network primitives
+  ---
+  duration_ms: 0.076
+  type: 'test'
+  ...
+1..158
+# tests 158
+# suites 0
+# pass 158
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 957.5388

@@ -1,0 +1,505 @@
+{
+  "status": "STOPPED_DIRECT_SEMANTIC_REGRESSION",
+  "base": "6bea8e9d0300c227043192d70fca763b6231afac",
+  "newFailures": [
+    {
+      "title": "complete positive units reject unrecognized tails, negation, wishes, identity and color",
+      "status": "fail",
+      "diagnostic": "not ok 47 - complete positive units reject unrecognized tails, negation, wishes, identity and color\n  ---\n  duration_ms: 23.102\n  type: 'test'\n  location: 'E:\\\\Masterpiece-OS-Main-Publish-20261015-Verified\\\\packages\\\\visual-workflow\\\\tests\\\\restaurant-knowledge\\\\spatial-semantics\\\\evidence-boundaries.test.ts:1:3051'\n  failureType: 'testCodeFailure'\n  error: |-\n    equipment\n    \n    'pass' !== 'block'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'block'\n  actual: 'pass'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\restaurant-knowledge\\spatial-semantics\\evidence-boundaries.test.ts:55:55)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1397:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:969:18)\n    Test.postRun (node:internal/test_runner/test:1537:19)\n    Test.run (node:internal/test_runner/test:1462:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)\n  ...\n# Subtest: pure brand demotion is not permission to render a decorative object as a visible function\n",
+      "group": "NEW_SEMANTIC_REGRESSION",
+      "rootCause": "typedNode accepts bare equipment, and mustBeVisible node permission lacks the required use/location restriction",
+      "action": "STOPPED; no further implementation or tests"
+    }
+  ],
+  "initialFailures": [
+    {
+      "title": "field contract complete relation or prescription: Kitchen preparation connects to service counter; dining tables remain accessible; takeaway handoff keeps a clear route",
+      "status": "fail",
+      "diagnostic": "not ok 75 - field contract complete relation or prescription: Kitchen preparation connects to service counter; dining tables remain accessible; takeaway handoff keeps a clear route\n  ---\n  duration_ms: 4.8847\n  type: 'test'\n  location: 'E:\\\\Masterpiece-OS-Main-Publish-20261015-Verified\\\\packages\\\\visual-workflow\\\\tests\\\\restaurant-knowledge\\\\spatial-semantics\\\\field-contract.test.ts:1:4552'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'block' !== 'pass'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'pass'\n  actual: 'block'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\restaurant-knowledge\\spatial-semantics\\field-contract.test.ts:57:63)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1397:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:969:18)\n    Test.postRun (node:internal/test_runner/test:1537:19)\n    Test.run (node:internal/test_runner/test:1462:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)\n  ...\n# Subtest: field contract complete relation or prescription: 厨师在厨房制作食品并透过临街橱窗玻璃可见\n",
+      "finalStatus": "pass_before_stop",
+      "cause": "Generic English node grammar lacked preparation; added general node noun before original-suite regression."
+    },
+    {
+      "title": "field contract source clauses retain exact spans and parent scope without confirmation",
+      "status": "fail",
+      "diagnostic": "not ok 97 - field contract source clauses retain exact spans and parent scope without confirmation\n  ---\n  duration_ms: 1.4342\n  type: 'test'\n  location: 'E:\\\\Masterpiece-OS-Main-Publish-20261015-Verified\\\\packages\\\\visual-workflow\\\\tests\\\\restaurant-knowledge\\\\spatial-semantics\\\\field-contract.test.ts:1:6752'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'block' !== 'pass'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'pass'\n  actual: 'block'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\restaurant-knowledge\\spatial-semantics\\field-contract.test.ts:80:9)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1397:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:969:18)\n    Test.postRun (node:internal/test_runner/test:1537:19)\n    Test.run (node:internal/test_runner/test:1462:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)\n  ...\n# Subtest: field contract brand separation keeps original index, ranges and source evidence\n",
+      "finalStatus": "pass_before_stop",
+      "cause": "Generic English node grammar lacked preparation; added general node noun before original-suite regression."
+    },
+    {
+      "title": "field contract six-field source state cannot become confirmed on completion",
+      "status": "fail",
+      "diagnostic": "not ok 100 - field contract six-field source state cannot become confirmed on completion\n  ---\n  duration_ms: 42.3381\n  type: 'test'\n  location: 'E:\\\\Masterpiece-OS-Main-Publish-20261015-Verified\\\\packages\\\\visual-workflow\\\\tests\\\\restaurant-knowledge\\\\spatial-semantics\\\\field-contract.test.ts:1:8925'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'ready'\n    - 'requires_confirmation'\n         ^\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'requires_confirmation'\n  actual: 'ready'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\restaurant-knowledge\\spatial-semantics\\field-contract.test.ts:113:9)\n    async Test.run (node:internal/test_runner/test:1404:7)\n    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)\n  ...\n# Subtest: field contract observations require no network\n",
+      "finalStatus": "pass_before_stop",
+      "cause": "New fixture kept a concrete industry value despite marking status unknown; corrected fixture value to unknown before original-suite regression. No original assertion changed."
+    }
+  ],
+  "originalFailures": [
+    {
+      "historicalId": 1,
+      "title": "read-only existing report RPC supplies suggestions for missing directions without creating any decision files",
+      "group": "B0",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "不适用：完整性入口阻断"
+    },
+    {
+      "historicalId": 2,
+      "title": "integrated project direction reaches the standard provider body without a reference input",
+      "group": "G1",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "多数原句保留；分号/逗号部分投影，有跨从句指代风险，逐项见sceneScope。未发现本次分离探针移走否定词。"
+    },
+    {
+      "historicalId": 3,
+      "title": "project direction alone reaches formal standard request with height, open transition and usable functions",
+      "group": "G1",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "多数原句保留；分号/逗号部分投影，有跨从句指代风险，逐项见sceneScope。未发现本次分离探针移走否定词。"
+    },
+    {
+      "historicalId": 4,
+      "title": "P1-P4 survive confirmation, projection, formal compilation and the actual standard provider adapter",
+      "group": "G1",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "多数原句保留；分号/逗号部分投影，有跨从句指代风险，逐项见sceneScope。未发现本次分离探针移走否定词。"
+    },
+    {
+      "historicalId": 5,
+      "title": "open hall, complete service face, single screened threshold and optional cues survive standard provider dispatch",
+      "group": "G1",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "多数原句保留；分号/逗号部分投影，有跨从句指代风险，逐项见sceneScope。未发现本次分离探针移走否定词。"
+    },
+    {
+      "historicalId": 6,
+      "title": "application service loads confirmation, preserves gates and sends four ordered original byte inputs through actual image adapter",
+      "group": "G1",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "多数原句保留；分号/逗号部分投影，有跨从句指代风险，逐项见sceneScope。未发现本次分离探针移走否定词。"
+    },
+    {
+      "historicalId": 7,
+      "title": "post-compilation asset edits and missing files fail before any adapter transport",
+      "group": "G1",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "多数原句保留；分号/逗号部分投影，有跨从句指代风险，逐项见sceneScope。未发现本次分离探针移走否定词。"
+    },
+    {
+      "historicalId": 8,
+      "title": "revocation, authorization change, source directive change and registry role tampering invalidate the execution snapshot",
+      "group": "G1",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "多数原句保留；分号/逗号部分投影，有跨从句指代风险，逐项见sceneScope。未发现本次分离探针移走否定词。"
+    },
+    {
+      "historicalId": 9,
+      "title": "provider profile model or protocol changes cannot silently execute a compiled reference task",
+      "group": "G1",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "多数原句保留；分号/逗号部分投影，有跨从句指代风险，逐项见sceneScope。未发现本次分离探针移走否定词。"
+    },
+    {
+      "historicalId": 10,
+      "title": "edited prompts and tampered task snapshots cannot bypass compile or Provider prompt gates",
+      "group": "G1",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "多数原句保留；分号/逗号部分投影，有跨从句指代风险，逐项见sceneScope。未发现本次分离探针移走否定词。"
+    },
+    {
+      "historicalId": 11,
+      "title": "asset parent junctions and registry traversal fail closed",
+      "group": "G1",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "多数原句保留；分号/逗号部分投影，有跨从句指代风险，逐项见sceneScope。未发现本次分离探针移走否定词。"
+    },
+    {
+      "historicalId": 12,
+      "title": "public operations verify the approved implementation before registration, compilation, generation and Logo composition",
+      "group": "B0",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "不适用：完整性入口阻断"
+    },
+    {
+      "historicalId": 13,
+      "title": "image service independently rejects reordered or relabeled execution references",
+      "group": "G1",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "多数原句保留；分号/逗号部分投影，有跨从句指代风险，逐项见sceneScope。未发现本次分离探针移走否定词。"
+    },
+    {
+      "historicalId": 14,
+      "title": "ten unique authorized files are supported; eleven inputs or an empty set are rejected without truncation",
+      "group": "G1",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "多数原句保留；分号/逗号部分投影，有跨从句指代风险，逐项见sceneScope。未发现本次分离探针移走否定词。"
+    },
+    {
+      "historicalId": 15,
+      "title": "a changed analysis context or a malformed current confirmation blocks instead of silently recompiling",
+      "group": "G1",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "多数原句保留；分号/逗号部分投影，有跨从句指代风险，逐项见sceneScope。未发现本次分离探针移走否定词。"
+    },
+    {
+      "historicalId": 16,
+      "title": "restrained service cues, unlettered identity carriers, fine edges and diffuse light reach the standard request",
+      "group": "G1",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "多数原句保留；分号/逗号部分投影，有跨从句指代风险，逐项见sceneScope。未发现本次分离探针移走否定词。"
+    },
+    {
+      "historicalId": 17,
+      "title": "functional movement remains outside geometric actions and material paths retain original indices",
+      "group": "G2",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "无转换丢失，词法/字段覆盖不足。"
+    },
+    {
+      "historicalId": 18,
+      "title": "natural-language form values retain independent semantic fields through official standard business compilation",
+      "group": "G1",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "多数原句保留；分号/逗号部分投影，有跨从句指代风险，逐项见sceneScope。未发现本次分离探针移走否定词。"
+    },
+    {
+      "historicalId": 19,
+      "title": "direction correction replaces the rejected art mechanism and preserves five functional targets through the standard adapter",
+      "group": "G1",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "多数原句保留；分号/逗号部分投影，有跨从句指代风险，逐项见sceneScope。未发现本次分离探针移走否定词。"
+    },
+    {
+      "historicalId": 20,
+      "title": "baseline lock prevents input/model/code drift and old tasks; other projects remain independent, zero network",
+      "group": "B0",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "不适用：完整性入口阻断"
+    },
+    {
+      "historicalId": 21,
+      "title": "custom preview binds a complete source program to its project without granting a camera",
+      "group": "G3",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "custom预览不切句；没有上下文丢失。"
+    },
+    {
+      "historicalId": 22,
+      "title": "custom previews retain project geometry, materials, color scope and light without inventing parameters",
+      "group": "G3",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "custom预览不切句；没有上下文丢失。"
+    },
+    {
+      "historicalId": 23,
+      "title": "glass text in a custom preview cannot become an executable visible owner",
+      "group": "G3",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "custom预览不切句；没有上下文丢失。"
+    },
+    {
+      "historicalId": 24,
+      "title": "RKS-02C mapped scene formal and Provider prompt hashes, source maps and controls remain identical",
+      "group": "G4",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "已证实：目的从句与空间对象分离，空实体被当current_shot，最终只有两个残句。"
+    },
+    {
+      "historicalId": 25,
+      "title": "web standard task, effective Packet, official compiler, actual image request and validator share the confirmed direction",
+      "group": "G1",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "多数原句保留；分号/逗号部分投影，有跨从句指代风险，逐项见sceneScope。未发现本次分离探针移走否定词。"
+    },
+    {
+      "historicalId": 26,
+      "title": "decision changes after compile block dispatch and keep all history",
+      "group": "G1",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "多数原句保留；分号/逗号部分投影，有跨从句指代风险，逐项见sceneScope。未发现本次分离探针移走否定词。"
+    },
+    {
+      "historicalId": 27,
+      "title": "existing four-image art direction route remains independent and operational",
+      "group": "G1",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "多数原句保留；分号/逗号部分投影，有跨从句指代风险，逐项见sceneScope。未发现本次分离探针移走否定词。"
+    },
+    {
+      "historicalId": 28,
+      "title": "the plain-language web editor saves and confirms a usable direction without JSON editing",
+      "group": "G1",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "多数原句保留；分号/逗号部分投影，有跨从句指代风险，逐项见sceneScope。未发现本次分离探针移走否定词。"
+    },
+    {
+      "historicalId": 29,
+      "title": "guarded public web operations save, confirm, compile, generate, reopen and invalidate on an analysis request",
+      "group": "B0",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "不适用：完整性入口阻断"
+    },
+    {
+      "historicalId": 30,
+      "title": "explicit details save persists identity, retains artifacts and requires new analysis/confirmation without calling models",
+      "group": "B0",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "不适用：完整性入口阻断"
+    },
+    {
+      "historicalId": 31,
+      "title": "packages//visual-workflow//tests//restaurant-knowledge//ftt-fidelity.test.ts",
+      "group": "G4",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "已证实：目的从句与空间对象分离，空实体被当current_shot，最终只有两个残句。"
+    },
+    {
+      "historicalId": 32,
+      "title": "packages//visual-workflow//tests//restaurant-knowledge//ftt-final-design.test.ts",
+      "group": "G5",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "已证实：未知位置从全店依赖分离并取得current_shot，语义门禁最终挡住；不应修成通过。"
+    },
+    {
+      "historicalId": 33,
+      "title": "A/B uses actual B1 projection and pure compilers with controlled synthetic input, no confirmation or transport",
+      "group": "G6",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "已证实：分号拆分后外带尾句脱离厨房/就餐关系；该尾句本身仍可构成完整设计关系，存在词法覆盖问题。"
+    },
+    {
+      "historicalId": 34,
+      "title": "unresolved clauses outside the visible field cannot be hidden by a passing final gate",
+      "group": "C1",
+      "baselineStatus": "fail",
+      "currentStatus": "fail",
+      "reason": "retained historical failure; see targeted diagnostic",
+      "priorRootCause": "不可安全拆分；原句应保留。",
+      "diagnostic": "not ok 51 - unresolved clauses outside the visible field cannot be hidden by a passing final gate\n  ---\n  duration_ms: 2.784\n  type: 'test'\n  location: 'E:\\\\Masterpiece-OS-Main-Publish-20261015-Verified\\\\packages\\\\visual-workflow\\\\tests\\\\restaurant-knowledge\\\\spatial-semantics\\\\evidence-boundaries.test.ts:1:7453'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'block' !== 'pass'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'pass'\n  actual: 'block'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\restaurant-knowledge\\spatial-semantics\\evidence-boundaries.test.ts:98:10)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1397:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:969:18)\n    Test.postRun (node:internal/test_runner/test:1537:19)\n    Test.run (node:internal/test_runner/test:1462:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)\n  ...\n# Subtest: local validator exception before optional repair uses zero model calls\n"
+    },
+    {
+      "historicalId": 35,
+      "title": "formal create/import/analyze via injected provider succeeds with exactly two fake HTTP responses",
+      "group": "B0",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "不适用：完整性入口阻断"
+    },
+    {
+      "historicalId": 36,
+      "title": "formal UVU parse path does not retry after invalid JSON",
+      "group": "B0",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "不适用：完整性入口阻断"
+    },
+    {
+      "historicalId": 37,
+      "title": "formal spatial semantic repair is blocked; existing semantic gate still fails",
+      "group": "B0",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "不适用：完整性入口阻断"
+    },
+    {
+      "historicalId": 38,
+      "title": "formal structured decision repair catches errors but cannot obtain a third dispatch",
+      "group": "B0",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "不适用：完整性入口阻断"
+    },
+    {
+      "historicalId": 39,
+      "title": "formal report validation is not bypassed by two-call budget logic",
+      "group": "B0",
+      "baselineStatus": "fail",
+      "currentStatus": "not_run_after_stop",
+      "reason": "no post-change cross-industry or full workflow claim; stopped on new direct semantic regression",
+      "priorRootCause": "不适用：完整性入口阻断"
+    },
+    {
+      "historicalId": 40,
+      "title": "source clauses retain exact ranges and mixed local/dependency/review dispositions",
+      "group": "C2",
+      "baselineStatus": "fail",
+      "currentStatus": "fail",
+      "reason": "retained historical failure; see targeted diagnostic",
+      "priorRootCause": "投影能保留三类审计证据；旧编译允许未知被排除后继续，新门禁阻断整个原Packet。",
+      "diagnostic": "not ok 93 - source clauses retain exact ranges and mixed local/dependency/review dispositions\n  ---\n  duration_ms: 9.2792\n  type: 'test'\n  location: 'E:\\\\Masterpiece-OS-Main-Publish-20261015-Verified\\\\packages\\\\visual-workflow\\\\tests\\\\scene-authority-repair.test.ts:1:4794'\n  failureType: 'testCodeFailure'\n  error: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID: formal Space generation route failed closed.'\n  code: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID'\n  stack: |-\n    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:24:23)\n    assertSpaceGenerationRouteIntegrity (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:85:35)\n    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:283:21)\n    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)\n    compileScene (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-cases.ts:26:18)\n    TestContext.<anonymous> (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:74:56)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1397:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:969:18)\n    Test.postRun (node:internal/test_runner/test:1537:19)\n  ...\n# Subtest: unsafe networks stay reviewable: 点餐制作取餐就餐的完整关系\n"
+    },
+    {
+      "historicalId": 41,
+      "title": "unsafe networks stay reviewable: 点餐制作取餐就餐的完整关系",
+      "group": "C3",
+      "baselineStatus": "fail",
+      "currentStatus": "fail",
+      "reason": "retained historical failure; see targeted diagnostic",
+      "priorRootCause": "不能推定节点，不作独立肯定网络。",
+      "diagnostic": "not ok 94 - unsafe networks stay reviewable: 点餐制作取餐就餐的完整关系\n  ---\n  duration_ms: 19.2457\n  type: 'test'\n  location: 'E:\\\\Masterpiece-OS-Main-Publish-20261015-Verified\\\\packages\\\\visual-workflow\\\\tests\\\\scene-authority-repair.test.ts:1:5848'\n  failureType: 'testCodeFailure'\n  error: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID: formal Space generation route failed closed.'\n  code: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID'\n  stack: |-\n    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:24:23)\n    assertSpaceGenerationRouteIntegrity (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:85:35)\n    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:283:21)\n    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)\n    compileScene (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-cases.ts:26:18)\n    TestContext.<anonymous> (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:83:16)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1397:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:969:18)\n    Test.postRun (node:internal/test_runner/test:1537:19)\n  ...\n# Subtest: unsafe networks stay reviewable: 入口 → 无法确定的节点\n"
+    },
+    {
+      "historicalId": 42,
+      "title": "unsafe networks stay reviewable: 入口 → 无法确定的节点",
+      "group": "C4",
+      "baselineStatus": "fail",
+      "currentStatus": "fail",
+      "reason": "retained historical failure; see targeted diagnostic",
+      "priorRootCause": "不能推定未知节点，不作独立肯定网络。",
+      "diagnostic": "not ok 95 - unsafe networks stay reviewable: 入口 → 无法确定的节点\n  ---\n  duration_ms: 10.0642\n  type: 'test'\n  location: 'E:\\\\Masterpiece-OS-Main-Publish-20261015-Verified\\\\packages\\\\visual-workflow\\\\tests\\\\scene-authority-repair.test.ts:1:5848'\n  failureType: 'testCodeFailure'\n  error: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID: formal Space generation route failed closed.'\n  code: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID'\n  stack: |-\n    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:24:23)\n    assertSpaceGenerationRouteIntegrity (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:85:35)\n    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:283:21)\n    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)\n    compileScene (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-cases.ts:26:18)\n    TestContext.<anonymous> (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:83:16)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1397:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:969:18)\n    Test.postRun (node:internal/test_runner/test:1537:19)\n  ...\n# Subtest: unsafe networks stay reviewable: whole project operating network\n"
+    },
+    {
+      "historicalId": 43,
+      "title": "unsafe networks stay reviewable: whole project operating network",
+      "group": "C5",
+      "baselineStatus": "fail",
+      "currentStatus": "fail",
+      "reason": "retained historical failure; see targeted diagnostic",
+      "priorRootCause": "缺少节点与关系，不能补造。",
+      "diagnostic": "not ok 96 - unsafe networks stay reviewable: whole project operating network\n  ---\n  duration_ms: 9.891\n  type: 'test'\n  location: 'E:\\\\Masterpiece-OS-Main-Publish-20261015-Verified\\\\packages\\\\visual-workflow\\\\tests\\\\scene-authority-repair.test.ts:1:5848'\n  failureType: 'testCodeFailure'\n  error: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID: formal Space generation route failed closed.'\n  code: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID'\n  stack: |-\n    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:24:23)\n    assertSpaceGenerationRouteIntegrity (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:85:35)\n    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:283:21)\n    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)\n    compileScene (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-cases.ts:26:18)\n    TestContext.<anonymous> (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:83:16)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1397:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:969:18)\n    Test.postRun (node:internal/test_runner/test:1537:19)\n  ...\n# Subtest: kitchen relationships cannot inherit a boundary authority merely from their container or another entrance clause\n"
+    },
+    {
+      "historicalId": 44,
+      "title": "kitchen relationships cannot inherit a boundary authority merely from their container or another entrance clause",
+      "group": "G7",
+      "baselineStatus": "fail",
+      "currentStatus": "fail",
+      "reason": "retained historical failure; see targeted diagnostic",
+      "priorRootCause": "厨房子句正确画外；合法到达节点遗留在functionalRelationships，节点被误当完整关系校验。",
+      "diagnostic": "not ok 97 - kitchen relationships cannot inherit a boundary authority merely from their container or another entrance clause\n  ---\n  duration_ms: 14.5368\n  type: 'test'\n  location: 'E:\\\\Masterpiece-OS-Main-Publish-20261015-Verified\\\\packages\\\\visual-workflow\\\\tests\\\\scene-authority-repair.test.ts:1:6202'\n  failureType: 'testCodeFailure'\n  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'\n  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'\n  stack: |-\n    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)\n    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)\n    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)\n    compileScene (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-cases.ts:26:18)\n    TestContext.<anonymous> (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:93:16)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1397:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:969:18)\n    Test.postRun (node:internal/test_runner/test:1537:19)\n    Test.run (node:internal/test_runner/test:1462:12)\n  ...\n# Subtest: dining operations and Chinese actors remain visible with exactly one rendered owner\n"
+    },
+    {
+      "historicalId": 45,
+      "title": "interior sightline request awaits a reviewed interface: 厨师在厨房制作食品并透过临街橱窗玻璃可见",
+      "group": "G8",
+      "baselineStatus": "fail",
+      "currentStatus": "pass",
+      "reason": "original assertion passed in current targeted suite",
+      "priorRootCause": "无语义内容丢失；投影正确隔离未授权视线，外层原Packet门禁误拒语义类型。"
+    },
+    {
+      "historicalId": 46,
+      "title": "interior sightline request awaits a reviewed interface: 入口视线可见厨房制作活动",
+      "group": "G8",
+      "baselineStatus": "fail",
+      "currentStatus": "pass",
+      "reason": "original assertion passed in current targeted suite",
+      "priorRootCause": "无语义内容丢失；投影正确隔离未授权视线，外层原Packet门禁误拒语义类型。"
+    },
+    {
+      "historicalId": 47,
+      "title": "an exterior prohibition protects interior privacy as a boundary, never as a rendered interior",
+      "group": "G9",
+      "baselineStatus": "fail",
+      "currentStatus": "pass",
+      "reason": "original assertion passed in current targeted suite",
+      "priorRootCause": "无禁止范围丢失；投影正确路由边界约束，外层原Packet门禁误拒模态/词法。"
+    },
+    {
+      "historicalId": 48,
+      "title": "explicit off-frame operational prohibitions remain boundary-only",
+      "group": "G9",
+      "baselineStatus": "fail",
+      "currentStatus": "pass",
+      "reason": "original assertion passed in current targeted suite",
+      "priorRootCause": "无禁止范围丢失；投影正确路由边界约束，外层原Packet门禁误拒模态/词法。"
+    },
+    {
+      "historicalId": 49,
+      "title": "reference-first target program still replaces source operations instead of inheriting standard fallback",
+      "group": "G10",
+      "baselineStatus": "fail",
+      "currentStatus": "fail",
+      "reason": "retained historical failure; see targeted diagnostic",
+      "priorRootCause": "源程序按目标覆盖属预期；系统生成目标句与校验器契约不一致，不是来源事实升级。",
+      "diagnostic": "not ok 158 - reference-first target program still replaces source operations instead of inheriting standard fallback\n  ---\n  duration_ms: 26.2841\n  type: 'test'\n  location: 'E:\\\\Masterpiece-OS-Main-Publish-20261015-Verified\\\\packages\\\\visual-workflow\\\\tests\\\\visible-requirement-ownership.test.ts:1:9665'\n  failureType: 'testCodeFailure'\n  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'\n  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'\n  stack: |-\n    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)\n    TestContext.<anonymous> (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:175:18)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1397:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:969:18)\n    Test.postRun (node:internal/test_runner/test:1537:19)\n    Test.run (node:internal/test_runner/test:1462:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)\n  ...\n# Subtest: continuation keeps the target program authoritative and does not expose source dining operations\n"
+    },
+    {
+      "historicalId": 50,
+      "title": "continuation keeps the target program authoritative and does not expose source dining operations",
+      "group": "G10",
+      "baselineStatus": "fail",
+      "currentStatus": "fail",
+      "reason": "retained historical failure; see targeted diagnostic",
+      "priorRootCause": "源程序按目标覆盖属预期；系统生成目标句与校验器契约不一致，不是来源事实升级。",
+      "diagnostic": "not ok 159 - continuation keeps the target program authoritative and does not expose source dining operations\n  ---\n  duration_ms: 22.3478\n  type: 'test'\n  location: 'E:\\\\Masterpiece-OS-Main-Publish-20261015-Verified\\\\packages\\\\visual-workflow\\\\tests\\\\visible-requirement-ownership.test.ts:1:10338'\n  failureType: 'testCodeFailure'\n  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'\n  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'\n  stack: |-\n    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)\n    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)\n    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)\n    TestContext.<anonymous> (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:190:18)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1397:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:969:18)\n    Test.postRun (node:internal/test_runner/test:1537:19)\n    Test.run (node:internal/test_runner/test:1462:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)\n  ...\n1..159\n# tests 159\n# suites 0\n# pass 150\n# fail 9\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 7066.8631\n"
+    }
+  ],
+  "skippedAfterStop": [
+    "cross-industry post-change",
+    "full workflow post-change",
+    "Golden",
+    "repo:verify",
+    "verify:current-flows"
+  ],
+  "note": "Do not infer remaining G groups pass from local positive examples. No tests started after the stop trigger."
+}

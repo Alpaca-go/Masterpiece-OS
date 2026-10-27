@@ -1,0 +1,4061 @@
+TAP version 13
+# Subtest: presentation distinguishes absent Packet, insufficient evidence and usable suggestions with zero model calls
+ok 1 - presentation distinguishes absent Packet, insufficient evidence and usable suggestions with zero model calls
+  ---
+  duration_ms: 530.5483
+  type: 'test'
+  ...
+# Subtest: explicit analysis fields map deterministically with leaf provenance and without mutating the Packet
+ok 2 - explicit analysis fields map deterministically with leaf provenance and without mutating the Packet
+  ---
+  duration_ms: 3.3565
+  type: 'test'
+  ...
+# Subtest: missing spatial evidence stays blank; color rank, global systems and risk observations cannot grant scope or prohibitions
+ok 3 - missing spatial evidence stays blank; color rank, global systems and risk observations cannot grant scope or prohibitions
+  ---
+  duration_ms: 2.2838
+  type: 'test'
+  ...
+# Subtest: rereading a missing direction uses the current Packet and fingerprint without persisting the previous suggestion
+ok 4 - rereading a missing direction uses the current Packet and fingerprint without persisting the previous suggestion
+  ---
+  duration_ms: 159.9821
+  type: 'test'
+  ...
+# Subtest: read-only existing report RPC supplies suggestions for missing directions without creating any decision files
+not ok 5 - read-only existing report RPC supplies suggestions for missing directions without creating any decision files
+  ---
+  duration_ms: 180.2236
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\analysis-direction-suggestion.test.ts:1:8343'
+  failureType: 'testCodeFailure'
+  error: 'VISUAL_WORKFLOW_IMPLEMENTATION_CHANGED: src/analysis-decisions/analysis-completion-orchestrator.js'
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    verifyImplementation (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/integrity.js:13:39)
+    async Object.visual-workflow:report (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/service.js:183:28)
+    async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\analysis-direction-suggestion.test.ts:106:14)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: draft, confirmed and needs_reconfirmation retain their fields, hashes, source and disk bytes across suggestion reads
+ok 6 - draft, confirmed and needs_reconfirmation retain their fields, hashes, source and disk bytes across suggestion reads
+  ---
+  duration_ms: 405.9184
+  type: 'test'
+  ...
+# Subtest: integrated project direction reaches the standard provider body without a reference input
+not ok 7 - integrated project direction reaches the standard provider body without a reference input
+  ---
+  duration_ms: 517.891
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\architectural-integration.test.ts:1:801'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    Object.compile (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js:175:20)
+    async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\architectural-integration.test.ts:20:18)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: architectural revision preserves approved atmosphere, structured palette, material optics and light
+ok 8 - architectural revision preserves approved atmosphere, structured palette, material optics and light
+  ---
+  duration_ms: 1.7493
+  type: 'test'
+  ...
+# Subtest: project direction alone reaches formal standard request with height, open transition and usable functions
+not ok 9 - project direction alone reaches formal standard request with height, open transition and usable functions
+  ---
+  duration_ms: 614.0189
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\architectural-language.test.ts:1:1409'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    Object.compile (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js:175:20)
+    async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\architectural-language.test.ts:33:18)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# {"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"7fbb0b9a-b2da-46ca-ac3d-c01a39489cb3","taskId":"vnext-task-ba3e3e56-fbcd-4686-a2e6-850e8ac41be8","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6838,"compileDurationMs":35.287}
+# {"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"bea29db4-2ca9-4239-89a3-78be67f1c538","taskId":"vnext-task-1e288e57-5fa5-42f0-82e1-9749ae33b4dd","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6822,"compileDurationMs":36.826}
+# {"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"703e9e5a-e3bd-4efe-93d9-8f99ccf1ad6c","taskId":"vnext-task-bece66df-317c-41ee-84fe-95d3bae59af2","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6812,"compileDurationMs":27.499}
+# Subtest: three other industries keep their actual standard request bodies byte-identical to the reviewed baseline
+ok 10 - three other industries keep their actual standard request bodies byte-identical to the reviewed baseline
+  ---
+  duration_ms: 1251.0509
+  type: 'test'
+  ...
+# Subtest: refinement preserves the integrated direction and approved atmosphere without expanding drift guards
+ok 11 - refinement preserves the integrated direction and approved atmosphere without expanding drift guards
+  ---
+  duration_ms: 3.408
+  type: 'test'
+  ...
+# Subtest: P1-P4 survive confirmation, projection, formal compilation and the actual standard provider adapter
+not ok 12 - P1-P4 survive confirmation, projection, formal compilation and the actual standard provider adapter
+  ---
+  duration_ms: 487.8188
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\architectural-refinement.test.ts:1:1891'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    Object.compile (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js:175:20)
+    async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\architectural-refinement.test.ts:31:18)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: hall protection changes only four project relation fields and keeps the established art, material and light
+ok 13 - hall protection changes only four project relation fields and keeps the established art, material and light
+  ---
+  duration_ms: 7.5025
+  type: 'test'
+  ...
+# Subtest: open hall, complete service face, single screened threshold and optional cues survive standard provider dispatch
+not ok 14 - open hall, complete service face, single screened threshold and optional cues survive standard provider dispatch
+  ---
+  duration_ms: 573.6011
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\architecture-commercial-layer.test.ts:1:1621'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    Object.compile (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js:175:20)
+    async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\architecture-commercial-layer.test.ts:28:18)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: official space route applies project confirmation before compiler and semantic gates, without mutating history
+ok 15 - official space route applies project confirmation before compiler and semantic gates, without mutating history
+  ---
+  duration_ms: 223.1274
+  type: 'test'
+  ...
+# Subtest: project, approval and invalid spatial data fail closed in the official route
+ok 16 - project, approval and invalid spatial data fail closed in the official route
+  ---
+  duration_ms: 15.0791
+  type: 'test'
+  ...
+# Subtest: family scope does not apply a spatial confirmation to another deliverable
+ok 17 - family scope does not apply a spatial confirmation to another deliverable
+  ---
+  duration_ms: 0.4254
+  type: 'test'
+  ...
+# Subtest: other medical, restaurant and hotel standard tasks retain their input; no art direction leaks by industry or name
+ok 18 - other medical, restaurant and hotel standard tasks retain their input; no art direction leaks by industry or name
+  ---
+  duration_ms: 241.6287
+  type: 'test'
+  ...
+# Subtest: adapter feasibility encodes and verifies actual registered bytes; standard remains zero images
+ok 19 - adapter feasibility encodes and verifies actual registered bytes; standard remains zero images
+  ---
+  duration_ms: 51.4789
+  type: 'test'
+  ...
+# Subtest: negative, logo, cross-project, missing, duplicate, unapproved, corrupt and path-traversal references fail closed
+ok 20 - negative, logo, cross-project, missing, duplicate, unapproved, corrupt and path-traversal references fail closed
+  ---
+  duration_ms: 54.1797
+  type: 'test'
+  ...
+# Subtest: missing files and parent-directory symlinks cannot leave the authorized review root
+ok 21 - missing files and parent-directory symlinks cannot leave the authorized review root
+  ---
+  duration_ms: 41.3115
+  type: 'test'
+  ...
+# Subtest: application service loads confirmation, preserves gates and sends four ordered original byte inputs through actual image adapter
+not ok 22 - application service loads confirmation, preserves gates and sends four ordered original byte inputs through actual image adapter
+  ---
+  duration_ms: 383.9674
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\art-direction-route.test.ts:1:755'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    Object.compile (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js:175:20)
+    async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\art-direction-route.test.ts:16:52)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: independent provider and product capacity are consistent and unsupported models fail closed
+ok 23 - independent provider and product capacity are consistent and unsupported models fail closed
+  ---
+  duration_ms: 87.2372
+  type: 'test'
+  ...
+# Subtest: registration rejects negative/Logo roles, duplicates, foreign authority, corrupt images and invalid MIME before modifying a directive
+ok 24 - registration rejects negative/Logo roles, duplicates, foreign authority, corrupt images and invalid MIME before modifying a directive
+  ---
+  duration_ms: 115.6441
+  type: 'test'
+  ...
+# Subtest: missing, duplicate, foreign project and unknown reference selections never become text generation
+ok 25 - missing, duplicate, foreign project and unknown reference selections never become text generation
+  ---
+  duration_ms: 161.5903
+  type: 'test'
+  ...
+# Subtest: post-compilation asset edits and missing files fail before any adapter transport
+not ok 26 - post-compilation asset edits and missing files fail before any adapter transport
+  ---
+  duration_ms: 133.2105
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\art-direction-route.test.ts:1:6030'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    Object.compile (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js:175:20)
+    async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\art-direction-route.test.ts:85:87)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: revocation, authorization change, source directive change and registry role tampering invalidate the execution snapshot
+not ok 27 - revocation, authorization change, source directive change and registry role tampering invalidate the execution snapshot
+  ---
+  duration_ms: 69.4611
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\art-direction-route.test.ts:1:6491'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    Object.compile (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js:175:20)
+    async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\art-direction-route.test.ts:93:72)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: provider profile model or protocol changes cannot silently execute a compiled reference task
+not ok 28 - provider profile model or protocol changes cannot silently execute a compiled reference task
+  ---
+  duration_ms: 117.2072
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\art-direction-route.test.ts:1:7383'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    Object.compile (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js:175:20)
+    async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\art-direction-route.test.ts:106:72)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: edited prompts and tampered task snapshots cannot bypass compile or Provider prompt gates
+not ok 29 - edited prompts and tampered task snapshots cannot bypass compile or Provider prompt gates
+  ---
+  duration_ms: 87.079
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\art-direction-route.test.ts:1:7742'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    Object.compile (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js:175:20)
+    async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\art-direction-route.test.ts:112:70)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: asset parent junctions and registry traversal fail closed
+not ok 30 - asset parent junctions and registry traversal fail closed
+  ---
+  duration_ms: 95.6856
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\art-direction-route.test.ts:1:8387'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    Object.compile (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js:175:20)
+    async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\art-direction-route.test.ts:120:85)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# {"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"4517666d-15d7-4d05-935a-2312d2da976d","taskId":"vnext-task-74d6e979-848b-472b-8dc8-f702b14f73d2","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6832,"compileDurationMs":21.336}
+# {"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"4517666d-15d7-4d05-935a-2312d2da976d","taskId":"vnext-task-db7904c2-6c84-4649-9cf5-db3f3193b6d9","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6832,"compileDurationMs":21.829}
+# {"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"91932dec-4ada-4e9c-addd-9d71ef80bd7c","taskId":"vnext-task-298a4b15-4cbe-4feb-a9b0-8f3beb992450","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6816,"compileDurationMs":56.015}
+# {"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"91932dec-4ada-4e9c-addd-9d71ef80bd7c","taskId":"vnext-task-a0549c84-57c0-4918-b7ce-660a9fd817db","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6816,"compileDurationMs":22.28}
+# {"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"5a8b62c4-c851-4346-a29e-5adcb92b0998","taskId":"vnext-task-c6c3be5a-beeb-44d6-b984-40014c0c0a87","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6806,"compileDurationMs":25.547}
+# {"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"5a8b62c4-c851-4346-a29e-5adcb92b0998","taskId":"vnext-task-91b33c0f-b76a-4325-beb6-afeb5d8a2e5f","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":6806,"compileDurationMs":17.477}
+# Subtest: ordinary standard generation remains byte-for-byte identical across medical, restaurant and hotel projects
+ok 31 - ordinary standard generation remains byte-for-byte identical across medical, restaurant and hotel projects
+  ---
+  duration_ms: 916.2254
+  type: 'test'
+  ...
+# Subtest: public operations verify the approved implementation before registration, compilation, generation and Logo composition
+not ok 32 - public operations verify the approved implementation before registration, compilation, generation and Logo composition
+  ---
+  duration_ms: 26.0378
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\art-direction-route.test.ts:1:9779'
+  failureType: 'testCodeFailure'
+  error: 'VISUAL_WORKFLOW_IMPLEMENTATION_CHANGED: src/analysis-decisions/analysis-completion-orchestrator.js'
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    verifyImplementation (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/integrity.js:13:39)
+    async Object.visual-workflow:save-profile (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/service.js:183:28)
+    async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\art-direction-route.test.ts:147:3)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: image service independently rejects reordered or relabeled execution references
+not ok 33 - image service independently rejects reordered or relabeled execution references
+  ---
+  duration_ms: 69.7597
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\art-direction-route.test.ts:1:12784'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    Object.compile (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js:175:20)
+    async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\art-direction-route.test.ts:164:72)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: ten unique authorized files are supported; eleven inputs or an empty set are rejected without truncation
+not ok 34 - ten unique authorized files are supported; eleven inputs or an empty set are rejected without truncation
+  ---
+  duration_ms: 319.0119
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\art-direction-route.test.ts:1:13517'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    Object.compile (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js:175:20)
+    async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\art-direction-route.test.ts:186:18)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: a changed analysis context or a malformed current confirmation blocks instead of silently recompiling
+not ok 35 - a changed analysis context or a malformed current confirmation blocks instead of silently recompiling
+  ---
+  duration_ms: 163.27
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\art-direction-route.test.ts:1:14371'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    Object.compile (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js:175:20)
+    async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\art-direction-route.test.ts:193:72)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: multi-megabyte canonical image uploads register and resolve without regex stack exhaustion
+ok 36 - multi-megabyte canonical image uploads register and resolve without regex stack exhaustion
+  ---
+  duration_ms: 243.8525
+  type: 'test'
+  ...
+# Subtest: default model request asks for automatic proposals while retaining evidence and unknown-fact boundaries
+ok 37 - default model request asks for automatic proposals while retaining evidence and unknown-fact boundaries
+  ---
+  duration_ms: 1.5588
+  type: 'test'
+  ...
+# Subtest: model output keeps scoped colors, composition and proposal provenance through normalization and autofill
+ok 38 - model output keeps scoped colors, composition and proposal provenance through normalization and autofill
+  ---
+  duration_ms: 22.6584
+  type: 'test'
+  ...
+# Subtest: invalid scope or claimed confirmation cannot acquire proposal authority
+ok 39 - invalid scope or claimed confirmation cannot acquire proposal authority
+  ---
+  duration_ms: 2.2875
+  type: 'test'
+  ...
+# Subtest: functional relation recognition does not grant authority to identity, motifs or color geometry
+ok 40 - functional relation recognition does not grant authority to identity, motifs or color geometry
+  ---
+  duration_ms: 48.8652
+  type: 'test'
+  ...
+# {"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"5a259b89-3078-4875-a4c7-f488aa6076e2","taskId":"vnext-task-75bf404d-fc8b-43d3-b76d-1bdf67872a27","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7243,"compileDurationMs":219.049}
+# Subtest: automatic suggestion can be confirmed without field rewriting and reaches actual offline image adapter
+ok 41 - automatic suggestion can be confirmed without field rewriting and reaches actual offline image adapter
+  ---
+  duration_ms: 1066.643
+  type: 'test'
+  ...
+# Subtest: commercial refinement keeps architecture, art, lateral composition, palette and guardrails unchanged
+ok 42 - commercial refinement keeps architecture, art, lateral composition, palette and guardrails unchanged
+  ---
+  duration_ms: 2.9655
+  type: 'test'
+  ...
+# Subtest: restrained service cues, unlettered identity carriers, fine edges and diffuse light reach the standard request
+not ok 43 - restrained service cues, unlettered identity carriers, fine edges and diffuse light reach the standard request
+  ---
+  duration_ms: 687.9824
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\commercial-attribute.test.ts:1:1677'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    Object.compile (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js:175:20)
+    async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\commercial-attribute.test.ts:27:18)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: cross-zone relationship remains a current boundary constraint: Reception circulation connects to treatment through a screened access route
+ok 44 - cross-zone relationship remains a current boundary constraint: Reception circulation connects to treatment through a screened access route
+  ---
+  duration_ms: 5.9497
+  type: 'test'
+  ...
+# Subtest: cross-zone relationship remains a current boundary constraint: Reception waiting must not expose consultation conversations
+ok 45 - cross-zone relationship remains a current boundary constraint: Reception waiting must not expose consultation conversations
+  ---
+  duration_ms: 1.2914
+  type: 'test'
+  ...
+# Subtest: cross-zone relationship remains a current boundary constraint: Recovery return traffic must avoid the reception queue
+ok 46 - cross-zone relationship remains a current boundary constraint: Recovery return traffic must avoid the reception queue
+  ---
+  duration_ms: 0.2512
+  type: 'test'
+  ...
+# Subtest: cross-zone relationship remains a current boundary constraint: Reception is adjacent to consultation with an acoustic privacy boundary
+ok 47 - cross-zone relationship remains a current boundary constraint: Reception is adjacent to consultation with an acoustic privacy boundary
+  ---
+  duration_ms: 0.1754
+  type: 'test'
+  ...
+# Subtest: cross-zone relationship remains a current boundary constraint: 接待区到治疗区的患者动线与员工通道分离
+ok 48 - cross-zone relationship remains a current boundary constraint: 接待区到治疗区的患者动线与员工通道分离
+  ---
+  duration_ms: 1.4393
+  type: 'test'
+  ...
+# Subtest: cross-zone relationship remains a current boundary constraint: 接待区与治疗区之间应保持隔声边界
+ok 49 - cross-zone relationship remains a current boundary constraint: 接待区与治疗区之间应保持隔声边界
+  ---
+  duration_ms: 0.1792
+  type: 'test'
+  ...
+# Subtest: cross-zone relationship remains a current boundary constraint: 咨询区入口不得从接待座位直接看到，保护隐私
+ok 50 - cross-zone relationship remains a current boundary constraint: 咨询区入口不得从接待座位直接看到，保护隐私
+  ---
+  duration_ms: 0.3393
+  type: 'test'
+  ...
+# Subtest: cross-zone relationship remains a current boundary constraint: 恢复区返回人流不得与接待候客队列交叉
+ok 51 - cross-zone relationship remains a current boundary constraint: 恢复区返回人流不得与接待候客队列交叉
+  ---
+  duration_ms: 0.1922
+  type: 'test'
+  ...
+# Subtest: foreign interior remains off frame: Treatment room contains procedure beds
+ok 52 - foreign interior remains off frame: Treatment room contains procedure beds
+  ---
+  duration_ms: 0.3668
+  type: 'test'
+  ...
+# Subtest: foreign interior remains off frame: Consultation room furniture and display walls
+ok 53 - foreign interior remains off frame: Consultation room furniture and display walls
+  ---
+  duration_ms: 0.2968
+  type: 'test'
+  ...
+# Subtest: foreign interior remains off frame: Recovery room equipped with lounge beds
+ok 54 - foreign interior remains off frame: Recovery room equipped with lounge beds
+  ---
+  duration_ms: 0.1367
+  type: 'test'
+  ...
+# Subtest: foreign interior remains off frame: 治疗室内有诊疗设备
+ok 55 - foreign interior remains off frame: 治疗室内有诊疗设备
+  ---
+  duration_ms: 0.2103
+  type: 'test'
+  ...
+# Subtest: mixed clauses preserve the local operational relation without granting interior visibility
+ok 56 - mixed clauses preserve the local operational relation without granting interior visibility
+  ---
+  duration_ms: 1.0424
+  type: 'test'
+  ...
+# Subtest: a foreign-only privacy statement is retained only in an operational source context
+ok 57 - a foreign-only privacy statement is retained only in an operational source context
+  ---
+  duration_ms: 0.2958
+  type: 'test'
+  ...
+# Subtest: formal compiler retains legitimate relationships once without exposing foreign interiors or mutating input
+ok 58 - formal compiler retains legitimate relationships once without exposing foreign interiors or mutating input
+  ---
+  duration_ms: 170.8923
+  type: 'test'
+  ...
+# Subtest: bilingual background scope works for neutral and chromatic colors
+ok 59 - bilingual background scope works for neutral and chromatic colors
+  ---
+  duration_ms: 2.7371
+  type: 'test'
+  ...
+# Subtest: identity rank and color names cannot manufacture spatial scope
+ok 60 - identity rank and color names cannot manufacture spatial scope
+  ---
+  duration_ms: 0.4293
+  type: 'test'
+  ...
+# Subtest: role, ratio and carrier mutations reach the final compiler while materials and functions stay fixed
+ok 61 - role, ratio and carrier mutations reach the final compiler while materials and functions stay fixed
+  ---
+  duration_ms: 119.3113
+  type: 'test'
+  ...
+# Subtest: conflicting scope is visible, not resolved through matcher order
+ok 62 - conflicting scope is visible, not resolved through matcher order
+  ---
+  duration_ms: 8.9571
+  type: 'test'
+  ...
+# Subtest: chromatic and neutral materials preserve carrier, optical behavior and role without adding optics
+ok 63 - chromatic and neutral materials preserve carrier, optical behavior and role without adding optics
+  ---
+  duration_ms: 7.0048
+  type: 'test'
+  ...
+# Subtest: lighting retains supplied optical interaction and filters identity light
+ok 64 - lighting retains supplied optical interaction and filters identity light
+  ---
+  duration_ms: 0.1575
+  type: 'test'
+  ...
+# Subtest: actions retain the supplied object: Circulation flow guides visitors
+ok 65 - actions retain the supplied object: Circulation flow guides visitors
+  ---
+  duration_ms: 0.3803
+  type: 'test'
+  ...
+# Subtest: actions retain the supplied object: 动线流动引导访客
+ok 66 - actions retain the supplied object: 动线流动引导访客
+  ---
+  duration_ms: 2.0068
+  type: 'test'
+  ...
+# Subtest: actions retain the supplied object: Layered light falls on the wall
+ok 67 - actions retain the supplied object: Layered light falls on the wall
+  ---
+  duration_ms: 0.1332
+  type: 'test'
+  ...
+# Subtest: actions retain the supplied object: 层叠光影照亮接待台
+ok 68 - actions retain the supplied object: 层叠光影照亮接待台
+  ---
+  duration_ms: 0.1891
+  type: 'test'
+  ...
+# Subtest: actions retain the supplied object: Complex curved ceiling and curved walls
+ok 69 - actions retain the supplied object: Complex curved ceiling and curved walls
+  ---
+  duration_ms: 0.1194
+  type: 'test'
+  ...
+# Subtest: actions retain the supplied object: 复杂曲线天花与连续曲墙
+ok 70 - actions retain the supplied object: 复杂曲线天花与连续曲墙
+  ---
+  duration_ms: 0.1339
+  type: 'test'
+  ...
+# Subtest: actions retain the supplied object: Translucent glass partitions filter views
+ok 71 - actions retain the supplied object: Translucent glass partitions filter views
+  ---
+  duration_ms: 0.0774
+  type: 'test'
+  ...
+# Subtest: nonspatial sources are excluded before action derivation
+ok 72 - nonspatial sources are excluded before action derivation
+  ---
+  duration_ms: 15.6044
+  type: 'test'
+  ...
+# Subtest: motif translation does not invent geometry and explicit complex architecture survives
+ok 73 - motif translation does not invent geometry and explicit complex architecture survives
+  ---
+  duration_ms: 5.6199
+  type: 'test'
+  ...
+# Subtest: functional movement remains outside geometric actions and material paths retain original indices
+not ok 74 - functional movement remains outside geometric actions and material paths retain original indices
+  ---
+  duration_ms: 37.8379
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\design-decision-fidelity.test.js:108:1'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    TestContext.<anonymous> (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/design-decision-fidelity.test.js:112:18)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: full compiler preserves complex architectural intent across industries without adding installations
+ok 75 - full compiler preserves complex architectural intent across industries without adding installations
+  ---
+  duration_ms: 17.1682
+  type: 'test'
+  ...
+# Subtest: natural-language form values retain independent semantic fields through official standard business compilation
+not ok 76 - natural-language form values retain independent semantic fields through official standard business compilation
+  ---
+  duration_ms: 488.7756
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\design-direction-editor.test.ts:1:504'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    Object.compile (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js:175:20)
+    async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\design-direction-editor.test.ts:14:18)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: ambiguous color scope, misplaced full color prose, missing optics and duplicated function relations require clarification
+ok 77 - ambiguous color scope, misplaced full color prose, missing optics and duplicated function relations require clarification
+  ---
+  duration_ms: 476.4487
+  type: 'test'
+  ...
+# Subtest: explicit ordinary layouts retain source wording and provenance without invented architecture
+ok 78 - explicit ordinary layouts retain source wording and provenance without invented architecture
+  ---
+  duration_ms: 59.4967
+  type: 'test'
+  ...
+# Subtest: decorative or functional prose cannot grant ordinary layout authority
+ok 79 - decorative or functional prose cannot grant ordinary layout authority
+  ---
+  duration_ms: 26.8268
+  type: 'test'
+  ...
+# Subtest: ordinary Chinese and English layout terms pass source gates; genuinely absent architecture stays blocked
+ok 80 - ordinary Chinese and English layout terms pass source gates; genuinely absent architecture stays blocked
+  ---
+  duration_ms: 318.3374
+  type: 'test'
+  ...
+# Subtest: direction correction replaces the rejected art mechanism and preserves five functional targets through the standard adapter
+not ok 81 - direction correction replaces the rejected art mechanism and preserves five functional targets through the standard adapter
+  ---
+  duration_ms: 549.9331
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\fig2-fig3-spatial-direction.test.ts:1:542'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    Object.compile (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js:175:20)
+    async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\fig2-fig3-spatial-direction.test.ts:17:18)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: simplified hall direction remains project-local and does not replace an unedited project in the same store
+ok 82 - simplified hall direction remains project-local and does not replace an unedited project in the same store
+  ---
+  duration_ms: 165.0578
+  type: 'test'
+  ...
+# Subtest: baseline lock prevents input/model/code drift and old tasks; other projects remain independent, zero network
+not ok 83 - baseline lock prevents input/model/code drift and old tasks; other projects remain independent, zero network
+  ---
+  duration_ms: 113.5885
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\generation-baseline-lock.test.ts:1:516'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /BASELINE_LOCKED/. Input:
+    
+    'Error: VISUAL_WORKFLOW_IMPLEMENTATION_CHANGED: src/analysis-decisions/analysis-completion-orchestrator.js'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+  error: 'VISUAL_WORKFLOW_IMPLEMENTATION_CHANGED: src/analysis-decisions/analysis-completion-orchestrator.js'
+  stack: |-
+    verifyImplementation (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/integrity.js:13:39)
+    async Object.visual-workflow:analyze (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/service.js:183:28)
+    async waitForActual (node:assert:646:5)
+    async strict.rejects (node:assert:769:25)
+    async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\generation-baseline-lock.test.ts:38:3)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  operator: 'rejects'
+  stack: |-
+    async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\generation-baseline-lock.test.ts:38:3)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: bakery-methodology: current-project relations and scope reach suggestion and compiler without mutation
+ok 84 - bakery-methodology: current-project relations and scope reach suggestion and compiler without mutation
+  ---
+  duration_ms: 131.177
+  type: 'test'
+  ...
+# Subtest: outdoor-methodology: current-project relations and scope reach suggestion and compiler without mutation
+ok 85 - outdoor-methodology: current-project relations and scope reach suggestion and compiler without mutation
+  ---
+  duration_ms: 11.8372
+  type: 'test'
+  ...
+# Subtest: insufficient evidence remains absent rather than acquiring another project decision
+ok 86 - insufficient evidence remains absent rather than acquiring another project decision
+  ---
+  duration_ms: 0.8132
+  type: 'test'
+  ...
+# Subtest: brand or industry renaming alone does not change functional decisions or invent artwork
+ok 87 - brand or industry renaming alone does not change functional decisions or invent artwork
+  ---
+  duration_ms: 9.1814
+  type: 'test'
+  ...
+# Subtest: relationship mutation is preserved as a change, not accepted on object counts
+ok 88 - relationship mutation is preserved as a change, not accepted on object counts
+  ---
+  duration_ms: 18.1973
+  type: 'test'
+  ...
+# Subtest: historical P7a formal and provider prompts retain their recorded text hashes
+ok 89 - historical P7a formal and provider prompts retain their recorded text hashes
+  ---
+  duration_ms: 0.891
+  type: 'test'
+  ...
+# Subtest: custom preview binds a complete source program to its project without granting a camera
+not ok 90 - custom preview binds a complete source program to its project without granting a camera
+  ---
+  duration_ms: 137.9157
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\methodology\\custom-compatibility.test.ts:1:649'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\methodology\custom-compatibility.test.ts:14:65)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.start (node:internal/test_runner/test:1257:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+  ...
+# Subtest: custom previews retain project geometry, materials, color scope and light without inventing parameters
+not ok 91 - custom previews retain project geometry, materials, color scope and light without inventing parameters
+  ---
+  duration_ms: 8.8139
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\methodology\\custom-compatibility.test.ts:1:2919'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\methodology\custom-compatibility.test.ts:41:36)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: custom source binding rejects absent or foreign project ownership
+ok 92 - custom source binding rejects absent or foreign project ownership
+  ---
+  duration_ms: 35.0218
+  type: 'test'
+  ...
+# Subtest: a standard custom preview cannot accept a camera, scene alias, instruction, references or a fake target program
+ok 93 - a standard custom preview cannot accept a camera, scene alias, instruction, references or a fake target program
+  ---
+  duration_ms: 77.8448
+  type: 'test'
+  ...
+# Subtest: incomplete custom evidence is not replaced by an invented program or visibility list
+ok 94 - incomplete custom evidence is not replaced by an invented program or visibility list
+  ---
+  duration_ms: 29.9488
+  type: 'test'
+  ...
+# Subtest: unknown subtypes and other generation modes cannot opt into custom compatibility
+ok 95 - unknown subtypes and other generation modes cannot opt into custom compatibility
+  ---
+  duration_ms: 54.0063
+  type: 'test'
+  ...
+# Subtest: custom remains outside public template generation
+ok 96 - custom remains outside public template generation
+  ---
+  duration_ms: 2.7648
+  type: 'test'
+  ...
+# Subtest: glass text in a custom preview cannot become an executable visible owner
+not ok 97 - glass text in a custom preview cannot become an executable visible owner
+  ---
+  duration_ms: 8.9143
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\methodology\\custom-compatibility.test.ts:1:6324'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\methodology\custom-compatibility.test.ts:101:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: RKS-02C mapped scene formal and Provider prompt hashes, source maps and controls remain identical
+not ok 98 - RKS-02C mapped scene formal and Provider prompt hashes, source maps and controls remain identical
+  ---
+  duration_ms: 59.3131
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\methodology\\custom-compatibility.test.ts:1:6911'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    compile (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\restaurant-knowledge\ftt-fidelity-comparison.ts:20:10)
+    <anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\restaurant-knowledge\ftt-fidelity-comparison.ts:70:22)
+    Array.map (<anonymous>)
+    <anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\restaurant-knowledge\ftt-fidelity-comparison.ts:68:47)
+    Array.map (<anonymous>)
+    compareFidelity (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\restaurant-knowledge\ftt-fidelity-comparison.ts:63:21)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\methodology\custom-compatibility.test.ts:109:17)
+  ...
+# Subtest: existing methodology test expectations are unchanged from the frozen input
+ok 99 - existing methodology test expectations are unchanged from the frozen input
+  ---
+  duration_ms: 0.5253
+  type: 'test'
+  ...
+# Subtest: project direction saves and confirms without registering or uploading a single reference
+ok 100 - project direction saves and confirms without registering or uploading a single reference
+  ---
+  duration_ms: 113.4061
+  type: 'test'
+  ...
+# Subtest: web standard task, effective Packet, official compiler, actual image request and validator share the confirmed direction
+not ok 101 - web standard task, effective Packet, official compiler, actual image request and validator share the confirmed direction
+  ---
+  duration_ms: 284.6675
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\project-design-direction.test.ts:1:2483'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    Object.compile (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js:175:20)
+    async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\project-design-direction.test.ts:36:18)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: a changed analysis Packet cannot silently overwrite or reuse the confirmed decision
+ok 102 - a changed analysis Packet cannot silently overwrite or reuse the confirmed decision
+  ---
+  duration_ms: 111.3282
+  type: 'test'
+  ...
+# Subtest: an analysis request preserves direction and requires explicit reconfirmation even if analysis fails or app restarts
+ok 103 - an analysis request preserves direction and requires explicit reconfirmation even if analysis fails or app restarts
+  ---
+  duration_ms: 102.32
+  type: 'test'
+  ...
+# Subtest: decision changes after compile block dispatch and keep all history
+not ok 104 - decision changes after compile block dispatch and keep all history
+  ---
+  duration_ms: 89.0481
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\project-design-direction.test.ts:1:5776'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    Object.compile (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js:175:20)
+    async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\project-design-direction.test.ts:71:44)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: cross-project, stale editing, non-confirmation and invalid confirmed decisions are rejected
+ok 105 - cross-project, stale editing, non-confirmation and invalid confirmed decisions are rejected
+  ---
+  duration_ms: 79.04
+  type: 'test'
+  ...
+# {"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"49f2f114-10c9-41c4-9f36-75e4a615597a","taskId":"vnext-task-8bcc472f-f608-4b6f-aca3-7e4769bd8e89","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7094,"compileDurationMs":20.1}
+# Subtest: a newly confirmed decision invalidates a previously compiled ordinary task with no direction
+ok 106 - a newly confirmed decision invalidates a previously compiled ordinary task with no direction
+  ---
+  duration_ms: 208.6461
+  type: 'test'
+  ...
+# {"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"a0a5e9cb-99cd-4f84-86ef-7f03e985d65f","taskId":"vnext-task-7950c8af-9cf6-47f9-ba5a-56b084881741","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7094,"compileDurationMs":17.937}
+# {"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"8e8a5417-4f8d-447c-822b-b451f8724cf7","taskId":"vnext-task-5402b292-2b78-4393-a2af-912ff53cea42","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7078,"compileDurationMs":18.197}
+# {"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"5696e099-c597-48e0-a77a-1c14df53dcba","taskId":"vnext-task-3cad0874-f53a-4a3f-9653-916da9effb57","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7068,"compileDurationMs":19.537}
+# Subtest: ordinary industries remain byte-identical and contain no direction or image request fields
+ok 107 - ordinary industries remain byte-identical and contain no direction or image request fields
+  ---
+  duration_ms: 644.4909
+  type: 'test'
+  ...
+# Subtest: existing four-image art direction route remains independent and operational
+not ok 108 - existing four-image art direction route remains independent and operational
+  ---
+  duration_ms: 118.3476
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\project-design-direction.test.ts:1:8426'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    Object.compile (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js:175:20)
+    async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\project-design-direction.test.ts:100:63)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: the plain-language web editor saves and confirms a usable direction without JSON editing
+not ok 109 - the plain-language web editor saves and confirms a usable direction without JSON editing
+  ---
+  duration_ms: 118.1151
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\project-design-direction.test.ts:1:8738'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    Object.compile (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js:175:20)
+    async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\project-design-direction.test.ts:107:18)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: guarded public web operations save, confirm, compile, generate, reopen and invalidate on an analysis request
+not ok 110 - guarded public web operations save, confirm, compile, generate, reopen and invalidate on an analysis request
+  ---
+  duration_ms: 40.5486
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\project-design-direction.test.ts:1:9324'
+  failureType: 'testCodeFailure'
+  error: 'VISUAL_WORKFLOW_IMPLEMENTATION_CHANGED: src/analysis-decisions/analysis-completion-orchestrator.js'
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    verifyImplementation (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/integrity.js:13:39)
+    async Object.visual-workflow:save-profile (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/service.js:183:28)
+    async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\project-design-direction.test.ts:119:3)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: explicit details save persists identity, retains artifacts and requires new analysis/confirmation without calling models
+not ok 111 - explicit details save persists identity, retains artifacts and requires new analysis/confirmation without calling models
+  ---
+  duration_ms: 126.8469
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\project-details-editing.test.ts:1:442'
+  failureType: 'testCodeFailure'
+  error: 'VISUAL_WORKFLOW_IMPLEMENTATION_CHANGED: src/analysis-decisions/analysis-completion-orchestrator.js'
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    verifyImplementation (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/integrity.js:13:39)
+    async Object.visual-workflow:update-project (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/service.js:183:28)
+    async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\project-details-editing.test.ts:20:17)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: details editing rejects invalid values, stale saves, another project and active analysis without changing stored data
+ok 112 - details editing rejects invalid values, stale saves, another project and active analysis without changing stored data
+  ---
+  duration_ms: 44.9541
+  type: 'test'
+  ...
+# Subtest: synthetic Packet comparison uses existing pure compiler, with no confirmation or transport
+ok 113 - synthetic Packet comparison uses existing pure compiler, with no confirmation or transport
+  ---
+  duration_ms: 195.3453
+  type: 'test'
+  ...
+# Subtest: RKS-01E synthetic field lineage distinguishes routing from scene filtering without transport
+ok 114 - RKS-01E synthetic field lineage distinguishes routing from scene filtering without transport
+  ---
+  duration_ms: 352.4998
+  type: 'test'
+  ...
+# file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334
+#       new Error(`SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: ${codes}`),
+#       ^
+# Error: SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS
+#     at compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+#     at compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)
+#     at compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+#     at compile (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\restaurant-knowledge\\ftt-fidelity-comparison.ts:20:10)
+#     at <anonymous> (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\restaurant-knowledge\\ftt-fidelity-comparison.ts:70:22)
+#     at Array.map (<anonymous>)
+#     at <anonymous> (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\restaurant-knowledge\\ftt-fidelity-comparison.ts:68:47)
+#     at Array.map (<anonymous>)
+#     at compareFidelity (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\restaurant-knowledge\\ftt-fidelity-comparison.ts:63:21)
+#     at <anonymous> (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\restaurant-knowledge\\ftt-fidelity.test.ts:6:18) {
+#   code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK',
+#   findings: [
+#     {
+#       code: 'INVALID_SPACE_FUNCTIONAL_SEMANTICS',
+#       severity: 'block',
+#       field: 'functionalRelationships',
+#       path: 'mediaTranslations.spatial.functionalRelationships[0]',
+#       classification: 'architectural',
+#       original: '形成高效服务动线; 支持多场景消费',
+#       reason: 'complete_functional_evidence_required',
+#       analysis: {
+#         classification: 'architectural',
+#         motifHits: [],
+#         colorHits: [],
+#         archHits: 1,
+#         propertyHits: 0,
+#         metaphor: false,
+#         accent: false,
+#         geometryAction: true
+#       }
+#     }
+#   ]
+# }
+# Node.js v24.20.0
+# Subtest: packages\\visual-workflow\\tests\\restaurant-knowledge\\ftt-fidelity.test.ts
+not ok 22 - packages\\visual-workflow\\tests\\restaurant-knowledge\\ftt-fidelity.test.ts
+  ---
+  duration_ms: 458.456
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\restaurant-knowledge\\ftt-fidelity.test.ts:1:1'
+  failureType: 'testCodeFailure'
+  exitCode: 1
+  signal: ~
+  error: 'test failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+# file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334
+#       new Error(`SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: ${codes}`),
+#       ^
+# Error: SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS
+#     at compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+#     at compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)
+#     at compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+#     at <anonymous> (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\restaurant-knowledge\\ftt-final-design-compile.ts:12:44)
+#     at Array.map (<anonymous>)
+#     at <anonymous> (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\restaurant-knowledge\\ftt-final-design-compile.ts:11:47)
+#     at Array.map (<anonymous>)
+#     at compileFinalDesign (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\restaurant-knowledge\\ftt-final-design-compile.ts:10:31)
+#     at <anonymous> (E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\restaurant-knowledge\\ftt-final-design.test.ts:8:14)
+#     at ModuleJob.run (node:internal/modules/esm/module_job:561:25) {
+#   code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK',
+#   findings: [
+#     {
+#       code: 'INVALID_SPACE_FUNCTIONAL_SEMANTICS',
+#       severity: 'block',
+#       field: 'functionalNetwork',
+#       path: 'mediaTranslations.spatial.functionalNetwork[0]',
+#       classification: 'functional',
+#       original: '位置与设置方式待确认',
+#       reason: 'conditional_or_unconfirmed_scope',
+#       analysis: {
+#         classification: 'functional',
+#         motifHits: [],
+#         colorHits: [],
+#         archHits: 0,
+#         propertyHits: 0,
+#         metaphor: false,
+#         accent: false,
+#         geometryAction: false
+#       }
+#     },
+#     {
+#       code: 'INVALID_SPACE_FUNCTIONAL_SEMANTICS',
+#       severity: 'block',
+#       field: 'functionalRelationships',
+#       path: 'mediaTranslations.spatial.functionalRelationships[0]',
+#       classification: 'architectural',
+#       original: 'Kitchen preparation connects to service counter; dining tables remain accessible; takeaway handoff keeps a clear route',
+#       reason: 'complete_functional_evidence_required',
+#       analysis: {
+#         classification: 'architectural',
+#         motifHits: [],
+#         colorHits: [],
+#         archHits: 1,
+#         propertyHits: 0,
+#         metaphor: false,
+#         accent: false,
+#         geometryAction: false
+#       }
+#     }
+#   ]
+# }
+# Node.js v24.20.0
+# Subtest: packages\\visual-workflow\\tests\\restaurant-knowledge\\ftt-final-design.test.ts
+not ok 23 - packages\\visual-workflow\\tests\\restaurant-knowledge\\ftt-final-design.test.ts
+  ---
+  duration_ms: 617.7829
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\restaurant-knowledge\\ftt-final-design.test.ts:1:1'
+  failureType: 'testCodeFailure'
+  exitCode: 1
+  signal: ~
+  error: 'test failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+# Subtest: six-case counterexample: FTT 合成目标（并非图 1 实际输入）
+ok 117 - six-case counterexample: FTT 合成目标（并非图 1 实际输入）
+  ---
+  duration_ms: 27.7547
+  type: 'test'
+  ...
+# Subtest: six-case counterexample: 商场标准化川味快餐
+ok 118 - six-case counterexample: 商场标准化川味快餐
+  ---
+  duration_ms: 0.6463
+  type: 'test'
+  ...
+# Subtest: six-case counterexample: 临街现代外带小吃店
+ok 119 - six-case counterexample: 临街现代外带小吃店
+  ---
+  duration_ms: 0.3286
+  type: 'test'
+  ...
+# Subtest: six-case counterexample: 社区复古咖啡馆
+ok 120 - six-case counterexample: 社区复古咖啡馆
+  ---
+  duration_ms: 0.2901
+  type: 'test'
+  ...
+# Subtest: six-case counterexample: 写字楼复古中餐厅
+ok 121 - six-case counterexample: 写字楼复古中餐厅
+  ---
+  duration_ms: 0.3025
+  type: 'test'
+  ...
+# Subtest: six-case counterexample: 材料不足的餐饮品牌
+ok 122 - six-case counterexample: 材料不足的餐饮品牌
+  ---
+  duration_ms: 0.1548
+  type: 'test'
+  ...
+# Subtest: order, synonyms, provenance and project-name independence
+ok 123 - order, synonyms, provenance and project-name independence
+  ---
+  duration_ms: 3.1094
+  type: 'test'
+  ...
+# Subtest: all six conflict codes with paired evidence and no efficiency-only false positive
+ok 124 - all six conflict codes with paired evidence and no efficiency-only false positive
+  ---
+  duration_ms: 3.7299
+  type: 'test'
+  ...
+# Subtest: unknown tags, conflicting facts and competing archetypes stay unresolved
+ok 125 - unknown tags, conflicting facts and competing archetypes stay unresolved
+  ---
+  duration_ms: 2.088
+  type: 'test'
+  ...
+# Subtest: invalid ownership and fake authority fail closed
+ok 126 - invalid ownership and fake authority fail closed
+  ---
+  duration_ms: 2.4298
+  type: 'test'
+  ...
+# Subtest: candidate cards cannot be mistaken for promoted cross-project knowledge
+ok 127 - candidate cards cannot be mistaken for promoted cross-project knowledge
+  ---
+  duration_ms: 0.4353
+  type: 'test'
+  ...
+# Subtest: direction comparison is read-only, controlled and explicitly unconfirmed
+ok 128 - direction comparison is read-only, controlled and explicitly unconfirmed
+  ---
+  duration_ms: 1.1807
+  type: 'test'
+  ...
+# Subtest: prototype has no transport, production imports, brand rules or mutable global store
+ok 129 - prototype has no transport, production imports, brand rules or mutable global store
+  ---
+  duration_ms: 1.0535
+  type: 'test'
+  ...
+# Subtest: A/B uses actual B1 projection and pure compilers with controlled synthetic input, no confirmation or transport
+not ok 130 - A/B uses actual B1 projection and pure compilers with controlled synthetic input, no confirmation or transport
+  ---
+  duration_ms: 218.6894
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\restaurant-knowledge\\shadow-compile.test.ts:1:128'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    compile (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\restaurant-knowledge\shadow-comparison.ts:42:36)
+    compareShadowDirections (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\restaurant-knowledge\shadow-comparison.ts:43:29)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\restaurant-knowledge\shadow-compile.test.ts:7:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.start (node:internal/test_runner/test:1257:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+  ...
+# Subtest: pre-analysis boundary cannot read a Packet and never classifies proposals or history as original facts
+ok 131 - pre-analysis boundary cannot read a Packet and never classifies proposals or history as original facts
+  ---
+  duration_ms: 17.9648
+  type: 'test'
+  ...
+# Subtest: FTT reviewed upgrade proposal triggers paired direction conflict without making modernity universally incompatible
+ok 132 - FTT reviewed upgrade proposal triggers paired direction conflict without making modernity universally incompatible
+  ---
+  duration_ms: 2.9643
+  type: 'test'
+  ...
+# Subtest: candidate materials/operations remain separately reviewable and never become confirmed B1 fields
+ok 133 - candidate materials/operations remain separately reviewable and never become confirmed B1 fields
+  ---
+  duration_ms: 1.6564
+  type: 'test'
+  ...
+# Subtest: pure execution preserves all caller inputs, original historical Packet and resources across order changes
+ok 134 - pure execution preserves all caller inputs, original historical Packet and resources across order changes
+  ---
+  duration_ms: 7.1778
+  type: 'test'
+  ...
+# Subtest: shadow six-case isolation: FTT 合成目标（并非图 1 实际输入）
+ok 135 - shadow six-case isolation: FTT 合成目标（并非图 1 实际输入）
+  ---
+  duration_ms: 0.987
+  type: 'test'
+  ...
+# Subtest: shadow six-case isolation: 商场标准化川味快餐
+ok 136 - shadow six-case isolation: 商场标准化川味快餐
+  ---
+  duration_ms: 0.5525
+  type: 'test'
+  ...
+# Subtest: shadow six-case isolation: 临街现代外带小吃店
+ok 137 - shadow six-case isolation: 临街现代外带小吃店
+  ---
+  duration_ms: 0.4802
+  type: 'test'
+  ...
+# Subtest: shadow six-case isolation: 社区复古咖啡馆
+ok 138 - shadow six-case isolation: 社区复古咖啡馆
+  ---
+  duration_ms: 0.4514
+  type: 'test'
+  ...
+# Subtest: shadow six-case isolation: 写字楼复古中餐厅
+ok 139 - shadow six-case isolation: 写字楼复古中餐厅
+  ---
+  duration_ms: 0.4407
+  type: 'test'
+  ...
+# Subtest: shadow six-case isolation: 材料不足的餐饮品牌
+ok 140 - shadow six-case isolation: 材料不足的餐饮品牌
+  ---
+  duration_ms: 0.3588
+  type: 'test'
+  ...
+# Subtest: changing a brand label or trying to reuse FTT material bindings cannot move project-specific knowledge
+ok 141 - changing a brand label or trying to reuse FTT material bindings cannot move project-specific knowledge
+  ---
+  duration_ms: 1.3647
+  type: 'test'
+  ...
+# Subtest: evidence binding/ownership and exact mapping fail closed instead of inferring prose
+ok 142 - evidence binding/ownership and exact mapping fail closed instead of inferring prose
+  ---
+  duration_ms: 7.4376
+  type: 'test'
+  ...
+# Subtest: unverified intake/goals cannot authorize archetypes, styles or B1 drafts
+ok 143 - unverified intake/goals cannot authorize archetypes, styles or B1 drafts
+  ---
+  duration_ms: 1.2346
+  type: 'test'
+  ...
+# Subtest: contradictory confirmed direction values stay unresolved rather than last-write winning
+ok 144 - contradictory confirmed direction values stay unresolved rather than last-write winning
+  ---
+  duration_ms: 1.3242
+  type: 'test'
+  ...
+# Subtest: verified structured source facts remain facts; user location/customer goals remain goals
+ok 145 - verified structured source facts remain facts; user location/customer goals remain goals
+  ---
+  duration_ms: 0.476
+  type: 'test'
+  ...
+# Subtest: the shadow entry is isolated, has no I/O or production imports, and cannot dispatch a model
+ok 146 - the shadow entry is isolated, has no I/O or production imports, and cannot dispatch a model
+  ---
+  duration_ms: 0.6333
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: equipment conveying happiness
+ok 147 - E1E blocking expectation: equipment conveying happiness
+  ---
+  duration_ms: 38.3852
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: 砂锅传递幸福感
+ok 148 - E1E blocking expectation: 砂锅传递幸福感
+  ---
+  duration_ms: 16.2862
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: 设备自动治愈顾客
+ok 149 - E1E blocking expectation: 设备自动治愈顾客
+  ---
+  duration_ms: 2.6157
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: 在设备旁员工畅想未来
+ok 150 - E1E blocking expectation: 在设备旁员工畅想未来
+  ---
+  duration_ms: 1.7251
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: petal curved counter
+ok 151 - E1E blocking expectation: petal curved counter
+  ---
+  duration_ms: 2.5449
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: lotus layered table
+ok 152 - E1E blocking expectation: lotus layered table
+  ---
+  duration_ms: 2.9942
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: 花瓣曲线桌
+ok 153 - E1E blocking expectation: 花瓣曲线桌
+  ---
+  duration_ms: 3.6396
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: Logo and equipment conveying happiness
+ok 154 - E1E blocking expectation: Logo and equipment conveying happiness
+  ---
+  duration_ms: 7.5536
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: staff operating equipment and enjoying cosmic essence
+ok 155 - E1E blocking expectation: staff operating equipment and enjoying cosmic essence
+  ---
+  duration_ms: 2.3199
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: 员工操作设备并畅想未来
+ok 156 - E1E blocking expectation: 员工操作设备并畅想未来
+  ---
+  duration_ms: 1.0212
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: 员工没有使用设备
+ok 157 - E1E blocking expectation: 员工没有使用设备
+  ---
+  duration_ms: 4.4297
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: 员工不会操作设备
+ok 158 - E1E blocking expectation: 员工不会操作设备
+  ---
+  duration_ms: 1.3357
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: 员工尚未操作设备
+ok 159 - E1E blocking expectation: 员工尚未操作设备
+  ---
+  duration_ms: 1.8023
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: staff operating equipment
+ok 160 - E1E blocking expectation: staff operating equipment
+  ---
+  duration_ms: 4.2182
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: Waiting area seating
+ok 161 - E1E blocking expectation: Waiting area seating
+  ---
+  duration_ms: 28.2457
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: 入口处的菜单
+ok 162 - E1E blocking expectation: 入口处的菜单
+  ---
+  duration_ms: 1.6712
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: Logo吸引顾客点餐
+ok 163 - E1E blocking expectation: Logo吸引顾客点餐
+  ---
+  duration_ms: 3.4021
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: staff not operating equipment
+ok 164 - E1E blocking expectation: staff not operating equipment
+  ---
+  duration_ms: 0.8702
+  type: 'test'
+  ...
+# Subtest: E1E blocking expectation: unresolved rendezvous
+ok 165 - E1E blocking expectation: unresolved rendezvous
+  ---
+  duration_ms: 2.4867
+  type: 'test'
+  ...
+# Subtest: the E1E mixed visibility defect cannot become ready or call optional repair models
+ok 166 - the E1E mixed visibility defect cannot become ready or call optional repair models
+  ---
+  duration_ms: 38.4222
+  type: 'test'
+  ...
+# Subtest: complete positive units reject unrecognized tails, negation, wishes, identity and color
+ok 167 - complete positive units reject unrecognized tails, negation, wishes, identity and color
+  ---
+  duration_ms: 36.5488
+  type: 'test'
+  ...
+# Subtest: pure brand demotion is not permission to render a decorative object as a visible function
+ok 168 - pure brand demotion is not permission to render a decorative object as a visible function
+  ---
+  duration_ms: 0.9305
+  type: 'test'
+  ...
+# Subtest: approved architectural requirements consume every clause and reject appended unknown or negative predicates
+ok 169 - approved architectural requirements consume every clause and reject appended unknown or negative predicates
+  ---
+  duration_ms: 67.2141
+  type: 'test'
+  ...
+# Subtest: safe separation precedes structured model batches without filling missing material evidence
+ok 170 - safe separation precedes structured model batches without filling missing material evidence
+  ---
+  duration_ms: 145.0933
+  type: 'test'
+  ...
+# Subtest: unresolved clauses outside the visible field cannot be hidden by a passing final gate
+not ok 171 - unresolved clauses outside the visible field cannot be hidden by a passing final gate
+  ---
+  duration_ms: 6.2634
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\restaurant-knowledge\\spatial-semantics\\evidence-boundaries.test.ts:1:7453'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    'block' !== 'pass'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'pass'
+  actual: 'block'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\restaurant-knowledge\spatial-semantics\evidence-boundaries.test.ts:98:10)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: local validator exception before optional repair uses zero model calls
+ok 172 - local validator exception before optional repair uses zero model calls
+  ---
+  duration_ms: 0.8276
+  type: 'test'
+  ...
+# Subtest: local separator exception before optional repair uses zero model calls
+ok 173 - local separator exception before optional repair uses zero model calls
+  ---
+  duration_ms: 5.1621
+  type: 'test'
+  ...
+# Subtest: local repaired-persistence exception before optional repair uses zero model calls
+ok 174 - local repaired-persistence exception before optional repair uses zero model calls
+  ---
+  duration_ms: 25.6421
+  type: 'test'
+  ...
+# Subtest: unknown source facts still require confirmation after safe local semantic separation
+ok 175 - unknown source facts still require confirmation after safe local semantic separation
+  ---
+  duration_ms: 26.8194
+  type: 'test'
+  ...
+# Subtest: corrupt packet shape fails before optional model callbacks
+ok 176 - corrupt packet shape fails before optional model callbacks
+  ---
+  duration_ms: 0.4736
+  type: 'test'
+  ...
+# Subtest: targeted semantic regression uses zero network primitives
+ok 177 - targeted semantic regression uses zero network primitives
+  ---
+  duration_ms: 0.0872
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: Only if Logo and staff operating equipment
+ok 178 - E1G semantic expectation block: Only if Logo and staff operating equipment
+  ---
+  duration_ms: 13.1408
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: If Logo and staff operating equipment
+ok 179 - E1G semantic expectation block: If Logo and staff operating equipment
+  ---
+  duration_ms: 1.9502
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: 未确认Logo和员工操作设备
+ok 180 - E1G semantic expectation block: 未确认Logo和员工操作设备
+  ---
+  duration_ms: 3.8977
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: 如果出现Logo和员工操作设备
+ok 181 - E1G semantic expectation block: 如果出现Logo和员工操作设备
+  ---
+  duration_ms: 1.5211
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: 如果有Logo and staff operating equipment
+ok 182 - E1G semantic expectation block: 如果有Logo and staff operating equipment
+  ---
+  duration_ms: 2.1608
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: reception equipment of it
+ok 183 - E1G semantic expectation block: reception equipment of it
+  ---
+  duration_ms: 42.5087
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: equipment near it
+ok 184 - E1G semantic expectation block: equipment near it
+  ---
+  duration_ms: 3.7121
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: reception counter and with it
+ok 185 - E1G semantic expectation block: reception counter and with it
+  ---
+  duration_ms: 3.7307
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: Logo and equipment near it
+ok 186 - E1G semantic expectation block: Logo and equipment near it
+  ---
+  duration_ms: 11.4896
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: staff operating equipment; staff not using equipment
+ok 187 - E1G semantic expectation block: staff operating equipment; staff not using equipment
+  ---
+  duration_ms: 1.9116
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: staff operating equipment；员工尚未操作设备
+ok 188 - E1G semantic expectation block: staff operating equipment；员工尚未操作设备
+  ---
+  duration_ms: 2.4972
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: staff operating equipment and 员工没有使用设备
+ok 189 - E1G semantic expectation block: staff operating equipment and 员工没有使用设备
+  ---
+  duration_ms: 1.2503
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: 员工操作设备; staff may be operating equipment
+ok 190 - E1G semantic expectation block: 员工操作设备; staff may be operating equipment
+  ---
+  duration_ms: 2.0243
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: staff operating equipment; if customers arrive
+ok 191 - E1G semantic expectation block: staff operating equipment; if customers arrive
+  ---
+  duration_ms: 1.5785
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: staff operating equipment and enjoying cosmic essence
+ok 192 - E1G semantic expectation block: staff operating equipment and enjoying cosmic essence
+  ---
+  duration_ms: 4.2061
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: 员工使用设备并象征品牌未来
+ok 193 - E1G semantic expectation block: 员工使用设备并象征品牌未来
+  ---
+  duration_ms: 11.5266
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: Logo and staff operating equipment; staff not using equipment
+ok 194 - E1G semantic expectation block: Logo and staff operating equipment; staff not using equipment
+  ---
+  duration_ms: 2.5693
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: staff operating equipment if the store opens
+ok 195 - E1G semantic expectation block: staff operating equipment if the store opens
+  ---
+  duration_ms: 1.5898
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: 设备旁的员工 not operating equipment
+ok 196 - E1G semantic expectation block: 设备旁的员工 not operating equipment
+  ---
+  duration_ms: 1.5194
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: reception counter; staff do not serve customers
+ok 197 - E1G semantic expectation block: reception counter; staff do not serve customers
+  ---
+  duration_ms: 1.4608
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: reception counter and equipment
+ok 198 - E1G semantic expectation block: reception counter and equipment
+  ---
+  duration_ms: 19.2794
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: Reception counter with a usable staff approach and not usable by visitors
+ok 199 - E1G semantic expectation block: Reception counter with a usable staff approach and not usable by visitors
+  ---
+  duration_ms: 1.2551
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation pass: staff operating equipment and serving customers
+ok 200 - E1G semantic expectation pass: staff operating equipment and serving customers
+  ---
+  duration_ms: 2.6628
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation pass: 顾客在入口查看菜单
+ok 201 - E1G semantic expectation pass: 顾客在入口查看菜单
+  ---
+  duration_ms: 2.6215
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation pass: 员工在柜台为顾客办理入住
+ok 202 - E1G semantic expectation pass: 员工在柜台为顾客办理入住
+  ---
+  duration_ms: 2.3327
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation pass: 工作人员使用收银机收款
+ok 203 - E1G semantic expectation pass: 工作人员使用收银机收款
+  ---
+  duration_ms: 2.2209
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation pass: Customers paying at the checkout counter
+ok 204 - E1G semantic expectation pass: Customers paying at the checkout counter
+  ---
+  duration_ms: 1.9656
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation pass: 餐桌位于就餐区
+ok 205 - E1G semantic expectation pass: 餐桌位于就餐区
+  ---
+  duration_ms: 4.689
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation pass: 取餐台位于点餐区旁
+ok 206 - E1G semantic expectation pass: 取餐台位于点餐区旁
+  ---
+  duration_ms: 3.4413
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation pass: Menu at the service counter
+ok 207 - E1G semantic expectation pass: Menu at the service counter
+  ---
+  duration_ms: 2.9361
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation pass: staff operating equipment；员工使用设备
+ok 208 - E1G semantic expectation pass: staff operating equipment；员工使用设备
+  ---
+  duration_ms: 5.4371
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation pass: staff serving customers; guests checking in
+ok 209 - E1G semantic expectation pass: staff serving customers; guests checking in
+  ---
+  duration_ms: 4.4948
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation pass: Reception counter with a usable staff and visitor approach
+ok 210 - E1G semantic expectation pass: Reception counter with a usable staff and visitor approach
+  ---
+  duration_ms: 2.9814
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation pass: 入口处的菜单
+ok 211 - E1G semantic expectation pass: 入口处的菜单
+  ---
+  duration_ms: 2.4895
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation pass: staff operating equipment; lotus represents happiness
+ok 212 - E1G semantic expectation pass: staff operating equipment; lotus represents happiness
+  ---
+  duration_ms: 5.5682
+  type: 'test'
+  ...
+# Subtest: E1G completion must fail closed: mustBeVisible: Only if Logo and staff operating equipment
+ok 213 - E1G completion must fail closed: mustBeVisible: Only if Logo and staff operating equipment
+  ---
+  duration_ms: 37.3246
+  type: 'test'
+  ...
+# Subtest: E1G completion must fail closed: mustBeVisible: 未确认Logo和员工操作设备
+ok 214 - E1G completion must fail closed: mustBeVisible: 未确认Logo和员工操作设备
+  ---
+  duration_ms: 30.2767
+  type: 'test'
+  ...
+# Subtest: E1G completion must fail closed: mustBeVisible: equipment near it
+ok 215 - E1G completion must fail closed: mustBeVisible: equipment near it
+  ---
+  duration_ms: 18.1208
+  type: 'test'
+  ...
+# Subtest: E1G completion must fail closed: functionalRelationships: staff operating equipment and enjoying cosmic essence
+ok 216 - E1G completion must fail closed: functionalRelationships: staff operating equipment and enjoying cosmic essence
+  ---
+  duration_ms: 54.5187
+  type: 'test'
+  ...
+# Subtest: E1G completion must fail closed: functionalNetwork: 员工尚未操作设备
+ok 217 - E1G completion must fail closed: functionalNetwork: 员工尚未操作设备
+  ---
+  duration_ms: 13.3875
+  type: 'test'
+  ...
+# Subtest: E1G completion must fail closed: sceneProgram: If staff operating equipment
+ok 218 - E1G completion must fail closed: sceneProgram: If staff operating equipment
+  ---
+  duration_ms: 10.6277
+  type: 'test'
+  ...
+# Subtest: E1G source status and user confirmation remain distinct from semantic affirmation
+ok 219 - E1G source status and user confirmation remain distinct from semantic affirmation
+  ---
+  duration_ms: 11.6589
+  type: 'test'
+  ...
+# Subtest: E1G unresolved evidence survives even when sufficiency has no missing fields
+ok 220 - E1G unresolved evidence survives even when sufficiency has no missing fields
+  ---
+  duration_ms: 16.6529
+  type: 'test'
+  ...
+# Subtest: E1G compatibility characterization: no deterministic callback permits model semantic replacement
+ok 221 - E1G compatibility characterization: no deterministic callback permits model semantic replacement
+  ---
+  duration_ms: 6.368
+  type: 'test'
+  ...
+# Subtest: E1G dispatch distinction A-no-third-attempt
+ok 222 - E1G dispatch distinction A-no-third-attempt
+  ---
+  duration_ms: 145.3401
+  type: 'test'
+  ...
+# Subtest: E1G dispatch distinction B-attempt-blocked
+ok 223 - E1G dispatch distinction B-attempt-blocked
+  ---
+  duration_ms: 81.8042
+  type: 'test'
+  ...
+# Subtest: scope repair affirmative proposition: staff operating equipment and serving customers
+ok 224 - scope repair affirmative proposition: staff operating equipment and serving customers
+  ---
+  duration_ms: 24.3459
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Only if Logo and staff operating equipment and serving customers
+ok 225 - scope repair rejects extension: Only if Logo and staff operating equipment and serving customers
+  ---
+  duration_ms: 2.0068
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Unless staff operating equipment and serving customers
+ok 226 - scope repair rejects extension: Unless staff operating equipment and serving customers
+  ---
+  duration_ms: 0.7683
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 尚未确认Logo和staff operating equipment and serving customers
+ok 227 - scope repair rejects extension: 尚未确认Logo和staff operating equipment and serving customers
+  ---
+  duration_ms: 3.4564
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: staff operating equipment and serving customers; staff not using equipment
+ok 228 - scope repair rejects extension: staff operating equipment and serving customers; staff not using equipment
+  ---
+  duration_ms: 0.7858
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: staff operating equipment and serving customers and enjoying cosmic essence
+ok 229 - scope repair rejects extension: staff operating equipment and serving customers and enjoying cosmic essence
+  ---
+  duration_ms: 15.5772
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: staff operating equipment and serving customers并象征品牌未来
+ok 230 - scope repair rejects extension: staff operating equipment and serving customers并象征品牌未来
+  ---
+  duration_ms: 17.1223
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: staff operating equipment and serving customers; unknown operational tail
+ok 231 - scope repair rejects extension: staff operating equipment and serving customers; unknown operational tail
+  ---
+  duration_ms: 3.7086
+  type: 'test'
+  ...
+# Subtest: scope repair affirmative proposition: 顾客在入口查看菜单
+ok 232 - scope repair affirmative proposition: 顾客在入口查看菜单
+  ---
+  duration_ms: 2.0262
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Only if Logo and 顾客在入口查看菜单
+ok 233 - scope repair rejects extension: Only if Logo and 顾客在入口查看菜单
+  ---
+  duration_ms: 0.8072
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Unless 顾客在入口查看菜单
+ok 234 - scope repair rejects extension: Unless 顾客在入口查看菜单
+  ---
+  duration_ms: 0.6739
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 尚未确认Logo和顾客在入口查看菜单
+ok 235 - scope repair rejects extension: 尚未确认Logo和顾客在入口查看菜单
+  ---
+  duration_ms: 0.5854
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 顾客在入口查看菜单; staff not using equipment
+ok 236 - scope repair rejects extension: 顾客在入口查看菜单; staff not using equipment
+  ---
+  duration_ms: 0.7985
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 顾客在入口查看菜单 and enjoying cosmic essence
+ok 237 - scope repair rejects extension: 顾客在入口查看菜单 and enjoying cosmic essence
+  ---
+  duration_ms: 4.2496
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 顾客在入口查看菜单并象征品牌未来
+ok 238 - scope repair rejects extension: 顾客在入口查看菜单并象征品牌未来
+  ---
+  duration_ms: 1.5806
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 顾客在入口查看菜单; unknown operational tail
+ok 239 - scope repair rejects extension: 顾客在入口查看菜单; unknown operational tail
+  ---
+  duration_ms: 3.0512
+  type: 'test'
+  ...
+# Subtest: scope repair affirmative proposition: 员工在柜台为顾客办理入住
+ok 240 - scope repair affirmative proposition: 员工在柜台为顾客办理入住
+  ---
+  duration_ms: 0.9059
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Only if Logo and 员工在柜台为顾客办理入住
+ok 241 - scope repair rejects extension: Only if Logo and 员工在柜台为顾客办理入住
+  ---
+  duration_ms: 0.662
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Unless 员工在柜台为顾客办理入住
+ok 242 - scope repair rejects extension: Unless 员工在柜台为顾客办理入住
+  ---
+  duration_ms: 0.6238
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 尚未确认Logo和员工在柜台为顾客办理入住
+ok 243 - scope repair rejects extension: 尚未确认Logo和员工在柜台为顾客办理入住
+  ---
+  duration_ms: 0.643
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 员工在柜台为顾客办理入住; staff not using equipment
+ok 244 - scope repair rejects extension: 员工在柜台为顾客办理入住; staff not using equipment
+  ---
+  duration_ms: 0.8603
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 员工在柜台为顾客办理入住 and enjoying cosmic essence
+ok 245 - scope repair rejects extension: 员工在柜台为顾客办理入住 and enjoying cosmic essence
+  ---
+  duration_ms: 2.0231
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 员工在柜台为顾客办理入住并象征品牌未来
+ok 246 - scope repair rejects extension: 员工在柜台为顾客办理入住并象征品牌未来
+  ---
+  duration_ms: 3.2649
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 员工在柜台为顾客办理入住; unknown operational tail
+ok 247 - scope repair rejects extension: 员工在柜台为顾客办理入住; unknown operational tail
+  ---
+  duration_ms: 2.9739
+  type: 'test'
+  ...
+# Subtest: scope repair affirmative proposition: 工作人员使用收银机收款
+ok 248 - scope repair affirmative proposition: 工作人员使用收银机收款
+  ---
+  duration_ms: 0.9875
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Only if Logo and 工作人员使用收银机收款
+ok 249 - scope repair rejects extension: Only if Logo and 工作人员使用收银机收款
+  ---
+  duration_ms: 0.6205
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Unless 工作人员使用收银机收款
+ok 250 - scope repair rejects extension: Unless 工作人员使用收银机收款
+  ---
+  duration_ms: 0.5966
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 尚未确认Logo和工作人员使用收银机收款
+ok 251 - scope repair rejects extension: 尚未确认Logo和工作人员使用收银机收款
+  ---
+  duration_ms: 0.5569
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 工作人员使用收银机收款; staff not using equipment
+ok 252 - scope repair rejects extension: 工作人员使用收银机收款; staff not using equipment
+  ---
+  duration_ms: 0.6197
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 工作人员使用收银机收款 and enjoying cosmic essence
+ok 253 - scope repair rejects extension: 工作人员使用收银机收款 and enjoying cosmic essence
+  ---
+  duration_ms: 1.9435
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 工作人员使用收银机收款并象征品牌未来
+ok 254 - scope repair rejects extension: 工作人员使用收银机收款并象征品牌未来
+  ---
+  duration_ms: 2.57
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 工作人员使用收银机收款; unknown operational tail
+ok 255 - scope repair rejects extension: 工作人员使用收银机收款; unknown operational tail
+  ---
+  duration_ms: 3.9604
+  type: 'test'
+  ...
+# Subtest: scope repair affirmative proposition: Customers paying at the checkout counter
+ok 256 - scope repair affirmative proposition: Customers paying at the checkout counter
+  ---
+  duration_ms: 1.3222
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Only if Logo and Customers paying at the checkout counter
+ok 257 - scope repair rejects extension: Only if Logo and Customers paying at the checkout counter
+  ---
+  duration_ms: 1.1941
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Unless Customers paying at the checkout counter
+ok 258 - scope repair rejects extension: Unless Customers paying at the checkout counter
+  ---
+  duration_ms: 0.8092
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 尚未确认Logo和Customers paying at the checkout counter
+ok 259 - scope repair rejects extension: 尚未确认Logo和Customers paying at the checkout counter
+  ---
+  duration_ms: 0.7132
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Customers paying at the checkout counter; staff not using equipment
+ok 260 - scope repair rejects extension: Customers paying at the checkout counter; staff not using equipment
+  ---
+  duration_ms: 0.6631
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Customers paying at the checkout counter and enjoying cosmic essence
+ok 261 - scope repair rejects extension: Customers paying at the checkout counter and enjoying cosmic essence
+  ---
+  duration_ms: 2.012
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Customers paying at the checkout counter并象征品牌未来
+ok 262 - scope repair rejects extension: Customers paying at the checkout counter并象征品牌未来
+  ---
+  duration_ms: 2.6542
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Customers paying at the checkout counter; unknown operational tail
+ok 263 - scope repair rejects extension: Customers paying at the checkout counter; unknown operational tail
+  ---
+  duration_ms: 2.4646
+  type: 'test'
+  ...
+# Subtest: scope repair affirmative proposition: 餐桌位于就餐区
+ok 264 - scope repair affirmative proposition: 餐桌位于就餐区
+  ---
+  duration_ms: 1.071
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Only if Logo and 餐桌位于就餐区
+ok 265 - scope repair rejects extension: Only if Logo and 餐桌位于就餐区
+  ---
+  duration_ms: 0.5351
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Unless 餐桌位于就餐区
+ok 266 - scope repair rejects extension: Unless 餐桌位于就餐区
+  ---
+  duration_ms: 0.5167
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 尚未确认Logo和餐桌位于就餐区
+ok 267 - scope repair rejects extension: 尚未确认Logo和餐桌位于就餐区
+  ---
+  duration_ms: 0.6144
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 餐桌位于就餐区; staff not using equipment
+ok 268 - scope repair rejects extension: 餐桌位于就餐区; staff not using equipment
+  ---
+  duration_ms: 1.0084
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 餐桌位于就餐区 and enjoying cosmic essence
+ok 269 - scope repair rejects extension: 餐桌位于就餐区 and enjoying cosmic essence
+  ---
+  duration_ms: 1.8889
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 餐桌位于就餐区并象征品牌未来
+ok 270 - scope repair rejects extension: 餐桌位于就餐区并象征品牌未来
+  ---
+  duration_ms: 1.2493
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 餐桌位于就餐区; unknown operational tail
+ok 271 - scope repair rejects extension: 餐桌位于就餐区; unknown operational tail
+  ---
+  duration_ms: 2.2554
+  type: 'test'
+  ...
+# Subtest: scope repair affirmative proposition: 取餐台位于点餐区旁
+ok 272 - scope repair affirmative proposition: 取餐台位于点餐区旁
+  ---
+  duration_ms: 1.0401
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Only if Logo and 取餐台位于点餐区旁
+ok 273 - scope repair rejects extension: Only if Logo and 取餐台位于点餐区旁
+  ---
+  duration_ms: 0.5415
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Unless 取餐台位于点餐区旁
+ok 274 - scope repair rejects extension: Unless 取餐台位于点餐区旁
+  ---
+  duration_ms: 0.5137
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 尚未确认Logo和取餐台位于点餐区旁
+ok 275 - scope repair rejects extension: 尚未确认Logo和取餐台位于点餐区旁
+  ---
+  duration_ms: 0.4909
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 取餐台位于点餐区旁; staff not using equipment
+ok 276 - scope repair rejects extension: 取餐台位于点餐区旁; staff not using equipment
+  ---
+  duration_ms: 0.5928
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 取餐台位于点餐区旁 and enjoying cosmic essence
+ok 277 - scope repair rejects extension: 取餐台位于点餐区旁 and enjoying cosmic essence
+  ---
+  duration_ms: 2.1653
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 取餐台位于点餐区旁并象征品牌未来
+ok 278 - scope repair rejects extension: 取餐台位于点餐区旁并象征品牌未来
+  ---
+  duration_ms: 1.4583
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 取餐台位于点餐区旁; unknown operational tail
+ok 279 - scope repair rejects extension: 取餐台位于点餐区旁; unknown operational tail
+  ---
+  duration_ms: 3.1485
+  type: 'test'
+  ...
+# Subtest: scope repair affirmative proposition: Menu at the service counter
+ok 280 - scope repair affirmative proposition: Menu at the service counter
+  ---
+  duration_ms: 1.2597
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Only if Logo and Menu at the service counter
+ok 281 - scope repair rejects extension: Only if Logo and Menu at the service counter
+  ---
+  duration_ms: 0.7927
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Unless Menu at the service counter
+ok 282 - scope repair rejects extension: Unless Menu at the service counter
+  ---
+  duration_ms: 0.6957
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 尚未确认Logo和Menu at the service counter
+ok 283 - scope repair rejects extension: 尚未确认Logo和Menu at the service counter
+  ---
+  duration_ms: 0.8019
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Menu at the service counter; staff not using equipment
+ok 284 - scope repair rejects extension: Menu at the service counter; staff not using equipment
+  ---
+  duration_ms: 0.788
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Menu at the service counter and enjoying cosmic essence
+ok 285 - scope repair rejects extension: Menu at the service counter and enjoying cosmic essence
+  ---
+  duration_ms: 1.942
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Menu at the service counter并象征品牌未来
+ok 286 - scope repair rejects extension: Menu at the service counter并象征品牌未来
+  ---
+  duration_ms: 1.8261
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Menu at the service counter; unknown operational tail
+ok 287 - scope repair rejects extension: Menu at the service counter; unknown operational tail
+  ---
+  duration_ms: 2.5328
+  type: 'test'
+  ...
+# Subtest: scope repair affirmative proposition: employees using a scanner and assisting visitors at reception
+ok 288 - scope repair affirmative proposition: employees using a scanner and assisting visitors at reception
+  ---
+  duration_ms: 0.8345
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Only if Logo and employees using a scanner and assisting visitors at reception
+ok 289 - scope repair rejects extension: Only if Logo and employees using a scanner and assisting visitors at reception
+  ---
+  duration_ms: 0.5583
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Unless employees using a scanner and assisting visitors at reception
+ok 290 - scope repair rejects extension: Unless employees using a scanner and assisting visitors at reception
+  ---
+  duration_ms: 0.5444
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 尚未确认Logo和employees using a scanner and assisting visitors at reception
+ok 291 - scope repair rejects extension: 尚未确认Logo和employees using a scanner and assisting visitors at reception
+  ---
+  duration_ms: 0.581
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: employees using a scanner and assisting visitors at reception; staff not using equipment
+ok 292 - scope repair rejects extension: employees using a scanner and assisting visitors at reception; staff not using equipment
+  ---
+  duration_ms: 0.7611
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: employees using a scanner and assisting visitors at reception and enjoying cosmic essence
+ok 293 - scope repair rejects extension: employees using a scanner and assisting visitors at reception and enjoying cosmic essence
+  ---
+  duration_ms: 2.7335
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: employees using a scanner and assisting visitors at reception并象征品牌未来
+ok 294 - scope repair rejects extension: employees using a scanner and assisting visitors at reception并象征品牌未来
+  ---
+  duration_ms: 1.6896
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: employees using a scanner and assisting visitors at reception; unknown operational tail
+ok 295 - scope repair rejects extension: employees using a scanner and assisting visitors at reception; unknown operational tail
+  ---
+  duration_ms: 2.4019
+  type: 'test'
+  ...
+# Subtest: scope repair affirmative proposition: guests checking in and paying at the reception counter
+ok 296 - scope repair affirmative proposition: guests checking in and paying at the reception counter
+  ---
+  duration_ms: 0.7704
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Only if Logo and guests checking in and paying at the reception counter
+ok 297 - scope repair rejects extension: Only if Logo and guests checking in and paying at the reception counter
+  ---
+  duration_ms: 0.5491
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Unless guests checking in and paying at the reception counter
+ok 298 - scope repair rejects extension: Unless guests checking in and paying at the reception counter
+  ---
+  duration_ms: 0.6484
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 尚未确认Logo和guests checking in and paying at the reception counter
+ok 299 - scope repair rejects extension: 尚未确认Logo和guests checking in and paying at the reception counter
+  ---
+  duration_ms: 0.5584
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: guests checking in and paying at the reception counter; staff not using equipment
+ok 300 - scope repair rejects extension: guests checking in and paying at the reception counter; staff not using equipment
+  ---
+  duration_ms: 0.5749
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: guests checking in and paying at the reception counter and enjoying cosmic essence
+ok 301 - scope repair rejects extension: guests checking in and paying at the reception counter and enjoying cosmic essence
+  ---
+  duration_ms: 2.0325
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: guests checking in and paying at the reception counter并象征品牌未来
+ok 302 - scope repair rejects extension: guests checking in and paying at the reception counter并象征品牌未来
+  ---
+  duration_ms: 1.3758
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: guests checking in and paying at the reception counter; unknown operational tail
+ok 303 - scope repair rejects extension: guests checking in and paying at the reception counter; unknown operational tail
+  ---
+  duration_ms: 2.8516
+  type: 'test'
+  ...
+# Subtest: scope repair affirmative proposition: staff cleaning equipment and serving drinks
+ok 304 - scope repair affirmative proposition: staff cleaning equipment and serving drinks
+  ---
+  duration_ms: 0.7524
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Only if Logo and staff cleaning equipment and serving drinks
+ok 305 - scope repair rejects extension: Only if Logo and staff cleaning equipment and serving drinks
+  ---
+  duration_ms: 0.5332
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Unless staff cleaning equipment and serving drinks
+ok 306 - scope repair rejects extension: Unless staff cleaning equipment and serving drinks
+  ---
+  duration_ms: 0.5065
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 尚未确认Logo和staff cleaning equipment and serving drinks
+ok 307 - scope repair rejects extension: 尚未确认Logo和staff cleaning equipment and serving drinks
+  ---
+  duration_ms: 0.5755
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: staff cleaning equipment and serving drinks; staff not using equipment
+ok 308 - scope repair rejects extension: staff cleaning equipment and serving drinks; staff not using equipment
+  ---
+  duration_ms: 0.7036
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: staff cleaning equipment and serving drinks and enjoying cosmic essence
+ok 309 - scope repair rejects extension: staff cleaning equipment and serving drinks and enjoying cosmic essence
+  ---
+  duration_ms: 2.4864
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: staff cleaning equipment and serving drinks并象征品牌未来
+ok 310 - scope repair rejects extension: staff cleaning equipment and serving drinks并象征品牌未来
+  ---
+  duration_ms: 2.6294
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: staff cleaning equipment and serving drinks; unknown operational tail
+ok 311 - scope repair rejects extension: staff cleaning equipment and serving drinks; unknown operational tail
+  ---
+  duration_ms: 2.2944
+  type: 'test'
+  ...
+# Subtest: scope repair affirmative proposition: 访客在柜台查看价目表
+ok 312 - scope repair affirmative proposition: 访客在柜台查看价目表
+  ---
+  duration_ms: 0.8803
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Only if Logo and 访客在柜台查看价目表
+ok 313 - scope repair rejects extension: Only if Logo and 访客在柜台查看价目表
+  ---
+  duration_ms: 0.5396
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Unless 访客在柜台查看价目表
+ok 314 - scope repair rejects extension: Unless 访客在柜台查看价目表
+  ---
+  duration_ms: 0.492
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 尚未确认Logo和访客在柜台查看价目表
+ok 315 - scope repair rejects extension: 尚未确认Logo和访客在柜台查看价目表
+  ---
+  duration_ms: 0.7634
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 访客在柜台查看价目表; staff not using equipment
+ok 316 - scope repair rejects extension: 访客在柜台查看价目表; staff not using equipment
+  ---
+  duration_ms: 0.7465
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 访客在柜台查看价目表 and enjoying cosmic essence
+ok 317 - scope repair rejects extension: 访客在柜台查看价目表 and enjoying cosmic essence
+  ---
+  duration_ms: 1.7598
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 访客在柜台查看价目表并象征品牌未来
+ok 318 - scope repair rejects extension: 访客在柜台查看价目表并象征品牌未来
+  ---
+  duration_ms: 1.7085
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 访客在柜台查看价目表; unknown operational tail
+ok 319 - scope repair rejects extension: 访客在柜台查看价目表; unknown operational tail
+  ---
+  duration_ms: 2.899
+  type: 'test'
+  ...
+# Subtest: scope repair affirmative proposition: 店员使用支付终端收款
+ok 320 - scope repair affirmative proposition: 店员使用支付终端收款
+  ---
+  duration_ms: 0.7437
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Only if Logo and 店员使用支付终端收款
+ok 321 - scope repair rejects extension: Only if Logo and 店员使用支付终端收款
+  ---
+  duration_ms: 0.5162
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Unless 店员使用支付终端收款
+ok 322 - scope repair rejects extension: Unless 店员使用支付终端收款
+  ---
+  duration_ms: 0.4965
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 尚未确认Logo和店员使用支付终端收款
+ok 323 - scope repair rejects extension: 尚未确认Logo和店员使用支付终端收款
+  ---
+  duration_ms: 0.4798
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 店员使用支付终端收款; staff not using equipment
+ok 324 - scope repair rejects extension: 店员使用支付终端收款; staff not using equipment
+  ---
+  duration_ms: 1.0919
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 店员使用支付终端收款 and enjoying cosmic essence
+ok 325 - scope repair rejects extension: 店员使用支付终端收款 and enjoying cosmic essence
+  ---
+  duration_ms: 1.7808
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 店员使用支付终端收款并象征品牌未来
+ok 326 - scope repair rejects extension: 店员使用支付终端收款并象征品牌未来
+  ---
+  duration_ms: 1.7
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 店员使用支付终端收款; unknown operational tail
+ok 327 - scope repair rejects extension: 店员使用支付终端收款; unknown operational tail
+  ---
+  duration_ms: 3.1282
+  type: 'test'
+  ...
+# Subtest: scope repair affirmative proposition: 座椅设在等候区内
+ok 328 - scope repair affirmative proposition: 座椅设在等候区内
+  ---
+  duration_ms: 1.0384
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Only if Logo and 座椅设在等候区内
+ok 329 - scope repair rejects extension: Only if Logo and 座椅设在等候区内
+  ---
+  duration_ms: 0.5279
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Unless 座椅设在等候区内
+ok 330 - scope repair rejects extension: Unless 座椅设在等候区内
+  ---
+  duration_ms: 0.4877
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 尚未确认Logo和座椅设在等候区内
+ok 331 - scope repair rejects extension: 尚未确认Logo和座椅设在等候区内
+  ---
+  duration_ms: 0.4773
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 座椅设在等候区内; staff not using equipment
+ok 332 - scope repair rejects extension: 座椅设在等候区内; staff not using equipment
+  ---
+  duration_ms: 0.5243
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 座椅设在等候区内 and enjoying cosmic essence
+ok 333 - scope repair rejects extension: 座椅设在等候区内 and enjoying cosmic essence
+  ---
+  duration_ms: 1.9728
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 座椅设在等候区内并象征品牌未来
+ok 334 - scope repair rejects extension: 座椅设在等候区内并象征品牌未来
+  ---
+  duration_ms: 1.7544
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 座椅设在等候区内; unknown operational tail
+ok 335 - scope repair rejects extension: 座椅设在等候区内; unknown operational tail
+  ---
+  duration_ms: 2.6445
+  type: 'test'
+  ...
+# Subtest: scope repair affirmative proposition: price list at the checkout counter
+ok 336 - scope repair affirmative proposition: price list at the checkout counter
+  ---
+  duration_ms: 1.1926
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Only if Logo and price list at the checkout counter
+ok 337 - scope repair rejects extension: Only if Logo and price list at the checkout counter
+  ---
+  duration_ms: 0.6873
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: Unless price list at the checkout counter
+ok 338 - scope repair rejects extension: Unless price list at the checkout counter
+  ---
+  duration_ms: 0.6475
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: 尚未确认Logo和price list at the checkout counter
+ok 339 - scope repair rejects extension: 尚未确认Logo和price list at the checkout counter
+  ---
+  duration_ms: 0.5654
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: price list at the checkout counter; staff not using equipment
+ok 340 - scope repair rejects extension: price list at the checkout counter; staff not using equipment
+  ---
+  duration_ms: 14.0472
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: price list at the checkout counter and enjoying cosmic essence
+ok 341 - scope repair rejects extension: price list at the checkout counter and enjoying cosmic essence
+  ---
+  duration_ms: 1.7179
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: price list at the checkout counter并象征品牌未来
+ok 342 - scope repair rejects extension: price list at the checkout counter并象征品牌未来
+  ---
+  duration_ms: 1.8038
+  type: 'test'
+  ...
+# Subtest: scope repair rejects extension: price list at the checkout counter; unknown operational tail
+ok 343 - scope repair rejects extension: price list at the checkout counter; unknown operational tail
+  ---
+  duration_ms: 2.6081
+  type: 'test'
+  ...
+# Subtest: scope repair incomplete or negative unit: equipment near it
+ok 344 - scope repair incomplete or negative unit: equipment near it
+  ---
+  duration_ms: 9.7984
+  type: 'test'
+  ...
+# Subtest: scope repair incomplete or negative unit: reception equipment of it
+ok 345 - scope repair incomplete or negative unit: reception equipment of it
+  ---
+  duration_ms: 1.2729
+  type: 'test'
+  ...
+# Subtest: scope repair incomplete or negative unit: reception counter and with it
+ok 346 - scope repair incomplete or negative unit: reception counter and with it
+  ---
+  duration_ms: 1.2859
+  type: 'test'
+  ...
+# Subtest: scope repair incomplete or negative unit: Logo and equipment near it
+ok 347 - scope repair incomplete or negative unit: Logo and equipment near it
+  ---
+  duration_ms: 2.2183
+  type: 'test'
+  ...
+# Subtest: scope repair incomplete or negative unit: equipment behind this
+ok 348 - scope repair incomplete or negative unit: equipment behind this
+  ---
+  duration_ms: 0.8499
+  type: 'test'
+  ...
+# Subtest: scope repair incomplete or negative unit: equipment beside that
+ok 349 - scope repair incomplete or negative unit: equipment beside that
+  ---
+  duration_ms: 0.8179
+  type: 'test'
+  ...
+# Subtest: scope repair incomplete or negative unit: reception counter near it
+ok 350 - scope repair incomplete or negative unit: reception counter near it
+  ---
+  duration_ms: 0.8177
+  type: 'test'
+  ...
+# Subtest: scope repair incomplete or negative unit: staff operating equipment but no customers
+ok 351 - scope repair incomplete or negative unit: staff operating equipment but no customers
+  ---
+  duration_ms: 0.2886
+  type: 'test'
+  ...
+# Subtest: scope repair incomplete or negative unit: 员工没有使用设备
+ok 352 - scope repair incomplete or negative unit: 员工没有使用设备
+  ---
+  duration_ms: 0.2865
+  type: 'test'
+  ...
+# Subtest: scope repair incomplete or negative unit: 员工不会操作设备
+ok 353 - scope repair incomplete or negative unit: 员工不会操作设备
+  ---
+  duration_ms: 0.2783
+  type: 'test'
+  ...
+# Subtest: scope repair incomplete or negative unit: 员工尚未操作设备
+ok 354 - scope repair incomplete or negative unit: 员工尚未操作设备
+  ---
+  duration_ms: 0.2469
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks functionalNetwork: unknown operational clause
+ok 355 - scope repair completion blocks functionalNetwork: unknown operational clause
+  ---
+  duration_ms: 58.6848
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks functionalNetwork: staff operating equipment and enjoying cosmic essence
+ok 356 - scope repair completion blocks functionalNetwork: staff operating equipment and enjoying cosmic essence
+  ---
+  duration_ms: 9.1075
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks functionalNetwork: Only if Logo and staff operating equipment
+ok 357 - scope repair completion blocks functionalNetwork: Only if Logo and staff operating equipment
+  ---
+  duration_ms: 19.3204
+  type: 'test'
+  ...
+# Subtest: scope repair invalid field shape preserved: functionalNetwork
+ok 358 - scope repair invalid field shape preserved: functionalNetwork
+  ---
+  duration_ms: 1.0484
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks functionalRelationships: unknown operational clause
+ok 359 - scope repair completion blocks functionalRelationships: unknown operational clause
+  ---
+  duration_ms: 11.3439
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks functionalRelationships: staff operating equipment and enjoying cosmic essence
+ok 360 - scope repair completion blocks functionalRelationships: staff operating equipment and enjoying cosmic essence
+  ---
+  duration_ms: 11.8453
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks functionalRelationships: Only if Logo and staff operating equipment
+ok 361 - scope repair completion blocks functionalRelationships: Only if Logo and staff operating equipment
+  ---
+  duration_ms: 11.3318
+  type: 'test'
+  ...
+# Subtest: scope repair invalid field shape preserved: functionalRelationships
+ok 362 - scope repair invalid field shape preserved: functionalRelationships
+  ---
+  duration_ms: 0.8008
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks mustBeVisible: unknown operational clause
+ok 363 - scope repair completion blocks mustBeVisible: unknown operational clause
+  ---
+  duration_ms: 10.0538
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks mustBeVisible: staff operating equipment and enjoying cosmic essence
+ok 364 - scope repair completion blocks mustBeVisible: staff operating equipment and enjoying cosmic essence
+  ---
+  duration_ms: 11.9
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks mustBeVisible: Only if Logo and staff operating equipment
+ok 365 - scope repair completion blocks mustBeVisible: Only if Logo and staff operating equipment
+  ---
+  duration_ms: 9.9842
+  type: 'test'
+  ...
+# Subtest: scope repair invalid field shape preserved: mustBeVisible
+ok 366 - scope repair invalid field shape preserved: mustBeVisible
+  ---
+  duration_ms: 0.6521
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks operationConstraints: unknown operational clause
+ok 367 - scope repair completion blocks operationConstraints: unknown operational clause
+  ---
+  duration_ms: 14.7495
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks operationConstraints: staff operating equipment and enjoying cosmic essence
+ok 368 - scope repair completion blocks operationConstraints: staff operating equipment and enjoying cosmic essence
+  ---
+  duration_ms: 28.3643
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks operationConstraints: Only if Logo and staff operating equipment
+ok 369 - scope repair completion blocks operationConstraints: Only if Logo and staff operating equipment
+  ---
+  duration_ms: 11.3045
+  type: 'test'
+  ...
+# Subtest: scope repair invalid field shape preserved: operationConstraints
+ok 370 - scope repair invalid field shape preserved: operationConstraints
+  ---
+  duration_ms: 0.9088
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks requiredSpatialElements: unknown operational clause
+ok 371 - scope repair completion blocks requiredSpatialElements: unknown operational clause
+  ---
+  duration_ms: 12.2442
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks requiredSpatialElements: staff operating equipment and enjoying cosmic essence
+ok 372 - scope repair completion blocks requiredSpatialElements: staff operating equipment and enjoying cosmic essence
+  ---
+  duration_ms: 12.8745
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks requiredSpatialElements: Only if Logo and staff operating equipment
+ok 373 - scope repair completion blocks requiredSpatialElements: Only if Logo and staff operating equipment
+  ---
+  duration_ms: 11.716
+  type: 'test'
+  ...
+# Subtest: scope repair invalid field shape preserved: requiredSpatialElements
+ok 374 - scope repair invalid field shape preserved: requiredSpatialElements
+  ---
+  duration_ms: 0.6088
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks sceneProgram: unknown operational clause
+ok 375 - scope repair completion blocks sceneProgram: unknown operational clause
+  ---
+  duration_ms: 9.7065
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks sceneProgram: staff operating equipment and enjoying cosmic essence
+ok 376 - scope repair completion blocks sceneProgram: staff operating equipment and enjoying cosmic essence
+  ---
+  duration_ms: 11.533
+  type: 'test'
+  ...
+# Subtest: scope repair completion blocks sceneProgram: Only if Logo and staff operating equipment
+ok 377 - scope repair completion blocks sceneProgram: Only if Logo and staff operating equipment
+  ---
+  duration_ms: 16.3011
+  type: 'test'
+  ...
+# Subtest: scope repair invalid field shape preserved: sceneProgram
+ok 378 - scope repair invalid field shape preserved: sceneProgram
+  ---
+  duration_ms: 0.7729
+  type: 'test'
+  ...
+# Subtest: scope repair legacy normalizers retain unknown and conditional tails
+ok 379 - scope repair legacy normalizers retain unknown and conditional tails
+  ---
+  duration_ms: 7.198
+  type: 'test'
+  ...
+# Subtest: scope repair independent brand statement keeps functional proposition and provenance
+ok 380 - scope repair independent brand statement keeps functional proposition and provenance
+  ---
+  duration_ms: 1.8704
+  type: 'test'
+  ...
+# Subtest: scope repair uses zero network primitives
+ok 381 - scope repair uses zero network primitives
+  ---
+  duration_ms: 0.1084
+  type: 'test'
+  ...
+# Subtest: archived mixed records remain rejected as whole phrases; only evidenced clauses are separated
+ok 382 - archived mixed records remain rejected as whole phrases; only evidenced clauses are separated
+  ---
+  duration_ms: 203.434
+  type: 'test'
+  ...
+# Subtest: mixed scene nodes preserve menu, seating, lighting and pickup; brand imagery has a separate owner
+ok 383 - mixed scene nodes preserve menu, seating, lighting and pickup; brand imagery has a separate owner
+  ---
+  duration_ms: 30.0826
+  type: 'test'
+  ...
+# Subtest: deterministic separation runs before any optional model repair, revalidates and keeps input packet immutable
+ok 384 - deterministic separation runs before any optional model repair, revalidates and keeps input packet immutable
+  ---
+  duration_ms: 55.3199
+  type: 'test'
+  ...
+# Subtest: dedicated visible evidence retains actual activity: 厨师正在备餐
+ok 385 - dedicated visible evidence retains actual activity: 厨师正在备餐
+  ---
+  duration_ms: 0.4418
+  type: 'test'
+  ...
+# Subtest: dedicated visible evidence retains actual activity: 顾客在餐桌用餐
+ok 386 - dedicated visible evidence retains actual activity: 顾客在餐桌用餐
+  ---
+  duration_ms: 0.378
+  type: 'test'
+  ...
+# Subtest: dedicated visible evidence retains actual activity: 店员为顾客打包商品
+ok 387 - dedicated visible evidence retains actual activity: 店员为顾客打包商品
+  ---
+  duration_ms: 0.3768
+  type: 'test'
+  ...
+# Subtest: dedicated visible evidence retains actual activity: 员工操作收银机
+ok 388 - dedicated visible evidence retains actual activity: 员工操作收银机
+  ---
+  duration_ms: 0.3829
+  type: 'test'
+  ...
+# Subtest: dedicated visible evidence retains actual activity: 操作员使用检测设备
+ok 389 - dedicated visible evidence retains actual activity: 操作员使用检测设备
+  ---
+  duration_ms: 0.3795
+  type: 'test'
+  ...
+# Subtest: dedicated visible evidence retains actual activity: staff operating a cash register
+ok 390 - dedicated visible evidence retains actual activity: staff operating a cash register
+  ---
+  duration_ms: 9.3139
+  type: 'test'
+  ...
+# Subtest: dedicated visible evidence retains actual activity: technicians using equipment
+ok 391 - dedicated visible evidence retains actual activity: technicians using equipment
+  ---
+  duration_ms: 0.5209
+  type: 'test'
+  ...
+# Subtest: dedicated visible evidence retains actual activity: guests checking in at reception
+ok 392 - dedicated visible evidence retains actual activity: guests checking in at reception
+  ---
+  duration_ms: 0.3723
+  type: 'test'
+  ...
+# Subtest: existing concrete visible carriers keep renderer ownership while analysis uses positive carrier evidence
+ok 393 - existing concrete visible carriers keep renderer ownership while analysis uses positive carrier evidence
+  ---
+  duration_ms: 10.7311
+  type: 'test'
+  ...
+# Subtest: payment equipment is not a silver color declaration; explicit silver finish still remains styling
+ok 394 - payment equipment is not a silver color declaration; explicit silver finish still remains styling
+  ---
+  duration_ms: 0.4109
+  type: 'test'
+  ...
+# Subtest: unknown, decorative or negated visibility gets no functional grant: unresolved rendezvous
+ok 395 - unknown, decorative or negated visibility gets no functional grant: unresolved rendezvous
+  ---
+  duration_ms: 0.734
+  type: 'test'
+  ...
+# Subtest: unknown, decorative or negated visibility gets no functional grant: customers enjoying the cosmic essence at tables
+ok 396 - unknown, decorative or negated visibility gets no functional grant: customers enjoying the cosmic essence at tables
+  ---
+  duration_ms: 0.4714
+  type: 'test'
+  ...
+# Subtest: unknown, decorative or negated visibility gets no functional grant: maybe staff operating equipment
+ok 397 - unknown, decorative or negated visibility gets no functional grant: maybe staff operating equipment
+  ---
+  duration_ms: 0.2659
+  type: 'test'
+  ...
+# Subtest: unknown, decorative or negated visibility gets no functional grant: staff not operating equipment
+ok 398 - unknown, decorative or negated visibility gets no functional grant: staff not operating equipment
+  ---
+  duration_ms: 0.2505
+  type: 'test'
+  ...
+# Subtest: unknown, decorative or negated visibility gets no functional grant: 文字招牌与标语
+ok 399 - unknown, decorative or negated visibility gets no functional grant: 文字招牌与标语
+  ---
+  duration_ms: 0.3231
+  type: 'test'
+  ...
+# Subtest: unknown, decorative or negated visibility gets no functional grant: Logo wordmark
+ok 400 - unknown, decorative or negated visibility gets no functional grant: Logo wordmark
+  ---
+  duration_ms: 0.3368
+  type: 'test'
+  ...
+# Subtest: unknown, decorative or negated visibility gets no functional grant: 品牌色彩系统的层次化应用
+ok 401 - unknown, decorative or negated visibility gets no functional grant: 品牌色彩系统的层次化应用
+  ---
+  duration_ms: 0.3134
+  type: 'test'
+  ...
+# Subtest: unknown, decorative or negated visibility gets no functional grant: 品牌标识→未知愿景
+ok 402 - unknown, decorative or negated visibility gets no functional grant: 品牌标识→未知愿景
+  ---
+  duration_ms: 0.2464
+  type: 'test'
+  ...
+# Subtest: inseparable or unknown mixed clauses stay blocked; word deletion is not a repair
+ok 403 - inseparable or unknown mixed clauses stay blocked; word deletion is not a repair
+  ---
+  duration_ms: 3.6953
+  type: 'test'
+  ...
+# Subtest: pure brand data cannot empty required fields to earn a pass or invent functions
+ok 404 - pure brand data cannot empty required fields to earn a pass or invent functions
+  ---
+  duration_ms: 4.1585
+  type: 'test'
+  ...
+# Subtest: missing source functions remain missing after separation
+ok 405 - missing source functions remain missing after separation
+  ---
+  duration_ms: 0.1532
+  type: 'test'
+  ...
+# Subtest: a failed deterministic callback cannot fall through to a model call
+ok 406 - a failed deterministic callback cannot fall through to a model call
+  ---
+  duration_ms: 5.0411
+  type: 'test'
+  ...
+# Subtest: non-food service sequence is separated without adding a room or changing service content
+ok 407 - non-food service sequence is separated without adding a room or changing service content
+  ---
+  duration_ms: 3.9462
+  type: 'test'
+  ...
+# Subtest: motif, sculpture and color geometry cannot acquire functional or architectural authority
+ok 408 - motif, sculpture and color geometry cannot acquire functional or architectural authority
+  ---
+  duration_ms: 24.8076
+  type: 'test'
+  ...
+# Subtest: all targeted tests used zero network primitives
+ok 409 - all targeted tests used zero network primitives
+  ---
+  duration_ms: 0.1254
+  type: 'test'
+  ...
+# Subtest: two pinned stages reserve before HTTP, preserve parameters, persist usage and stop at two
+ok 410 - two pinned stages reserve before HTTP, preserve parameters, persist usage and stop at two
+  ---
+  duration_ms: 84.2236
+  type: 'test'
+  ...
+# Subtest: third request is blocked before send and swallowed errors cannot reopen the gate
+ok 411 - third request is blocked before send and swallowed errors cannot reopen the gate
+  ---
+  duration_ms: 61.3983
+  type: 'test'
+  ...
+# Subtest: HTTP failure: first failure consumes one slot and every further attempt is blocked
+ok 412 - HTTP failure: first failure consumes one slot and every further attempt is blocked
+  ---
+  duration_ms: 49.4722
+  type: 'test'
+  ...
+# Subtest: redirect: first failure consumes one slot and every further attempt is blocked
+ok 413 - redirect: first failure consumes one slot and every further attempt is blocked
+  ---
+  duration_ms: 47.6969
+  type: 'test'
+  ...
+# Subtest: network exception: first failure consumes one slot and every further attempt is blocked
+ok 414 - network exception: first failure consumes one slot and every further attempt is blocked
+  ---
+  duration_ms: 44.3342
+  type: 'test'
+  ...
+# Subtest: missing usage: first failure consumes one slot and every further attempt is blocked
+ok 415 - missing usage: first failure consumes one slot and every further attempt is blocked
+  ---
+  duration_ms: 58.1106
+  type: 'test'
+  ...
+# Subtest: invalid usage: first failure consumes one slot and every further attempt is blocked
+ok 416 - invalid usage: first failure consumes one slot and every further attempt is blocked
+  ---
+  duration_ms: 46.3026
+  type: 'test'
+  ...
+# Subtest: missing request ID: first failure consumes one slot and every further attempt is blocked
+ok 417 - missing request ID: first failure consumes one slot and every further attempt is blocked
+  ---
+  duration_ms: 45.1641
+  type: 'test'
+  ...
+# Subtest: response model mismatch: first failure consumes one slot and every further attempt is blocked
+ok 418 - response model mismatch: first failure consumes one slot and every further attempt is blocked
+  ---
+  duration_ms: 45.0894
+  type: 'test'
+  ...
+# Subtest: empty output: first failure consumes one slot and every further attempt is blocked
+ok 419 - empty output: first failure consumes one slot and every further attempt is blocked
+  ---
+  duration_ms: 46.37
+  type: 'test'
+  ...
+# Subtest: truncated output: first failure consumes one slot and every further attempt is blocked
+ok 420 - truncated output: first failure consumes one slot and every further attempt is blocked
+  ---
+  duration_ms: 47.9784
+  type: 'test'
+  ...
+# Subtest: invalid HTTP JSON: first failure consumes one slot and every further attempt is blocked
+ok 421 - invalid HTTP JSON: first failure consumes one slot and every further attempt is blocked
+  ---
+  duration_ms: 49.0373
+  type: 'test'
+  ...
+# Subtest: bad UVU JSON stops before the pipeline can make its parse retry
+ok 422 - bad UVU JSON stops before the pipeline can make its parse retry
+  ---
+  duration_ms: 58.6229
+  type: 'test'
+  ...
+# Subtest: analysis_repair cannot dispatch as a third request
+ok 423 - analysis_repair cannot dispatch as a third request
+  ---
+  duration_ms: 61.1465
+  type: 'test'
+  ...
+# Subtest: spatial_semantic_repair cannot dispatch as a third request
+ok 424 - spatial_semantic_repair cannot dispatch as a third request
+  ---
+  duration_ms: 67.5689
+  type: 'test'
+  ...
+# Subtest: repair cannot replace UVU using the still unused second budget slot
+ok 425 - repair cannot replace UVU using the still unused second budget slot
+  ---
+  duration_ms: 46.1628
+  type: 'test'
+  ...
+# Subtest: timeout with late successful response keeps unknown status and never refunds
+ok 426 - timeout with late successful response keeps unknown status and never refunds
+  ---
+  duration_ms: 86.3013
+  type: 'test'
+  ...
+# Subtest: concurrent calls reject the competitor and cannot exceed one in flight
+ok 427 - concurrent calls reject the competitor and cannot exceed one in flight
+  ---
+  duration_ms: 48.5523
+  type: 'test'
+  ...
+# Subtest: a second project and duplicate user click terminate the same run, never get another reasoner
+ok 428 - a second project and duplicate user click terminate the same run, never get another reasoner
+  ---
+  duration_ms: 34.396
+  type: 'test'
+  ...
+# Subtest: duplicate click while first HTTP is pending cancels and locks
+ok 429 - duplicate click while first HTTP is pending cancels and locks
+  ---
+  duration_ms: 43.8153
+  type: 'test'
+  ...
+# Subtest: separate process cannot reopen a persisted claim, even under another session ID
+ok 430 - separate process cannot reopen a persisted claim, even under another session ID
+  ---
+  duration_ms: 170.2726
+  type: 'test'
+  ...
+# Subtest: crash with in-flight reservation leaves a permanent claim, no restart dispatch
+ok 431 - crash with in-flight reservation leaves a permanent claim, no restart dispatch
+  ---
+  duration_ms: 140.8777
+  type: 'test'
+  ...
+# Subtest: configuration model change / fallback denied
+ok 432 - configuration model change / fallback denied
+  ---
+  duration_ms: 34.7188
+  type: 'test'
+  ...
+# Subtest: configuration provider change / fallback denied
+ok 433 - configuration provider change / fallback denied
+  ---
+  duration_ms: 33.3972
+  type: 'test'
+  ...
+# Subtest: configuration client change / fallback denied
+ok 434 - configuration client change / fallback denied
+  ---
+  duration_ms: 33.2669
+  type: 'test'
+  ...
+# Subtest: configuration endpoint change / fallback denied
+ok 435 - configuration endpoint change / fallback denied
+  ---
+  duration_ms: 33.905
+  type: 'test'
+  ...
+# Subtest: material drift rejects before HTTP
+ok 436 - material drift rejects before HTTP
+  ---
+  duration_ms: 31.4136
+  type: 'test'
+  ...
+# Subtest: intake drift rejects before HTTP
+ok 437 - intake drift rejects before HTTP
+  ---
+  duration_ms: 27.7913
+  type: 'test'
+  ...
+# Subtest: stage drift rejects before HTTP
+ok 438 - stage drift rejects before HTTP
+  ---
+  duration_ms: 32.8942
+  type: 'test'
+  ...
+# Subtest: prompt drift rejects before HTTP
+ok 439 - prompt drift rejects before HTTP
+  ---
+  duration_ms: 32.2854
+  type: 'test'
+  ...
+# Subtest: bodyPin drift rejects before HTTP
+ok 440 - bodyPin drift rejects before HTTP
+  ---
+  duration_ms: 37.31
+  type: 'test'
+  ...
+# Subtest: reservation persistence failure forbids HTTP; reopening never resets the budget
+ok 441 - reservation persistence failure forbids HTTP; reopening never resets the budget
+  ---
+  duration_ms: 41.0433
+  type: 'test'
+  ...
+# Subtest: response persistence failure consumes slot and cannot retry
+ok 442 - response persistence failure consumes slot and cannot retry
+  ---
+  duration_ms: 43.8472
+  type: 'test'
+  ...
+# Subtest: cancelled signal never reaches HTTP
+ok 443 - cancelled signal never reaches HTTP
+  ---
+  duration_ms: 38.7194
+  type: 'test'
+  ...
+# Subtest: external ledger modification is detected without dispatch
+ok 444 - external ledger modification is detected without dispatch
+  ---
+  duration_ms: 29.5815
+  type: 'test'
+  ...
+# Subtest: missing cost basis rejects initialization, no fake free-cost assumption
+ok 445 - missing cost basis rejects initialization, no fake free-cost assumption
+  ---
+  duration_ms: 20.3399
+  type: 'test'
+  ...
+# Subtest: changing ledger directory cannot silently replenish a pinned session budget
+ok 446 - changing ledger directory cannot silently replenish a pinned session budget
+  ---
+  duration_ms: 21.0381
+  type: 'test'
+  ...
+# Subtest: second reasoner call arriving during actual in-flight HTTP aborts without another send
+ok 447 - second reasoner call arriving during actual in-flight HTTP aborts without another send
+  ---
+  duration_ms: 46.7223
+  type: 'test'
+  ...
+# Subtest: orphaned durable ledger cannot be silently replaced if the claim file is missing
+ok 448 - orphaned durable ledger cannot be silently replaced if the claim file is missing
+  ---
+  duration_ms: 25.5126
+  type: 'test'
+  ...
+# Subtest: formal create/import/analyze via injected provider succeeds with exactly two fake HTTP responses
+not ok 449 - formal create/import/analyze via injected provider succeeds with exactly two fake HTTP responses
+  ---
+  duration_ms: 141.1471
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\restaurant-knowledge\\two-dispatch-guard\\integration.test.ts:1:4778'
+  failureType: 'testCodeFailure'
+  error: 'ANALYSIS_STOPPED'
+  code: 'ANALYSIS_STOPPED'
+  stack: |-
+    failure (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/restaurant-knowledge/two-dispatch-guard/ledger.mjs:6:46)
+    Object.runOnce (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/restaurant-knowledge/two-dispatch-guard/guard.mjs:162:13)
+    async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\restaurant-knowledge\two-dispatch-guard\integration.test.ts:54:16)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: formal UVU parse path does not retry after invalid JSON
+not ok 450 - formal UVU parse path does not retry after invalid JSON
+  ---
+  duration_ms: 57.3664
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\restaurant-knowledge\\two-dispatch-guard\\integration.test.ts:1:5323'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    0 !== 2
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 2
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\restaurant-knowledge\two-dispatch-guard\integration.test.ts:63:40)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: formal spatial semantic repair is blocked; existing semantic gate still fails
+not ok 451 - formal spatial semantic repair is blocked; existing semantic gate still fails
+  ---
+  duration_ms: 53.407
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\restaurant-knowledge\\two-dispatch-guard\\integration.test.ts:1:5725'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    0 !== 2
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 2
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\restaurant-knowledge\two-dispatch-guard\integration.test.ts:69:40)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: formal structured decision repair catches errors but cannot obtain a third dispatch
+not ok 452 - formal structured decision repair catches errors but cannot obtain a third dispatch
+  ---
+  duration_ms: 62.4998
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\restaurant-knowledge\\two-dispatch-guard\\integration.test.ts:1:6181'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    0 !== 2
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 2
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\restaurant-knowledge\two-dispatch-guard\integration.test.ts:75:40)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: formal report validation is not bypassed by two-call budget logic
+not ok 453 - formal report validation is not bypassed by two-call budget logic
+  ---
+  duration_ms: 70.8508
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\restaurant-knowledge\\two-dispatch-guard\\integration.test.ts:1:6578'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    0 !== 1
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 1
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\restaurant-knowledge\two-dispatch-guard\integration.test.ts:81:40)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: formal project eligibility and direction confirmation still reject unanalyzed project
+ok 454 - formal project eligibility and direction confirmation still reject unanalyzed project
+  ---
+  duration_ms: 61.2461
+  type: 'test'
+  ...
+# Subtest: native one-shot transport: HTTP 200 causes one request and no redirect/retry
+ok 455 - native one-shot transport: HTTP 200 causes one request and no redirect/retry
+  ---
+  duration_ms: 2.2715
+  type: 'test'
+  ...
+# Subtest: native one-shot transport: HTTP 302 causes one request and no redirect/retry
+ok 456 - native one-shot transport: HTTP 302 causes one request and no redirect/retry
+  ---
+  duration_ms: 0.1917
+  type: 'test'
+  ...
+# Subtest: native one-shot transport: HTTP 307 causes one request and no redirect/retry
+ok 457 - native one-shot transport: HTTP 307 causes one request and no redirect/retry
+  ---
+  duration_ms: 0.1542
+  type: 'test'
+  ...
+# Subtest: native one-shot transport: HTTP 429 causes one request and no redirect/retry
+ok 458 - native one-shot transport: HTTP 429 causes one request and no redirect/retry
+  ---
+  duration_ms: 0.1608
+  type: 'test'
+  ...
+# Subtest: native one-shot transport: HTTP 500 causes one request and no redirect/retry
+ok 459 - native one-shot transport: HTTP 500 causes one request and no redirect/retry
+  ---
+  duration_ms: 0.1718
+  type: 'test'
+  ...
+# Subtest: native one-shot transport never retries a connection error
+ok 460 - native one-shot transport never retries a connection error
+  ---
+  duration_ms: 0.42
+  type: 'test'
+  ...
+# Subtest: native one-shot transport abort before send and redirect-policy drift have zero requests
+ok 461 - native one-shot transport abort before send and redirect-policy drift have zero requests
+  ---
+  duration_ms: 0.3182
+  type: 'test'
+  ...
+# Subtest: storefront/front preserves explicit requester, exterior program and exact camera through formal and Provider prompts
+ok 462 - storefront/front preserves explicit requester, exterior program and exact camera through formal and Provider prompts
+  ---
+  duration_ms: 134.6957
+  type: 'test'
+  ...
+# Subtest: all public subtype/shot choices have resolved authority or explicitly fail closed
+ok 463 - all public subtype/shot choices have resolved authority or explicitly fail closed
+  ---
+  duration_ms: 566.2511
+  type: 'test'
+  ...
+# Subtest: exterior default camera uses exterior authority: legacy_project_default
+ok 464 - exterior default camera uses exterior authority: legacy_project_default
+  ---
+  duration_ms: 12.0184
+  type: 'test'
+  ...
+# Subtest: exterior default camera uses exterior authority: target_scene_default
+ok 465 - exterior default camera uses exterior authority: target_scene_default
+  ---
+  duration_ms: 12.6524
+  type: 'test'
+  ...
+# Subtest: unknown targets cannot turn an unresolved visible requirement into executable content
+ok 466 - unknown targets cannot turn an unresolved visible requirement into executable content
+  ---
+  duration_ms: 24.3878
+  type: 'test'
+  ...
+# Subtest: complete functional dependencies are preserved without acquiring shot visibility: 点餐区 → 明档制作区 → 取餐区 → 就餐区
+ok 467 - complete functional dependencies are preserved without acquiring shot visibility: 点餐区 → 明档制作区 → 取餐区 → 就餐区
+  ---
+  duration_ms: 9.1937
+  type: 'test'
+  ...
+# Subtest: complete functional dependencies are preserved without acquiring shot visibility: ordering area -> food preparation area -> pickup area -> dining area
+ok 468 - complete functional dependencies are preserved without acquiring shot visibility: ordering area -> food preparation area -> pickup area -> dining area
+  ---
+  duration_ms: 9.0078
+  type: 'test'
+  ...
+# Subtest: source clauses retain exact ranges and mixed local/dependency/review dispositions
+not ok 469 - source clauses retain exact ranges and mixed local/dependency/review dispositions
+  ---
+  duration_ms: 18.8647
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:4794'
+  failureType: 'testCodeFailure'
+  error: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID: formal Space generation route failed closed.'
+  code: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:24:23)
+    assertSpaceGenerationRouteIntegrity (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:85:35)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:283:21)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:74:56)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+  ...
+# Subtest: unsafe networks stay reviewable: 点餐制作取餐就餐的完整关系
+not ok 470 - unsafe networks stay reviewable: 点餐制作取餐就餐的完整关系
+  ---
+  duration_ms: 9.4962
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:5848'
+  failureType: 'testCodeFailure'
+  error: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID: formal Space generation route failed closed.'
+  code: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:24:23)
+    assertSpaceGenerationRouteIntegrity (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:85:35)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:283:21)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:83:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+  ...
+# Subtest: unsafe networks stay reviewable: 入口 → 无法确定的节点
+not ok 471 - unsafe networks stay reviewable: 入口 → 无法确定的节点
+  ---
+  duration_ms: 8.2728
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:5848'
+  failureType: 'testCodeFailure'
+  error: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID: formal Space generation route failed closed.'
+  code: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:24:23)
+    assertSpaceGenerationRouteIntegrity (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:85:35)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:283:21)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:83:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+  ...
+# Subtest: unsafe networks stay reviewable: whole project operating network
+not ok 472 - unsafe networks stay reviewable: whole project operating network
+  ---
+  duration_ms: 8.3217
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:5848'
+  failureType: 'testCodeFailure'
+  error: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID: formal Space generation route failed closed.'
+  code: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:24:23)
+    assertSpaceGenerationRouteIntegrity (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:85:35)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:283:21)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:83:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+  ...
+# Subtest: kitchen relationships cannot inherit a boundary authority merely from their container or another entrance clause
+not ok 473 - kitchen relationships cannot inherit a boundary authority merely from their container or another entrance clause
+  ---
+  duration_ms: 8.7256
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:6202'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:93:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+  ...
+# Subtest: dining operations and Chinese actors remain visible with exactly one rendered owner
+ok 474 - dining operations and Chinese actors remain visible with exactly one rendered owner
+  ---
+  duration_ms: 26.8425
+  type: 'test'
+  ...
+# Subtest: unlocated storefront activity requires review: chef preparing food
+ok 475 - unlocated storefront activity requires review: chef preparing food
+  ---
+  duration_ms: 10.0302
+  type: 'test'
+  ...
+# Subtest: unlocated storefront activity requires review: steam above dishes
+ok 476 - unlocated storefront activity requires review: steam above dishes
+  ---
+  duration_ms: 10.426
+  type: 'test'
+  ...
+# Subtest: interior sightline request awaits a reviewed interface: chef preparing food in kitchen visible through storefront glazing
+ok 477 - interior sightline request awaits a reviewed interface: chef preparing food in kitchen visible through storefront glazing
+  ---
+  duration_ms: 7.9854
+  type: 'test'
+  ...
+# Subtest: interior sightline request awaits a reviewed interface: 厨师在厨房制作食品并透过临街橱窗玻璃可见
+not ok 478 - interior sightline request awaits a reviewed interface: 厨师在厨房制作食品并透过临街橱窗玻璃可见
+  ---
+  duration_ms: 7.5529
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:8354'
+  failureType: 'testCodeFailure'
+  error: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID: formal Space generation route failed closed.'
+  code: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:24:23)
+    assertSpaceGenerationRouteIntegrity (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:85:35)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:283:21)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:123:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+  ...
+# Subtest: interior sightline request awaits a reviewed interface: 入口视线可见厨房制作活动
+not ok 479 - interior sightline request awaits a reviewed interface: 入口视线可见厨房制作活动
+  ---
+  duration_ms: 8.244
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:8354'
+  failureType: 'testCodeFailure'
+  error: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID: formal Space generation route failed closed.'
+  code: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:24:23)
+    assertSpaceGenerationRouteIntegrity (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:85:35)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:283:21)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:123:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+  ...
+# Subtest: an exterior prohibition protects interior privacy as a boundary, never as a rendered interior
+not ok 480 - an exterior prohibition protects interior privacy as a boundary, never as a rendered interior
+  ---
+  duration_ms: 8.4002
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:8809'
+  failureType: 'testCodeFailure'
+  error: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID: formal Space generation route failed closed.'
+  code: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:24:23)
+    assertSpaceGenerationRouteIntegrity (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:85:35)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:283:21)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:131:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+  ...
+# Subtest: cross-project exterior projection follows sources, not industry: 临街外带档口
+ok 481 - cross-project exterior projection follows sources, not industry: 临街外带档口
+  ---
+  duration_ms: 10.8612
+  type: 'test'
+  ...
+# Subtest: cross-project exterior projection follows sources, not industry: 现代连锁快餐
+ok 482 - cross-project exterior projection follows sources, not industry: 现代连锁快餐
+  ---
+  duration_ms: 10.9976
+  type: 'test'
+  ...
+# Subtest: cross-project exterior projection follows sources, not industry: 社区咖啡馆
+ok 483 - cross-project exterior projection follows sources, not industry: 社区咖啡馆
+  ---
+  duration_ms: 11.0836
+  type: 'test'
+  ...
+# Subtest: cross-project exterior projection follows sources, not industry: 日本料理餐厅
+ok 484 - cross-project exterior projection follows sources, not industry: 日本料理餐厅
+  ---
+  duration_ms: 12.1501
+  type: 'test'
+  ...
+# Subtest: cross-project exterior projection follows sources, not industry: 零售商店
+ok 485 - cross-project exterior projection follows sources, not industry: 零售商店
+  ---
+  duration_ms: 13.8508
+  type: 'test'
+  ...
+# Subtest: cross-project exterior projection follows sources, not industry: 旅宿服务
+ok 486 - cross-project exterior projection follows sources, not industry: 旅宿服务
+  ---
+  duration_ms: 12.9675
+  type: 'test'
+  ...
+# Subtest: other established commercial scene authorities retain their own local activities
+ok 487 - other established commercial scene authorities retain their own local activities
+  ---
+  duration_ms: 35.0686
+  type: 'test'
+  ...
+# Subtest: negative project guards are preserved even when they name a foreign exterior
+ok 488 - negative project guards are preserved even when they name a foreign exterior
+  ---
+  duration_ms: 9.6006
+  type: 'test'
+  ...
+# Subtest: explicit off-frame operational prohibitions remain boundary-only
+not ok 489 - explicit off-frame operational prohibitions remain boundary-only
+  ---
+  duration_ms: 10.7503
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:11013'
+  failureType: 'testCodeFailure'
+  error: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID: formal Space generation route failed closed.'
+  code: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:24:23)
+    assertSpaceGenerationRouteIntegrity (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js:85:35)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:283:21)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:167:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+  ...
+# Subtest: artistic focus is composed once and remains distinct from operations
+ok 490 - artistic focus is composed once and remains distinct from operations
+  ---
+  duration_ms: 113.3845
+  type: 'test'
+  ...
+# Subtest: optional artwork stays optional and a source without art does not acquire an installation
+ok 491 - optional artwork stays optional and a source without art does not acquire an installation
+  ---
+  duration_ms: 30.1709
+  type: 'test'
+  ...
+# Subtest: single reception shot keeps other program nodes in the trace rather than displaying their interiors
+ok 492 - single reception shot keeps other program nodes in the trace rather than displaying their interiors
+  ---
+  duration_ms: 16.4778
+  type: 'test'
+  ...
+# Subtest: scene projection preserves trace and does not translate a color or transparency keyword into new geometry
+ok 493 - scene projection preserves trace and does not translate a color or transparency keyword into new geometry
+  ---
+  duration_ms: 12.9312
+  type: 'test'
+  ...
+# Subtest: gallery character passes sanitization while identity text remains protected
+ok 494 - gallery character passes sanitization while identity text remains protected
+  ---
+  duration_ms: 12.9217
+  type: 'test'
+  ...
+# Subtest: source-scoped decisions occur once instead of being repeated through strategy/form/organization
+ok 495 - source-scoped decisions occur once instead of being repeated through strategy/form/organization
+  ---
+  duration_ms: 13.1394
+  type: 'test'
+  ...
+# Subtest: unconfirmed color scopes and ratios remain proposals without mandatory large-area authority
+ok 496 - unconfirmed color scopes and ratios remain proposals without mandatory large-area authority
+  ---
+  duration_ms: 28.0785
+  type: 'test'
+  ...
+# Subtest: brand names and stored brand keys cannot auto-select architecture examples
+ok 497 - brand names and stored brand keys cannot auto-select architecture examples
+  ---
+  duration_ms: 41.0143
+  type: 'test'
+  ...
+# Subtest: explicit optional examples require scene and mechanism compatibility and cannot outrank the project
+ok 498 - explicit optional examples require scene and mechanism compatibility and cannot outrank the project
+  ---
+  duration_ms: 15.004
+  type: 'test'
+  ...
+# Subtest: Medical aesthetics: formal route retains complex architecture and explicit strong color without manufacturing art
+ok 499 - Medical aesthetics: formal route retains complex architecture and explicit strong color without manufacturing art
+  ---
+  duration_ms: 15.1121
+  type: 'test'
+  ...
+# Subtest: Hospitality: formal route retains complex architecture and explicit strong color without manufacturing art
+ok 500 - Hospitality: formal route retains complex architecture and explicit strong color without manufacturing art
+  ---
+  duration_ms: 14.7943
+  type: 'test'
+  ...
+# Subtest: Restaurant: formal route retains complex architecture and explicit strong color without manufacturing art
+ok 501 - Restaurant: formal route retains complex architecture and explicit strong color without manufacturing art
+  ---
+  duration_ms: 14.5899
+  type: 'test'
+  ...
+# Subtest: source scopes retain provenance and unknown scenes remain explicitly unresolved
+ok 502 - source scopes retain provenance and unknown scenes remain explicitly unresolved
+  ---
+  duration_ms: 0.1685
+  type: 'test'
+  ...
+# Subtest: Packet and source adapter reject empty functional data even with a stale ready flag
+ok 503 - Packet and source adapter reject empty functional data even with a stale ready flag
+  ---
+  duration_ms: 103.863
+  type: 'test'
+  ...
+# Subtest: blank string arrays cannot satisfy spatial decision repair
+ok 504 - blank string arrays cannot satisfy spatial decision repair
+  ---
+  duration_ms: 1.0085
+  type: 'test'
+  ...
+# Subtest: stale ready packet cannot compile when all functional entries are removed by cleanup
+ok 505 - stale ready packet cannot compile when all functional entries are removed by cleanup
+  ---
+  duration_ms: 9.5465
+  type: 'test'
+  ...
+# Subtest: semantic cleanup cannot erase required data and still complete analysis
+ok 506 - semantic cleanup cannot erase required data and still complete analysis
+  ---
+  duration_ms: 14.8812
+  type: 'test'
+  ...
+# Subtest: explicit material installation survives in brand layer, outside the functional and architectural layers
+ok 507 - explicit material installation survives in brand layer, outside the functional and architectural layers
+  ---
+  duration_ms: 34.4796
+  type: 'test'
+  ...
+# Subtest: installation preservation retains identity protection without inventing gradient area authority
+ok 508 - installation preservation retains identity protection without inventing gradient area authority
+  ---
+  duration_ms: 13.7039
+  type: 'test'
+  ...
+# Subtest: ordinary hospitality space needs no art object and packaging is unaffected
+ok 509 - ordinary hospitality space needs no art object and packaging is unaffected
+  ---
+  duration_ms: 11.4577
+  type: 'test'
+  ...
+# Subtest: post-composite identity absence never violates locked assets in generation
+ok 510 - post-composite identity absence never violates locked assets in generation
+  ---
+  duration_ms: 3.0282
+  type: 'test'
+  ...
+# Subtest: generated text is checked independently, with visible evidence
+ok 511 - generated text is checked independently, with visible evidence
+  ---
+  duration_ms: 0.3794
+  type: 'test'
+  ...
+# Subtest: uncertainty and subjective quality hints never authorize regeneration
+ok 512 - uncertainty and subjective quality hints never authorize regeneration
+  ---
+  duration_ms: 0.2929
+  type: 'test'
+  ...
+# Subtest: physical blocking findings retain concrete evidence without triggering paid work
+ok 513 - physical blocking findings retain concrete evidence without triggering paid work
+  ---
+  duration_ms: 0.2558
+  type: 'test'
+  ...
+# Subtest: non-composite modes keep identity violation evidence
+ok 514 - non-composite modes keep identity violation evidence
+  ---
+  duration_ms: 0.2069
+  type: 'test'
+  ...
+# Subtest: text regeneration prompt does not claim pixel preservation or local editing
+ok 515 - text regeneration prompt does not claim pixel preservation or local editing
+  ---
+  duration_ms: 0.3669
+  type: 'test'
+  ...
+# Subtest: a second passed validation never ranks its image over the first; uncertainty is not passed
+ok 516 - a second passed validation never ranks its image over the first; uncertainty is not passed
+  ---
+  duration_ms: 0.153
+  type: 'test'
+  ...
+# Subtest: legacy retry recommendation cannot cause a second generation and paid first image remains available
+ok 517 - legacy retry recommendation cannot cause a second generation and paid first image remains available
+  ---
+  duration_ms: 33.6752
+  type: 'test'
+  ...
+# Subtest: explicit later invocation keeps both runs and validation summaries independently
+ok 518 - explicit later invocation keeps both runs and validation summaries independently
+  ---
+  duration_ms: 26.9618
+  type: 'test'
+  ...
+# Subtest: validator exception retains successful first run and truthful unverified state
+ok 519 - validator exception retains successful first run and truthful unverified state
+  ---
+  duration_ms: 15.6147
+  type: 'test'
+  ...
+# Subtest: validator request declares stage and asks for separately scoped identity evidence
+ok 520 - validator request declares stage and asks for separately scoped identity evidence
+  ---
+  duration_ms: 8.2244
+  type: 'test'
+  ...
+# Subtest: actual offline composite preserves the original and records confirmed logo source digest
+ok 521 - actual offline composite preserves the original and records confirmed logo source digest
+  ---
+  duration_ms: 22.402
+  type: 'test'
+  ...
+# Subtest: post-composite service requires confirmation and records stage separately from visual acceptance
+ok 522 - post-composite service requires confirmation and records stage separately from visual acceptance
+  ---
+  duration_ms: 19.7671
+  type: 'test'
+  ...
+# Subtest: visible operations have one actual execution owner: lobby/default
+ok 523 - visible operations have one actual execution owner: lobby/default
+  ---
+  duration_ms: 139.554
+  type: 'test'
+  ...
+# Subtest: visible operations have one actual execution owner: lobby/entrance_view
+ok 524 - visible operations have one actual execution owner: lobby/entrance_view
+  ---
+  duration_ms: 31.4373
+  type: 'test'
+  ...
+# Subtest: visible operations have one actual execution owner: lobby/three_quarter_wide
+ok 525 - visible operations have one actual execution owner: lobby/three_quarter_wide
+  ---
+  duration_ms: 30.5015
+  type: 'test'
+  ...
+# Subtest: visible operations have one actual execution owner: dining/default
+ok 526 - visible operations have one actual execution owner: dining/default
+  ---
+  duration_ms: 30.9868
+  type: 'test'
+  ...
+# Subtest: visible operations have one actual execution owner: dining/entrance_view
+ok 527 - visible operations have one actual execution owner: dining/entrance_view
+  ---
+  duration_ms: 33.6702
+  type: 'test'
+  ...
+# Subtest: visible operations have one actual execution owner: dining/three_quarter_wide
+ok 528 - visible operations have one actual execution owner: dining/three_quarter_wide
+  ---
+  duration_ms: 30.699
+  type: 'test'
+  ...
+# Subtest: bilingual activity/effect has functional evidence and ownership: 厨师正在备餐
+ok 529 - bilingual activity/effect has functional evidence and ownership: 厨师正在备餐
+  ---
+  duration_ms: 20.9233
+  type: 'test'
+  ...
+# Subtest: bilingual activity/effect has functional evidence and ownership: 菜品上方升起热气
+ok 530 - bilingual activity/effect has functional evidence and ownership: 菜品上方升起热气
+  ---
+  duration_ms: 14.0731
+  type: 'test'
+  ...
+# Subtest: bilingual activity/effect has functional evidence and ownership: 顾客在餐桌用餐
+ok 531 - bilingual activity/effect has functional evidence and ownership: 顾客在餐桌用餐
+  ---
+  duration_ms: 12.4405
+  type: 'test'
+  ...
+# Subtest: bilingual activity/effect has functional evidence and ownership: 店员为顾客打包商品
+ok 532 - bilingual activity/effect has functional evidence and ownership: 店员为顾客打包商品
+  ---
+  duration_ms: 12.7843
+  type: 'test'
+  ...
+# Subtest: bilingual activity/effect has functional evidence and ownership: customers browsing products
+ok 533 - bilingual activity/effect has functional evidence and ownership: customers browsing products
+  ---
+  duration_ms: 11.8442
+  type: 'test'
+  ...
+# Subtest: bilingual activity/effect has functional evidence and ownership: staff handing parcels to visitors
+ok 534 - bilingual activity/effect has functional evidence and ownership: staff handing parcels to visitors
+  ---
+  duration_ms: 12.3305
+  type: 'test'
+  ...
+# Subtest: bilingual activity/effect has functional evidence and ownership: guests checking in at reception
+ok 535 - bilingual activity/effect has functional evidence and ownership: guests checking in at reception
+  ---
+  duration_ms: 11.6184
+  type: 'test'
+  ...
+# Subtest: bilingual activity/effect has functional evidence and ownership: receptionist greeting visitors
+ok 536 - bilingual activity/effect has functional evidence and ownership: receptionist greeting visitors
+  ---
+  duration_ms: 12.1716
+  type: 'test'
+  ...
+# Subtest: bilingual activity/effect has functional evidence and ownership: water flowing into the basin
+ok 537 - bilingual activity/effect has functional evidence and ownership: water flowing into the basin
+  ---
+  duration_ms: 11.9755
+  type: 'test'
+  ...
+# Subtest: de-duplication retains an actual rendered owner, not mere raw membership; original indices survive
+ok 538 - de-duplication retains an actual rendered owner, not mere raw membership; original indices survive
+  ---
+  duration_ms: 13.2823
+  type: 'test'
+  ...
+# Subtest: foreign operations cannot re-enter through the brand branch after scope rejection
+ok 539 - foreign operations cannot re-enter through the brand branch after scope rejection
+  ---
+  duration_ms: 12.7125
+  type: 'test'
+  ...
+# Subtest: an activity also supplied in a signature source has one rendered visible owner
+ok 540 - an activity also supplied in a signature source has one rendered visible owner
+  ---
+  duration_ms: 12.6952
+  type: 'test'
+  ...
+# Subtest: brand duplicate is removed only after the current visible owner exists
+ok 541 - brand duplicate is removed only after the current visible owner exists
+  ---
+  duration_ms: 12.1352
+  type: 'test'
+  ...
+# Subtest: a prohibitive list never receives credit as the positive visible execution owner
+ok 542 - a prohibitive list never receives credit as the positive visible execution owner
+  ---
+  duration_ms: 11.5172
+  type: 'test'
+  ...
+# Subtest: unknown or wishful fragments stay reviewable without becoming a hard operating requirement
+ok 543 - unknown or wishful fragments stay reviewable without becoming a hard operating requirement
+  ---
+  duration_ms: 35.4796
+  type: 'test'
+  ...
+# Subtest: identity, motif, color, decoration and architecture retain distinct semantic routes
+ok 544 - identity, motif, color, decoration and architecture retain distinct semantic routes
+  ---
+  duration_ms: 18.5207
+  type: 'test'
+  ...
+# Subtest: mixed clauses retain only the local activity and boundary, with foreign interiors rejected in trace
+ok 545 - mixed clauses retain only the local activity and boundary, with foreign interiors rejected in trace
+  ---
+  duration_ms: 12.5015
+  type: 'test'
+  ...
+# Subtest: sourceMap reflects actual renderer ownership, not a broad promise of preservation
+ok 546 - sourceMap reflects actual renderer ownership, not a broad promise of preservation
+  ---
+  duration_ms: 16.1378
+  type: 'test'
+  ...
+# Subtest: reference-first target program still replaces source operations instead of inheriting standard fallback
+not ok 547 - reference-first target program still replaces source operations instead of inheriting standard fallback
+  ---
+  duration_ms: 18.4803
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:1:9665'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\visible-requirement-ownership.test.ts:175:18)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: continuation keeps the target program authoritative and does not expose source dining operations
+not ok 548 - continuation keeps the target program authoritative and does not expose source dining operations
+  ---
+  duration_ms: 16.2106
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:1:10338'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: INVALID_SPACE_FUNCTIONAL_SEMANTICS'
+  code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:334:7)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:125:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:73:22)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\visible-requirement-ownership.test.ts:190:18)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+1..548
+# tests 548
+# suites 0
+# pass 498
+# fail 50
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 42211.0325

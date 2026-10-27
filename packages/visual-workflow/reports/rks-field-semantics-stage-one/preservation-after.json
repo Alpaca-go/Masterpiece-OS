@@ -1,0 +1,26 @@
+{
+  "base": "6bea8e9d0300c227043192d70fca763b6231afac",
+  "head": "6bea8e9d0300c227043192d70fca763b6231afac",
+  "status": "STOPPED_DIRECT_SEMANTIC_REGRESSION",
+  "trackedFiles": 3048,
+  "unchanged": 3046,
+  "changed": [
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/semantic/separate-space-semantics.js",
+      "before": "e8615c0cc49176769cc39f9b9393767b318b9de1b28a65e2fce20b869fb2bed0",
+      "after": "62a5452fe3849d1bd8dc34b8bec3aa79a480a32a2a5e992db7a6a74ef0855a65"
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/semantic/validate-spatial-semantics.js",
+      "before": "ff084eedfeb19d4ae177788fccc2f792cea41ed80cad6d02ab1af1a3dc162932",
+      "after": "570df55c5ca086d9f0af29e8dd734324fcf12f2e96e3794f6cce9ab8fec5cde6"
+    }
+  ],
+  "implementationIntegritySha256": "85947e556d9467837f7583c106f5f7fec10f65207ed9b2c31b410ae7c2f13bec",
+  "originalTestsChanged": 0,
+  "historicalReportsChanged": 0,
+  "scopeExpansion": 0,
+  "committed": false,
+  "realProviderCalls": 0,
+  "verificationAfterStop": "file hashes and report accounting only; no subsequent tests or implementation changes"
+}

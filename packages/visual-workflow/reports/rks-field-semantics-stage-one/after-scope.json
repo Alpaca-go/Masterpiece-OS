@@ -1,0 +1,657 @@
+{
+  "label": "after-scope",
+  "suite": "new",
+  "args": [
+    "--import",
+    "tsx",
+    "--test",
+    "--test-reporter=tap",
+    "--test-concurrency=1",
+    "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/scope-and-operations.test.ts"
+  ],
+  "exitCode": 0,
+  "durationMs": 1037,
+  "counts": {
+    "tests": 158,
+    "pass": 158,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "cases": [
+    {
+      "title": "scope repair affirmative proposition: staff operating equipment and serving customers",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Only if Logo and staff operating equipment and serving customers",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Unless staff operating equipment and serving customers",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 尚未确认Logo和staff operating equipment and serving customers",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: staff operating equipment and serving customers; staff not using equipment",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: staff operating equipment and serving customers and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: staff operating equipment and serving customers并象征品牌未来",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: staff operating equipment and serving customers; unknown operational tail",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair affirmative proposition: 顾客在入口查看菜单",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Only if Logo and 顾客在入口查看菜单",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Unless 顾客在入口查看菜单",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 尚未确认Logo和顾客在入口查看菜单",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 顾客在入口查看菜单; staff not using equipment",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 顾客在入口查看菜单 and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 顾客在入口查看菜单并象征品牌未来",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 顾客在入口查看菜单; unknown operational tail",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair affirmative proposition: 员工在柜台为顾客办理入住",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Only if Logo and 员工在柜台为顾客办理入住",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Unless 员工在柜台为顾客办理入住",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 尚未确认Logo和员工在柜台为顾客办理入住",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 员工在柜台为顾客办理入住; staff not using equipment",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 员工在柜台为顾客办理入住 and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 员工在柜台为顾客办理入住并象征品牌未来",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 员工在柜台为顾客办理入住; unknown operational tail",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair affirmative proposition: 工作人员使用收银机收款",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Only if Logo and 工作人员使用收银机收款",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Unless 工作人员使用收银机收款",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 尚未确认Logo和工作人员使用收银机收款",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 工作人员使用收银机收款; staff not using equipment",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 工作人员使用收银机收款 and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 工作人员使用收银机收款并象征品牌未来",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 工作人员使用收银机收款; unknown operational tail",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair affirmative proposition: Customers paying at the checkout counter",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Only if Logo and Customers paying at the checkout counter",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Unless Customers paying at the checkout counter",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 尚未确认Logo和Customers paying at the checkout counter",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Customers paying at the checkout counter; staff not using equipment",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Customers paying at the checkout counter and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Customers paying at the checkout counter并象征品牌未来",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Customers paying at the checkout counter; unknown operational tail",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair affirmative proposition: 餐桌位于就餐区",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Only if Logo and 餐桌位于就餐区",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Unless 餐桌位于就餐区",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 尚未确认Logo和餐桌位于就餐区",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 餐桌位于就餐区; staff not using equipment",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 餐桌位于就餐区 and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 餐桌位于就餐区并象征品牌未来",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 餐桌位于就餐区; unknown operational tail",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair affirmative proposition: 取餐台位于点餐区旁",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Only if Logo and 取餐台位于点餐区旁",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Unless 取餐台位于点餐区旁",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 尚未确认Logo和取餐台位于点餐区旁",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 取餐台位于点餐区旁; staff not using equipment",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 取餐台位于点餐区旁 and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 取餐台位于点餐区旁并象征品牌未来",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 取餐台位于点餐区旁; unknown operational tail",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair affirmative proposition: Menu at the service counter",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Only if Logo and Menu at the service counter",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Unless Menu at the service counter",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 尚未确认Logo和Menu at the service counter",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Menu at the service counter; staff not using equipment",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Menu at the service counter and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Menu at the service counter并象征品牌未来",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Menu at the service counter; unknown operational tail",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair affirmative proposition: employees using a scanner and assisting visitors at reception",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Only if Logo and employees using a scanner and assisting visitors at reception",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Unless employees using a scanner and assisting visitors at reception",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 尚未确认Logo和employees using a scanner and assisting visitors at reception",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: employees using a scanner and assisting visitors at reception; staff not using equipment",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: employees using a scanner and assisting visitors at reception and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: employees using a scanner and assisting visitors at reception并象征品牌未来",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: employees using a scanner and assisting visitors at reception; unknown operational tail",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair affirmative proposition: guests checking in and paying at the reception counter",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Only if Logo and guests checking in and paying at the reception counter",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Unless guests checking in and paying at the reception counter",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 尚未确认Logo和guests checking in and paying at the reception counter",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: guests checking in and paying at the reception counter; staff not using equipment",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: guests checking in and paying at the reception counter and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: guests checking in and paying at the reception counter并象征品牌未来",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: guests checking in and paying at the reception counter; unknown operational tail",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair affirmative proposition: staff cleaning equipment and serving drinks",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Only if Logo and staff cleaning equipment and serving drinks",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Unless staff cleaning equipment and serving drinks",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 尚未确认Logo和staff cleaning equipment and serving drinks",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: staff cleaning equipment and serving drinks; staff not using equipment",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: staff cleaning equipment and serving drinks and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: staff cleaning equipment and serving drinks并象征品牌未来",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: staff cleaning equipment and serving drinks; unknown operational tail",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair affirmative proposition: 访客在柜台查看价目表",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Only if Logo and 访客在柜台查看价目表",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Unless 访客在柜台查看价目表",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 尚未确认Logo和访客在柜台查看价目表",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 访客在柜台查看价目表; staff not using equipment",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 访客在柜台查看价目表 and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 访客在柜台查看价目表并象征品牌未来",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 访客在柜台查看价目表; unknown operational tail",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair affirmative proposition: 店员使用支付终端收款",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Only if Logo and 店员使用支付终端收款",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Unless 店员使用支付终端收款",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 尚未确认Logo和店员使用支付终端收款",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 店员使用支付终端收款; staff not using equipment",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 店员使用支付终端收款 and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 店员使用支付终端收款并象征品牌未来",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 店员使用支付终端收款; unknown operational tail",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair affirmative proposition: 座椅设在等候区内",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Only if Logo and 座椅设在等候区内",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Unless 座椅设在等候区内",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 尚未确认Logo和座椅设在等候区内",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 座椅设在等候区内; staff not using equipment",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 座椅设在等候区内 and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 座椅设在等候区内并象征品牌未来",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 座椅设在等候区内; unknown operational tail",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair affirmative proposition: price list at the checkout counter",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Only if Logo and price list at the checkout counter",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: Unless price list at the checkout counter",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: 尚未确认Logo和price list at the checkout counter",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: price list at the checkout counter; staff not using equipment",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: price list at the checkout counter and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: price list at the checkout counter并象征品牌未来",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair rejects extension: price list at the checkout counter; unknown operational tail",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair incomplete or negative unit: equipment near it",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair incomplete or negative unit: reception equipment of it",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair incomplete or negative unit: reception counter and with it",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair incomplete or negative unit: Logo and equipment near it",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair incomplete or negative unit: equipment behind this",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair incomplete or negative unit: equipment beside that",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair incomplete or negative unit: reception counter near it",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair incomplete or negative unit: staff operating equipment but no customers",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair incomplete or negative unit: 员工没有使用设备",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair incomplete or negative unit: 员工不会操作设备",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair incomplete or negative unit: 员工尚未操作设备",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair completion blocks functionalNetwork: unknown operational clause",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair completion blocks functionalNetwork: staff operating equipment and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair completion blocks functionalNetwork: Only if Logo and staff operating equipment",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair invalid field shape preserved: functionalNetwork",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair completion blocks functionalRelationships: unknown operational clause",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair completion blocks functionalRelationships: staff operating equipment and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair completion blocks functionalRelationships: Only if Logo and staff operating equipment",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair invalid field shape preserved: functionalRelationships",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair completion blocks mustBeVisible: unknown operational clause",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair completion blocks mustBeVisible: staff operating equipment and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair completion blocks mustBeVisible: Only if Logo and staff operating equipment",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair invalid field shape preserved: mustBeVisible",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair completion blocks operationConstraints: unknown operational clause",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair completion blocks operationConstraints: staff operating equipment and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair completion blocks operationConstraints: Only if Logo and staff operating equipment",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair invalid field shape preserved: operationConstraints",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair completion blocks requiredSpatialElements: unknown operational clause",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair completion blocks requiredSpatialElements: staff operating equipment and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair completion blocks requiredSpatialElements: Only if Logo and staff operating equipment",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair invalid field shape preserved: requiredSpatialElements",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair completion blocks sceneProgram: unknown operational clause",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair completion blocks sceneProgram: staff operating equipment and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair completion blocks sceneProgram: Only if Logo and staff operating equipment",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair invalid field shape preserved: sceneProgram",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair legacy normalizers retain unknown and conditional tails",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair independent brand statement keeps functional proposition and provenance",
+      "status": "pass"
+    },
+    {
+      "title": "scope repair uses zero network primitives",
+      "status": "pass"
+    }
+  ],
+  "log": "packages/visual-workflow/reports/rks-field-semantics-stage-one/after-scope.txt",
+  "sha256": "364bd4e07d7864da75ab4461fffbda6b3bfcb950e52c7b9c49637fd8413fe4a8"
+}

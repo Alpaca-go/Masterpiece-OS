@@ -1,0 +1,209 @@
+{
+  "label": "after-e1g",
+  "suite": "e1g",
+  "args": [
+    "--import",
+    "tsx",
+    "--test",
+    "--test-reporter=tap",
+    "--test-concurrency=1",
+    "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/independent-review.test.ts"
+  ],
+  "exitCode": 0,
+  "durationMs": 948,
+  "counts": {
+    "tests": 46,
+    "pass": 46,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "cases": [
+    {
+      "title": "E1G semantic expectation block: Only if Logo and staff operating equipment",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation block: If Logo and staff operating equipment",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation block: 未确认Logo和员工操作设备",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation block: 如果出现Logo和员工操作设备",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation block: 如果有Logo and staff operating equipment",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation block: reception equipment of it",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation block: equipment near it",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation block: reception counter and with it",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation block: Logo and equipment near it",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation block: staff operating equipment; staff not using equipment",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation block: staff operating equipment；员工尚未操作设备",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation block: staff operating equipment and 员工没有使用设备",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation block: 员工操作设备; staff may be operating equipment",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation block: staff operating equipment; if customers arrive",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation block: staff operating equipment and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation block: 员工使用设备并象征品牌未来",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation block: Logo and staff operating equipment; staff not using equipment",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation block: staff operating equipment if the store opens",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation block: 设备旁的员工 not operating equipment",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation block: reception counter; staff do not serve customers",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation block: reception counter and equipment",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation block: Reception counter with a usable staff approach and not usable by visitors",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation pass: staff operating equipment and serving customers",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation pass: 顾客在入口查看菜单",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation pass: 员工在柜台为顾客办理入住",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation pass: 工作人员使用收银机收款",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation pass: Customers paying at the checkout counter",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation pass: 餐桌位于就餐区",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation pass: 取餐台位于点餐区旁",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation pass: Menu at the service counter",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation pass: staff operating equipment；员工使用设备",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation pass: staff serving customers; guests checking in",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation pass: Reception counter with a usable staff and visitor approach",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation pass: 入口处的菜单",
+      "status": "pass"
+    },
+    {
+      "title": "E1G semantic expectation pass: staff operating equipment; lotus represents happiness",
+      "status": "pass"
+    },
+    {
+      "title": "E1G completion must fail closed: mustBeVisible: Only if Logo and staff operating equipment",
+      "status": "pass"
+    },
+    {
+      "title": "E1G completion must fail closed: mustBeVisible: 未确认Logo和员工操作设备",
+      "status": "pass"
+    },
+    {
+      "title": "E1G completion must fail closed: mustBeVisible: equipment near it",
+      "status": "pass"
+    },
+    {
+      "title": "E1G completion must fail closed: functionalRelationships: staff operating equipment and enjoying cosmic essence",
+      "status": "pass"
+    },
+    {
+      "title": "E1G completion must fail closed: functionalNetwork: 员工尚未操作设备",
+      "status": "pass"
+    },
+    {
+      "title": "E1G completion must fail closed: sceneProgram: If staff operating equipment",
+      "status": "pass"
+    },
+    {
+      "title": "E1G source status and user confirmation remain distinct from semantic affirmation",
+      "status": "pass"
+    },
+    {
+      "title": "E1G unresolved evidence survives even when sufficiency has no missing fields",
+      "status": "pass"
+    },
+    {
+      "title": "E1G compatibility characterization: no deterministic callback permits model semantic replacement",
+      "status": "pass"
+    },
+    {
+      "title": "E1G dispatch distinction A-no-third-attempt",
+      "status": "pass"
+    },
+    {
+      "title": "E1G dispatch distinction B-attempt-blocked",
+      "status": "pass"
+    }
+  ],
+  "log": "packages/visual-workflow/reports/rks-field-semantics-stage-one/after-e1g.txt",
+  "sha256": "eae5805744f3b35e0f6578852f5fe93573f3985a472c614820442ac3254007df"
+}

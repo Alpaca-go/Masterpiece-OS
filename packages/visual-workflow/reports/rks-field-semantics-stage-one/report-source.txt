@@ -1,0 +1,34 @@
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+import {execFileSync} from 'node:child_process';
+const dir='packages/visual-workflow/reports/rks-field-semantics-stage-one/';
+const read=f=>JSON.parse(fs.readFileSync(dir+f,'utf8'));
+const baseline=read('before-workflow.json'),targeted=read('after-targeted.json');
+const prior=JSON.parse(fs.readFileSync('packages/visual-workflow/reports/rks-semantic-field-contract-audit/case-ledger.json'));
+const clean=s=>s.replaceAll('\\','/').replace(/\/{2,}/gu,'/');
+const byTitle=new Map(targeted.cases.map(x=>[clean(x.title),x]));
+const originalFailures=prior.rows.map(row=>{const current=byTitle.get(clean(row.title));return {historicalId:row.failureId,title:row.title,group:row.group,baselineStatus:'fail',currentStatus:current?.status??'not_run_after_stop',
+ reason:current?.status==='pass'?'original assertion passed in current targeted suite':current?.status==='fail'?'retained historical failure; see targeted diagnostic':'no post-change cross-industry or full workflow claim; stopped on new direct semantic regression',
+ priorRootCause:row.contextOrScopeLoss,...current?.status==='fail'?{diagnostic:current.diagnostic}:{}};});
+const newFailures=targeted.cases.filter(x=>x.status==='fail'&&baseline.cases.some(b=>clean(b.title)===clean(x.title)&&b.status==='pass'))
+ .map(x=>({...x,group:'NEW_SEMANTIC_REGRESSION',rootCause:'typedNode accepts bare equipment, and mustBeVisible node permission lacks the required use/location restriction',action:'STOPPED; no further implementation or tests'}));
+const initialFailures=read('after-paired-01.json').cases.filter(x=>x.status==='fail').map(x=>({...x,finalStatus:'pass_before_stop',
+ cause:x.title.includes('source state')?'New fixture kept a concrete industry value despite marking status unknown; corrected fixture value to unknown before original-suite regression. No original assertion changed.':'Generic English node grammar lacked preparation; added general node noun before original-suite regression.'}));
+const result={status:'STOPPED_DIRECT_SEMANTIC_REGRESSION',base:'6bea8e9d0300c227043192d70fca763b6231afac',newFailures,initialFailures,originalFailures,
+ skippedAfterStop:['cross-industry post-change','full workflow post-change','Golden','repo:verify','verify:current-flows'],note:'Do not infer remaining G groups pass from local positive examples. No tests started after the stop trigger.'};
+fs.writeFileSync(dir+'failure-attribution.json',JSON.stringify(result,null,2),{flag:'wx'});
+let md='# 失败逐项归因与未验证范围\n\n状态：STOPPED_DIRECT_SEMANTIC_REGRESSION / BLOCK。停止后只读日志与保存报告；未继续修复或运行测试。\n\n## 本轮新增直接语义回归\n\n';
+for(const f of newFailures)md+=`- ${f.title}：基准PASS→当前FAIL。输入 mustBeVisible=["equipment"] 得到pass，原断言要求block。归属新语义层回归，不归入旧投影G组。\n`;
+md+='\n## 50项原有失败（含35项G1–G10）\n\n|原编号|原用例|组|当前证据|\n|---|---|---|---|\n';
+for(const r of originalFailures)md+=`|${r.historicalId}|${r.title.replaceAll('|','\\|')}|${r.group}|${r.currentStatus}|\n`;
+md+='\nnot_run_after_stop不等于仍失败或已修复。原定向159项中的跨模块失败只有G7一项与G10两项；C1–C5为原契约争议，单独保留。完整28项未展开初始化依赖沿用已提交审计，不宣称本轮已恢复展开。\n\n## 新增配对测试初次失败\n\n';
+for(const f of initialFailures)md+=`- ${f.title}：${f.cause} 最后结果PASS；首轮日志保留，未覆盖。\n`;
+fs.writeFileSync(dir+'FAILURES.md',md,{flag:'wx'});
+const runs=['before-workflow','after-paired-01','after-paired-02','after-e1g','after-scope','after-e1e','after-targeted'].map(name=>{const {cases,...r}=read(name+'.json');return r;});
+fs.writeFileSync(dir+'test-results.json',JSON.stringify({status:result.status,runs,notRun:result.skippedAfterStop},null,2),{flag:'wx'});
+fs.writeFileSync(dir+'six-field-test-matrix.json',JSON.stringify({status:'local_tests_pass_overall_candidate_blocked',cases:read('after-paired-02.json').cases,
+ coverageGap:'Bare equipment in mustBeVisible was missing from the new node matrix; original E1F assertion caught the unsafe acceptance. New matrix passing is insufficient.'},null,2),{flag:'wx'});
+const files=['packages/visual-workflow/src/generation-runtime/space/semantic/separate-space-semantics.js','packages/visual-workflow/src/generation-runtime/space/semantic/validate-spatial-semantics.js'];
+fs.writeFileSync(dir+'production-diff.patch',execFileSync('git',['diff','--',...files]),{flag:'wx'});
+for(const name of ['network-off','run','report'])fs.copyFileSync('.codex-smoke/rks-field-semantics-stage-one/'+name+'.mjs',dir+name+'-source.txt',fs.constants.COPYFILE_EXCL);
+console.log(JSON.stringify({newRegressions:newFailures.length,originalNowPass:originalFailures.filter(x=>x.currentStatus==='pass').length,originalStillFail:originalFailures.filter(x=>x.currentStatus==='fail').length,originalNotRun:originalFailures.filter(x=>x.currentStatus==='not_run_after_stop').length}));
