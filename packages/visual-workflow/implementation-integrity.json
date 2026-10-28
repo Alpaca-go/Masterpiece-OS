@@ -217,7 +217,7 @@
     },
     {
       "path": "src/generation-runtime/generation/task-contract.js",
-      "sha256": "54ccd0f1209ca3baf62a55819c3b1ca06ee42b85a46c5f71e0a6a232c3f6020b"
+      "sha256": "ec4a6db780a26d2405421db96086d06a610947d1240d5a383a9c1b712f440d0e"
     },
     {
       "path": "src/generation-runtime/generation/template-registry.js",
@@ -245,7 +245,7 @@
     },
     {
       "path": "src/generation-runtime/space/compiler.js",
-      "sha256": "cb647951047f38464c049e44b2cd77d442e2d10f9f44241831ea3ab245b6b185"
+      "sha256": "1ccbd877521c045315fb5a43144b2109ea86b5fddbfc99996333d4d84c2c3a05"
     },
     {
       "path": "src/generation-runtime/space/continuation/apply-continuation-program-override.js",

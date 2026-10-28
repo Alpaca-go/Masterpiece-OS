@@ -61,6 +61,18 @@ function createShortChainTaskContract(input, options = {}) {
       });
     }
   }
+  // Advisory precedents from accepted projects. Never a hard requirement and
+  // never a source of brand props or assets that the project did not supply.
+  const knowledgeContext = Array.isArray(input?.knowledgeContext)
+    ? input.knowledgeContext
+      .filter((item) => item && typeof item.text === "string" && item.text.trim())
+      .slice(0, 7)
+      .map((item) => ({
+        id: String(item.id || "").trim().slice(0, 80),
+        source: String(item.source || "case-library").trim().slice(0, 120),
+        text: item.text.trim().slice(0, 1200)
+      }))
+    : [];
   return {
     schemaVersion: "1.0",
     taskId: input.taskId || `vnext-task-${crypto.randomUUID()}`,
@@ -76,6 +88,7 @@ function createShortChainTaskContract(input, options = {}) {
     ...generationBasis === 'art_direction_reference' ? {artDirection:structuredClone(input.artDirection)} : {},
     mustInclude: cleanList(input.mustInclude),
     mustAvoid: cleanList(input.mustAvoid),
+    ...knowledgeContext.length ? { knowledgeContext } : {},
     referenceAssetIds,
     logoUsageMode,
     ...continuation ? { continuation } : {},

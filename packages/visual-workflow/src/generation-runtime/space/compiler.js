@@ -255,6 +255,19 @@ function renderNegatives(layers, logoUsageMode = "post_composite") {
   ].join("\n");
   return block("negative_constraints", "Prohibited (fail-closed)", body);
 }
+// Advisory precedents from accepted projects. They may shape judgment but never
+// grant brand assets, props or narrative that this project did not supply.
+function renderKnowledgeContext(knowledge) {
+  if (!Array.isArray(knowledge) || !knowledge.length) return null;
+  const body = [
+    "These precedents come from previously accepted projects. Treat them as judgment aids, not hard requirements.",
+    "Do not copy their specific materials, symbols, props, mascots or brand stories.",
+    "Do not invent props, characters, signage text or brand assets that this project's materials do not contain.",
+    "",
+    ...knowledge.map((item) => `- [${item.source}${item.id ? " / " + item.id : ""}] ${item.text}`)
+  ].join("\n");
+  return block("knowledge_context", "Experience Reference (advisory)", body);
+}
 function compileSpacePrompt(input) {
   const layers = adaptSpaceSource(input);
   let anchors = [];
@@ -281,12 +294,14 @@ function compileSpacePrompt(input) {
   const referenceImages = anchors.map((a) => ({ anchorId: a.id, imagePath: resolveArchitectureAnchorImagePath(a) })).filter((r) => r.imagePath);
   const continuationIntentText = renderContinuationIntentBlock(input.taskContract?.continuation);
   const continuationBlock = continuationIntentText ? { id: "continuation_intent", title: "Continuation Intent", text: continuationIntentText } : null;
+  const knowledgeBlock = renderKnowledgeContext(input.taskContract?.knowledgeContext);
   const ordered = [
     renderTask(layers),
     ...continuationBlock ? [continuationBlock] : [],
     renderSpatialIntent(layers),
     renderArchitectureLanguage(layers),
     ...contextBlock ? [contextBlock] : [],
+    ...knowledgeBlock ? [knowledgeBlock] : [],
     renderArchitectureFunctionBridge(layers),
     renderArchitecturalConcept(layers),
     renderArchitectureDna(layers),
@@ -438,6 +453,7 @@ function blockSource(id,layers) {
     spatial_intent: ["spatial.spatialConcept (normalized)", "semantic.architectureStrategy"],
     architecture_language: ["semantic.architectureStrategy", "semantic.architectureForm", "semantic.architectureOrganization", "materialSystem", "lightingSystem"],
     architecture_context: ["architecture-anchors/registry.json"],
+    knowledge_context: ["taskContract.knowledgeContext (advisory precedents)"],
     architecture_function_bridge: ["projectFacts.brandRole", "spatial.functionalRelationships", "spatial.sceneProgram", "spatial.brandRoleManifestation", "diagnosis.brandMisreadRisks"],
     architectural_concept: ["spatial.spatialConcept (normalized)", "semantic.architectureForm", "semantic.architectureStrategy"],
     architecture_dna: ["semantic.architectureStrategy", "semantic.architectureForm", "semantic.architectureOrganization"],
