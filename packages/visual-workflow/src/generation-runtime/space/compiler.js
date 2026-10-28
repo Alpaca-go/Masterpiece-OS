@@ -275,7 +275,7 @@ const STYLE_LABELS = Object.freeze({
     detail: "detail view"
   },
   textDensity: {
-    minimal: "at most one text panel per view; no menu walls or dense copy",
+    minimal: "at most one text panel per view; no menu walls or dense copy. Achieve density through people, objects and lighting, not text",
     moderate: "a few text panels, balanced with the space",
     rich: "text-rich menu walls are allowed, but keep them readable"
   }

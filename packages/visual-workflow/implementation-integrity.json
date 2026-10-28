@@ -245,7 +245,7 @@
     },
     {
       "path": "src/generation-runtime/space/compiler.js",
-      "sha256": "94ce2988df5a95578aec8900f6f5fd513d5b502d3de7886bf63da0b275283898"
+      "sha256": "96840e305e5c692c77eea0cf6cf661288e244455c9a02ac42df1b449ce83af2d"
     },
     {
       "path": "src/generation-runtime/space/continuation/apply-continuation-program-override.js",
