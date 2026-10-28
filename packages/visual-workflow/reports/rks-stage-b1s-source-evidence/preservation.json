@@ -1,0 +1,842 @@
+{
+  "status": "BLOCK_SOURCE_AUTHORITY_HANDOFF_REQUIRED",
+  "baseline": "11523613363992da5bed8b05b7024e9574d754e5",
+  "head": "11523613363992da5bed8b05b7024e9574d754e5",
+  "branch": "fix/rks-semantic-scope-and-operations",
+  "trackedFileCount": 3080,
+  "trackedDiffAgainstBaseline": [],
+  "productionDiffBytes": 0,
+  "note": "Git diff against baseline empty for all originally tracked files; raw SHA-256 values below are preservation evidence, not trust/authorization proof.",
+  "explicitBaselineComparisons": [
+    {
+      "path": "packages/visual-workflow/src/project-design-direction.js",
+      "baselineBlob": "28eb9549b62bac07e91b7903f70bf4c75506f179",
+      "baselineSha256": "cccd26e77c37a542a86598f7a9a8b612afbdf5c0c08c73aebb9c9d7d1b605a7d",
+      "currentSha256": "cccd26e77c37a542a86598f7a9a8b612afbdf5c0c08c73aebb9c9d7d1b605a7d",
+      "byteEqual": true,
+      "lfNormalizedEqual": true
+    },
+    {
+      "path": "packages/visual-workflow/src/runtime/image-generation/short-chain-service.js",
+      "baselineBlob": "ba493d47263cab7cadfeb7eda0a0458c80434c75",
+      "baselineSha256": "9df3e2ee086e076d0e5aeb749f442836b3c57c3975377854defe8d05a9c5aec3",
+      "currentSha256": "9df3e2ee086e076d0e5aeb749f442836b3c57c3975377854defe8d05a9c5aec3",
+      "byteEqual": true,
+      "lfNormalizedEqual": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/generation/user-confirmed-visual-decision.js",
+      "baselineBlob": "dcb517e5a822827db75777c01ffce323040460f0",
+      "baselineSha256": "3d6ec8e9fc701de0967d226c2f323c34861456d6b0137c762fa580dfc0ec0ad4",
+      "currentSha256": "3d6ec8e9fc701de0967d226c2f323c34861456d6b0137c762fa580dfc0ec0ad4",
+      "byteEqual": true,
+      "lfNormalizedEqual": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/generation/compile.js",
+      "baselineBlob": "0fe6992480136530b1612c153c61d60cccbce138",
+      "baselineSha256": "0d01aea348d2c4853d0e5fcff18c9d3b1e964dae1d642821a91590c39754212a",
+      "currentSha256": "0d01aea348d2c4853d0e5fcff18c9d3b1e964dae1d642821a91590c39754212a",
+      "byteEqual": true,
+      "lfNormalizedEqual": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/source-adapter.js",
+      "baselineBlob": "3736e04bf61bf2aca3b63927c131bde1d6d197f4",
+      "baselineSha256": "b4fe223f16c1cf4e0bde5a83e936e598ed6eb63fb7ccb6fe94fd61af0e649299",
+      "currentSha256": "b4fe223f16c1cf4e0bde5a83e936e598ed6eb63fb7ccb6fe94fd61af0e649299",
+      "byteEqual": true,
+      "lfNormalizedEqual": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/scene-projection/target-scene-projection.js",
+      "baselineBlob": "72e14a59f3ae79a6937eeafc5381804c6158767b",
+      "baselineSha256": "78be27d7523ee10561005f553e51e9a90c801791ae52842f575d51ce63267598",
+      "currentSha256": "78be27d7523ee10561005f553e51e9a90c801791ae52842f575d51ce63267598",
+      "byteEqual": true,
+      "lfNormalizedEqual": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/compiler.js",
+      "baselineBlob": "540e5af90ad3105632b2d07e9afdf1d7aa70b6ca",
+      "baselineSha256": "a6614dce173d79c159854c19fe649d71204037a52183d1d0467242afad4cf352",
+      "currentSha256": "a6614dce173d79c159854c19fe649d71204037a52183d1d0467242afad4cf352",
+      "byteEqual": true,
+      "lfNormalizedEqual": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/semantic/separate-space-semantics.js",
+      "baselineBlob": "851d40a47fa382650499b4cb90aa1d359aec69a5",
+      "baselineSha256": "62a5452fe3849d1bd8dc34b8bec3aa79a480a32a2a5e992db7a6a74ef0855a65",
+      "currentSha256": "62a5452fe3849d1bd8dc34b8bec3aa79a480a32a2a5e992db7a6a74ef0855a65",
+      "byteEqual": true,
+      "lfNormalizedEqual": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/semantic/validate-spatial-semantics.js",
+      "baselineBlob": "9bb9b8e2d8df78575bfac29673fc16176c7a6867",
+      "baselineSha256": "a377f1400af37b54e173acd918f937143c17433e3e943231b7312065f74beb9d",
+      "currentSha256": "a377f1400af37b54e173acd918f937143c17433e3e943231b7312065f74beb9d",
+      "byteEqual": true,
+      "lfNormalizedEqual": true
+    },
+    {
+      "path": "packages/visual-workflow/src/analysis-decisions/analysis-completion-orchestrator.js",
+      "baselineBlob": "a63e374bc2177515d3818e50b944444e274ec766",
+      "baselineSha256": "012ce13cc950546958f0dcc36e39f4b60c0dd5bb6465a25909ec785e0671d25b",
+      "currentSha256": "012ce13cc950546958f0dcc36e39f4b60c0dd5bb6465a25909ec785e0671d25b",
+      "byteEqual": true,
+      "lfNormalizedEqual": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/rks-stage-b1-projection-evidence/stage-a-checkpoint.json",
+      "baselineBlob": "914e3ca75f04e0eda9b2cfb782eff927559a50de",
+      "baselineSha256": "51449863f33c520d6ebcf65456203cf17b966927e2378b6134f89ec0517046bc",
+      "currentSha256": "51449863f33c520d6ebcf65456203cf17b966927e2378b6134f89ec0517046bc",
+      "byteEqual": true,
+      "lfNormalizedEqual": true
+    },
+    {
+      "path": "packages/visual-workflow/reports/rks-stage-b1r-evidence-wiring/README.md",
+      "baselineBlob": "ddb8c4773fe1163628a885426fc26fc8b4185575",
+      "baselineSha256": "45a67a8e61c7551b96501e7e5c991a546f2d4e180306158fd5c10fb6a1cc550f",
+      "currentSha256": "45a67a8e61c7551b96501e7e5c991a546f2d4e180306158fd5c10fb6a1cc550f",
+      "byteEqual": true,
+      "lfNormalizedEqual": true
+    },
+    {
+      "path": "packages/visual-workflow/implementation-integrity.json",
+      "baselineBlob": "03f097a0a1496c29d22af656fd70442263ef0d4b",
+      "baselineSha256": "85947e556d9467837f7583c106f5f7fec10f65207ed9b2c31b410ae7c2f13bec",
+      "currentSha256": "85947e556d9467837f7583c106f5f7fec10f65207ed9b2c31b410ae7c2f13bec",
+      "byteEqual": true,
+      "lfNormalizedEqual": true
+    },
+    {
+      "path": "config/repository-contract/prompt-integrity.json",
+      "baselineBlob": "938839e6d9f07afbd4daa728bc1f43832ad54712",
+      "baselineSha256": "be3148abc17dfaddfd33dea944db6638b21a2036d4ba7210e07082c1e0f80c61",
+      "currentSha256": "be3148abc17dfaddfd33dea944db6638b21a2036d4ba7210e07082c1e0f80c61",
+      "byteEqual": true,
+      "lfNormalizedEqual": true
+    }
+  ],
+  "protectedFileCount": 174,
+  "protectedFiles": [
+    {
+      "path": "config/repository-contract/prompt-integrity.json",
+      "sha256": "be3148abc17dfaddfd33dea944db6638b21a2036d4ba7210e07082c1e0f80c61"
+    },
+    {
+      "path": "golden/CHANGELOG.md",
+      "sha256": "295b21679e5a3a4edcc29a5a858d955759f7db982dce6dc97123dde21eb31a7a"
+    },
+    {
+      "path": "golden/continuation/jiuzhou-reception-to-consultation/README.md",
+      "sha256": "cc4ab64f165d75f6abb009fc5e727ed064c438a1826b58718b40b79830c9c21a"
+    },
+    {
+      "path": "golden/continuation/jiuzhou-reception-to-consultation/case.json",
+      "sha256": "90ac981f05be264c51fda6d9244d33a70302c5ad929ef426b0aa3c348cec94f2"
+    },
+    {
+      "path": "golden/continuation/jiuzhou-reception-to-consultation/expected/contract.json",
+      "sha256": "f28d59fcf8a60afc44935a4ecaa097e7ad869ecd18c5b19cef0b38ef74e8e0ce"
+    },
+    {
+      "path": "golden/continuation/jiuzhou-reception-to-consultation/input/evidence.json",
+      "sha256": "ab04fa925211a633abb0130fec5d8b388273e032c1c8a255e682d3f60fa700b1"
+    },
+    {
+      "path": "golden/manifests/golden-registry.json",
+      "sha256": "762ef620f6dc0ba8bf4660551357297b5d1f69bfe3f9af8cc3a10ca514ade441"
+    },
+    {
+      "path": "golden/packaging/fengtangtang-deliverable/README.md",
+      "sha256": "b7ad9bc07d9154650bca3583cf6164d13dbe0c13b33ae7c47d0dd2b39800714e"
+    },
+    {
+      "path": "golden/packaging/fengtangtang-deliverable/case.json",
+      "sha256": "2a4240313f017b82a78a10c660d3501391d7f6ec6ab7347597cf1d33a39db0bd"
+    },
+    {
+      "path": "golden/packaging/fengtangtang-deliverable/expected/contract.json",
+      "sha256": "0c71f81a259418db68db704fe23f4bff6f56db6d28fc3c8e3f3c2ebfaa110f11"
+    },
+    {
+      "path": "golden/packaging/fengtangtang-deliverable/input/evidence.json",
+      "sha256": "f266e2bf355da15946902afd4006cb4ff9441dc1adcb263f30993958fb349d3f"
+    },
+    {
+      "path": "golden/reference-first/jiuzhou-reception-to-consultation/README.md",
+      "sha256": "9476541756777af7b846a743e5e77b4d24633485efefe9402e3aa4121eb9e282"
+    },
+    {
+      "path": "golden/reference-first/jiuzhou-reception-to-consultation/case.json",
+      "sha256": "651a237af97588b94996e2f5bc529208f8000ff7bfa5e93a0a92793a65847173"
+    },
+    {
+      "path": "golden/reference-first/jiuzhou-reception-to-consultation/expected/contract.json",
+      "sha256": "63d2f8d67b3433244f1407cf66a60dcdd33ec9a1276d7e8259466af60517faea"
+    },
+    {
+      "path": "golden/reference-first/jiuzhou-reception-to-consultation/input/evidence.json",
+      "sha256": "d0431a457b6a474d9bb7a54cd65e7f7fda1d7e6fac5e660a7459e43ea8bc94d5"
+    },
+    {
+      "path": "golden/standard-space/current-parity-set/README.md",
+      "sha256": "0749b93afa3c900106e0d0d5adde1a54340860191435db8907a121026b717840"
+    },
+    {
+      "path": "golden/standard-space/current-parity-set/case.json",
+      "sha256": "6dbea86f7dce4bd1b7b9f6e4c5800335d04bd1892f594d85ef1a0bee8a6c5b1e"
+    },
+    {
+      "path": "golden/standard-space/current-parity-set/expected/contract.json",
+      "sha256": "6a0a3241f363a3458364c091820f363c92684a0bb433560105522d6c6f252238"
+    },
+    {
+      "path": "golden/standard-space/current-parity-set/input/evidence.json",
+      "sha256": "27e82a8c4104898832b04b231a8cbea65f6a2e62cdd2c1a719bc2889d56287db"
+    },
+    {
+      "path": "golden/visual-analysis/jiuzhou-audit-fixture/README.md",
+      "sha256": "016806eddf692bb4a628931b15af72d0b657fad619879ffb33bf99f494f8deb6"
+    },
+    {
+      "path": "golden/visual-analysis/jiuzhou-audit-fixture/case.json",
+      "sha256": "327f082af25f5e849991f2123b823943e234b1cce441dd49f22d77c31dab6523"
+    },
+    {
+      "path": "golden/visual-analysis/jiuzhou-audit-fixture/expected/contract.json",
+      "sha256": "1bedfe45a5f2615f4972f6ffb7e134e0b2ff089dc9b14bf4779f72011adb4be7"
+    },
+    {
+      "path": "golden/visual-analysis/jiuzhou-audit-fixture/input/evidence.json",
+      "sha256": "ea3545b0406b0fb0cd50a4cdbc3c957937de530c698d5a84904e83ac4ed2f5d2"
+    },
+    {
+      "path": "packages/visual-workflow/implementation-integrity.json",
+      "sha256": "85947e556d9467837f7583c106f5f7fec10f65207ed9b2c31b410ae7c2f13bec"
+    },
+    {
+      "path": "packages/visual-workflow/prompts/analysis/benchmark-instructions.md",
+      "sha256": "df937bbc81bf1c7335933952eef5db654c73b485bff52a67abed2618ecee71cb"
+    },
+    {
+      "path": "packages/visual-workflow/prompts/analysis/deep-creative-director.md",
+      "sha256": "4d258cce657f023d054c86ee54c661fab9382387847904a4b386e5a674b46142"
+    },
+    {
+      "path": "packages/visual-workflow/prompts/analysis/execution-core-template.md",
+      "sha256": "d20def82f1d881a276007fb408fe62c92634f80bb346da0a52aa2fdfb8c3d54c"
+    },
+    {
+      "path": "packages/visual-workflow/prompts/analysis/report-schema.md",
+      "sha256": "cae74a0ab49ca33827e09194005df0d35bc979ad0e8f7165bd80524a20d637af"
+    },
+    {
+      "path": "packages/visual-workflow/reports/rks-stage-b1-projection-evidence/stage-a-checkpoint.json",
+      "sha256": "51449863f33c520d6ebcf65456203cf17b966927e2378b6134f89ec0517046bc"
+    },
+    {
+      "path": "packages/visual-workflow/reports/rks-stage-b1r-evidence-wiring/README.md",
+      "sha256": "45a67a8e61c7551b96501e7e5c991a546f2d4e180306158fd5c10fb6a1cc550f"
+    },
+    {
+      "path": "packages/visual-workflow/src/analysis-decisions/analysis-completion-orchestrator.js",
+      "sha256": "012ce13cc950546958f0dcc36e39f4b60c0dd5bb6465a25909ec785e0671d25b"
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/generation/compile.js",
+      "sha256": "0d01aea348d2c4853d0e5fcff18c9d3b1e964dae1d642821a91590c39754212a"
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/generation/seedream-adapter.js",
+      "sha256": "1a150deb5b1e495ca6bf8cb01de8566bca87012be4f36bbcfa7abf922b8926ec"
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/generation/user-confirmed-visual-decision.js",
+      "sha256": "3d6ec8e9fc701de0967d226c2f323c34861456d6b0137c762fa580dfc0ec0ad4"
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/compiler.js",
+      "sha256": "a6614dce173d79c159854c19fe649d71204037a52183d1d0467242afad4cf352"
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/gates/provider-prompt-gate.js",
+      "sha256": "860dcbcf445930f453c911aea2c8ddba791e0480eae7056afc390988f65c8015"
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/scene-projection/target-scene-projection.js",
+      "sha256": "78be27d7523ee10561005f553e51e9a90c801791ae52842f575d51ce63267598"
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/semantic/separate-space-semantics.js",
+      "sha256": "62a5452fe3849d1bd8dc34b8bec3aa79a480a32a2a5e992db7a6a74ef0855a65"
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/semantic/validate-spatial-semantics.js",
+      "sha256": "a377f1400af37b54e173acd918f937143c17433e3e943231b7312065f74beb9d"
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/source-adapter.js",
+      "sha256": "b4fe223f16c1cf4e0bde5a83e936e598ed6eb63fb7ccb6fe94fd61af0e649299"
+    },
+    {
+      "path": "packages/visual-workflow/src/model-runtime/analysis-provider-registry.js",
+      "sha256": "a5599c06d3f1e3557cddb0885caa86b20180bca4a059612d5651ccd63c3273dc"
+    },
+    {
+      "path": "packages/visual-workflow/src/model-runtime/analysis-provider.js",
+      "sha256": "dad1e5dbbb346768aac36aa28c9c1773a3ea9f96f1b81d6e9532981d8d2a5171"
+    },
+    {
+      "path": "packages/visual-workflow/src/model-runtime/qwen-analysis-provider.js",
+      "sha256": "9a27aa74ffc7cc8c3fc1cc1426a59b4f924702661cc86adadc6394a5ae13962a"
+    },
+    {
+      "path": "packages/visual-workflow/src/model-runtime/volcengine-analysis-provider.js",
+      "sha256": "a72234ff8e67a786c8b7ac62884cd743a6c1636d337e0ec62da84dee4f1269fa"
+    },
+    {
+      "path": "packages/visual-workflow/src/project-design-direction.js",
+      "sha256": "cccd26e77c37a542a86598f7a9a8b612afbdf5c0c08c73aebb9c9d7d1b605a7d"
+    },
+    {
+      "path": "packages/visual-workflow/src/runtime/image-generation/short-chain-service.js",
+      "sha256": "9df3e2ee086e076d0e5aeb749f442836b3c57c3975377854defe8d05a9c5aec3"
+    },
+    {
+      "path": "packages/visual-workflow/tests/analysis-direction-suggestion.test.ts",
+      "sha256": "0b33e0d43db14b86668de8b38ea2c6b35b1f7b0c0ac86eb748462a86ddf8d844"
+    },
+    {
+      "path": "packages/visual-workflow/tests/architectural-integration-form.json",
+      "sha256": "7529f1de629d829226a953dd4a4d8738914d562c07b1dd891efb12e61d691cdd"
+    },
+    {
+      "path": "packages/visual-workflow/tests/architectural-integration.test.ts",
+      "sha256": "f869e5986eedad82ddf9d00ef3e4776e34d11eba1a14131b7154c421db24a317"
+    },
+    {
+      "path": "packages/visual-workflow/tests/architectural-language-form.json",
+      "sha256": "c3334b31b519823dfde1a15ae3c4b75b47721a73fff415a939d8dd9f49cc7b43"
+    },
+    {
+      "path": "packages/visual-workflow/tests/architectural-language.test.ts",
+      "sha256": "1e9bf184767b1c18c380a309e6298c90676e08f5bb9dd6609138cc66c824fad9"
+    },
+    {
+      "path": "packages/visual-workflow/tests/architectural-refinement-form.json",
+      "sha256": "635e6b063a896bfe88390b0c94763cafb24135bbd983096456d2743ccff66bee"
+    },
+    {
+      "path": "packages/visual-workflow/tests/architectural-refinement.test.ts",
+      "sha256": "eb65da26aebbbd247b716f5a038088bc6852840bfdcba18ab7d35e7aa783bcce"
+    },
+    {
+      "path": "packages/visual-workflow/tests/architecture-commercial-layer-form.json",
+      "sha256": "5d4b6d90bfe30c9cd86a8dd4fdcab58417dfcecabfc5acd3510c21d3704661e7"
+    },
+    {
+      "path": "packages/visual-workflow/tests/architecture-commercial-layer.test.ts",
+      "sha256": "c9f9c8fb75602b6920e9eaa070f5efdadad01fbb4b7d31408ed58229c49a54eb"
+    },
+    {
+      "path": "packages/visual-workflow/tests/art-direction-authority.test.ts",
+      "sha256": "72f1dfb8c13d444afc38f320c4499310f7524c39ffddd181716d1bd70d6c2cb6"
+    },
+    {
+      "path": "packages/visual-workflow/tests/art-direction-business-fixture.ts",
+      "sha256": "d193aafc39064c106c3a538e41510d6106a52b8536db3657c96d29ac6d7ff22c"
+    },
+    {
+      "path": "packages/visual-workflow/tests/art-direction-review.mjs",
+      "sha256": "045028e3550977834d9963ebf1a6909b855c19fba7bf1996700cf489edbda8fc"
+    },
+    {
+      "path": "packages/visual-workflow/tests/art-direction-route.test.ts",
+      "sha256": "303949e5d39a89106b0bc441865068baac3f2e1204686167bbfbb0128c4ffa58"
+    },
+    {
+      "path": "packages/visual-workflow/tests/audit-compiler-integrity.mjs",
+      "sha256": "c64ce8de3339591e97d579caac876c66c5f6a552fdb10505a28bfe791535f9c9"
+    },
+    {
+      "path": "packages/visual-workflow/tests/automatic-design-proposal.test.ts",
+      "sha256": "b6405028f9ee5866f879807020cac363c73848a81bd1d2db0cd921a085dc9338"
+    },
+    {
+      "path": "packages/visual-workflow/tests/capture-art-direction-business.mjs",
+      "sha256": "6ea6c7e656635673e9252e570f13bacf2a4deb7752c4ff542b2eb210296f71f6"
+    },
+    {
+      "path": "packages/visual-workflow/tests/capture-art-direction-operations.mjs",
+      "sha256": "8a28f13d8d62b54f65473810e3c47734003a3e91565133a0a9bd35ce85c8e685"
+    },
+    {
+      "path": "packages/visual-workflow/tests/capture-art-direction.mjs",
+      "sha256": "50cf853b3721e14bedffc6ef7b2ad11a6b0e4b2a0133ddcf4026e292023e625a"
+    },
+    {
+      "path": "packages/visual-workflow/tests/capture-design-direction-editor.mjs",
+      "sha256": "845bb660181a061eb36a30157775c729beed007b98e7a4611957ce17d82cff98"
+    },
+    {
+      "path": "packages/visual-workflow/tests/capture-design-fidelity.mjs",
+      "sha256": "29a95b766fc01110e34570e00efa1b877f67a77ce2db7db8534895e64543441d"
+    },
+    {
+      "path": "packages/visual-workflow/tests/capture-project-design-direction.mjs",
+      "sha256": "045f29a0c53c1270f6b3e7d0e34d6f99664e1e0fac6e4f068465c58a37131794"
+    },
+    {
+      "path": "packages/visual-workflow/tests/commercial-attribute-form.json",
+      "sha256": "ce0c56c7d94fa18d21f007cb8c1b76d361bffc2d079ed63ac2084daa8fa0c7b5"
+    },
+    {
+      "path": "packages/visual-workflow/tests/commercial-attribute.test.ts",
+      "sha256": "77cc20f23d1bdf462299fe2dd7526b6e55045f8ac73afee2d123779e7c4daa86"
+    },
+    {
+      "path": "packages/visual-workflow/tests/cross-zone-operation-scope.test.ts",
+      "sha256": "23d7f667eb1bdc9667f34892accde9aac2322d64f74d0f89962b4fba03b2fcfe"
+    },
+    {
+      "path": "packages/visual-workflow/tests/design-decision-fidelity.test.js",
+      "sha256": "ea97ff9bdcf967fb3f25d6bacfbfa5a62eadc7773563fb6c9c42a4d45763dc28"
+    },
+    {
+      "path": "packages/visual-workflow/tests/design-direction-editor-evidence.mjs",
+      "sha256": "cc6b6967fe23f6905fbcc6be6b3c4db85012a6747ef3fe1e453b56a480c5402d"
+    },
+    {
+      "path": "packages/visual-workflow/tests/design-direction-editor.test.ts",
+      "sha256": "85eb6be146dfd9853efa27ca2c4b379647c3530599725bdc3248f032e89c11ce"
+    },
+    {
+      "path": "packages/visual-workflow/tests/design-direction-form.json",
+      "sha256": "499cab2b72f0d4449a99f5cd3bf209ea87060088602d2128a4771d60f56d96b7"
+    },
+    {
+      "path": "packages/visual-workflow/tests/explicit-spatial-layout.test.ts",
+      "sha256": "dc7c7edb62e3592236823996d7431ac0477b03150cfe8f67390b7faba3f06990"
+    },
+    {
+      "path": "packages/visual-workflow/tests/fig2-fig3-spatial-direction-form.json",
+      "sha256": "591f2e48fea580f0879f0791861a0d302629b8769037d37c483d0eb1777ca1c5"
+    },
+    {
+      "path": "packages/visual-workflow/tests/fig2-fig3-spatial-direction.test.ts",
+      "sha256": "65a328c6b234189104f0cb292d160076fbc4ca3c58bfaa507e07ecca2a08ae21"
+    },
+    {
+      "path": "packages/visual-workflow/tests/generation-baseline-lock.test.ts",
+      "sha256": "f7eb96c1d9d087ccbc448486f052597324e3ff04188b1c25ad322f2818379d79"
+    },
+    {
+      "path": "packages/visual-workflow/tests/methodology/acceptance.test.mjs",
+      "sha256": "0f8862ec10c67d5fe4f4598f162bd46c71a9069f615c378779dac5dc91f740ba"
+    },
+    {
+      "path": "packages/visual-workflow/tests/methodology/compatibility-evidence.ts",
+      "sha256": "c5a1a72c1d3cf5479f62d24ba10cb09d522de353637987273d062e2fbdc94a54"
+    },
+    {
+      "path": "packages/visual-workflow/tests/methodology/compatibility-regression.mjs",
+      "sha256": "8004c95a23b2e325690202503e565db4dd8e3aecdd0022d0451ce942a391184e"
+    },
+    {
+      "path": "packages/visual-workflow/tests/methodology/custom-compatibility-fixture.ts",
+      "sha256": "385f7527c2cc2fb1f81a047742932de4370d84b6b0b5d2d8a9fc8e642cbd8066"
+    },
+    {
+      "path": "packages/visual-workflow/tests/methodology/custom-compatibility.test.ts",
+      "sha256": "8d88536c08d9037efc2a8df06889178b6449ab42f3bc9b5c1774ecdd23fb9027"
+    },
+    {
+      "path": "packages/visual-workflow/tests/methodology/integrity-evidence.ts",
+      "sha256": "be1322cd238cc351dd2984cca0b769f3576c0e5c2ba260bfc9aa70b535651445"
+    },
+    {
+      "path": "packages/visual-workflow/tests/methodology/integrity-regression.mjs",
+      "sha256": "a00937b9bc2c3265c6040eece5e62eabf5d721ce12bdae30e5a2788d853b9f8c"
+    },
+    {
+      "path": "packages/visual-workflow/tests/prepare-architectural-review.mjs",
+      "sha256": "b71eb25942c80b51207224fe2badb93821613a40a826eb13ef2dcb9e7b87aa8c"
+    },
+    {
+      "path": "packages/visual-workflow/tests/project-design-direction.test.ts",
+      "sha256": "54d5d392069fd6536f90dacee4eb725e4e58c282f263b27a40dea87da4b11934"
+    },
+    {
+      "path": "packages/visual-workflow/tests/project-details-editing.test.ts",
+      "sha256": "9f42c984b68d91944aea3e65a97e851ac61124d478dc4fb0bdd25623985606db"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/analysis-input-freeze/capture.mjs",
+      "sha256": "78f48e90b500c5c34746cdf17cd75ba57b0654a4313aa28a039381aae878617e"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/analysis-input-freeze/composition.mjs",
+      "sha256": "0852d04b9e515107f374754bf14cb7c11cc430413466a108bdc5cb644038a02e"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/analysis-input-freeze/contexts.mjs",
+      "sha256": "396ce6b601859ee497c5b24f94de0bfaab69238e82262051dac939498ffd18f7"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/analysis-input-freeze/prepare-offline.mjs",
+      "sha256": "3361c71a9c134e3e104abbf0041c25ebf30a79e739087bc279df33155dd6f72f"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/cases.json",
+      "sha256": "fe102546705d7882a9be350ac985525c20a86f194139e5b02687ca04b2027b11"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/compile.test.ts",
+      "sha256": "888eaf8c0d6fcac82944e9568b51fb31839c9b81b58fdc504829aa81792ac659"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/field-lineage.test.ts",
+      "sha256": "66f0ff2ae0b930a14d36818fe71fdbf326b240d29d77d32e7acd5cf0d1223c1c"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/ftt-analysis-inspect-offline.mjs",
+      "sha256": "8d552055daff35000d2eb3e66f364a592875251c5551542984c6e8b55f2f3f51"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/ftt-analysis-prepare-offline.mjs",
+      "sha256": "e6bd22817b91e3e1b7e1e3a83d3113a1bdfadabbf09e0fc9b2bba915749ecdec"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/ftt-fidelity-comparison.ts",
+      "sha256": "9ce06cea2eaf7e0c861537e7bef7b9d02d7ab26c21fc419f01838ace36d1c841"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/ftt-fidelity-cross-project.ts",
+      "sha256": "034a6d8726ac6c61c491e1a2099e5c987a812f82c88636ccc5bd3711dc66093e"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/ftt-fidelity-evidence.ts",
+      "sha256": "8486f198915be200119db538de9fda89ff9c54934e425d4cf087cd723f7fc189"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/ftt-fidelity-fixture.ts",
+      "sha256": "37731bcd94a71b1d08df9cd451d9f694a9e1a1a76b1a305032a2717d5ec73713"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/ftt-fidelity.test.ts",
+      "sha256": "b8e20cef2351edcc03baa68dd66306ed77a03b68afa76b258db6cebbcb60154c"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/ftt-final-design-compile.ts",
+      "sha256": "c77bb0053a9e9c40f4be22e7cf6c7897d1d8907c8c5e9214ba57b012a0dac630"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/ftt-final-design-evidence.ts",
+      "sha256": "9afb9a8cdd123a99f48b1c9779a45c40a68f197cf2f1ba42023073e537b6099a"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/ftt-final-design-fixture.ts",
+      "sha256": "e54988ca59fe05ec73807551a615d72c1552c95ee636d472ca0137167210dac8"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/ftt-final-design-regression.mjs",
+      "sha256": "9e51d32a5d54734841205bb8eacf42d88d8fa3106b295de202625376dde701a5"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/ftt-final-design.test.ts",
+      "sha256": "dd9df2e21703e4c8cf7acaf4159be750a6e78fbfbc9acb684b727f24794913e0"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/ftt-first-image-preflight.ts",
+      "sha256": "838e4229dc5b908a93deec931e651c9005d84337d5af1a17bdf41004c96935ac"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/ftt-historical-packet.json",
+      "sha256": "e3564d51888661989eeb16de8923992a4e1148268e7f55e7427c4c70e6fb613c"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/knowledge.test.js",
+      "sha256": "2cdbe484804cc451467ff5e6abe304bdbf9e790ab4778b3a0c807cb780c20d04"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/scene-authority-evidence.ts",
+      "sha256": "819e3242bf804cc450194bbeee83e6d67b8d5c2f21af611bd176bc87789b6f09"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/shadow-comparison.ts",
+      "sha256": "b07a369d3f18aaa1b1fc1364c7bf45da4839d11edea0e6fd45657141891c39c8"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/shadow-compile.test.ts",
+      "sha256": "bf034acc43be4ed3e41093401bc244bf4b56b880f187edb917c0616d6b7ca75c"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/shadow-evidence.ts",
+      "sha256": "f2730f3bd211878259b712fdabbe17d565873c91b32157c99e307e74bd80f828"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/shadow-fixtures.ts",
+      "sha256": "06956d04f99e7d7c45e184b98aefb8798325462bcabe5fc8341d28d00eda65da"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/shadow.test.ts",
+      "sha256": "00ddb5a9bdadb6abe3dbcbb88e8187d3da6108180b72c3175b3d9fd2e6af8342"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/evidence-boundaries.test.ts",
+      "sha256": "b983b91b9260bc201063590416361046d5acc5da935d5234fc7afd227cd37212"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/field-contract.test.ts",
+      "sha256": "70a2cfbc8121019588ba06bbd2d4f6146c9231edb685292505669643652f7adf"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/independent-review.test.ts",
+      "sha256": "468f2e8da5eb454c618f947e8381f346701fa8bde66e59d8dd54395119cfe269"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/integrity-review-probes.mjs",
+      "sha256": "39e28b3346b262a998fef07c45b689ae060565bc45aceda1c14e2be3f4c73af7"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/network-off.mjs",
+      "sha256": "f12ee0601f4cdbf081d2e096188df6b146f718682978e0b056298b3d086330b0"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/replay.mjs",
+      "sha256": "cc2047e587f75ad0a4209b4c2b52381b75f8961c5328c68e3d2170ab324e22be"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/scope-and-operations.test.ts",
+      "sha256": "daa5bf5b4246c2e9d8992c89330027e8fe268784706527f2566aceda87974a24"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/separation.test.ts",
+      "sha256": "de6c51c411d1edfa8d77f04ee76a4d7abd1deb1bb4335ac2277523d8eb5facbb"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/source-fields.json",
+      "sha256": "b0be978ab8261012252a4cfc6683cf6b9a899df412722ad631f7c4240999832e"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/visible-carrier-evidence.test.ts",
+      "sha256": "53e779317a8f8686b9e457a7e7a9afb85f4a0d756da44e32aa230ba57a237b2a"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/two-dispatch-guard/fixtures.mjs",
+      "sha256": "99f74001094645b606c091223d3047ebde8c3c89318b8e88ed8161f5ecf9053d"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/two-dispatch-guard/freeze.mjs",
+      "sha256": "bffa4d6cee16f44b3614dc1ae4b09675e25cf2dc99ee064ae9ef6c433426365b"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/two-dispatch-guard/guard.mjs",
+      "sha256": "d3f2e9a4b06574cffcfc19d5f94d2d7d0934a2db0750b29b6e454d44eef8286b"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/two-dispatch-guard/guard.test.mjs",
+      "sha256": "3d7f62f6d6385e4f0e31cc5d15ec7c8934968f81c378e335f4d0a50c2beff0eb"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/two-dispatch-guard/integration.test.ts",
+      "sha256": "895b8b46f1e64958fb33fbf728cce960a077520d2c00430fee504832ed1697c9"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/two-dispatch-guard/ledger.mjs",
+      "sha256": "36c0e4c5fa8eb0ed2a0353fd23c2ef1db3f2d6776ae45ba2bc66f9926079ee63"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/two-dispatch-guard/single-post-transport.mjs",
+      "sha256": "82a2fe8e3c7bf76454075f3be51b8d864abe2840f96a239e47c36e7d3a6266eb"
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/two-dispatch-guard/transport.test.mjs",
+      "sha256": "3a3f44bef7ffadb5c93f9df092f93e8c558c51edc6984fa75bc19006c19b3739"
+    },
+    {
+      "path": "packages/visual-workflow/tests/scene-authority-cases.ts",
+      "sha256": "1bc1b877a6c115547ac300bd93797c4ff2b42be52700a5503c24bbb3b58af9ff"
+    },
+    {
+      "path": "packages/visual-workflow/tests/scene-authority-regression.mjs",
+      "sha256": "026cf70a8b9b0c2a85461f22b997c83c78bebf2ffb194c8e045b041081556f5b"
+    },
+    {
+      "path": "packages/visual-workflow/tests/scene-authority-repair.test.ts",
+      "sha256": "6e980c49c37f63e7e7ad0c67c6b576958334e0ccd4f8a59d6dc41e8acf7e79cf"
+    },
+    {
+      "path": "packages/visual-workflow/tests/scene-authority-review.ts",
+      "sha256": "f65f47b189b5cc20b43300683a07520849dfe0e231e9657f658875394aacbbce"
+    },
+    {
+      "path": "packages/visual-workflow/tests/scene-decision-fidelity.test.ts",
+      "sha256": "1a4a4fd6c1bc9a0968220eceb23357d9ee527cfa2102801fa82bb940d557788b"
+    },
+    {
+      "path": "packages/visual-workflow/tests/spatial-quality.test.ts",
+      "sha256": "540fdc933927b537b7750acc2384f477392262b14b8b81b1b17c08c1f0ab3ae9"
+    },
+    {
+      "path": "packages/visual-workflow/tests/validation-policy.test.js",
+      "sha256": "f0ff29eba31e1bfa52f7951c9615f4b48ca1b0a7dbcb7412d01d509106cd1b5c"
+    },
+    {
+      "path": "packages/visual-workflow/tests/visible-ownership-evidence.mjs",
+      "sha256": "20c1eb9f1d845e1cfed0a50706162e82a4fc314beb39302afbc26c843d5bf715"
+    },
+    {
+      "path": "packages/visual-workflow/tests/visible-requirement-ownership.test.ts",
+      "sha256": "172a6d85d418caa371a0de73f8120249f0a921798de6154cf7c880823e9922f1"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/GATE-REPORT.md",
+      "sha256": "049e34d1fe0ac1b1961bb16deb70702052a5cef41bf94dbb4e7181b086a09077"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/README.md",
+      "sha256": "68774310b87b8101f28a4e141cc2bf83208198883a4d9326287922803121e515"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/final-dining-1/evaluation.json",
+      "sha256": "ff1c5f11f27dcdf435eb5fff90b2c3e948a820ce5f6b493422bc550234f8a66c"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/final-dining-1/manifest.json",
+      "sha256": "16b683f8d37c70daded8decded15b96fe8373586d656ba3953b9d32890b3ad3a"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/final-dining-1/prompt.md",
+      "sha256": "d1877d17fc6dcdfcc6cb9f736c7e384b3b0a8a459a43e9ff3542d9eed71bfd9f"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/final-dining-1/provider-payload.redacted.json",
+      "sha256": "980d93561532e5ed0672af065fcd63f61473fbed631162e77b3737590a5dab60"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/final-dining-1/reference-trace.json",
+      "sha256": "ac2729db551f2f9fcc93688caca6343117f475f89249f26c5d91551007fe0254"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/final-dining-1/run.json",
+      "sha256": "fade2354b29ac9103f62ed734edc4a7b750f08f6f16fca0f64724a0d99fbd848"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/golden-selection.json",
+      "sha256": "65daac53a8eaf6fb132d92e563f2aca17b21d19983c7321e9e3cab8c98818539"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-entrance-1/evaluation.json",
+      "sha256": "ce2c547d48b9fc70f15cf3f50039f50b07c5948a1d254568963d072e52e9f0fb"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-entrance-1/manifest.json",
+      "sha256": "81e899a211d3d0d6261ebba5c6b43b94f1655beaa054ee0d198bae53579a1ca1"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-entrance-1/prompt.md",
+      "sha256": "b0bf57ca1eb12649bc8e37ad5fef2e53d385110d1f924953c75ec67098f0e31e"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-entrance-1/provider-payload.redacted.json",
+      "sha256": "814e861cb5a3e5f49a45f39bd498e82e003e65f0f3c93a702c5bb76acabd29bf"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-entrance-1/reference-trace.json",
+      "sha256": "ac2729db551f2f9fcc93688caca6343117f475f89249f26c5d91551007fe0254"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-entrance-1/run.json",
+      "sha256": "2a4cb4a73265e22d02342adb105acc25868cd83921e498cdbc1e5f945e2431ab"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-reception-1/evaluation.json",
+      "sha256": "723a9730179be7d489e04b347ec76823a900a13a4d5db70bec4244ec6d7f09d7"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-reception-1/manifest.json",
+      "sha256": "29cc1f81ea03eb06bb76dc177de7c49090ee1e7b1ba8c11db91be53be3ef9ffa"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-reception-1/prompt.md",
+      "sha256": "6b93a42f6b6b76fe180db99730d63a965a983cf9ec1e5bbb2112a2f3b16810ac"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-reception-1/provider-payload.redacted.json",
+      "sha256": "0704eacb351ebd2efbb4d87f4f673a723b58130fa86a263b803d346cb278529e"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-reception-1/reference-trace.json",
+      "sha256": "ac2729db551f2f9fcc93688caca6343117f475f89249f26c5d91551007fe0254"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-reception-1/run.json",
+      "sha256": "b941b87befe9633acdb60d723fb41c5d52d32968b144db670d6b0298c30a8811"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/golden-selection.json",
+      "sha256": "8ebc598e1ba8d8a50db02f424f5bef4cd5439b26fdf4fdd5fbad0e72d4f164f2"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/manifest.json",
+      "sha256": "bd9b14fe46a0e5c2db27db33615929985ac6260d4ade1a2f2bb07611d56ebcc6"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/production-unlock.json",
+      "sha256": "875b2c78c02652e7a3c3a2f15290b03ea10e772d572528f3c1605ab2a1ca0793"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/yi-ji-liang-fang/final-reception-1/evaluation.json",
+      "sha256": "f6a694d49f46049eac9f5213b91ce75d2c32bce1cf0c5d94af3376bfc0499732"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/yi-ji-liang-fang/final-reception-1/manifest.json",
+      "sha256": "181aa6ec8d70181ed53ba105f5b90defa8fd45191b6c1fb6f1cb65219b637e66"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/yi-ji-liang-fang/final-reception-1/prompt.md",
+      "sha256": "6f5fc75bc47d7c2bac20174a291ea334dd48ce2119535319985dda62e618eeb6"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/yi-ji-liang-fang/final-reception-1/provider-payload.redacted.json",
+      "sha256": "ee8e5ea97c8ce85f328ac726fd4bb50181359e06c834cddfc765b033c55e701e"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/yi-ji-liang-fang/final-reception-1/reference-trace.json",
+      "sha256": "ac2729db551f2f9fcc93688caca6343117f475f89249f26c5d91551007fe0254"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/yi-ji-liang-fang/final-reception-1/run.json",
+      "sha256": "df5567bcb12c470709857bacf652d10a3e51cec5a1ce3540cd552b8ec4d56c47"
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/yi-ji-liang-fang/golden-selection.json",
+      "sha256": "4f34b286d9a13de778266e9719612f148f5766a3b19961d1a8c7a3f6b3809846"
+    }
+  ],
+  "repoVerify": {
+    "command": "npm run repo:verify",
+    "exitCode": 1,
+    "repositoryContract": "PASS",
+    "isolation": "FAIL",
+    "violation": "VISUAL_WORKFLOW_IMPLEMENTATION_CHANGED: src/analysis-decisions/analysis-completion-orchestrator.js",
+    "manifestRecordedSha256": "9577c3d59c4d8869cb11e563163f49ad9bc324dda05855a32664f891cf1338ae",
+    "currentSha256": "012ce13cc950546958f0dcc36e39f4b60c0dd5bb6465a25909ec785e0671d25b",
+    "fileUnchangedFromBaseline": true,
+    "log": "repo-verify.txt",
+    "logSha256": "91c38cc0e69c1c77b93b0c4dc59030aa081cc8c3bb52213fe49a86d1688b3d88",
+    "laterChainedGates": "NOT_EXECUTED",
+    "rawLogSha256": "2bcbede691f2a80adf54a35d03cd65f06c89419ab43c806510801c0f0a42325e",
+    "logNormalization": "CRLF to LF only; original output SHA-256 retained in rawLogSha256"
+  },
+  "behaviorTests": "NOT_RUN_STOP_TRIGGER",
+  "realProviderCalls": 0,
+  "credentialsRead": 0,
+  "commitsCreated": 0
+}
