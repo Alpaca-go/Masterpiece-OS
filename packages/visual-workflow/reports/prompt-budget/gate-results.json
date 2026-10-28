@@ -7,7 +7,7 @@
       "status": "PASS",
       "originalLocalLogSha256": "7117694ba4576585abd603d3aec0538a280ddfa07b95dd1d12e4fb474a51c095",
       "archivedLogSha256": "3ff12361acc69f070c703a4ee323fb2f33821a93802c25a6702c257311c2c128",
-      "archivedLog": "P7a-workflow-ts-log.txt",
+      "archivedLog": "workflow-ts-log.txt",
       "normalization": "LF and trailing whitespace only; original local log preserved"
     },
     {
@@ -16,7 +16,7 @@
       "status": "PASS",
       "originalLocalLogSha256": "d58a042c9d97acdd6851e7cd3dd9b11f414d293df7937d37ce0354e2396e0247",
       "archivedLogSha256": "c37428d4e74fe1abccd515c510883e2a461b081fefd62ebd83f6183f1a77c28b",
-      "archivedLog": "P7a-workflow-js-log.txt",
+      "archivedLog": "workflow-js-log.txt",
       "normalization": "LF and trailing whitespace only; original local log preserved"
     },
     {
@@ -25,7 +25,7 @@
       "status": "PASS",
       "originalLocalLogSha256": "b3e66d14351f8e08578cd736b5275e5eb77fa28290a634b189656c568dc39d6e",
       "archivedLogSha256": "64d8805da2bb758e4f155a71bccdc55e3d9d9c74dd7a76f22f691357b4e63243",
-      "archivedLog": "P7a-industry-parity-log.txt",
+      "archivedLog": "industry-parity-log.txt",
       "normalization": "LF and trailing whitespace only; original local log preserved"
     },
     {
@@ -34,7 +34,7 @@
       "status": "PASS",
       "originalLocalLogSha256": "78a4f5734232760dcf2bc1d582a66a5a73e1b296580fa769923fc6b2e2f537c5",
       "archivedLogSha256": "eaed2d48f66cd195c0edfa0da879740f349f7ebee983bfc8b0f03ea8fe01347c",
-      "archivedLog": "P7a-golden-log.txt",
+      "archivedLog": "golden-log.txt",
       "normalization": "LF and trailing whitespace only; original local log preserved"
     },
     {
@@ -43,7 +43,7 @@
       "status": "PASS",
       "originalLocalLogSha256": "d94a053c290bfa76431f5d38194c5690abb140545881678f81bab36a524ec68c",
       "archivedLogSha256": "e2696978350e84b244e099f577e79d23628e2f4fec7c499edcc00dfe09f81b20",
-      "archivedLog": "P7a-repo-verify-log.txt",
+      "archivedLog": "repo-verify-log.txt",
       "normalization": "LF and trailing whitespace only; original local log preserved"
     }
   ],

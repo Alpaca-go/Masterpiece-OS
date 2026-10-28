@@ -30,6 +30,10 @@
 - 版本域与命名规则：`docs/development/versioning-policy.md`；活跃代码不得新增
   `V5` / `V6` / `V18` / `vnext` 阶段式版本常量，校验命令为
   `npm run verify:version-naming`。
+- 历史阶段文档集中在 `docs/history/`，索引为 `docs/history/INDEX.md`；
+  `docs/` 其他位置不得新增 `S4`、`P3`、`R10`、`M1`、`phase9` 这类编号路径，
+  新文档使用语义名或日期名。校验：`npm run verify:history-naming`（已包含在
+  `repo:verify`）。
 
 ## 包边界
 
@@ -59,6 +63,7 @@
 # 离线闸门（不调用真实 Provider）
 npm run verify:version-consistency
 npm run verify:version-naming
+npm run verify:history-naming
 npm run verify:workspace-boundaries
 npm run verify:no-obsolete-code
 npm run verify:production-boundaries
@@ -125,13 +130,12 @@ no secret committed). Procedure lives in
 
 ## Branch discipline
 
-- origin 没有 `main` 分支。远程 HEAD / 默认分支是
-  `codex/visual-migration-vm1-integration-freeze`。
-- 该默认分支是 VM1 集成候选（CONDITIONAL PASS / NOT FROZEN），
-  见 `docs/runtime/visual-migration-vm1-integrated-baseline.md`。
-  把它当作导航起点。这里不把它写成新的产品冻结。
+- origin 的默认分支是 `main`，发布线保持在 `main` 上。
+- VM1 集成候选（CONDITIONAL PASS / NOT FROZEN）记录在
+  `docs/runtime/visual-migration-vm1-integrated-baseline.md`，只作历史导航，
+  不是新的产品冻结。
 - 其它工作使用短期 `feat/*` / `fix/*` / `chore/*` / `experiment/*`
-  分支，或 origin 上已经存在的 `codex/*` 线。
+  分支，合并后删除；历史线用 tag 保留。
 - 分支治理决策表：`docs/development/repository/reference-branch-disposition.md`。
 - 完成报告：`docs/releases/5.0-repository-consolidation.md`。
 

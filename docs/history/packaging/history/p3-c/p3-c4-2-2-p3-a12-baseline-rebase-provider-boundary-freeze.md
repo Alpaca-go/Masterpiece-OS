@@ -59,7 +59,7 @@ It is no longer the current zero-diff target. The
 C4.2.1 sub-tree (read-only `checkStale` seam in
 workspace-service.js) IS a real historical delta between
 P3-A11 and P3-A12; this delta is documented in the
-P3-A12 history (`docs/packaging/history/p3-a/p3-a12-canonical-stale-inspection-corrective.md`)
+P3-A12 history (`docs/history/packaging/history/p3-a/p3-a12-canonical-stale-inspection-corrective.md`)
 and is NOT masqueraded as zero.
 
 ## D. Current P3-A12 Baseline

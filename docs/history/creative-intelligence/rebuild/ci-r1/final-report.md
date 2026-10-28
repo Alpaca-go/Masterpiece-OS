@@ -41,7 +41,7 @@ Tests:
 
 Report:
 
-- `docs/creative-intelligence/rebuild/ci-r1/final-report.md`
+- `docs/history/creative-intelligence/rebuild/ci-r1/final-report.md`
 
 ## Production Delta
 

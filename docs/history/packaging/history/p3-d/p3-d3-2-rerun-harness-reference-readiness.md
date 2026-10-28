@@ -28,7 +28,7 @@ Production source changes: 0. Working tree after the P3-D3.2 commits is empty. L
 
 ## B. Owner Audit Consumed
 
-P3-D3.1 owner audit (`a942a6f`, `docs/packaging/history/p3-d/p3-d3-1-reference-binding-owner-audit.md`) is the prerequisite of this readiness phase. It proved:
+P3-D3.1 owner audit (`a942a6f`, `docs/history/packaging/history/p3-d/p3-d3-1-reference-binding-owner-audit.md`) is the prerequisite of this readiness phase. It proved:
 
 - **Production Reference binding path: CORRECT.**
 - **Production corrective: NOT REQUIRED.**

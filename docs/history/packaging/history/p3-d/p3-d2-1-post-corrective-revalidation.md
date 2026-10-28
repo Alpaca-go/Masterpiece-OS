@@ -28,7 +28,7 @@ that the C4.1 corrective consumed from the D2 freeze.
 ## B. C4.1 baseline consumed
 
 The C4.1 corrective re-freeze report
-(`docs/packaging/history/p3-c/p3-c4-1-project-identity-projection-corrective.md`)
+(`docs/history/packaging/history/p3-c/p3-c4-1-project-identity-projection-corrective.md`)
 is the authoritative input. D2.1 re-runs every C4.1 acceptance check
 and confirms:
 
@@ -50,7 +50,7 @@ and confirms:
 
 ## C. Historical D2 HOLD
 
-`docs/packaging/history/p3-d/p3-d2-cross-project-technical-hardening.md`
+`docs/history/packaging/history/p3-d/p3-d2-cross-project-technical-hardening.md`
 recorded `STOP-P3-D-05` as **TRIGGERED** in the original D2 because
 the frozen Web Runtime composition root projected only `projectId`
 and `projectName` into `truthSnapshot.projectIdentity`. The

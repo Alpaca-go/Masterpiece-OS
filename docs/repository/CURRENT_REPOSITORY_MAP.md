@@ -85,6 +85,6 @@ The registry is `config/repository-contract/compatibility-registry.json`. This m
 - Persisted compatibility identifiers:
   `config/repository-contract/compatibility-registry.json`
 - Historical S0 version topology:
-  `docs/repository-stabilization/history/S0-version-registry-2026-08-11.md`
+  `docs/history/stabilization/history/S0-version-registry-2026-08-11.md`
 - Retired cleanup batches recoverable through Git:
   `docs/repository/CLEANUP_MANIFEST_2026-08-26.md`

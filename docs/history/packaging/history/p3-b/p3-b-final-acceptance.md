@@ -254,7 +254,7 @@ boundary, both Space boundaries, `git diff --check`, and final status.
 - Production changes in B6.3: **0**.
 - Changed files:
   - `tests/runtime-application/packaging-workspace-production-flow-acceptance.test.ts`
-  - `docs/packaging/history/p3-b/p3-b-final-acceptance.md`
+  - `docs/history/packaging/history/p3-b/p3-b-final-acceptance.md`
 - Final working tree after the acceptance commit: **EMPTY**.
 
 ## AK. Corrective history retained

@@ -704,7 +704,7 @@ No second authority is permitted for any of the above.
 ## 17. P3-A8 Acceptance Evidence
 
 P3-A8 Full Regression (per
-`docs/packaging/history/p3-a/full-regression-report.md`):
+`docs/history/packaging/history/p3-a/full-regression-report.md`):
 
 | Suite | Count | Status |
 |---|---|---|
@@ -724,7 +724,7 @@ P3-A8 Full Regression (per
 | **Repeat / flake** | runtime:test × 2 + P3-A flake-prone (232) | PASS / PASS / PASS |
 
 The full evidence is recorded at
-`docs/packaging/history/p3-a/full-regression-report.md`
+`docs/history/packaging/history/p3-a/full-regression-report.md`
 and committed at `c434400`.
 
 ---

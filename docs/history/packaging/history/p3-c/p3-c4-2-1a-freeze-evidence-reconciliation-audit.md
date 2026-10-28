@@ -123,7 +123,7 @@ that the modification is removable.
 
 ### `C4_2_SUBTREE` (the OLD exclusion)
 - **Live references in test files: 0.**
-- Doc references: 14, all in `docs/packaging/history/p3-c/p3-c4-2-1-provider-identity-boundary-cleanup.md` (describing the historical removal).
+- Doc references: 14, all in `docs/history/packaging/history/p3-c/p3-c4-2-1-provider-identity-boundary-cleanup.md` (describing the historical removal).
 - C4.2.1 docs claim "Removes the `C4_2_SUBTREE` constant and all its pathspec references" — **TRUE** (live test references are gone).
 
 ### `C4_2_1_SUBTREE` (the NEW exclusion)

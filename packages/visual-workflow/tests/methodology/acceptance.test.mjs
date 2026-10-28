@@ -123,8 +123,8 @@ test('relationship mutation is preserved as a change, not accepted on object cou
 
 test('historical prompt-budget formal and provider prompts retain their recorded text hashes', () => {
   for (const [name, expected] of [
-    ['P7a-formal-prompt.txt', '031d2d20b203d73b5a11b77c27792bde9b02a15cc912c8e0c5f2d9f8dd886ab9'],
-    ['P7a-provider-prompt.txt', 'a7b402054cc0153517dd3d2411668fe0d1583f89c9c9eb3b8f30b6d64edfdc97'],
+    ['formal-prompt.txt', '031d2d20b203d73b5a11b77c27792bde9b02a15cc912c8e0c5f2d9f8dd886ab9'],
+    ['provider-prompt.txt', 'a7b402054cc0153517dd3d2411668fe0d1583f89c9c9eb3b8f30b6d64edfdc97'],
   ]) {
     // Git checkouts may use CRLF on Windows; historical hashes describe LF text.
     const text = readFileSync(new URL(`../../reports/prompt-budget/${name}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
