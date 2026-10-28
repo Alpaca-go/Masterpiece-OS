@@ -1,4 +1,4 @@
-{
+﻿{
   "status": "OFFLINE_COMPLETE_STOPPED_PENDING_USER_REVIEW",
   "selfExcluded": true,
   "files": [
@@ -113,7 +113,7 @@
       "sha256": "27e937e100f9e7d6aab7a2dd48f920c08a3cc5b6f3fa20f2d8b3a64dcf0d8f59"
     },
     {
-      "name": "review.md",
+      "name": "review-notes.md",
       "bytes": 10240,
       "sha256": "b4c92dd1b7b79f1cb9a64f006763bed4a5033ba01da129b2bfaa85accb46801d"
     },
