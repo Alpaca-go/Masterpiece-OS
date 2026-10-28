@@ -3,6 +3,38 @@ import { assertArtDirectionSnapshot } from '../../art-direction-contract.js';
 const FAMILIES = /* @__PURE__ */ new Set(["space", "packaging", "vi", "poster"]);
 const RATIOS = /* @__PURE__ */ new Set(["1:1", "4:3", "3:4", "16:9", "9:16"]);
 const LOGO_USAGE_MODES = /* @__PURE__ */ new Set(["reference", "blank_area", "post_composite", "in_image"]);
+// Explicit, coarse controls. Every axis has a designer-choice default; unknown
+// values fall back to it instead of failing the task.
+const STYLE_AXES = Object.freeze({
+  lighting: ["bright", "warm_dim", "natural", "designer_choice"],
+  density: ["sparse", "balanced", "dense", "designer_choice"],
+  materials: ["brick_wood", "metal", "stone", "plaster", "mixed", "designer_choice"],
+  brandColorArea: ["accent", "half", "dominant", "designer_choice"],
+  tradition: ["modern", "balanced", "traditional", "designer_choice"],
+  props: ["none", "lived_in", "designer_choice"],
+  shot: ["entrance", "interior", "detail", "designer_choice"],
+  priceDisplay: ["none", "real_menu", "placeholder"]
+});
+const STYLE_DEFAULTS = Object.freeze({
+  lighting: "designer_choice",
+  density: "designer_choice",
+  materials: "designer_choice",
+  brandColorArea: "designer_choice",
+  tradition: "designer_choice",
+  props: "designer_choice",
+  shot: "designer_choice",
+  // Policy A: no numeric prices in generated images unless a real menu is supplied.
+  priceDisplay: "none"
+});
+function cleanStyleControls(value) {
+  const source = value && typeof value === "object" ? value : {};
+  const out = {};
+  for (const [axis, allowed] of Object.entries(STYLE_AXES)) {
+    const candidate = String(source[axis] ?? "").trim();
+    out[axis] = allowed.includes(candidate) ? candidate : STYLE_DEFAULTS[axis];
+  }
+  return out;
+}
 function cleanList(value) {
   return [...new Set((Array.isArray(value) ? value : []).filter((item) => typeof item === "string").map((item) => item.trim()).filter(Boolean))];
 }
@@ -73,6 +105,10 @@ function createShortChainTaskContract(input, options = {}) {
         text: item.text.trim().slice(0, 1200)
       }))
     : [];
+  // Only an explicitly supplied object activates style controls, so legacy
+  // standard requests keep their byte-identical prompt bodies.
+  const hasStyleControls = Boolean(input?.styleControls) && typeof input.styleControls === "object";
+  const styleControls = hasStyleControls ? cleanStyleControls(input.styleControls) : null;
   return {
     schemaVersion: "1.0",
     taskId: input.taskId || `vnext-task-${crypto.randomUUID()}`,
@@ -89,6 +125,7 @@ function createShortChainTaskContract(input, options = {}) {
     mustInclude: cleanList(input.mustInclude),
     mustAvoid: cleanList(input.mustAvoid),
     ...knowledgeContext.length ? { knowledgeContext } : {},
+    ...styleControls ? { styleControls } : {},
     referenceAssetIds,
     logoUsageMode,
     ...continuation ? { continuation } : {},

@@ -217,7 +217,7 @@
     },
     {
       "path": "src/generation-runtime/generation/task-contract.js",
-      "sha256": "ec4a6db780a26d2405421db96086d06a610947d1240d5a383a9c1b712f440d0e"
+      "sha256": "c5a5cf65f57701fda109ad029ffc32c5a0c6631c54c3641ea883da9445bb175b"
     },
     {
       "path": "src/generation-runtime/generation/template-registry.js",
@@ -245,7 +245,7 @@
     },
     {
       "path": "src/generation-runtime/space/compiler.js",
-      "sha256": "1ccbd877521c045315fb5a43144b2109ea86b5fddbfc99996333d4d84c2c3a05"
+      "sha256": "f15d793c9fe37d2b0c74e7dbbbd6363d47608ddc3dcb57a44d13877b70fa651e"
     },
     {
       "path": "src/generation-runtime/space/continuation/apply-continuation-program-override.js",
@@ -441,7 +441,7 @@
     },
     {
       "path": "src/runtime/image-generation/deliverable-validator-service.js",
-      "sha256": "6db3067edbc5bb692badf56a2a8f2c021b9341b134d06f98188a75fbfac01ab4"
+      "sha256": "0ba9b7f4c8bd0a4ab8002ef7cc414c92f10166ae0c7fcffa84d783e86a56e7fa"
     },
     {
       "path": "src/runtime/image-generation/logo-post-composite.js",

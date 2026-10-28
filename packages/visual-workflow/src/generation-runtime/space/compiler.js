@@ -237,18 +237,77 @@ function renderRendering() {
   ].join("\n");
   return block("rendering", "Rendering Requirements", body);
 }
+const STYLE_LABELS = Object.freeze({
+  lighting: {
+    bright: "bright, even illumination; no dark pools",
+    warm_dim: "warm low ambient, retain shadow, keep the scene readable",
+    natural: "daylight-led with soft shadows"
+  },
+  density: {
+    sparse: "sparse, generous spacing",
+    balanced: "balanced spacing",
+    dense: "compact and lively, circulation still readable"
+  },
+  materials: {
+    brick_wood: "brick, aged wood, terracotta and copper",
+    metal: "metal, glass and acrylic",
+    stone: "stone and mineral surfaces",
+    plaster: "plaster and paint",
+    mixed: "mixed materials with one dominant family"
+  },
+  brandColorArea: {
+    accent: "brand colour only as an accent",
+    half: "brand colour on roughly half of the surfaces",
+    dominant: "brand colour dominant and deliberate"
+  },
+  tradition: {
+    modern: "modern, no traditional motifs",
+    balanced: "modern with restrained traditional references",
+    traditional: "traditional references as structure, not costume"
+  },
+  props: {
+    none: "no props; do not invent objects, characters or brand story",
+    lived_in: "only props supported by the project materials; do not invent brand story"
+  },
+  shot: {
+    entrance: "storefront or entrance view",
+    interior: "interior view",
+    detail: "detail view"
+  }
+});
+function renderStyleControls(styleControls) {
+  if (!styleControls) return null;
+  const lines = [];
+  if (styleControls.priceDisplay === "none") lines.push("- price display: none. Do not render numerals, prices, currency symbols or invented menu numbers anywhere.");
+  if (styleControls.priceDisplay === "real_menu") lines.push("- price display: real menu only. Reproduce only prices supplied in the project materials.");
+  if (styleControls.priceDisplay === "placeholder") lines.push("- price display: placeholder. Menu boards stay blank or clearly non-numeric.");
+  for (const axis of ["lighting", "density", "materials", "brandColorArea", "tradition", "props", "shot"]) {
+    const value = styleControls[axis];
+    if (!value || value === "designer_choice") continue;
+    const text = STYLE_LABELS[axis]?.[value];
+    if (text) lines.push(`- ${axis}: ${text}`);
+  }
+  const body = [
+    "Explicit user controls. They override conflicting analysis proposals and optional examples.",
+    ...lines
+  ].join("\n");
+  return block("style_controls", "Style Controls (explicit)", body);
+}
 const BASE_NEGATIVES = Object.freeze([
   "no rendered brand name, wordmark, logotype, signage text, or illuminated letters in the scene",
   "no generic AI clinic look, no stock-photo medical aesthetic template"
 ]);
-function renderNegatives(layers, logoUsageMode = "post_composite") {
+function renderNegatives(layers, logoUsageMode = "post_composite", styleControls = null) {
   const base = logoUsageMode === "in_image"
     ? [
       "no invented, garbled, misspelled or duplicated brand text beyond the supplied brand name",
       "no generic AI clinic look, no stock-photo medical aesthetic template"
     ]
     : BASE_NEGATIVES;
-  const merged = [...base, ...layers.negatives];
+  const price = styleControls?.priceDisplay === "none"
+    ? ["no numerals, prices, currency symbols or invented menu numbers"]
+    : [];
+  const merged = [...base, ...price, ...layers.negatives];
   const body = [
     "The following MUST NOT appear in the generated image:",
     bullet(merged)
@@ -295,8 +354,10 @@ function compileSpacePrompt(input) {
   const continuationIntentText = renderContinuationIntentBlock(input.taskContract?.continuation);
   const continuationBlock = continuationIntentText ? { id: "continuation_intent", title: "Continuation Intent", text: continuationIntentText } : null;
   const knowledgeBlock = renderKnowledgeContext(input.taskContract?.knowledgeContext);
+  const styleBlock = renderStyleControls(input.taskContract?.styleControls);
   const ordered = [
     renderTask(layers),
+    ...styleBlock ? [styleBlock] : [],
     ...continuationBlock ? [continuationBlock] : [],
     renderSpatialIntent(layers),
     renderArchitectureLanguage(layers),
@@ -312,7 +373,7 @@ function compileSpacePrompt(input) {
     renderLighting(layers),
     renderComposition(layers),
     renderRendering(),
-    renderNegatives(layers, input.taskContract?.logoUsageMode)
+    renderNegatives(layers, input.taskContract?.logoUsageMode, input.taskContract?.styleControls)
   ];
   const blocksById = Object.fromEntries(ordered.map((b) => [b.id, b]));
   const referenceBoundaryText = renderReferenceBoundary({
@@ -454,6 +515,7 @@ function blockSource(id,layers) {
     architecture_language: ["semantic.architectureStrategy", "semantic.architectureForm", "semantic.architectureOrganization", "materialSystem", "lightingSystem"],
     architecture_context: ["architecture-anchors/registry.json"],
     knowledge_context: ["taskContract.knowledgeContext (advisory precedents)"],
+    style_controls: ["taskContract.styleControls (explicit user controls)"],
     architecture_function_bridge: ["projectFacts.brandRole", "spatial.functionalRelationships", "spatial.sceneProgram", "spatial.brandRoleManifestation", "diagnosis.brandMisreadRisks"],
     architectural_concept: ["spatial.spatialConcept (normalized)", "semantic.architectureForm", "semantic.architectureStrategy"],
     architecture_dna: ["semantic.architectureStrategy", "semantic.architectureForm", "semantic.architectureOrganization"],

@@ -110,6 +110,9 @@ function createDeliverableValidatorService(projects, getImageGeneration, readSet
               "In reference Logo mode, flag distorted, invented, duplicated, or misspelled identity. In blank_area mode, any visible logo, word, letters, or pseudo-text is incorrect.",
               "In post_composite mode this is the pre-composite generation stage. Logo and identity typography MUST be absent. Never report their absence as missingRequiredItems, forbiddenItemsFound or nonIdentityLockedAssetViolations. Logo fidelity/completeness is deferred to the actual post-composite stage. Independently report any wrongly generated letters, pseudo-text or logo as logoTextStatus=incorrect with concrete generatedIdentityEvidence (location and visible marks). A clean blank area is logoTextStatus=absent.",
               "In in_image mode the supplied brand name MUST appear in-scene as part of the design. Report logoTextStatus=correct only when the visible brand text matches the supplied name exactly with no garbled, misspelled, duplicated or extra text; use incorrect for wrong or extra text, and absent when no brand text is visible. Do not treat the supplied brand text as forbidden content.",
+              ...(input.taskContract.styleControls?.priceDisplay === "none"
+                ? ["Price display is none: any visible price, numeral or currency figure is forbidden. Report it in forbiddenNonIdentityItems with the visible evidence."]
+                : []),
               "Evaluate brand tone from visible color/material/light/form behavior, not from prompt wording.",
               "Do not infer correctness from this text. If the image cannot prove a field, use unknown/uncertain."
             ].join("\n")
