@@ -21,7 +21,15 @@ test('supplied style controls fill defaults including no numeric prices', () => 
   const task = createShortChainTaskContract({ ...BASE, styleControls: { lighting: 'warm_dim' } });
   assert.equal(task.styleControls.lighting, 'warm_dim');
   assert.equal(task.styleControls.density, 'designer_choice');
+  assert.equal(task.styleControls.textDensity, 'designer_choice');
   assert.equal(task.styleControls.priceDisplay, 'none');
+});
+
+test('text density accepts only coarse values', () => {
+  const tight = createShortChainTaskContract({ ...BASE, styleControls: { textDensity: 'minimal' } });
+  assert.equal(tight.styleControls.textDensity, 'minimal');
+  const loose = createShortChainTaskContract({ ...BASE, styleControls: { textDensity: 'billboard' } });
+  assert.equal(loose.styleControls.textDensity, 'designer_choice');
 });
 
 test('known style values are preserved', () => {

@@ -41,14 +41,25 @@ export function projectDesignDirectionStatusText(value:ProjectDesignDirection) {
     available:'AI 分析建议可用，尚未人工确认'
   }[value.analysisSuggestion?.availability || 'missing_packet'];
 }
+export interface StyleControls {
+  lighting: string; density: string; materials: string; brandColorArea: string;
+  tradition: string; props: string; shot: string; textDensity: string; priceDisplay: string;
+}
+export const DEFAULT_STYLE_CONTROLS: StyleControls = {
+  lighting: 'designer_choice', density: 'designer_choice', materials: 'designer_choice',
+  brandColorArea: 'designer_choice', tradition: 'designer_choice', props: 'designer_choice',
+  shot: 'designer_choice', textDensity: 'designer_choice', priceDisplay: 'none'
+};
 export function createStandardGenerationInput(input: {
   projectId:string; family:string; subtype:string; shot:string; shotExplicit:boolean; ratio:string;
   instruction:string; include:string; avoid:string; hasLogo:boolean; directionRecordSha256:string | null;
+  styleControls?: StyleControls;
 }) {
   return {projectId:input.projectId,designDirectionExpectedRecordSha256:input.directionRecordSha256,
     task:{deliverableFamily:input.family,subtype:input.subtype,shot:input.shot,shotSource:input.shotExplicit?'user_explicit':undefined,
       aspectRatio:input.ratio,count:1,currentInstruction:input.instruction,generationBasis:'standard',referenceAssetIds:[],
-      mustInclude:input.include.split('\n').filter(Boolean),mustAvoid:input.avoid.split('\n').filter(Boolean),logoUsageMode:input.hasLogo?'post_composite':'blank_area'}};
+      mustInclude:input.include.split('\n').filter(Boolean),mustAvoid:input.avoid.split('\n').filter(Boolean),logoUsageMode:input.hasLogo?'post_composite':'blank_area',
+      ...input.styleControls ? {styleControls: input.styleControls} : {}}};
 }
 
 // This client has no access to the planning/migration API namespaces.

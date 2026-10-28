@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
-import { filePayload, workflowCall, createStandardGenerationInput, type WorkflowOptions, type WorkflowProfile, type WorkflowProject, type WorkflowRun, type WorkflowSettings, type ProjectDesignDirection } from './api';
+import { filePayload, workflowCall, createStandardGenerationInput, DEFAULT_STYLE_CONTROLS, type StyleControls, type WorkflowOptions, type WorkflowProfile, type WorkflowProject, type WorkflowRun, type WorkflowSettings, type ProjectDesignDirection } from './api';
 import { ProjectDesignDirectionPanel } from './ProjectDesignDirectionPanel';
 import './visual-workflow.css';
 
@@ -10,6 +10,17 @@ const FAMILY_LABELS: Record<string, string> = { space: '空间效果图', packag
 const LABELS: Record<string, string> = { reception: '前台接待区', lobby: '大堂', consultation: '咨询室', entrance: '入口空间', storefront: '门店外立面', dining: '用餐区', exhibition: '展陈空间', treatment_room: '服务操作间', entrance_view: '入口视角', eye_level: '平视', wide_angle: '广角', detail_closeup: '局部细节', three_quarter_hero: '四分之三视角', front: '正面', subject_centered: '主体居中', lid_and_base_box: '天地盖盒', business_card: '名片', brand_key_visual: '品牌主视觉' };
 const STEPS = ['导入素材', '视觉分析', '查看报告', '智能生图'];
 const DEFAULTS: Record<string, [string, string]> = { space: ['reception', 'entrance_view'], packaging: ['lid_and_base_box', 'three_quarter_hero'], vi: ['business_card', 'front'], poster: ['brand_key_visual', 'subject_centered'] };
+const STYLE_FIELDS: Array<{ key: keyof StyleControls; label: string; options: Array<[string, string]> }> = [
+  { key: 'lighting', label: '光照', options: [['designer_choice', '跟随分析'], ['bright', '明亮'], ['warm_dim', '暖黄偏暗'], ['natural', '自然光']] },
+  { key: 'density', label: '密度', options: [['designer_choice', '跟随分析'], ['sparse', '疏'], ['balanced', '中'], ['dense', '密']] },
+  { key: 'materials', label: '材质', options: [['designer_choice', '跟随分析'], ['brick_wood', '砖木铜'], ['metal', '金属玻璃'], ['stone', '石材'], ['plaster', '涂料'], ['mixed', '混合']] },
+  { key: 'brandColorArea', label: '品牌色面积', options: [['designer_choice', '跟随分析'], ['accent', '点缀'], ['half', '约一半'], ['dominant', '主导']] },
+  { key: 'tradition', label: '传统度', options: [['designer_choice', '跟随分析'], ['modern', '现代'], ['balanced', '平衡'], ['traditional', '传统']] },
+  { key: 'props', label: '生活道具', options: [['designer_choice', '跟随分析'], ['none', '无'], ['lived_in', '有（仅素材支持）']] },
+  { key: 'shot', label: '镜头', options: [['designer_choice', '跟随分析'], ['entrance', '门头'], ['interior', '室内'], ['detail', '细节']] },
+  { key: 'textDensity', label: '文字密度', options: [['designer_choice', '跟随分析'], ['minimal', '少'], ['moderate', '中'], ['rich', '多']] },
+  { key: 'priceDisplay', label: '价格显示', options: [['none', '不出现数字'], ['real_menu', '仅真实菜单'], ['placeholder', '占位']] }
+];
 const statusLabels: Record<string, string> = { draft: '待导入', ready: '待分析', running: '分析中', completed: '已完成', failed: '失败', cancelled: '已取消' };
 
 export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
@@ -45,6 +56,7 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
   const [instruction, setInstruction] = useState('生成符合项目气质的空间效果图');
   const [include, setInclude] = useState('');
   const [avoid, setAvoid] = useState('');
+  const [styleControls, setStyleControls] = useState<StyleControls>(DEFAULT_STYLE_CONTROLS);
   const [profile, setProfile] = useState({ name: '', provider: 'dashscope', modelType: 'analysis', modelId: '', baseUrl: '', apiKey: '', protocol: 'openai-chat-multimodal' });
 
   async function refresh() {
@@ -119,7 +131,7 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
       const currentDirection=await workflowCall<ProjectDesignDirection>('report',project.id,'project_design_direction');
       if (family==='space' && (directionUnsaved || !designDirection || currentDirection.recordSha256!==designDirection.recordSha256 || !['missing','confirmed'].includes(currentDirection.status))) throw new Error('项目设计方向已变化或尚未确认，请核对并确认后再生图。');
       setImage(''); setRun(null); setResultLabel('');
-      const compiled = await workflowCall<{taskContract: {taskId: string}}>('compile', createStandardGenerationInput({projectId:project.id,family,subtype,shot,shotExplicit,ratio,instruction,include,avoid,hasLogo:project.assets.some(a=>a.role==='logo'),directionRecordSha256:currentDirection.recordSha256}));
+      const compiled = await workflowCall<{taskContract: {taskId: string}}>('compile', createStandardGenerationInput({projectId:project.id,family,subtype,shot,shotExplicit,ratio,instruction,include,avoid,hasLogo:project.assets.some(a=>a.role==='logo'),directionRecordSha256:currentDirection.recordSha256,styleControls}));
       const result = await workflowCall<{initialRun: WorkflowRun; correctionRun?: WorkflowRun; firstImage?: {runId: string; imageId: string}; terminalStatus: string; automaticRetryCount: number}>('generate', { projectId: project.id, taskId: compiled.taskContract.taskId });
       const selected = result.correctionRun?.status === 'succeeded' ? result.correctionRun : result.initialRun;
       setRun(selected); setResultLabel(`${result.terminalStatus === 'passed' ? '校验通过' : result.terminalStatus === 'failed' ? '未通过校验，请检查结果' : '生成完成，请确认结果'}${result.automaticRetryCount ? ' · 已执行一次纠偏' : ''}`);
@@ -189,6 +201,7 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
           <label>子类型<select value={subtype} onChange={event => setSubtype(event.target.value)}>{available?.subtypes.map(item => <option key={item} value={item}>{LABELS[item] || item}</option>)}</select></label>
           <label>镜头 / 构图<select value={shot} onChange={event => {setShot(event.target.value); setShotExplicit(true);}}>{available?.shots.map(item => <option key={item} value={item}>{LABELS[item] || item}</option>)}</select></label>
           <label>必须包含（每行一项）<textarea value={include} onChange={event => setInclude(event.target.value)} /></label><label>必须避免（每行一项）<textarea value={avoid} onChange={event => setAvoid(event.target.value)} /></label>
+          <details className="visual-workflow__style"><summary>风格约束（可选，默认跟随分析）</summary><div className="visual-workflow__fields">{STYLE_FIELDS.map(field => <label key={field.key}>{field.label}<select value={styleControls[field.key]} onChange={event => setStyleControls({ ...styleControls, [field.key]: event.target.value })}>{field.options.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>)}</div><p>“不出现数字”是当前默认价格策略；选择“仅真实菜单”前请先确认菜单内容。</p></details>
           <p>Logo：{project?.assets.some(a => a.role === 'logo') ? '预留区域，原始 Logo 后期合成' : '预留干净区域'}</p>
           <button disabled={Boolean(busy) || !canGenerate || !settings?.imageProfileId || family==='space' && (directionUnsaved || !designDirection || !['missing','confirmed'].includes(designDirection.status))}>智能生成</button>
           {busy && run?.status === 'running' && <button type="button" onClick={() => void workflowCall('cancel-generation', run.runId)}>取消生成</button>}

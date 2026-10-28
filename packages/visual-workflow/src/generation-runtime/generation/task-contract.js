@@ -13,6 +13,7 @@ const STYLE_AXES = Object.freeze({
   tradition: ["modern", "balanced", "traditional", "designer_choice"],
   props: ["none", "lived_in", "designer_choice"],
   shot: ["entrance", "interior", "detail", "designer_choice"],
+  textDensity: ["minimal", "moderate", "rich", "designer_choice"],
   priceDisplay: ["none", "real_menu", "placeholder"]
 });
 const STYLE_DEFAULTS = Object.freeze({
@@ -23,6 +24,7 @@ const STYLE_DEFAULTS = Object.freeze({
   tradition: "designer_choice",
   props: "designer_choice",
   shot: "designer_choice",
+  textDensity: "designer_choice",
   // Policy A: no numeric prices in generated images unless a real menu is supplied.
   priceDisplay: "none"
 });

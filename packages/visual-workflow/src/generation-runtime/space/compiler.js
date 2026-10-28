@@ -273,6 +273,11 @@ const STYLE_LABELS = Object.freeze({
     entrance: "storefront or entrance view",
     interior: "interior view",
     detail: "detail view"
+  },
+  textDensity: {
+    minimal: "at most one text panel per view; no menu walls or dense copy",
+    moderate: "a few text panels, balanced with the space",
+    rich: "text-rich menu walls are allowed, but keep them readable"
   }
 });
 function renderStyleControls(styleControls) {
@@ -281,7 +286,7 @@ function renderStyleControls(styleControls) {
   if (styleControls.priceDisplay === "none") lines.push("- price display: none. Do not render numerals, prices, currency symbols or invented menu numbers anywhere.");
   if (styleControls.priceDisplay === "real_menu") lines.push("- price display: real menu only. Reproduce only prices supplied in the project materials.");
   if (styleControls.priceDisplay === "placeholder") lines.push("- price display: placeholder. Menu boards stay blank or clearly non-numeric.");
-  for (const axis of ["lighting", "density", "materials", "brandColorArea", "tradition", "props", "shot"]) {
+  for (const axis of ["lighting", "density", "materials", "brandColorArea", "tradition", "props", "shot", "textDensity"]) {
     const value = styleControls[axis];
     if (!value || value === "designer_choice") continue;
     const text = STYLE_LABELS[axis]?.[value];
@@ -307,7 +312,10 @@ function renderNegatives(layers, logoUsageMode = "post_composite", styleControls
   const price = styleControls?.priceDisplay === "none"
     ? ["no numerals, prices, currency symbols or invented menu numbers"]
     : [];
-  const merged = [...base, ...price, ...layers.negatives];
+  const text = styleControls?.textDensity === "minimal"
+    ? ["no wall of text panels, menu walls or long copy"]
+    : [];
+  const merged = [...base, ...price, ...text, ...layers.negatives];
   const body = [
     "The following MUST NOT appear in the generated image:",
     bullet(merged)
