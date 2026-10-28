@@ -125,6 +125,8 @@ node scripts/extract-case.mjs --project <projectId> --out <draft.md>
 
 ## 9. 与代码的关系
 
+显式风格约束（光照/密度/材质/品牌色面积/传统度/道具/镜头/价格）见 [style-controls.md](style-controls.md)。
+
 - 字段：`packages/visual-workflow/src/generation-runtime/generation/task-contract.js`
 - 渲染：`packages/visual-workflow/src/generation-runtime/space/compiler.js`（`knowledge_context` block）
 - 测试：`packages/visual-workflow/tests/knowledge-context.test.ts`
