@@ -21,21 +21,21 @@ test('knowledgeContext keeps id, source and text, and drops empty entries', () =
   const task = createShortChainTaskContract({
     ...BASE,
     knowledgeContext: [
-      { id: 'H1', source: '冯烫烫', text: '  暖黄偏暗优于明亮均匀  ' },
-      { id: 'H2', source: '冯烫烫', text: '   ' },
+      { id: 'warm-low-light', source: '冯烫烫', text: '  暖黄偏暗优于明亮均匀  ' },
+      { id: 'hood-in-structure', source: '冯烫烫', text: '   ' },
       { source: 'case-library', text: '排烟罩收进结构' }
     ]
   });
   assert.equal(task.knowledgeContext.length, 2);
-  assert.deepEqual(task.knowledgeContext[0], { id: 'H1', source: '冯烫烫', text: '暖黄偏暗优于明亮均匀' });
+  assert.deepEqual(task.knowledgeContext[0], { id: 'warm-low-light', source: '冯烫烫', text: '暖黄偏暗优于明亮均匀' });
   assert.deepEqual(task.knowledgeContext[1], { id: '', source: 'case-library', text: '排烟罩收进结构' });
 });
 
 test('knowledgeContext is capped at seven entries', () => {
-  const many = Array.from({ length: 12 }, (_, i) => ({ id: 'H' + i, source: 'case', text: 'rule ' + i }));
+  const many = Array.from({ length: 12 }, (_, i) => ({ id: 'rule-' + i, source: 'case', text: 'rule ' + i }));
   const task = createShortChainTaskContract({ ...BASE, knowledgeContext: many });
   assert.equal(task.knowledgeContext.length, 7);
-  assert.equal(task.knowledgeContext[6].id, 'H6');
+  assert.equal(task.knowledgeContext[6].id, 'rule-6');
 });
 
 test('knowledgeContext text is capped at 1200 characters', () => {
