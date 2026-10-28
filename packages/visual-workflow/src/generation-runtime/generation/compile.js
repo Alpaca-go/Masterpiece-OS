@@ -33,7 +33,9 @@ function compileShortChainGeneration(input) {
   const preferredLogoAssetId = packetLogoAssetIds[0] || input.projectContext?.promptSourceObject?.lockedAssets?.preferredLogoAssetId || logoAssetIds[0] || null;
   const inferredLogoUsageMode = preferredLogoAssetId ? "post_composite" : "blank_area";
   const logoUsageMode = input.task?.logoUsageMode || inferredLogoUsageMode;
-  if (preferredLogoAssetId && logoUsageMode !== "post_composite") {
+  // in_image is an explicit project decision to render the supplied brand name as
+  // part of the scene. Every other mode with a confirmed logo stays post-composite.
+  if (preferredLogoAssetId && logoUsageMode !== "post_composite" && logoUsageMode !== "in_image") {
     throw Object.assign(new Error(
       "LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED: confirmed Logo must use post-composite mode."
     ), { code: "LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED" });

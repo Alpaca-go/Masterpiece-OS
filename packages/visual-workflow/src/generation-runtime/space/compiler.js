@@ -126,13 +126,16 @@ function renderArchitectureDna(layers) {
   ].join("\n");
   return block("architecture_dna", "Architecture DNA", body);
 }
-function renderBrandTranslation(layers) {
+function renderBrandTranslation(layers, logoUsageMode = "post_composite") {
   const p = layers.projectIdentity;
+  const inImage = logoUsageMode === "in_image";
   const architectureSources = new Set(layers.decisionTrace.canonicalOwners.filter(entry=>entry.blockId==="architecture_language").map(entry=>entry.text));
   const ownedBrandLines = new Set(layers.brandSanitization.records.filter(entry=>architectureSources.has(entry.raw)).map(entry=>entry.text));
   const body = [
     "> Preserve project identity and artistic expression together with the functional program. The artistic focus is stated in Composition.",
-    "> Brand identity (logo, wordmark, signage text) is composited AFTER generation; do NOT render it in-scene.",
+    inImage
+      ? `> Brand identity is rendered in-scene. Use the exact Chinese brand name "${p.brandName || ""}" on real signage or menu surfaces. Do not invent slogans, translations, extra names or pseudo-text.`
+      : "> Brand identity (logo, wordmark, signage text) is composited AFTER generation; do NOT render it in-scene.",
     "",
     `**Brand**: ${p.brandName} | **Industry**: ${p.industry}`,
     "**Brand Role**: see the Commercial Purpose in Architecture-Function Bridge.",
@@ -238,8 +241,14 @@ const BASE_NEGATIVES = Object.freeze([
   "no rendered brand name, wordmark, logotype, signage text, or illuminated letters in the scene",
   "no generic AI clinic look, no stock-photo medical aesthetic template"
 ]);
-function renderNegatives(layers) {
-  const merged = [...BASE_NEGATIVES, ...layers.negatives];
+function renderNegatives(layers, logoUsageMode = "post_composite") {
+  const base = logoUsageMode === "in_image"
+    ? [
+      "no invented, garbled, misspelled or duplicated brand text beyond the supplied brand name",
+      "no generic AI clinic look, no stock-photo medical aesthetic template"
+    ]
+    : BASE_NEGATIVES;
+  const merged = [...base, ...layers.negatives];
   const body = [
     "The following MUST NOT appear in the generated image:",
     bullet(merged)
@@ -281,14 +290,14 @@ function compileSpacePrompt(input) {
     renderArchitectureFunctionBridge(layers),
     renderArchitecturalConcept(layers),
     renderArchitectureDna(layers),
-    renderBrandTranslation(layers),
+    renderBrandTranslation(layers, input.taskContract?.logoUsageMode),
     renderFunctionalRequirement(layers),
     renderColor(layers),
     renderMaterial(layers),
     renderLighting(layers),
     renderComposition(layers),
     renderRendering(),
-    renderNegatives(layers)
+    renderNegatives(layers, input.taskContract?.logoUsageMode)
   ];
   const blocksById = Object.fromEntries(ordered.map((b) => [b.id, b]));
   const referenceBoundaryText = renderReferenceBoundary({

@@ -2,7 +2,7 @@ import crypto from "node:crypto";
 import { assertArtDirectionSnapshot } from '../../art-direction-contract.js';
 const FAMILIES = /* @__PURE__ */ new Set(["space", "packaging", "vi", "poster"]);
 const RATIOS = /* @__PURE__ */ new Set(["1:1", "4:3", "3:4", "16:9", "9:16"]);
-const LOGO_USAGE_MODES = /* @__PURE__ */ new Set(["reference", "blank_area", "post_composite"]);
+const LOGO_USAGE_MODES = /* @__PURE__ */ new Set(["reference", "blank_area", "post_composite", "in_image"]);
 function cleanList(value) {
   return [...new Set((Array.isArray(value) ? value : []).filter((item) => typeof item === "string").map((item) => item.trim()).filter(Boolean))];
 }

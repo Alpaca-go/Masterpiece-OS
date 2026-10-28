@@ -135,7 +135,7 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
     const logoAssetIds = packetLogoAssetIds.length ? packetLogoAssetIds : context.promptSourceObject?.lockedAssets.logoAssetIds.length ? context.promptSourceObject.lockedAssets.logoAssetIds : context.lockedAssets.logoAssetIds;
     const preferredLogoAssetId = packetLogoAssetIds[0] || context.promptSourceObject?.lockedAssets.preferredLogoAssetId || logoAssetIds[0] || null;
     const logoUsageMode = input.task.logoUsageMode || (preferredLogoAssetId ? "post_composite" : "blank_area");
-    if (preferredLogoAssetId && logoUsageMode !== "post_composite") {
+    if (preferredLogoAssetId && logoUsageMode !== "post_composite" && logoUsageMode !== "in_image") {
       throw Object.assign(
         new Error("LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED: confirmed Logo must use post-composite mode."),
         { code: "LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED" }

@@ -1,5 +1,39 @@
 import { classifyPhrase, SEMANTIC_CLASS } from "./separate-space-semantics.js";
 const SPATIAL_SEMANTIC_GATE_VERSION = "space-spatial-semantic-gate@1.1.0";
+// A wayfinding sign is part of a route, not a decorative-identity requirement.
+// These helpers are deliberately narrow: they only exempt a complete walking
+// route whose remaining steps are all functional, and a located sign at an
+// entrance/threshold. A sign without a route, a dominating logo wall, or an
+// identity term outside these fields stays blocked exactly as before.
+const IDENTITY_TERM = /logo|wordmark|logotype|slogan|mascot|emblem|发光字|标识|标志|徽标|徽章|吉祥物|字标|品牌文字|艺术字|招牌/iu;
+const FLOW_STEP = /(?:进入|到达|进门|入店|点餐|下单|付款|结账|支付|等候|等待|排队|取餐|取货|就餐|用餐|入座|离开|打包|外带|选购|浏览|查看|洗手|如厕|出餐|备餐|制作|收银|接待|引导|送餐|点单|落座|通行|经过)/u;
+const ROUTE_ARROW = /(?:→|->|⇒|»)/u;
+const ROUTE_SPLIT = /\s*(?:→|->|⇒|»)\s*/u;
+const SIGNAGE_PLACE = /(?:入口|门头|店门|店面|外立面|立面|前厅|前台|接待处|接待区|通道|门口|街面)/u;
+const IDENTITY_DOMINANCE = /(?:主视觉|视觉中心|视觉焦点|唯一焦点|放大|满墙|整墙|整面|大面积|占据|覆盖|作为(?:空间|墙面|背景)?主景|背景墙)/u;
+function isWayfindingIdentityStep(step) {
+  return IDENTITY_TERM.test(step) && !FLOW_STEP.test(step);
+}
+function isWayfindingRoute(value) {
+  const text = String(value ?? "").trim();
+  if (!ROUTE_ARROW.test(text)) return false;
+  const steps = text.split(ROUTE_SPLIT).map((step) => step.trim()).filter(Boolean);
+  if (steps.length < 4) return false;
+  const kept = steps.filter((step) => !isWayfindingIdentityStep(step));
+  if (kept.length === steps.length) return false;
+  if (kept.length < 3) return false;
+  return kept.every((step) => FLOW_STEP.test(step));
+}
+function stripWayfindingIdentitySteps(value) {
+  if (!isWayfindingRoute(value)) return null;
+  return String(value).split(ROUTE_SPLIT).map((step) => step.trim()).filter(Boolean).filter((step) => !isWayfindingIdentityStep(step)).join("→");
+}
+function isLocatedVisibleSign(value) {
+  const text = String(value ?? "").trim();
+  if (!IDENTITY_TERM.test(text)) return false;
+  if (!SIGNAGE_PLACE.test(text)) return false;
+  return !IDENTITY_DOMINANCE.test(text);
+}
 const FUNCTIONAL_FIELDS = Object.freeze([
   "functionalNetwork",
   "functionalRelationships",
@@ -38,6 +72,8 @@ function validateSpatialSemantics(spatial = {}) {
   const findings = [];
   for (const field of FUNCTIONAL_FIELDS) {
     for (const [index, value] of list(spatial?.[field]).entries()) {
+      if (field === "mustBeVisible" && isLocatedVisibleSign(value)) continue;
+      if ((field === "functionalNetwork" || field === "functionalRelationships") && isWayfindingRoute(value)) continue;
       const semanticSourceField = field === "mustBeVisible" ? "functionalNetwork" : field;
       const analysis = classifyPhrase(value, semanticSourceField);
       const graphicIdentity = GRAPHIC_IDENTITY.test(value);
@@ -63,8 +99,11 @@ function validateSpatialSemantics(spatial = {}) {
   };
 }
 function normalizeSpatialFunctionalValue(value, field) {
-  const text = String(value ?? "").trim();
-  if (!text) return null;
+  const rawText = String(value ?? "").trim();
+  if (!rawText) return null;
+  // A route that only uses a sign as a wayfinding step keeps its functional
+  // steps; the identity step is not forwarded to the prompt.
+  const text = stripWayfindingIdentitySteps(rawText) ?? rawText;
   if (validateSpatialSemantics({ [field]: [text] }).status === "pass") return text;
   const withoutIdentity = text.replace(/(?:简洁|清晰|统一|品牌|门店|导向)?(?:logo|wordmark|logotype|slogan|标识|标志|字标|品牌文字)(?:系统)?(?:与|、)?/giu, "").replace(/\s+/gu, " ").replace(/[，,]{2,}/gu, "\uFF0C").trim();
   if (withoutIdentity && withoutIdentity !== text && validateSpatialSemantics({ [field]: [withoutIdentity] }).status === "pass") {
@@ -102,8 +141,9 @@ const DECORATIVE_DEPENDENCY_PATTERNS = [
   }
 ];
 function demoteDecorativeObjectFromFunctionalLayer(value, field) {
-  const text = String(value ?? "").trim();
-  if (!text) return null;
+  const rawText = String(value ?? "").trim();
+  if (!rawText) return null;
+  const text = stripWayfindingIdentitySteps(rawText) ?? rawText;
   if (validateSpatialSemantics({ [field]: [text] }).status === "pass") return text;
   let demoted = text;
   for (const { re, replace } of DECORATIVE_DEPENDENCY_PATTERNS) {
