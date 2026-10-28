@@ -1,0 +1,78 @@
+{
+  "baseline": "2e6da0fe2115880eac4323b2daa264f0c98df88c",
+  "note": "Stage A logs captured before its commit with the same production/test diff; visible-at-2e6da0fe rerun on committed baseline. Ignored local logs are referenced, not tracked.",
+  "results": {
+    "e1f": "151/159",
+    "repoVerify": "FAIL: existing visual workflow integrity drift",
+    "e1e": "19/19",
+    "golden": "5/5, zero provider calls",
+    "cross": "39/43, 28 not expanded",
+    "visible": "14/14",
+    "field": "101/101",
+    "scope": "158/158",
+    "e1g": "46/46",
+    "workflow": "621/663"
+  },
+  "files": [
+    {
+      "name": "cross.log",
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\stage-a-visible-carrier\\cross.log",
+      "sha256": "4d960bc81c3ddde7b85e8f4ee14643648b374c12e9d1566a8ee4c63a5eb74cc8",
+      "bytes": 22454
+    },
+    {
+      "name": "e1e.json",
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\stage-a-visible-carrier\\e1e.json",
+      "sha256": "3f63ea3a135781c96592d27dc4fee756d70024e665eb49ec997345f8bc280de6",
+      "bytes": 153559
+    },
+    {
+      "name": "e1f.log",
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\stage-a-visible-carrier\\e1f.log",
+      "sha256": "3ad5e87112745782b802b039ad75f060150a5fca1f70eaf808778656d535aef1",
+      "bytes": 50270
+    },
+    {
+      "name": "e1g.log",
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\stage-a-visible-carrier\\e1g.log",
+      "sha256": "b6da32a14043e2ac627f7405c237610e4d181ef32b3a52cf74739ac24388f1ce",
+      "bytes": 10351
+    },
+    {
+      "name": "field.log",
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\stage-a-visible-carrier\\field.log",
+      "sha256": "4400bfce118f0dc6722ab21b61772ecfb7879d7d1acb09fbe2374540898b247c",
+      "bytes": 22364
+    },
+    {
+      "name": "golden.log",
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\stage-a-visible-carrier\\golden.log",
+      "sha256": "78a4f5734232760dcf2bc1d582a66a5a73e1b296580fa769923fc6b2e2f537c5",
+      "bytes": 344
+    },
+    {
+      "name": "repo-verify.log",
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\stage-a-visible-carrier\\repo-verify.log",
+      "sha256": "2bcbede691f2a80adf54a35d03cd65f06c89419ab43c806510801c0f0a42325e",
+      "bytes": 1169
+    },
+    {
+      "name": "scope.log",
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\stage-a-visible-carrier\\scope.log",
+      "sha256": "9e973ec7b8f560ed870c1f4be3f14e0b25762284cc2234e11f8b0ba9a922c0cb",
+      "bytes": 38854
+    },
+    {
+      "name": "visible-at-2e6da0fe.log",
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\stage-a-visible-carrier\\visible-at-2e6da0fe.log",
+      "sha256": "855d78644ddb49ad0e9fbe6eb81f81016ad88a032fb6447ac7fe881847641af8",
+      "bytes": 2856
+    },
+    {
+      "name": "workflow.log",
+      "path": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\stage-a-visible-carrier\\workflow.log",
+      "sha256": "e0fea405e63e0a97b465a51edbcf22f96e7a8c32dd1b2bc5739ef390e5cb25da",
+      "bytes": 221925
+    }
+  ]
+}
