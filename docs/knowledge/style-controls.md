@@ -22,6 +22,7 @@
 | `tradition` | `modern` / `balanced` / `traditional` / `designer_choice` | 现代 / 现代+克制传统 / 传统作结构不作戏服 |
 | `props` | `none` / `lived_in` / `designer_choice` | 无道具 / 仅用素材支持的道具（禁止发明品牌故事） |
 | `shot` | `entrance` / `interior` / `detail` / `designer_choice` | 门头 / 室内 / 细节 |
+| `textDensity` | `minimal` / `moderate` / `rich` / `designer_choice` | 每视角最多一块文字板 / 少量 / 允许菜单墙 |
 | `priceDisplay` | `none`（默认）/ `real_menu` / `placeholder` | 不出现数字价格 / 只用真实菜单价格 / 留白或非数字 |
 
 ## 3. 价格策略 A（用户选择）
@@ -57,7 +58,7 @@
 - **分析提案**：tag 为空时完全跟随分析；有 tag 时覆盖冲突项。
 - **knowledgeContext**：经验是“建议”，tag 是“决定”；两者冲突时以 tag 为准。
 - **校验器**：价格策略会改变 forbidden 判定；其它 tag 只影响 Prompt，不新增自动校验。
-- **UI**：尚未实现面板；当前通过任务字段传入。
+- **UI**：已接入生图页的“风格约束（可选）”折叠面板（9 个下拉，默认跟随分析；价格默认“不出现数字”）。
 
 ## 6. 首轮对照（潮牛帮，2026-10-28）
 
@@ -69,6 +70,8 @@
   - 实验组出现“文字板过密”的副作用（大量中文菜单/故事板，虽无数字），需要后续加“文字密度”控制；
   - 两版自动校验均 `passed`。
 - **结论**：7 个轴可用，价格策略可用；下一轮需要单独验证“文字密度”和“tag 与分析的冲突”。
+
+2026-10-28 增补：新增 `textDensity`（少/中/多），并接入生图页面板；待用同一项目验证“文字密度少”是否能压住菜单墙。
 
 ## 7. 测试协议
 
