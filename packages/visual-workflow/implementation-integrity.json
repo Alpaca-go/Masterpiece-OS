@@ -539,7 +539,7 @@
   "frontendFiles": [
     {
       "path": "apps/web/src/features/visual-workflow/VisualWorkflowWorkspace.tsx",
-      "sha256": "6225c163866e7517f47c3a3cdd214ddd83b317ff9dd20ca731b461ba77016e0c"
+      "sha256": "85477c59c99d2f22921d399488064cc662f117eea36147148ae9a4d7925aa538"
     },
     {
       "path": "apps/web/src/features/visual-workflow/api.ts",

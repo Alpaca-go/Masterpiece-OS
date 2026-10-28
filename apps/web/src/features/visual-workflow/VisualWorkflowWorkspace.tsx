@@ -17,7 +17,6 @@ const STYLE_FIELDS: Array<{ key: keyof StyleControls; label: string; options: Ar
   { key: 'brandColorArea', label: '品牌色面积', options: [['designer_choice', '跟随分析'], ['accent', '点缀'], ['half', '约一半'], ['dominant', '主导']] },
   { key: 'tradition', label: '传统度', options: [['designer_choice', '跟随分析'], ['modern', '现代'], ['balanced', '平衡'], ['traditional', '传统']] },
   { key: 'props', label: '生活道具', options: [['designer_choice', '跟随分析'], ['none', '无'], ['lived_in', '有（仅素材支持）']] },
-  { key: 'shot', label: '镜头', options: [['designer_choice', '跟随分析'], ['entrance', '门头'], ['interior', '室内'], ['detail', '细节']] },
   { key: 'textDensity', label: '文字密度', options: [['designer_choice', '跟随分析'], ['minimal', '少'], ['moderate', '中'], ['rich', '多']] },
   { key: 'priceDisplay', label: '价格显示', options: [['none', '不出现数字'], ['real_menu', '仅真实菜单'], ['placeholder', '占位']] }
 ];
