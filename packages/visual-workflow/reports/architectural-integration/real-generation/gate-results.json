@@ -1,9 +1,0 @@
-{
-  "command": "npm run repo:verify",
-  "exitCode": 0,
-  "status": "PASS",
-  "log": ".git/architectural-integration-real-generation-verify.log",
-  "modelCallsFromGate": 0,
-  "productionCodeChanged": false,
-  "goldenChanged": false
-}

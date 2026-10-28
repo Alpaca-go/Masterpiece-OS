@@ -1,9 +1,0 @@
-{
-  "imageDispatches": 1,
-  "validationDispatches": 1,
-  "imageSucceeded": true,
-  "retries": 0,
-  "regenerations": 0,
-  "directedCorrections": 0,
-  "extraModelDispatches": 0
-}

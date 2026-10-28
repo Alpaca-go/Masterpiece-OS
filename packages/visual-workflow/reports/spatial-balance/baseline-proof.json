@@ -1,9 +1,0 @@
-{
-  "branch": "fix/jiuzhou-final-spatial-balance",
-  "startingSha": "5103076f5db51d9d3fe1705c8f2918443be24e49",
-  "frozenBranch": "fix/jiuzhou-architectural-language",
-  "frozenSha": "5103076f5db51d9d3fe1705c8f2918443be24e49",
-  "workingTreeInitiallyClean": true,
-  "bothPriorArtifactManifestsVerified": true,
-  "sourceCopyMatchesFrozenConfirmedDirection": true
-}
