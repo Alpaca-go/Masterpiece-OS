@@ -1,9 +1,9 @@
-{
+﻿{
   "status": "PASS",
   "branch": "fix/jiuzhou-final-spatial-balance",
   "head": "a4e6512c9fe74eac9a75880fb286c73dc8b52071",
   "mandatoryFiles": [
-    "review.md",
+    "review-notes.md",
     "field-differences.md",
     "confirmed-direction.json",
     "formal-prompt.txt",

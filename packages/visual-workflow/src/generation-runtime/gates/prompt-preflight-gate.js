@@ -140,7 +140,7 @@ function runPromptPreflightGate({
     }
   }
   const hasLockedLogo = projectContract?.mustPreserve?.some((item) => /logo|标志|标识/iu.test(String(item?.value ?? "")));
-  if (hasLockedLogo && taskContract?.logoUsageMode !== "post_composite") {
+  if (hasLockedLogo && taskContract?.logoUsageMode !== "post_composite" && taskContract?.logoUsageMode !== "in_image") {
     add(
       "LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED",
       "block",

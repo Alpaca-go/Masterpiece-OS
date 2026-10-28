@@ -1,4 +1,4 @@
-{
+﻿{
   "status": "PASS",
   "head": "ab15bb29fc577b6f67258b1dc9344ff2c8916016",
   "branch": "fix/jiuzhou-architectural-language",
@@ -8,7 +8,7 @@
   "endpoint": "https://ark.cn-beijing.volces.com/api/v3/images/generations",
   "authorization": "User authorized max one Seedream call and zero paid validation; user saved current independent configuration.",
   "mandatoryFiles": [
-    "review.md",
+    "review-notes.md",
     "confirmed-direction.json",
     "formal-prompt.txt",
     "provider-prompt.txt",

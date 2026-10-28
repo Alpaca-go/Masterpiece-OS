@@ -181,15 +181,15 @@
     },
     {
       "path": "src/generation-runtime/gates/prompt-preflight-gate.js",
-      "sha256": "35ba11e0a05343d52afd0f28bf48bf29cdcb177355f28e6e8405b7eff15466a5"
+      "sha256": "57a37f9632cfa6f05b19d9a2bdfdb7e2433718670419d8ea59e8aae8efc18ef4"
     },
     {
       "path": "src/generation-runtime/generation/compile.js",
-      "sha256": "0d01aea348d2c4853d0e5fcff18c9d3b1e964dae1d642821a91590c39754212a"
+      "sha256": "61fc7339f3e3332c2c38de41d9ee3318b58c1d479096546518c9397f5c3b9833"
     },
     {
       "path": "src/generation-runtime/generation/deliverable-validator.js",
-      "sha256": "63feebfb07534284c7143a0887bf1fe61718f7f919f3f4259fbfe1095b84ac74"
+      "sha256": "1d64f851cbcc0330cb62b7878cd1eb88f7bcdbaa90f567b7d7bce1167429e0b9"
     },
     {
       "path": "src/generation-runtime/generation/golden-backtrace-audit.js",
@@ -217,7 +217,7 @@
     },
     {
       "path": "src/generation-runtime/generation/task-contract.js",
-      "sha256": "1feea579a9bc015f9a3c53f3e9c75c4506e97b4ed94883a3f939dc1ea53cc8e4"
+      "sha256": "54ccd0f1209ca3baf62a55819c3b1ca06ee42b85a46c5f71e0a6a232c3f6020b"
     },
     {
       "path": "src/generation-runtime/generation/template-registry.js",
@@ -245,7 +245,7 @@
     },
     {
       "path": "src/generation-runtime/space/compiler.js",
-      "sha256": "0b90295b72f3926da8de474e7d2c8bf1ce40961003eeede4fa1fbe461f6957d8"
+      "sha256": "cb647951047f38464c049e44b2cd77d442e2d10f9f44241831ea3ab245b6b185"
     },
     {
       "path": "src/generation-runtime/space/continuation/apply-continuation-program-override.js",
@@ -369,7 +369,7 @@
     },
     {
       "path": "src/generation-runtime/space/semantic/validate-spatial-semantics.js",
-      "sha256": "ab7b12cdbc4cb9a67b71001e0be38bd4abfaa46b960dcd65558916ab49728288"
+      "sha256": "62877507b726c268c3b167792fd26f1752beb128c1acd080f6339d60abd46bd9"
     },
     {
       "path": "src/generation-runtime/space/source-adapter.js",
@@ -441,7 +441,7 @@
     },
     {
       "path": "src/runtime/image-generation/deliverable-validator-service.js",
-      "sha256": "ffab8580c25314eb7ce2fd47c78acf230fe252e7047c04de3cada2409996c197"
+      "sha256": "6db3067edbc5bb692badf56a2a8f2c021b9341b134d06f98188a75fbfac01ab4"
     },
     {
       "path": "src/runtime/image-generation/logo-post-composite.js",
@@ -449,7 +449,7 @@
     },
     {
       "path": "src/runtime/image-generation/short-chain-service.js",
-      "sha256": "9df3e2ee086e076d0e5aeb749f442836b3c57c3975377854defe8d05a9c5aec3"
+      "sha256": "1d1defe1d94abf0ffe5b9210ca665ee4549ba7f2178a11a5d4313116a42ab3b8"
     },
     {
       "path": "src/runtime/model-schema/validation-issues.js",

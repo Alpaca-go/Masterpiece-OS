@@ -19,6 +19,7 @@ function validateShortChainDeliverableEvidence({
   const forbiddenItemsFound = list(taskContract.logoUsageMode === "post_composite" ? evidence?.forbiddenNonIdentityItems : evidence?.forbiddenItemsFound);
   // Legacy observations mix identity absence with other asset violations.
   const postComposite = taskContract.logoUsageMode === "post_composite";
+  const inImageIdentity = taskContract.logoUsageMode === "in_image";
   const deferredIdentityFindings = postComposite ? list(evidence?.lockedAssetViolations) : [];
   const legacyUnscopedFindings = postComposite ? [...list(evidence?.missingRequiredItems), ...list(evidence?.forbiddenItemsFound)] : [];
   const lockedAssetViolations = postComposite
@@ -43,7 +44,10 @@ function validateShortChainDeliverableEvidence({
   if (brandMatch === "mismatched") mismatchTypes.push("brand_mismatch");
   if (brandToneMatch === "mismatched") mismatchTypes.push("brand_tone_mismatch");
   if (sceneCompleteness === "incomplete") mismatchTypes.push("scene_incomplete");
-  if (logoTextStatus === "incorrect" && (!postComposite || generatedIdentityEvidence.length)) mismatchTypes.push("logo_text_error");
+  const logoTextError = inImageIdentity
+    ? logoTextStatus !== "correct"
+    : logoTextStatus === "incorrect" && (!postComposite || generatedIdentityEvidence.length);
+  if (logoTextError) mismatchTypes.push("logo_text_error");
   if (qualityIssues.length) mismatchTypes.push("quality_issue");
   const blockingTypes = new Set(["wrong_family", "wrong_subtype", "missing_required_structure",
     "locked_asset_violation", "forbidden_content", "scene_incomplete", "logo_text_error"]);
