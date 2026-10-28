@@ -1,0 +1,656 @@
+{
+  "status": "STOP_PROTECTED_REGRESSION",
+  "e1fRun": "PARTIAL_COMMAND_OMITTED_FILE",
+  "expectedTotal": 159,
+  "actualTotal": 128,
+  "pass": 54,
+  "fail": 74,
+  "omittedFile": "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/evidence-boundaries.test.ts",
+  "omittedAssertions": [
+    "E1E blocking expectation: equipment conveying happiness",
+    "E1E blocking expectation: 砂锅传递幸福感",
+    "E1E blocking expectation: 设备自动治愈顾客",
+    "E1E blocking expectation: 在设备旁员工畅想未来",
+    "E1E blocking expectation: petal curved counter",
+    "E1E blocking expectation: lotus layered table",
+    "E1E blocking expectation: 花瓣曲线桌",
+    "E1E blocking expectation: Logo and equipment conveying happiness",
+    "E1E blocking expectation: staff operating equipment and enjoying cosmic essence",
+    "E1E blocking expectation: 员工操作设备并畅想未来",
+    "E1E blocking expectation: 员工没有使用设备",
+    "E1E blocking expectation: 员工不会操作设备",
+    "E1E blocking expectation: 员工尚未操作设备",
+    "E1E blocking expectation: staff operating equipment",
+    "E1E blocking expectation: Waiting area seating",
+    "E1E blocking expectation: 入口处的菜单",
+    "E1E blocking expectation: Logo吸引顾客点餐",
+    "E1E blocking expectation: staff not operating equipment",
+    "E1E blocking expectation: unresolved rendezvous",
+    "the E1E mixed visibility defect cannot become ready or call optional repair models",
+    "complete positive units reject unrecognized tails, negation, wishes, identity and color",
+    "pure brand demotion is not permission to render a decorative object as a visible function",
+    "approved architectural requirements consume every clause and reject appended unknown or negative predicates",
+    "safe separation precedes structured model batches without filling missing material evidence",
+    "unresolved clauses outside the visible field cannot be hidden by a passing final gate",
+    "local validator exception before optional repair uses zero model calls",
+    "local separator exception before optional repair uses zero model calls",
+    "local repaired-persistence exception before optional repair uses zero model calls",
+    "unknown source facts still require confirmation after safe local semantic separation",
+    "corrupt packet shape fails before optional model callbacks",
+    "targeted semantic regression uses zero network primitives"
+  ],
+  "historicalComparison": {
+    "path": ".codex-smoke/stage-a-visible-carrier/e1f.log",
+    "sha256": "3ad5e87112745782b802b039ad75f060150a5fca1f70eaf808778656d535aef1",
+    "source": "Historical Stage A checkpoint; not a fresh B1T baseline execution",
+    "failures": [
+      "unresolved clauses outside the visible field cannot be hidden by a passing final gate",
+      "source clauses retain exact ranges and mixed local/dependency/review dispositions",
+      "unsafe networks stay reviewable: 点餐制作取餐就餐的完整关系",
+      "unsafe networks stay reviewable: 入口 → 无法确定的节点",
+      "unsafe networks stay reviewable: whole project operating network",
+      "kitchen relationships cannot inherit a boundary authority merely from their container or another entrance clause",
+      "reference-first target program still replaces source operations instead of inheriting standard fallback",
+      "continuation keeps the target program authoritative and does not expose source dining operations"
+    ]
+  },
+  "groups": {
+    "new_confirmed_service_path_blocked": 1,
+    "new_legacy_call_missing_evidence": 66,
+    "historical_failure_rejected_earlier": 7
+  },
+  "failures": [
+    {
+      "name": "automatic suggestion can be confirmed without field rewriting and reaches actual offline image adapter",
+      "historicalStageAFailure": false,
+      "category": "new_confirmed_service_path_blocked",
+      "observedError": "'SPACE_EXECUTION_EVIDENCE_BLOCKED'",
+      "observedCode": "'SPACE_EXECUTION_EVIDENCE_BLOCKED'",
+      "detail": "Real service capture succeeds; Compiler evidence gate blocks. TAP does not serialize gate subfindings. Detailed root cause remains unverified after the stop."
+    },
+    {
+      "name": "formal compiler retains legitimate relationships once without exposing foreign interiors or mutating input",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "bakery-methodology: current-project relations and scope reach suggestion and compiler without mutation",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "outdoor-methodology: current-project relations and scope reach suggestion and compiler without mutation",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "brand or industry renaming alone does not change functional decisions or invent artwork",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "relationship mutation is preserved as a change, not accepted on object counts",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "storefront/front preserves explicit requester, exterior program and exact camera through formal and Provider prompts",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "all public subtype/shot choices have resolved authority or explicitly fail closed",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "exterior default camera uses exterior authority: legacy_project_default",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "exterior default camera uses exterior authority: target_scene_default",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "unknown targets cannot turn an unresolved visible requirement into executable content",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "|-",
+      "observedCode": "'ERR_ASSERTION'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "complete functional dependencies are preserved without acquiring shot visibility: 点餐区 → 明档制作区 → 取餐区 → 就餐区",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "complete functional dependencies are preserved without acquiring shot visibility: ordering area -> food preparation area -> pickup area -> dining area",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "source clauses retain exact ranges and mixed local/dependency/review dispositions",
+      "historicalStageAFailure": true,
+      "category": "historical_failure_rejected_earlier",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical failure is rejected at an earlier evidence gate; its original assertions were not reached."
+    },
+    {
+      "name": "unsafe networks stay reviewable: 点餐制作取餐就餐的完整关系",
+      "historicalStageAFailure": true,
+      "category": "historical_failure_rejected_earlier",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical failure is rejected at an earlier evidence gate; its original assertions were not reached."
+    },
+    {
+      "name": "unsafe networks stay reviewable: 入口 → 无法确定的节点",
+      "historicalStageAFailure": true,
+      "category": "historical_failure_rejected_earlier",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical failure is rejected at an earlier evidence gate; its original assertions were not reached."
+    },
+    {
+      "name": "unsafe networks stay reviewable: whole project operating network",
+      "historicalStageAFailure": true,
+      "category": "historical_failure_rejected_earlier",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical failure is rejected at an earlier evidence gate; its original assertions were not reached."
+    },
+    {
+      "name": "kitchen relationships cannot inherit a boundary authority merely from their container or another entrance clause",
+      "historicalStageAFailure": true,
+      "category": "historical_failure_rejected_earlier",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical failure is rejected at an earlier evidence gate; its original assertions were not reached."
+    },
+    {
+      "name": "dining operations and Chinese actors remain visible with exactly one rendered owner",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "unlocated storefront activity requires review: chef preparing food",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "unlocated storefront activity requires review: steam above dishes",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "interior sightline request awaits a reviewed interface: chef preparing food in kitchen visible through storefront glazing",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "interior sightline request awaits a reviewed interface: 厨师在厨房制作食品并透过临街橱窗玻璃可见",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "interior sightline request awaits a reviewed interface: 入口视线可见厨房制作活动",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "an exterior prohibition protects interior privacy as a boundary, never as a rendered interior",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "cross-project exterior projection follows sources, not industry: 临街外带档口",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "cross-project exterior projection follows sources, not industry: 现代连锁快餐",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "cross-project exterior projection follows sources, not industry: 社区咖啡馆",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "cross-project exterior projection follows sources, not industry: 日本料理餐厅",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "cross-project exterior projection follows sources, not industry: 零售商店",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "cross-project exterior projection follows sources, not industry: 旅宿服务",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "other established commercial scene authorities retain their own local activities",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "negative project guards are preserved even when they name a foreign exterior",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "explicit off-frame operational prohibitions remain boundary-only",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "artistic focus is composed once and remains distinct from operations",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "optional artwork stays optional and a source without art does not acquire an installation",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "single reception shot keeps other program nodes in the trace rather than displaying their interiors",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "scene projection preserves trace and does not translate a color or transparency keyword into new geometry",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "gallery character passes sanitization while identity text remains protected",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "source-scoped decisions occur once instead of being repeated through strategy/form/organization",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "unconfirmed color scopes and ratios remain proposals without mandatory large-area authority",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "brand names and stored brand keys cannot auto-select architecture examples",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "explicit optional examples require scene and mechanism compatibility and cannot outrank the project",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "Medical aesthetics: formal route retains complex architecture and explicit strong color without manufacturing art",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "Hospitality: formal route retains complex architecture and explicit strong color without manufacturing art",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "Restaurant: formal route retains complex architecture and explicit strong color without manufacturing art",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "explicit material installation survives in brand layer, outside the functional and architectural layers",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "installation preservation retains identity protection without inventing gradient area authority",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "visible operations have one actual execution owner: lobby/default",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "visible operations have one actual execution owner: lobby/entrance_view",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "visible operations have one actual execution owner: lobby/three_quarter_wide",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "visible operations have one actual execution owner: dining/default",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "visible operations have one actual execution owner: dining/entrance_view",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "visible operations have one actual execution owner: dining/three_quarter_wide",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "bilingual activity/effect has functional evidence and ownership: 厨师正在备餐",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "bilingual activity/effect has functional evidence and ownership: 菜品上方升起热气",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "bilingual activity/effect has functional evidence and ownership: 顾客在餐桌用餐",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "bilingual activity/effect has functional evidence and ownership: 店员为顾客打包商品",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "bilingual activity/effect has functional evidence and ownership: customers browsing products",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "bilingual activity/effect has functional evidence and ownership: staff handing parcels to visitors",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "bilingual activity/effect has functional evidence and ownership: guests checking in at reception",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "bilingual activity/effect has functional evidence and ownership: receptionist greeting visitors",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "bilingual activity/effect has functional evidence and ownership: water flowing into the basin",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "de-duplication retains an actual rendered owner, not mere raw membership; original indices survive",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "foreign operations cannot re-enter through the brand branch after scope rejection",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "an activity also supplied in a signature source has one rendered visible owner",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "brand duplicate is removed only after the current visible owner exists",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "a prohibitive list never receives credit as the positive visible execution owner",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "unknown or wishful fragments stay reviewable without becoming a hard operating requirement",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "identity, motif, color, decoration and architecture retain distinct semantic routes",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "mixed clauses retain only the local activity and boundary, with foreign interiors rejected in trace",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "sourceMap reflects actual renderer ownership, not a broad promise of preservation",
+      "historicalStageAFailure": false,
+      "category": "new_legacy_call_missing_evidence",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical call supplies no private capture/binding identity. The later source/scope assertion was not reached."
+    },
+    {
+      "name": "reference-first target program still replaces source operations instead of inheriting standard fallback",
+      "historicalStageAFailure": true,
+      "category": "historical_failure_rejected_earlier",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical failure is rejected at an earlier evidence gate; its original assertions were not reached."
+    },
+    {
+      "name": "continuation keeps the target program authoritative and does not expose source dining operations",
+      "historicalStageAFailure": true,
+      "category": "historical_failure_rejected_earlier",
+      "observedError": "'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'",
+      "observedCode": "'SPACE_EVIDENCE_INVALID'",
+      "detail": "Historical failure is rejected at an earlier evidence gate; its original assertions were not reached."
+    }
+  ]
+}

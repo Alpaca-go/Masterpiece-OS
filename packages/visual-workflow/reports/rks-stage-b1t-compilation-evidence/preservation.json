@@ -1,0 +1,947 @@
+{
+  "baseline": "7865909107240dc046ffd337859ef389d16f5829",
+  "headAtCapture": "7865909107240dc046ffd337859ef389d16f5829",
+  "branch": "fix/rks-semantic-scope-and-operations",
+  "status": "BLOCK_STOP_PROTECTED_REGRESSION",
+  "changedTrackedFiles": [
+    "packages/visual-workflow/src/generation-runtime/generation/compile.js",
+    "packages/visual-workflow/src/generation-runtime/space/compiler.js",
+    "packages/visual-workflow/src/generation-runtime/space/scene-projection/target-scene-projection.js",
+    "packages/visual-workflow/src/generation-runtime/space/source-adapter.js",
+    "packages/visual-workflow/src/runtime/image-generation/short-chain-service.js"
+  ],
+  "newProductionModule": "packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js",
+  "newProductionModuleSha256": "a832069bf4dcb7c58932a903c5b4c83300b8c594db88c41d644219ea42ddbdbc",
+  "productionDiffSha256": "0835c0910b0c89dee98459ac64304b7e50ee5d64d39928e574cb7807a4dcfe24",
+  "production": [
+    {
+      "path": "packages/visual-workflow/src/runtime/image-generation/short-chain-service.js",
+      "baselineBlob": "ba493d47263cab7cadfeb7eda0a0458c80434c75",
+      "baselineSha256": "9df3e2ee086e076d0e5aeb749f442836b3c57c3975377854defe8d05a9c5aec3",
+      "currentSha256": "bb215bf40345630a361c487014580b78e8fcb2af8038fc397f396ea217aefb36"
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/generation/compile.js",
+      "baselineBlob": "0fe6992480136530b1612c153c61d60cccbce138",
+      "baselineSha256": "0d01aea348d2c4853d0e5fcff18c9d3b1e964dae1d642821a91590c39754212a",
+      "currentSha256": "490e2ee25a7c295c0f06e9614ac3fd145e86c08c04ff9d050d2b0dc2ae094b50"
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/source-adapter.js",
+      "baselineBlob": "3736e04bf61bf2aca3b63927c131bde1d6d197f4",
+      "baselineSha256": "b4fe223f16c1cf4e0bde5a83e936e598ed6eb63fb7ccb6fe94fd61af0e649299",
+      "currentSha256": "ce1c66389fe5bcebe1b5b4b968748e83791ae3f50f0ca1f2586fe15e6d345a78"
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/scene-projection/target-scene-projection.js",
+      "baselineBlob": "72e14a59f3ae79a6937eeafc5381804c6158767b",
+      "baselineSha256": "78be27d7523ee10561005f553e51e9a90c801791ae52842f575d51ce63267598",
+      "currentSha256": "2c28d3fdcfb2c0afedc82bd68c731114240c12416cd1e912bd409799a53dc911"
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/compiler.js",
+      "baselineBlob": "540e5af90ad3105632b2d07e9afdf1d7aa70b6ca",
+      "baselineSha256": "a6614dce173d79c159854c19fe649d71204037a52183d1d0467242afad4cf352",
+      "currentSha256": "a33a1a20ca654131b8d769f85a5f44c20f18168c71bd8612c41e5f24e15919e2"
+    }
+  ],
+  "frozenCount": 165,
+  "frozen": [
+    {
+      "path": "config/repository-contract/prompt-integrity.json",
+      "currentSha256": "be3148abc17dfaddfd33dea944db6638b21a2036d4ba7210e07082c1e0f80c61",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "golden/CHANGELOG.md",
+      "currentSha256": "295b21679e5a3a4edcc29a5a858d955759f7db982dce6dc97123dde21eb31a7a",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "golden/continuation/jiuzhou-reception-to-consultation/README.md",
+      "currentSha256": "cc4ab64f165d75f6abb009fc5e727ed064c438a1826b58718b40b79830c9c21a",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "golden/continuation/jiuzhou-reception-to-consultation/case.json",
+      "currentSha256": "90ac981f05be264c51fda6d9244d33a70302c5ad929ef426b0aa3c348cec94f2",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "golden/continuation/jiuzhou-reception-to-consultation/expected/contract.json",
+      "currentSha256": "f28d59fcf8a60afc44935a4ecaa097e7ad869ecd18c5b19cef0b38ef74e8e0ce",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "golden/continuation/jiuzhou-reception-to-consultation/input/evidence.json",
+      "currentSha256": "ab04fa925211a633abb0130fec5d8b388273e032c1c8a255e682d3f60fa700b1",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "golden/manifests/golden-registry.json",
+      "currentSha256": "762ef620f6dc0ba8bf4660551357297b5d1f69bfe3f9af8cc3a10ca514ade441",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "golden/packaging/fengtangtang-deliverable/README.md",
+      "currentSha256": "b7ad9bc07d9154650bca3583cf6164d13dbe0c13b33ae7c47d0dd2b39800714e",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "golden/packaging/fengtangtang-deliverable/case.json",
+      "currentSha256": "2a4240313f017b82a78a10c660d3501391d7f6ec6ab7347597cf1d33a39db0bd",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "golden/packaging/fengtangtang-deliverable/expected/contract.json",
+      "currentSha256": "0c71f81a259418db68db704fe23f4bff6f56db6d28fc3c8e3f3c2ebfaa110f11",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "golden/packaging/fengtangtang-deliverable/input/evidence.json",
+      "currentSha256": "f266e2bf355da15946902afd4006cb4ff9441dc1adcb263f30993958fb349d3f",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "golden/reference-first/jiuzhou-reception-to-consultation/README.md",
+      "currentSha256": "9476541756777af7b846a743e5e77b4d24633485efefe9402e3aa4121eb9e282",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "golden/reference-first/jiuzhou-reception-to-consultation/case.json",
+      "currentSha256": "651a237af97588b94996e2f5bc529208f8000ff7bfa5e93a0a92793a65847173",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "golden/reference-first/jiuzhou-reception-to-consultation/expected/contract.json",
+      "currentSha256": "63d2f8d67b3433244f1407cf66a60dcdd33ec9a1276d7e8259466af60517faea",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "golden/reference-first/jiuzhou-reception-to-consultation/input/evidence.json",
+      "currentSha256": "d0431a457b6a474d9bb7a54cd65e7f7fda1d7e6fac5e660a7459e43ea8bc94d5",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "golden/standard-space/current-parity-set/README.md",
+      "currentSha256": "0749b93afa3c900106e0d0d5adde1a54340860191435db8907a121026b717840",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "golden/standard-space/current-parity-set/case.json",
+      "currentSha256": "6dbea86f7dce4bd1b7b9f6e4c5800335d04bd1892f594d85ef1a0bee8a6c5b1e",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "golden/standard-space/current-parity-set/expected/contract.json",
+      "currentSha256": "6a0a3241f363a3458364c091820f363c92684a0bb433560105522d6c6f252238",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "golden/standard-space/current-parity-set/input/evidence.json",
+      "currentSha256": "27e82a8c4104898832b04b231a8cbea65f6a2e62cdd2c1a719bc2889d56287db",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "golden/visual-analysis/jiuzhou-audit-fixture/README.md",
+      "currentSha256": "016806eddf692bb4a628931b15af72d0b657fad619879ffb33bf99f494f8deb6",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "golden/visual-analysis/jiuzhou-audit-fixture/case.json",
+      "currentSha256": "327f082af25f5e849991f2123b823943e234b1cce441dd49f22d77c31dab6523",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "golden/visual-analysis/jiuzhou-audit-fixture/expected/contract.json",
+      "currentSha256": "1bedfe45a5f2615f4972f6ffb7e134e0b2ff089dc9b14bf4779f72011adb4be7",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "golden/visual-analysis/jiuzhou-audit-fixture/input/evidence.json",
+      "currentSha256": "ea3545b0406b0fb0cd50a4cdbc3c957937de530c698d5a84904e83ac4ed2f5d2",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/implementation-integrity.json",
+      "currentSha256": "85947e556d9467837f7583c106f5f7fec10f65207ed9b2c31b410ae7c2f13bec",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/prompts/analysis/benchmark-instructions.md",
+      "currentSha256": "df937bbc81bf1c7335933952eef5db654c73b485bff52a67abed2618ecee71cb",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/prompts/analysis/deep-creative-director.md",
+      "currentSha256": "4d258cce657f023d054c86ee54c661fab9382387847904a4b386e5a674b46142",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/prompts/analysis/execution-core-template.md",
+      "currentSha256": "d20def82f1d881a276007fb408fe62c92634f80bb346da0a52aa2fdfb8c3d54c",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/prompts/analysis/report-schema.md",
+      "currentSha256": "cae74a0ab49ca33827e09194005df0d35bc979ad0e8f7165bd80524a20d637af",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/generation/seedream-adapter.js",
+      "currentSha256": "1a150deb5b1e495ca6bf8cb01de8566bca87012be4f36bbcfa7abf922b8926ec",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/gates/provider-prompt-gate.js",
+      "currentSha256": "860dcbcf445930f453c911aea2c8ddba791e0480eae7056afc390988f65c8015",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/semantic/separate-space-semantics.js",
+      "currentSha256": "62a5452fe3849d1bd8dc34b8bec3aa79a480a32a2a5e992db7a6a74ef0855a65",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/semantic/validate-spatial-semantics.js",
+      "currentSha256": "a377f1400af37b54e173acd918f937143c17433e3e943231b7312065f74beb9d",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/src/model-runtime/analysis-provider-registry.js",
+      "currentSha256": "a5599c06d3f1e3557cddb0885caa86b20180bca4a059612d5651ccd63c3273dc",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/src/model-runtime/analysis-provider.js",
+      "currentSha256": "dad1e5dbbb346768aac36aa28c9c1773a3ea9f96f1b81d6e9532981d8d2a5171",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/src/model-runtime/qwen-analysis-provider.js",
+      "currentSha256": "9a27aa74ffc7cc8c3fc1cc1426a59b4f924702661cc86adadc6394a5ae13962a",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/src/model-runtime/volcengine-analysis-provider.js",
+      "currentSha256": "a72234ff8e67a786c8b7ac62884cd743a6c1636d337e0ec62da84dee4f1269fa",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/src/project-design-direction.js",
+      "currentSha256": "cccd26e77c37a542a86598f7a9a8b612afbdf5c0c08c73aebb9c9d7d1b605a7d",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/analysis-direction-suggestion.test.ts",
+      "currentSha256": "0b33e0d43db14b86668de8b38ea2c6b35b1f7b0c0ac86eb748462a86ddf8d844",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/architectural-integration-form.json",
+      "currentSha256": "7529f1de629d829226a953dd4a4d8738914d562c07b1dd891efb12e61d691cdd",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/architectural-integration.test.ts",
+      "currentSha256": "f869e5986eedad82ddf9d00ef3e4776e34d11eba1a14131b7154c421db24a317",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/architectural-language-form.json",
+      "currentSha256": "c3334b31b519823dfde1a15ae3c4b75b47721a73fff415a939d8dd9f49cc7b43",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/architectural-language.test.ts",
+      "currentSha256": "1e9bf184767b1c18c380a309e6298c90676e08f5bb9dd6609138cc66c824fad9",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/architectural-refinement-form.json",
+      "currentSha256": "635e6b063a896bfe88390b0c94763cafb24135bbd983096456d2743ccff66bee",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/architectural-refinement.test.ts",
+      "currentSha256": "eb65da26aebbbd247b716f5a038088bc6852840bfdcba18ab7d35e7aa783bcce",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/architecture-commercial-layer-form.json",
+      "currentSha256": "5d4b6d90bfe30c9cd86a8dd4fdcab58417dfcecabfc5acd3510c21d3704661e7",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/architecture-commercial-layer.test.ts",
+      "currentSha256": "c9f9c8fb75602b6920e9eaa070f5efdadad01fbb4b7d31408ed58229c49a54eb",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/art-direction-authority.test.ts",
+      "currentSha256": "72f1dfb8c13d444afc38f320c4499310f7524c39ffddd181716d1bd70d6c2cb6",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/art-direction-business-fixture.ts",
+      "currentSha256": "d193aafc39064c106c3a538e41510d6106a52b8536db3657c96d29ac6d7ff22c",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/art-direction-review.mjs",
+      "currentSha256": "045028e3550977834d9963ebf1a6909b855c19fba7bf1996700cf489edbda8fc",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/art-direction-route.test.ts",
+      "currentSha256": "303949e5d39a89106b0bc441865068baac3f2e1204686167bbfbb0128c4ffa58",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/audit-compiler-integrity.mjs",
+      "currentSha256": "c64ce8de3339591e97d579caac876c66c5f6a552fdb10505a28bfe791535f9c9",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/automatic-design-proposal.test.ts",
+      "currentSha256": "b6405028f9ee5866f879807020cac363c73848a81bd1d2db0cd921a085dc9338",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/capture-art-direction-business.mjs",
+      "currentSha256": "6ea6c7e656635673e9252e570f13bacf2a4deb7752c4ff542b2eb210296f71f6",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/capture-art-direction-operations.mjs",
+      "currentSha256": "8a28f13d8d62b54f65473810e3c47734003a3e91565133a0a9bd35ce85c8e685",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/capture-art-direction.mjs",
+      "currentSha256": "50cf853b3721e14bedffc6ef7b2ad11a6b0e4b2a0133ddcf4026e292023e625a",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/capture-design-direction-editor.mjs",
+      "currentSha256": "845bb660181a061eb36a30157775c729beed007b98e7a4611957ce17d82cff98",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/capture-design-fidelity.mjs",
+      "currentSha256": "29a95b766fc01110e34570e00efa1b877f67a77ce2db7db8534895e64543441d",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/capture-project-design-direction.mjs",
+      "currentSha256": "045f29a0c53c1270f6b3e7d0e34d6f99664e1e0fac6e4f068465c58a37131794",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/commercial-attribute-form.json",
+      "currentSha256": "ce0c56c7d94fa18d21f007cb8c1b76d361bffc2d079ed63ac2084daa8fa0c7b5",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/commercial-attribute.test.ts",
+      "currentSha256": "77cc20f23d1bdf462299fe2dd7526b6e55045f8ac73afee2d123779e7c4daa86",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/cross-zone-operation-scope.test.ts",
+      "currentSha256": "23d7f667eb1bdc9667f34892accde9aac2322d64f74d0f89962b4fba03b2fcfe",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/design-decision-fidelity.test.js",
+      "currentSha256": "ea97ff9bdcf967fb3f25d6bacfbfa5a62eadc7773563fb6c9c42a4d45763dc28",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/design-direction-editor-evidence.mjs",
+      "currentSha256": "cc6b6967fe23f6905fbcc6be6b3c4db85012a6747ef3fe1e453b56a480c5402d",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/design-direction-editor.test.ts",
+      "currentSha256": "85eb6be146dfd9853efa27ca2c4b379647c3530599725bdc3248f032e89c11ce",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/design-direction-form.json",
+      "currentSha256": "499cab2b72f0d4449a99f5cd3bf209ea87060088602d2128a4771d60f56d96b7",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/explicit-spatial-layout.test.ts",
+      "currentSha256": "dc7c7edb62e3592236823996d7431ac0477b03150cfe8f67390b7faba3f06990",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/fig2-fig3-spatial-direction-form.json",
+      "currentSha256": "591f2e48fea580f0879f0791861a0d302629b8769037d37c483d0eb1777ca1c5",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/fig2-fig3-spatial-direction.test.ts",
+      "currentSha256": "65a328c6b234189104f0cb292d160076fbc4ca3c58bfaa507e07ecca2a08ae21",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/generation-baseline-lock.test.ts",
+      "currentSha256": "f7eb96c1d9d087ccbc448486f052597324e3ff04188b1c25ad322f2818379d79",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/methodology/acceptance.test.mjs",
+      "currentSha256": "0f8862ec10c67d5fe4f4598f162bd46c71a9069f615c378779dac5dc91f740ba",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/methodology/compatibility-evidence.ts",
+      "currentSha256": "c5a1a72c1d3cf5479f62d24ba10cb09d522de353637987273d062e2fbdc94a54",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/methodology/compatibility-regression.mjs",
+      "currentSha256": "8004c95a23b2e325690202503e565db4dd8e3aecdd0022d0451ce942a391184e",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/methodology/custom-compatibility-fixture.ts",
+      "currentSha256": "385f7527c2cc2fb1f81a047742932de4370d84b6b0b5d2d8a9fc8e642cbd8066",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/methodology/custom-compatibility.test.ts",
+      "currentSha256": "8d88536c08d9037efc2a8df06889178b6449ab42f3bc9b5c1774ecdd23fb9027",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/methodology/integrity-evidence.ts",
+      "currentSha256": "be1322cd238cc351dd2984cca0b769f3576c0e5c2ba260bfc9aa70b535651445",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/methodology/integrity-regression.mjs",
+      "currentSha256": "a00937b9bc2c3265c6040eece5e62eabf5d721ce12bdae30e5a2788d853b9f8c",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/prepare-architectural-review.mjs",
+      "currentSha256": "b71eb25942c80b51207224fe2badb93821613a40a826eb13ef2dcb9e7b87aa8c",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/project-design-direction.test.ts",
+      "currentSha256": "54d5d392069fd6536f90dacee4eb725e4e58c282f263b27a40dea87da4b11934",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/project-details-editing.test.ts",
+      "currentSha256": "9f42c984b68d91944aea3e65a97e851ac61124d478dc4fb0bdd25623985606db",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/analysis-input-freeze/capture.mjs",
+      "currentSha256": "78f48e90b500c5c34746cdf17cd75ba57b0654a4313aa28a039381aae878617e",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/analysis-input-freeze/composition.mjs",
+      "currentSha256": "0852d04b9e515107f374754bf14cb7c11cc430413466a108bdc5cb644038a02e",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/analysis-input-freeze/contexts.mjs",
+      "currentSha256": "396ce6b601859ee497c5b24f94de0bfaab69238e82262051dac939498ffd18f7",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/analysis-input-freeze/prepare-offline.mjs",
+      "currentSha256": "3361c71a9c134e3e104abbf0041c25ebf30a79e739087bc279df33155dd6f72f",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/cases.json",
+      "currentSha256": "fe102546705d7882a9be350ac985525c20a86f194139e5b02687ca04b2027b11",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/compile.test.ts",
+      "currentSha256": "888eaf8c0d6fcac82944e9568b51fb31839c9b81b58fdc504829aa81792ac659",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/field-lineage.test.ts",
+      "currentSha256": "66f0ff2ae0b930a14d36818fe71fdbf326b240d29d77d32e7acd5cf0d1223c1c",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/ftt-analysis-inspect-offline.mjs",
+      "currentSha256": "8d552055daff35000d2eb3e66f364a592875251c5551542984c6e8b55f2f3f51",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/ftt-analysis-prepare-offline.mjs",
+      "currentSha256": "e6bd22817b91e3e1b7e1e3a83d3113a1bdfadabbf09e0fc9b2bba915749ecdec",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/ftt-fidelity-comparison.ts",
+      "currentSha256": "9ce06cea2eaf7e0c861537e7bef7b9d02d7ab26c21fc419f01838ace36d1c841",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/ftt-fidelity-cross-project.ts",
+      "currentSha256": "034a6d8726ac6c61c491e1a2099e5c987a812f82c88636ccc5bd3711dc66093e",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/ftt-fidelity-evidence.ts",
+      "currentSha256": "8486f198915be200119db538de9fda89ff9c54934e425d4cf087cd723f7fc189",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/ftt-fidelity-fixture.ts",
+      "currentSha256": "37731bcd94a71b1d08df9cd451d9f694a9e1a1a76b1a305032a2717d5ec73713",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/ftt-fidelity.test.ts",
+      "currentSha256": "b8e20cef2351edcc03baa68dd66306ed77a03b68afa76b258db6cebbcb60154c",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/ftt-final-design-compile.ts",
+      "currentSha256": "c77bb0053a9e9c40f4be22e7cf6c7897d1d8907c8c5e9214ba57b012a0dac630",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/ftt-final-design-evidence.ts",
+      "currentSha256": "9afb9a8cdd123a99f48b1c9779a45c40a68f197cf2f1ba42023073e537b6099a",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/ftt-final-design-fixture.ts",
+      "currentSha256": "e54988ca59fe05ec73807551a615d72c1552c95ee636d472ca0137167210dac8",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/ftt-final-design-regression.mjs",
+      "currentSha256": "9e51d32a5d54734841205bb8eacf42d88d8fa3106b295de202625376dde701a5",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/ftt-final-design.test.ts",
+      "currentSha256": "dd9df2e21703e4c8cf7acaf4159be750a6e78fbfbc9acb684b727f24794913e0",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/ftt-first-image-preflight.ts",
+      "currentSha256": "838e4229dc5b908a93deec931e651c9005d84337d5af1a17bdf41004c96935ac",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/ftt-historical-packet.json",
+      "currentSha256": "e3564d51888661989eeb16de8923992a4e1148268e7f55e7427c4c70e6fb613c",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/knowledge.test.js",
+      "currentSha256": "2cdbe484804cc451467ff5e6abe304bdbf9e790ab4778b3a0c807cb780c20d04",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/scene-authority-evidence.ts",
+      "currentSha256": "819e3242bf804cc450194bbeee83e6d67b8d5c2f21af611bd176bc87789b6f09",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/shadow-comparison.ts",
+      "currentSha256": "b07a369d3f18aaa1b1fc1364c7bf45da4839d11edea0e6fd45657141891c39c8",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/shadow-compile.test.ts",
+      "currentSha256": "bf034acc43be4ed3e41093401bc244bf4b56b880f187edb917c0616d6b7ca75c",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/shadow-evidence.ts",
+      "currentSha256": "f2730f3bd211878259b712fdabbe17d565873c91b32157c99e307e74bd80f828",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/shadow-fixtures.ts",
+      "currentSha256": "06956d04f99e7d7c45e184b98aefb8798325462bcabe5fc8341d28d00eda65da",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/shadow.test.ts",
+      "currentSha256": "00ddb5a9bdadb6abe3dbcbb88e8187d3da6108180b72c3175b3d9fd2e6af8342",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/evidence-boundaries.test.ts",
+      "currentSha256": "b983b91b9260bc201063590416361046d5acc5da935d5234fc7afd227cd37212",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/field-contract.test.ts",
+      "currentSha256": "70a2cfbc8121019588ba06bbd2d4f6146c9231edb685292505669643652f7adf",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/independent-review.test.ts",
+      "currentSha256": "468f2e8da5eb454c618f947e8381f346701fa8bde66e59d8dd54395119cfe269",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/integrity-review-probes.mjs",
+      "currentSha256": "39e28b3346b262a998fef07c45b689ae060565bc45aceda1c14e2be3f4c73af7",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/network-off.mjs",
+      "currentSha256": "f12ee0601f4cdbf081d2e096188df6b146f718682978e0b056298b3d086330b0",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/replay.mjs",
+      "currentSha256": "cc2047e587f75ad0a4209b4c2b52381b75f8961c5328c68e3d2170ab324e22be",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/scope-and-operations.test.ts",
+      "currentSha256": "daa5bf5b4246c2e9d8992c89330027e8fe268784706527f2566aceda87974a24",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/separation.test.ts",
+      "currentSha256": "de6c51c411d1edfa8d77f04ee76a4d7abd1deb1bb4335ac2277523d8eb5facbb",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/source-fields.json",
+      "currentSha256": "b0be978ab8261012252a4cfc6683cf6b9a899df412722ad631f7c4240999832e",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/visible-carrier-evidence.test.ts",
+      "currentSha256": "53e779317a8f8686b9e457a7e7a9afb85f4a0d756da44e32aa230ba57a237b2a",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/two-dispatch-guard/fixtures.mjs",
+      "currentSha256": "99f74001094645b606c091223d3047ebde8c3c89318b8e88ed8161f5ecf9053d",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/two-dispatch-guard/freeze.mjs",
+      "currentSha256": "bffa4d6cee16f44b3614dc1ae4b09675e25cf2dc99ee064ae9ef6c433426365b",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/two-dispatch-guard/guard.mjs",
+      "currentSha256": "d3f2e9a4b06574cffcfc19d5f94d2d7d0934a2db0750b29b6e454d44eef8286b",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/two-dispatch-guard/guard.test.mjs",
+      "currentSha256": "3d7f62f6d6385e4f0e31cc5d15ec7c8934968f81c378e335f4d0a50c2beff0eb",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/two-dispatch-guard/integration.test.ts",
+      "currentSha256": "895b8b46f1e64958fb33fbf728cce960a077520d2c00430fee504832ed1697c9",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/two-dispatch-guard/ledger.mjs",
+      "currentSha256": "36c0e4c5fa8eb0ed2a0353fd23c2ef1db3f2d6776ae45ba2bc66f9926079ee63",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/two-dispatch-guard/single-post-transport.mjs",
+      "currentSha256": "82a2fe8e3c7bf76454075f3be51b8d864abe2840f96a239e47c36e7d3a6266eb",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/restaurant-knowledge/two-dispatch-guard/transport.test.mjs",
+      "currentSha256": "3a3f44bef7ffadb5c93f9df092f93e8c558c51edc6984fa75bc19006c19b3739",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/scene-authority-cases.ts",
+      "currentSha256": "1bc1b877a6c115547ac300bd93797c4ff2b42be52700a5503c24bbb3b58af9ff",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/scene-authority-regression.mjs",
+      "currentSha256": "026cf70a8b9b0c2a85461f22b997c83c78bebf2ffb194c8e045b041081556f5b",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/scene-authority-repair.test.ts",
+      "currentSha256": "6e980c49c37f63e7e7ad0c67c6b576958334e0ccd4f8a59d6dc41e8acf7e79cf",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/scene-authority-review.ts",
+      "currentSha256": "f65f47b189b5cc20b43300683a07520849dfe0e231e9657f658875394aacbbce",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/scene-decision-fidelity.test.ts",
+      "currentSha256": "1a4a4fd6c1bc9a0968220eceb23357d9ee527cfa2102801fa82bb940d557788b",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/spatial-quality.test.ts",
+      "currentSha256": "540fdc933927b537b7750acc2384f477392262b14b8b81b1b17c08c1f0ab3ae9",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/validation-policy.test.js",
+      "currentSha256": "f0ff29eba31e1bfa52f7951c9615f4b48ca1b0a7dbcb7412d01d509106cd1b5c",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/visible-ownership-evidence.mjs",
+      "currentSha256": "20c1eb9f1d845e1cfed0a50706162e82a4fc314beb39302afbc26c843d5bf715",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "packages/visual-workflow/tests/visible-requirement-ownership.test.ts",
+      "currentSha256": "172a6d85d418caa371a0de73f8120249f0a921798de6154cf7c880823e9922f1",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/GATE-REPORT.md",
+      "currentSha256": "049e34d1fe0ac1b1961bb16deb70702052a5cef41bf94dbb4e7181b086a09077",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/README.md",
+      "currentSha256": "68774310b87b8101f28a4e141cc2bf83208198883a4d9326287922803121e515",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/final-dining-1/evaluation.json",
+      "currentSha256": "ff1c5f11f27dcdf435eb5fff90b2c3e948a820ce5f6b493422bc550234f8a66c",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/final-dining-1/manifest.json",
+      "currentSha256": "16b683f8d37c70daded8decded15b96fe8373586d656ba3953b9d32890b3ad3a",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/final-dining-1/prompt.md",
+      "currentSha256": "d1877d17fc6dcdfcc6cb9f736c7e384b3b0a8a459a43e9ff3542d9eed71bfd9f",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/final-dining-1/provider-payload.redacted.json",
+      "currentSha256": "980d93561532e5ed0672af065fcd63f61473fbed631162e77b3737590a5dab60",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/final-dining-1/reference-trace.json",
+      "currentSha256": "ac2729db551f2f9fcc93688caca6343117f475f89249f26c5d91551007fe0254",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/final-dining-1/run.json",
+      "currentSha256": "fade2354b29ac9103f62ed734edc4a7b750f08f6f16fca0f64724a0d99fbd848",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/golden-selection.json",
+      "currentSha256": "65daac53a8eaf6fb132d92e563f2aca17b21d19983c7321e9e3cab8c98818539",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-entrance-1/evaluation.json",
+      "currentSha256": "ce2c547d48b9fc70f15cf3f50039f50b07c5948a1d254568963d072e52e9f0fb",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-entrance-1/manifest.json",
+      "currentSha256": "81e899a211d3d0d6261ebba5c6b43b94f1655beaa054ee0d198bae53579a1ca1",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-entrance-1/prompt.md",
+      "currentSha256": "b0bf57ca1eb12649bc8e37ad5fef2e53d385110d1f924953c75ec67098f0e31e",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-entrance-1/provider-payload.redacted.json",
+      "currentSha256": "814e861cb5a3e5f49a45f39bd498e82e003e65f0f3c93a702c5bb76acabd29bf",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-entrance-1/reference-trace.json",
+      "currentSha256": "ac2729db551f2f9fcc93688caca6343117f475f89249f26c5d91551007fe0254",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-entrance-1/run.json",
+      "currentSha256": "2a4cb4a73265e22d02342adb105acc25868cd83921e498cdbc1e5f945e2431ab",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-reception-1/evaluation.json",
+      "currentSha256": "723a9730179be7d489e04b347ec76823a900a13a4d5db70bec4244ec6d7f09d7",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-reception-1/manifest.json",
+      "currentSha256": "29cc1f81ea03eb06bb76dc177de7c49090ee1e7b1ba8c11db91be53be3ef9ffa",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-reception-1/prompt.md",
+      "currentSha256": "6b93a42f6b6b76fe180db99730d63a965a983cf9ec1e5bbb2112a2f3b16810ac",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-reception-1/provider-payload.redacted.json",
+      "currentSha256": "0704eacb351ebd2efbb4d87f4f673a723b58130fa86a263b803d346cb278529e",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-reception-1/reference-trace.json",
+      "currentSha256": "ac2729db551f2f9fcc93688caca6343117f475f89249f26c5d91551007fe0254",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-reception-1/run.json",
+      "currentSha256": "b941b87befe9633acdb60d723fb41c5d52d32968b144db670d6b0298c30a8811",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/golden-selection.json",
+      "currentSha256": "8ebc598e1ba8d8a50db02f424f5bef4cd5439b26fdf4fdd5fbad0e72d4f164f2",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/manifest.json",
+      "currentSha256": "bd9b14fe46a0e5c2db27db33615929985ac6260d4ade1a2f2bb07611d56ebcc6",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/production-unlock.json",
+      "currentSha256": "875b2c78c02652e7a3c3a2f15290b03ea10e772d572528f3c1605ab2a1ca0793",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/yi-ji-liang-fang/final-reception-1/evaluation.json",
+      "currentSha256": "f6a694d49f46049eac9f5213b91ce75d2c32bce1cf0c5d94af3376bfc0499732",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/yi-ji-liang-fang/final-reception-1/manifest.json",
+      "currentSha256": "181aa6ec8d70181ed53ba105f5b90defa8fd45191b6c1fb6f1cb65219b637e66",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/yi-ji-liang-fang/final-reception-1/prompt.md",
+      "currentSha256": "6f5fc75bc47d7c2bac20174a291ea334dd48ce2119535319985dda62e618eeb6",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/yi-ji-liang-fang/final-reception-1/provider-payload.redacted.json",
+      "currentSha256": "ee8e5ea97c8ce85f328ac726fd4bb50181359e06c834cddfc765b033c55e701e",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/yi-ji-liang-fang/final-reception-1/reference-trace.json",
+      "currentSha256": "ac2729db551f2f9fcc93688caca6343117f475f89249f26c5d91551007fe0254",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/yi-ji-liang-fang/final-reception-1/run.json",
+      "currentSha256": "df5567bcb12c470709857bacf652d10a3e51cec5a1ce3540cd552b8ec4d56c47",
+      "unchangedAccordingToGitDiff": true
+    },
+    {
+      "path": "space-generator/quality-baselines/current-verification/space-golden/yi-ji-liang-fang/golden-selection.json",
+      "currentSha256": "4f34b286d9a13de778266e9719612f148f5766a3b19961d1a8c7a3f6b3809846",
+      "unchangedAccordingToGitDiff": true
+    }
+  ],
+  "manifestFrozen": true,
+  "manifestDrift": [
+    {
+      "path": "src/analysis-decisions/analysis-completion-orchestrator.js",
+      "recorded": "9577c3d59c4d8869cb11e563163f49ad9bc324dda05855a32664f891cf1338ae",
+      "current": "012ce13cc950546958f0dcc36e39f4b60c0dd5bb6465a25909ec785e0671d25b",
+      "changedThisRound": false
+    },
+    {
+      "path": "src/generation-runtime/core/space-generation-core.js",
+      "recorded": "56b85e5b2719da1860cf2f4f1ae9dff4ebcf9af34c8460380fd56e8dc67c1c9a",
+      "current": "4dd49955c536f676916cf1a99c0b09ba498f5ed7bc49608e8e8339dbac8cd7d5",
+      "changedThisRound": false
+    },
+    {
+      "path": "src/generation-runtime/generation/compile.js",
+      "recorded": "0d01aea348d2c4853d0e5fcff18c9d3b1e964dae1d642821a91590c39754212a",
+      "current": "490e2ee25a7c295c0f06e9614ac3fd145e86c08c04ff9d050d2b0dc2ae094b50",
+      "changedThisRound": true
+    },
+    {
+      "path": "src/generation-runtime/space/compiler.js",
+      "recorded": "a6614dce173d79c159854c19fe649d71204037a52183d1d0467242afad4cf352",
+      "current": "a33a1a20ca654131b8d769f85a5f44c20f18168c71bd8612c41e5f24e15919e2",
+      "changedThisRound": true
+    },
+    {
+      "path": "src/generation-runtime/space/scene-projection/target-scene-projection.js",
+      "recorded": "78be27d7523ee10561005f553e51e9a90c801791ae52842f575d51ce63267598",
+      "current": "2c28d3fdcfb2c0afedc82bd68c731114240c12416cd1e912bd409799a53dc911",
+      "changedThisRound": true
+    },
+    {
+      "path": "src/generation-runtime/space/semantic/separate-space-semantics.js",
+      "recorded": "9867c041bd560bd968575deb9261f25494603b116e9a7e7ea39c15daeaf799a2",
+      "current": "62a5452fe3849d1bd8dc34b8bec3aa79a480a32a2a5e992db7a6a74ef0855a65",
+      "changedThisRound": false
+    },
+    {
+      "path": "src/generation-runtime/space/semantic/validate-spatial-semantics.js",
+      "recorded": "ab7b12cdbc4cb9a67b71001e0be38bd4abfaa46b960dcd65558916ab49728288",
+      "current": "a377f1400af37b54e173acd918f937143c17433e3e943231b7312065f74beb9d",
+      "changedThisRound": false
+    },
+    {
+      "path": "src/generation-runtime/space/source-adapter.js",
+      "recorded": "b4fe223f16c1cf4e0bde5a83e936e598ed6eb63fb7ccb6fe94fd61af0e649299",
+      "current": "ce1c66389fe5bcebe1b5b4b968748e83791ae3f50f0ca1f2586fe15e6d345a78",
+      "changedThisRound": true
+    },
+    {
+      "path": "src/runtime/image-generation/short-chain-service.js",
+      "recorded": "9df3e2ee086e076d0e5aeb749f442836b3c57c3975377854defe8d05a9c5aec3",
+      "current": "bb215bf40345630a361c487014580b78e8fcb2af8038fc397f396ea217aefb36",
+      "changedThisRound": true
+    },
+    {
+      "path": "src/runtime/pipeline-service.js",
+      "recorded": "f8a4fe7344a6c08ce2567277856203cbb88849a264fa5c277051bc6177fb8147",
+      "current": "59a61098145fea27f0bfe47f13cd5c4e160af75fea5c70a0859804dbebc95808",
+      "changedThisRound": false
+    }
+  ],
+  "unlistedProductionModule": "packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js",
+  "existingOrchestratorDriftRetained": true,
+  "providerCalls": 0,
+  "realProjectWrites": 0,
+  "confirmationOwnerChanged": false,
+  "persistenceSchemaChanged": false,
+  "priorTestsChanged": false,
+  "promptsOrGoldenChanged": false
+}

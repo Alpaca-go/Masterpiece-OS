@@ -1,0 +1,286 @@
+TAP version 13
+# Subtest: E1G semantic expectation block: Only if Logo and staff operating equipment
+ok 1 - E1G semantic expectation block: Only if Logo and staff operating equipment
+  ---
+  duration_ms: 10.9082
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: If Logo and staff operating equipment
+ok 2 - E1G semantic expectation block: If Logo and staff operating equipment
+  ---
+  duration_ms: 1.6833
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: 未确认Logo和员工操作设备
+ok 3 - E1G semantic expectation block: 未确认Logo和员工操作设备
+  ---
+  duration_ms: 3.6389
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: 如果出现Logo和员工操作设备
+ok 4 - E1G semantic expectation block: 如果出现Logo和员工操作设备
+  ---
+  duration_ms: 1.4493
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: 如果有Logo and staff operating equipment
+ok 5 - E1G semantic expectation block: 如果有Logo and staff operating equipment
+  ---
+  duration_ms: 1.6358
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: reception equipment of it
+ok 6 - E1G semantic expectation block: reception equipment of it
+  ---
+  duration_ms: 102.1321
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: equipment near it
+ok 7 - E1G semantic expectation block: equipment near it
+  ---
+  duration_ms: 7.7529
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: reception counter and with it
+ok 8 - E1G semantic expectation block: reception counter and with it
+  ---
+  duration_ms: 8.9519
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: Logo and equipment near it
+ok 9 - E1G semantic expectation block: Logo and equipment near it
+  ---
+  duration_ms: 11.3496
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: staff operating equipment; staff not using equipment
+ok 10 - E1G semantic expectation block: staff operating equipment; staff not using equipment
+  ---
+  duration_ms: 2.3521
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: staff operating equipment；员工尚未操作设备
+ok 11 - E1G semantic expectation block: staff operating equipment；员工尚未操作设备
+  ---
+  duration_ms: 2.9476
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: staff operating equipment and 员工没有使用设备
+ok 12 - E1G semantic expectation block: staff operating equipment and 员工没有使用设备
+  ---
+  duration_ms: 1.767
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: 员工操作设备; staff may be operating equipment
+ok 13 - E1G semantic expectation block: 员工操作设备; staff may be operating equipment
+  ---
+  duration_ms: 1.5224
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: staff operating equipment; if customers arrive
+ok 14 - E1G semantic expectation block: staff operating equipment; if customers arrive
+  ---
+  duration_ms: 1.7035
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: staff operating equipment and enjoying cosmic essence
+ok 15 - E1G semantic expectation block: staff operating equipment and enjoying cosmic essence
+  ---
+  duration_ms: 7.8908
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: 员工使用设备并象征品牌未来
+ok 16 - E1G semantic expectation block: 员工使用设备并象征品牌未来
+  ---
+  duration_ms: 10.7833
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: Logo and staff operating equipment; staff not using equipment
+ok 17 - E1G semantic expectation block: Logo and staff operating equipment; staff not using equipment
+  ---
+  duration_ms: 1.4755
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: staff operating equipment if the store opens
+ok 18 - E1G semantic expectation block: staff operating equipment if the store opens
+  ---
+  duration_ms: 1.3419
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: 设备旁的员工 not operating equipment
+ok 19 - E1G semantic expectation block: 设备旁的员工 not operating equipment
+  ---
+  duration_ms: 1.8449
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: reception counter; staff do not serve customers
+ok 20 - E1G semantic expectation block: reception counter; staff do not serve customers
+  ---
+  duration_ms: 7.6179
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: reception counter and equipment
+ok 21 - E1G semantic expectation block: reception counter and equipment
+  ---
+  duration_ms: 7.666
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation block: Reception counter with a usable staff approach and not usable by visitors
+ok 22 - E1G semantic expectation block: Reception counter with a usable staff approach and not usable by visitors
+  ---
+  duration_ms: 1.3886
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation pass: staff operating equipment and serving customers
+ok 23 - E1G semantic expectation pass: staff operating equipment and serving customers
+  ---
+  duration_ms: 3.1816
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation pass: 顾客在入口查看菜单
+ok 24 - E1G semantic expectation pass: 顾客在入口查看菜单
+  ---
+  duration_ms: 16.8522
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation pass: 员工在柜台为顾客办理入住
+ok 25 - E1G semantic expectation pass: 员工在柜台为顾客办理入住
+  ---
+  duration_ms: 2.726
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation pass: 工作人员使用收银机收款
+ok 26 - E1G semantic expectation pass: 工作人员使用收银机收款
+  ---
+  duration_ms: 2.6419
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation pass: Customers paying at the checkout counter
+ok 27 - E1G semantic expectation pass: Customers paying at the checkout counter
+  ---
+  duration_ms: 2.9209
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation pass: 餐桌位于就餐区
+ok 28 - E1G semantic expectation pass: 餐桌位于就餐区
+  ---
+  duration_ms: 5.9437
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation pass: 取餐台位于点餐区旁
+ok 29 - E1G semantic expectation pass: 取餐台位于点餐区旁
+  ---
+  duration_ms: 4.0034
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation pass: Menu at the service counter
+ok 30 - E1G semantic expectation pass: Menu at the service counter
+  ---
+  duration_ms: 2.7629
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation pass: staff operating equipment；员工使用设备
+ok 31 - E1G semantic expectation pass: staff operating equipment；员工使用设备
+  ---
+  duration_ms: 5.298
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation pass: staff serving customers; guests checking in
+ok 32 - E1G semantic expectation pass: staff serving customers; guests checking in
+  ---
+  duration_ms: 4.667
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation pass: Reception counter with a usable staff and visitor approach
+ok 33 - E1G semantic expectation pass: Reception counter with a usable staff and visitor approach
+  ---
+  duration_ms: 3.6944
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation pass: 入口处的菜单
+ok 34 - E1G semantic expectation pass: 入口处的菜单
+  ---
+  duration_ms: 2.6523
+  type: 'test'
+  ...
+# Subtest: E1G semantic expectation pass: staff operating equipment; lotus represents happiness
+ok 35 - E1G semantic expectation pass: staff operating equipment; lotus represents happiness
+  ---
+  duration_ms: 8.3882
+  type: 'test'
+  ...
+# Subtest: E1G completion must fail closed: mustBeVisible: Only if Logo and staff operating equipment
+ok 36 - E1G completion must fail closed: mustBeVisible: Only if Logo and staff operating equipment
+  ---
+  duration_ms: 27.1753
+  type: 'test'
+  ...
+# Subtest: E1G completion must fail closed: mustBeVisible: 未确认Logo和员工操作设备
+ok 37 - E1G completion must fail closed: mustBeVisible: 未确认Logo和员工操作设备
+  ---
+  duration_ms: 16.7192
+  type: 'test'
+  ...
+# Subtest: E1G completion must fail closed: mustBeVisible: equipment near it
+ok 38 - E1G completion must fail closed: mustBeVisible: equipment near it
+  ---
+  duration_ms: 18.4638
+  type: 'test'
+  ...
+# Subtest: E1G completion must fail closed: functionalRelationships: staff operating equipment and enjoying cosmic essence
+ok 39 - E1G completion must fail closed: functionalRelationships: staff operating equipment and enjoying cosmic essence
+  ---
+  duration_ms: 17.0365
+  type: 'test'
+  ...
+# Subtest: E1G completion must fail closed: functionalNetwork: 员工尚未操作设备
+ok 40 - E1G completion must fail closed: functionalNetwork: 员工尚未操作设备
+  ---
+  duration_ms: 15.1182
+  type: 'test'
+  ...
+# Subtest: E1G completion must fail closed: sceneProgram: If staff operating equipment
+ok 41 - E1G completion must fail closed: sceneProgram: If staff operating equipment
+  ---
+  duration_ms: 15.7301
+  type: 'test'
+  ...
+# Subtest: E1G source status and user confirmation remain distinct from semantic affirmation
+ok 42 - E1G source status and user confirmation remain distinct from semantic affirmation
+  ---
+  duration_ms: 15.4157
+  type: 'test'
+  ...
+# Subtest: E1G unresolved evidence survives even when sufficiency has no missing fields
+ok 43 - E1G unresolved evidence survives even when sufficiency has no missing fields
+  ---
+  duration_ms: 14.6998
+  type: 'test'
+  ...
+# Subtest: E1G compatibility characterization: no deterministic callback permits model semantic replacement
+ok 44 - E1G compatibility characterization: no deterministic callback permits model semantic replacement
+  ---
+  duration_ms: 5.5727
+  type: 'test'
+  ...
+# Subtest: E1G dispatch distinction A-no-third-attempt
+ok 45 - E1G dispatch distinction A-no-third-attempt
+  ---
+  duration_ms: 217.7345
+  type: 'test'
+  ...
+# Subtest: E1G dispatch distinction B-attempt-blocked
+ok 46 - E1G dispatch distinction B-attempt-blocked
+  ---
+  duration_ms: 60.1658
+  type: 'test'
+  ...
+1..46
+# tests 46
+# suites 0
+# pass 46
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1081.993

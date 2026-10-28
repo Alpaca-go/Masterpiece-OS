@@ -1,0 +1,616 @@
+TAP version 13
+# Subtest: field contract functionalNetwork / node
+ok 1 - field contract functionalNetwork / node
+  ---
+  duration_ms: 106.6386
+  type: 'test'
+  ...
+# Subtest: field contract functionalNetwork / activity
+ok 2 - field contract functionalNetwork / activity
+  ---
+  duration_ms: 20.4962
+  type: 'test'
+  ...
+# Subtest: field contract functionalNetwork / relation
+ok 3 - field contract functionalNetwork / relation
+  ---
+  duration_ms: 94.7475
+  type: 'test'
+  ...
+# Subtest: field contract functionalNetwork / constraint
+ok 4 - field contract functionalNetwork / constraint
+  ---
+  duration_ms: 1.2697
+  type: 'test'
+  ...
+# Subtest: field contract functionalNetwork / visibility_request
+ok 5 - field contract functionalNetwork / visibility_request
+  ---
+  duration_ms: 2.42
+  type: 'test'
+  ...
+# Subtest: field contract functionalRelationships / node
+ok 6 - field contract functionalRelationships / node
+  ---
+  duration_ms: 2.8717
+  type: 'test'
+  ...
+# Subtest: field contract functionalRelationships / activity
+ok 7 - field contract functionalRelationships / activity
+  ---
+  duration_ms: 1.9414
+  type: 'test'
+  ...
+# Subtest: field contract functionalRelationships / relation
+ok 8 - field contract functionalRelationships / relation
+  ---
+  duration_ms: 6.5993
+  type: 'test'
+  ...
+# Subtest: field contract functionalRelationships / constraint
+ok 9 - field contract functionalRelationships / constraint
+  ---
+  duration_ms: 1.2976
+  type: 'test'
+  ...
+# Subtest: field contract functionalRelationships / visibility_request
+ok 10 - field contract functionalRelationships / visibility_request
+  ---
+  duration_ms: 1.4898
+  type: 'test'
+  ...
+# Subtest: field contract mustBeVisible / node
+ok 11 - field contract mustBeVisible / node
+  ---
+  duration_ms: 3.4931
+  type: 'test'
+  ...
+# Subtest: field contract mustBeVisible / activity
+ok 12 - field contract mustBeVisible / activity
+  ---
+  duration_ms: 3.1891
+  type: 'test'
+  ...
+# Subtest: field contract mustBeVisible / relation
+ok 13 - field contract mustBeVisible / relation
+  ---
+  duration_ms: 6.1213
+  type: 'test'
+  ...
+# Subtest: field contract mustBeVisible / constraint
+ok 14 - field contract mustBeVisible / constraint
+  ---
+  duration_ms: 0.8925
+  type: 'test'
+  ...
+# Subtest: field contract mustBeVisible / visibility_request
+ok 15 - field contract mustBeVisible / visibility_request
+  ---
+  duration_ms: 1.1957
+  type: 'test'
+  ...
+# Subtest: field contract operationConstraints / node
+ok 16 - field contract operationConstraints / node
+  ---
+  duration_ms: 1.8464
+  type: 'test'
+  ...
+# Subtest: field contract operationConstraints / activity
+ok 17 - field contract operationConstraints / activity
+  ---
+  duration_ms: 1.313
+  type: 'test'
+  ...
+# Subtest: field contract operationConstraints / relation
+ok 18 - field contract operationConstraints / relation
+  ---
+  duration_ms: 5.5114
+  type: 'test'
+  ...
+# Subtest: field contract operationConstraints / constraint
+ok 19 - field contract operationConstraints / constraint
+  ---
+  duration_ms: 0.9391
+  type: 'test'
+  ...
+# Subtest: field contract operationConstraints / visibility_request
+ok 20 - field contract operationConstraints / visibility_request
+  ---
+  duration_ms: 1.0492
+  type: 'test'
+  ...
+# Subtest: field contract requiredSpatialElements / node
+ok 21 - field contract requiredSpatialElements / node
+  ---
+  duration_ms: 2.1733
+  type: 'test'
+  ...
+# Subtest: field contract requiredSpatialElements / activity
+ok 22 - field contract requiredSpatialElements / activity
+  ---
+  duration_ms: 1.5118
+  type: 'test'
+  ...
+# Subtest: field contract requiredSpatialElements / relation
+ok 23 - field contract requiredSpatialElements / relation
+  ---
+  duration_ms: 5.6295
+  type: 'test'
+  ...
+# Subtest: field contract requiredSpatialElements / constraint
+ok 24 - field contract requiredSpatialElements / constraint
+  ---
+  duration_ms: 0.844
+  type: 'test'
+  ...
+# Subtest: field contract requiredSpatialElements / visibility_request
+ok 25 - field contract requiredSpatialElements / visibility_request
+  ---
+  duration_ms: 0.9605
+  type: 'test'
+  ...
+# Subtest: field contract sceneProgram / node
+ok 26 - field contract sceneProgram / node
+  ---
+  duration_ms: 1.6496
+  type: 'test'
+  ...
+# Subtest: field contract sceneProgram / activity
+ok 27 - field contract sceneProgram / activity
+  ---
+  duration_ms: 1.1152
+  type: 'test'
+  ...
+# Subtest: field contract sceneProgram / relation
+ok 28 - field contract sceneProgram / relation
+  ---
+  duration_ms: 5.1013
+  type: 'test'
+  ...
+# Subtest: field contract sceneProgram / constraint
+ok 29 - field contract sceneProgram / constraint
+  ---
+  duration_ms: 0.7915
+  type: 'test'
+  ...
+# Subtest: field contract sceneProgram / visibility_request
+ok 30 - field contract sceneProgram / visibility_request
+  ---
+  duration_ms: 0.9104
+  type: 'test'
+  ...
+# Subtest: field contract scope functionalNetwork: 员工没有操作设备
+ok 31 - field contract scope functionalNetwork: 员工没有操作设备
+  ---
+  duration_ms: 1.4075
+  type: 'test'
+  ...
+# Subtest: field contract scope functionalNetwork: Only if Logo and staff operating equipment
+ok 32 - field contract scope functionalNetwork: Only if Logo and staff operating equipment
+  ---
+  duration_ms: 1.1038
+  type: 'test'
+  ...
+# Subtest: field contract scope functionalNetwork: 未确认Logo和员工操作设备
+ok 33 - field contract scope functionalNetwork: 未确认Logo和员工操作设备
+  ---
+  duration_ms: 0.9633
+  type: 'test'
+  ...
+# Subtest: field contract scope functionalNetwork: 如果入口连接厨房；员工操作设备
+ok 34 - field contract scope functionalNetwork: 如果入口连接厨房；员工操作设备
+  ---
+  duration_ms: 0.8458
+  type: 'test'
+  ...
+# Subtest: field contract scope functionalNetwork: staff operating equipment; unknown operational tail
+ok 35 - field contract scope functionalNetwork: staff operating equipment; unknown operational tail
+  ---
+  duration_ms: 0.9847
+  type: 'test'
+  ...
+# Subtest: field contract scope functionalNetwork: staff operating equipment and enjoying cosmic essence
+ok 36 - field contract scope functionalNetwork: staff operating equipment and enjoying cosmic essence
+  ---
+  duration_ms: 32.3621
+  type: 'test'
+  ...
+# Subtest: field contract scope functionalRelationships: 员工没有操作设备
+ok 37 - field contract scope functionalRelationships: 员工没有操作设备
+  ---
+  duration_ms: 0.7949
+  type: 'test'
+  ...
+# Subtest: field contract scope functionalRelationships: Only if Logo and staff operating equipment
+ok 38 - field contract scope functionalRelationships: Only if Logo and staff operating equipment
+  ---
+  duration_ms: 0.7816
+  type: 'test'
+  ...
+# Subtest: field contract scope functionalRelationships: 未确认Logo和员工操作设备
+ok 39 - field contract scope functionalRelationships: 未确认Logo和员工操作设备
+  ---
+  duration_ms: 0.741
+  type: 'test'
+  ...
+# Subtest: field contract scope functionalRelationships: 如果入口连接厨房；员工操作设备
+ok 40 - field contract scope functionalRelationships: 如果入口连接厨房；员工操作设备
+  ---
+  duration_ms: 0.7647
+  type: 'test'
+  ...
+# Subtest: field contract scope functionalRelationships: staff operating equipment; unknown operational tail
+ok 41 - field contract scope functionalRelationships: staff operating equipment; unknown operational tail
+  ---
+  duration_ms: 0.7697
+  type: 'test'
+  ...
+# Subtest: field contract scope functionalRelationships: staff operating equipment and enjoying cosmic essence
+ok 42 - field contract scope functionalRelationships: staff operating equipment and enjoying cosmic essence
+  ---
+  duration_ms: 4.7406
+  type: 'test'
+  ...
+# Subtest: field contract scope mustBeVisible: 员工没有操作设备
+ok 43 - field contract scope mustBeVisible: 员工没有操作设备
+  ---
+  duration_ms: 0.8001
+  type: 'test'
+  ...
+# Subtest: field contract scope mustBeVisible: Only if Logo and staff operating equipment
+ok 44 - field contract scope mustBeVisible: Only if Logo and staff operating equipment
+  ---
+  duration_ms: 0.7824
+  type: 'test'
+  ...
+# Subtest: field contract scope mustBeVisible: 未确认Logo和员工操作设备
+ok 45 - field contract scope mustBeVisible: 未确认Logo和员工操作设备
+  ---
+  duration_ms: 0.7405
+  type: 'test'
+  ...
+# Subtest: field contract scope mustBeVisible: 如果入口连接厨房；员工操作设备
+ok 46 - field contract scope mustBeVisible: 如果入口连接厨房；员工操作设备
+  ---
+  duration_ms: 0.7591
+  type: 'test'
+  ...
+# Subtest: field contract scope mustBeVisible: staff operating equipment; unknown operational tail
+ok 47 - field contract scope mustBeVisible: staff operating equipment; unknown operational tail
+  ---
+  duration_ms: 2.2978
+  type: 'test'
+  ...
+# Subtest: field contract scope mustBeVisible: staff operating equipment and enjoying cosmic essence
+ok 48 - field contract scope mustBeVisible: staff operating equipment and enjoying cosmic essence
+  ---
+  duration_ms: 4.9998
+  type: 'test'
+  ...
+# Subtest: field contract scope operationConstraints: 员工没有操作设备
+ok 49 - field contract scope operationConstraints: 员工没有操作设备
+  ---
+  duration_ms: 0.7509
+  type: 'test'
+  ...
+# Subtest: field contract scope operationConstraints: Only if Logo and staff operating equipment
+ok 50 - field contract scope operationConstraints: Only if Logo and staff operating equipment
+  ---
+  duration_ms: 0.8051
+  type: 'test'
+  ...
+# Subtest: field contract scope operationConstraints: 未确认Logo和员工操作设备
+ok 51 - field contract scope operationConstraints: 未确认Logo和员工操作设备
+  ---
+  duration_ms: 0.7912
+  type: 'test'
+  ...
+# Subtest: field contract scope operationConstraints: 如果入口连接厨房；员工操作设备
+ok 52 - field contract scope operationConstraints: 如果入口连接厨房；员工操作设备
+  ---
+  duration_ms: 0.744
+  type: 'test'
+  ...
+# Subtest: field contract scope operationConstraints: staff operating equipment; unknown operational tail
+ok 53 - field contract scope operationConstraints: staff operating equipment; unknown operational tail
+  ---
+  duration_ms: 0.7677
+  type: 'test'
+  ...
+# Subtest: field contract scope operationConstraints: staff operating equipment and enjoying cosmic essence
+ok 54 - field contract scope operationConstraints: staff operating equipment and enjoying cosmic essence
+  ---
+  duration_ms: 4.7938
+  type: 'test'
+  ...
+# Subtest: field contract scope requiredSpatialElements: 员工没有操作设备
+ok 55 - field contract scope requiredSpatialElements: 员工没有操作设备
+  ---
+  duration_ms: 0.7477
+  type: 'test'
+  ...
+# Subtest: field contract scope requiredSpatialElements: Only if Logo and staff operating equipment
+ok 56 - field contract scope requiredSpatialElements: Only if Logo and staff operating equipment
+  ---
+  duration_ms: 0.768
+  type: 'test'
+  ...
+# Subtest: field contract scope requiredSpatialElements: 未确认Logo和员工操作设备
+ok 57 - field contract scope requiredSpatialElements: 未确认Logo和员工操作设备
+  ---
+  duration_ms: 0.7284
+  type: 'test'
+  ...
+# Subtest: field contract scope requiredSpatialElements: 如果入口连接厨房；员工操作设备
+ok 58 - field contract scope requiredSpatialElements: 如果入口连接厨房；员工操作设备
+  ---
+  duration_ms: 1.0632
+  type: 'test'
+  ...
+# Subtest: field contract scope requiredSpatialElements: staff operating equipment; unknown operational tail
+ok 59 - field contract scope requiredSpatialElements: staff operating equipment; unknown operational tail
+  ---
+  duration_ms: 0.7782
+  type: 'test'
+  ...
+# Subtest: field contract scope requiredSpatialElements: staff operating equipment and enjoying cosmic essence
+ok 60 - field contract scope requiredSpatialElements: staff operating equipment and enjoying cosmic essence
+  ---
+  duration_ms: 4.6421
+  type: 'test'
+  ...
+# Subtest: field contract scope sceneProgram: 员工没有操作设备
+ok 61 - field contract scope sceneProgram: 员工没有操作设备
+  ---
+  duration_ms: 0.7807
+  type: 'test'
+  ...
+# Subtest: field contract scope sceneProgram: Only if Logo and staff operating equipment
+ok 62 - field contract scope sceneProgram: Only if Logo and staff operating equipment
+  ---
+  duration_ms: 0.7692
+  type: 'test'
+  ...
+# Subtest: field contract scope sceneProgram: 未确认Logo和员工操作设备
+ok 63 - field contract scope sceneProgram: 未确认Logo和员工操作设备
+  ---
+  duration_ms: 0.7314
+  type: 'test'
+  ...
+# Subtest: field contract scope sceneProgram: 如果入口连接厨房；员工操作设备
+ok 64 - field contract scope sceneProgram: 如果入口连接厨房；员工操作设备
+  ---
+  duration_ms: 0.7876
+  type: 'test'
+  ...
+# Subtest: field contract scope sceneProgram: staff operating equipment; unknown operational tail
+ok 65 - field contract scope sceneProgram: staff operating equipment; unknown operational tail
+  ---
+  duration_ms: 0.7859
+  type: 'test'
+  ...
+# Subtest: field contract scope sceneProgram: staff operating equipment and enjoying cosmic essence
+ok 66 - field contract scope sceneProgram: staff operating equipment and enjoying cosmic essence
+  ---
+  duration_ms: 4.5742
+  type: 'test'
+  ...
+# Subtest: field contract complete relation or prescription: 入口不得暴露厨房
+ok 67 - field contract complete relation or prescription: 入口不得暴露厨房
+  ---
+  duration_ms: 3.298
+  type: 'test'
+  ...
+# Subtest: field contract complete relation or prescription: treatment activity and private room interiors remain off frame
+ok 68 - field contract complete relation or prescription: treatment activity and private room interiors remain off frame
+  ---
+  duration_ms: 3.0413
+  type: 'test'
+  ...
+# Subtest: field contract complete relation or prescription: preserve visitor privacy
+ok 69 - field contract complete relation or prescription: preserve visitor privacy
+  ---
+  duration_ms: 3.2377
+  type: 'test'
+  ...
+# Subtest: field contract complete relation or prescription: takeaway handoff keeps a clear route
+ok 70 - field contract complete relation or prescription: takeaway handoff keeps a clear route
+  ---
+  duration_ms: 3.1256
+  type: 'test'
+  ...
+# Subtest: field contract complete relation or prescription: consultation is primary
+ok 71 - field contract complete relation or prescription: consultation is primary
+  ---
+  duration_ms: 10.1096
+  type: 'test'
+  ...
+# Subtest: field contract complete relation or prescription: seating supports 1-to-1 / 1-to-2
+ok 72 - field contract complete relation or prescription: seating supports 1-to-1 / 1-to-2
+  ---
+  duration_ms: 5.8212
+  type: 'test'
+  ...
+# Subtest: field contract complete relation or prescription: Reception: a usable reception counter connects to waiting area seating through clear visitor circulation.
+ok 73 - field contract complete relation or prescription: Reception: a usable reception counter connects to waiting area seating through clear visitor circulation.
+  ---
+  duration_ms: 5.5208
+  type: 'test'
+  ...
+# Subtest: field contract complete relation or prescription: Reception and waiting share readable circulation
+ok 74 - field contract complete relation or prescription: Reception and waiting share readable circulation
+  ---
+  duration_ms: 3.3061
+  type: 'test'
+  ...
+# Subtest: field contract complete relation or prescription: Kitchen preparation connects to service counter; dining tables remain accessible; takeaway handoff keeps a clear route
+ok 75 - field contract complete relation or prescription: Kitchen preparation connects to service counter; dining tables remain accessible; takeaway handoff keeps a clear route
+  ---
+  duration_ms: 7.0207
+  type: 'test'
+  ...
+# Subtest: field contract complete relation or prescription: 厨师在厨房制作食品并透过临街橱窗玻璃可见
+ok 76 - field contract complete relation or prescription: 厨师在厨房制作食品并透过临街橱窗玻璃可见
+  ---
+  duration_ms: 3.8474
+  type: 'test'
+  ...
+# Subtest: field contract named node without invented action: 候客区
+ok 77 - field contract named node without invented action: 候客区
+  ---
+  duration_ms: 3.9867
+  type: 'test'
+  ...
+# Subtest: field contract named node without invented action: 半开放艺术停留与过渡区
+ok 78 - field contract named node without invented action: 半开放艺术停留与过渡区
+  ---
+  duration_ms: 4.4224
+  type: 'test'
+  ...
+# Subtest: field contract named node without invented action: Flowing visitor circulation
+ok 79 - field contract named node without invented action: Flowing visitor circulation
+  ---
+  duration_ms: 4.1928
+  type: 'test'
+  ...
+# Subtest: field contract named node without invented action: 接待区
+ok 80 - field contract named node without invented action: 接待区
+  ---
+  duration_ms: 4.3201
+  type: 'test'
+  ...
+# Subtest: field contract named node without invented action: 比较工作台
+ok 81 - field contract named node without invented action: 比较工作台
+  ---
+  duration_ms: 4.2651
+  type: 'test'
+  ...
+# Subtest: field contract unresolved fragment stays closed: equipment near it
+ok 82 - field contract unresolved fragment stays closed: equipment near it
+  ---
+  duration_ms: 18.547
+  type: 'test'
+  ...
+# Subtest: field contract unresolved fragment stays closed: reception counter near it
+ok 83 - field contract unresolved fragment stays closed: reception counter near it
+  ---
+  duration_ms: 17.7112
+  type: 'test'
+  ...
+# Subtest: field contract unresolved fragment stays closed: equipment behind this
+ok 84 - field contract unresolved fragment stays closed: equipment behind this
+  ---
+  duration_ms: 21.1421
+  type: 'test'
+  ...
+# Subtest: field contract unresolved fragment stays closed: equipment beside that
+ok 85 - field contract unresolved fragment stays closed: equipment beside that
+  ---
+  duration_ms: 19.3016
+  type: 'test'
+  ...
+# Subtest: field contract unresolved fragment stays closed: reception counter and with it
+ok 86 - field contract unresolved fragment stays closed: reception counter and with it
+  ---
+  duration_ms: 18.9527
+  type: 'test'
+  ...
+# Subtest: field contract unresolved fragment stays closed: 入口 → 无法确定的节点
+ok 87 - field contract unresolved fragment stays closed: 入口 → 无法确定的节点
+  ---
+  duration_ms: 19.3172
+  type: 'test'
+  ...
+# Subtest: field contract unresolved fragment stays closed: 点餐制作取餐就餐的完整关系
+ok 88 - field contract unresolved fragment stays closed: 点餐制作取餐就餐的完整关系
+  ---
+  duration_ms: 18.8115
+  type: 'test'
+  ...
+# Subtest: field contract unresolved fragment stays closed: whole project operating network
+ok 89 - field contract unresolved fragment stays closed: whole project operating network
+  ---
+  duration_ms: 19.8681
+  type: 'test'
+  ...
+# Subtest: field contract unresolved fragment stays closed: 形成高效服务动线; 支持多场景消费
+ok 90 - field contract unresolved fragment stays closed: 形成高效服务动线; 支持多场景消费
+  ---
+  duration_ms: 45.93
+  type: 'test'
+  ...
+# Subtest: field contract unresolved fragment stays closed: 位置与设置方式待确认
+ok 91 - field contract unresolved fragment stays closed: 位置与设置方式待确认
+  ---
+  duration_ms: 4.5909
+  type: 'test'
+  ...
+# Subtest: field contract unresolved fragment stays closed: 入口不得
+ok 92 - field contract unresolved fragment stays closed: 入口不得
+  ---
+  duration_ms: 19.2327
+  type: 'test'
+  ...
+# Subtest: field contract unresolved fragment stays closed: Storefront access must not expose
+ok 93 - field contract unresolved fragment stays closed: Storefront access must not expose
+  ---
+  duration_ms: 7.9083
+  type: 'test'
+  ...
+# Subtest: field contract unresolved fragment stays closed: 入口不得暴露厨房 and enjoying cosmic essence
+ok 94 - field contract unresolved fragment stays closed: 入口不得暴露厨房 and enjoying cosmic essence
+  ---
+  duration_ms: 16.1482
+  type: 'test'
+  ...
+# Subtest: field contract unresolved fragment stays closed: takeaway handoff keeps
+ok 95 - field contract unresolved fragment stays closed: takeaway handoff keeps
+  ---
+  duration_ms: 15.38
+  type: 'test'
+  ...
+# Subtest: field contract unresolved fragment stays closed: 展示界面连接，服务通道位于它旁边
+ok 96 - field contract unresolved fragment stays closed: 展示界面连接，服务通道位于它旁边
+  ---
+  duration_ms: 38.4786
+  type: 'test'
+  ...
+# Subtest: field contract source clauses retain exact spans and parent scope without confirmation
+ok 97 - field contract source clauses retain exact spans and parent scope without confirmation
+  ---
+  duration_ms: 1.0211
+  type: 'test'
+  ...
+# Subtest: field contract brand separation keeps original index, ranges and source evidence
+ok 98 - field contract brand separation keeps original index, ranges and source evidence
+  ---
+  duration_ms: 6.4333
+  type: 'test'
+  ...
+# Subtest: field contract separator and validator agree for illegal field shapes
+ok 99 - field contract separator and validator agree for illegal field shapes
+  ---
+  duration_ms: 11.3602
+  type: 'test'
+  ...
+# Subtest: field contract six-field source state cannot become confirmed on completion
+ok 100 - field contract six-field source state cannot become confirmed on completion
+  ---
+  duration_ms: 23.9314
+  type: 'test'
+  ...
+# Subtest: field contract observations require no network
+ok 101 - field contract observations require no network
+  ---
+  duration_ms: 0.1112
+  type: 'test'
+  ...
+1..101
+# tests 101
+# suites 0
+# pass 101
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1184.7088

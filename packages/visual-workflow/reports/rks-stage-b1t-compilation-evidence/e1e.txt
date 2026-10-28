@@ -1,0 +1,17 @@
+{
+  "cases": 19,
+  "requirementsFailed": 0,
+  "unsafeCompletion": {
+    "status": "failed",
+    "expected": "failed",
+    "requirementMet": true,
+    "events": [
+      "deterministic"
+    ],
+    "modelCalls": 0,
+    "mustBeVisible": [
+      "Logo and equipment conveying happiness"
+    ],
+    "inputUnchanged": true
+  }
+}

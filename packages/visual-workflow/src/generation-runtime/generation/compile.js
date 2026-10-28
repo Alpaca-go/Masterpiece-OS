@@ -13,6 +13,7 @@ import {
 } from "../space/index.js";
 import crypto from "node:crypto";
 import { applyUserConfirmedVisualDecision } from "./user-confirmed-visual-decision.js";
+import { consumeCapturedSpaceEvidence, bindCapturedSpaceEvidence } from '../space/compilation-evidence.js';
 import { ART_DIRECTION_SOURCE, ART_DIRECTION_ROLE, digest, assertArtDirectionModel } from '../../art-direction-contract.js';
 const SPACE_COMPILER_MODES = Object.freeze({
   R8_6_GOLDEN: "r8_6_golden",
@@ -26,6 +27,11 @@ function isProductionSpaceMode(mode) {
   return mode === SPACE_COMPILER_MODES.R8_6_GOLDEN || mode === SPACE_COMPILER_MODES.PHASE9B_QUALITY;
 }
 function compileShortChainGeneration(input) {
+  if (input.evidencePurpose === 'offline_review') {
+    const taskContract=createShortChainTaskContract(input.task,{now:input.now});
+    return compileSpacePrompt({packet:input.projectContext?.visualDecisionPacket,taskContract,
+      projectContext:input.projectContext,sourceEvidence:input.offlineEvidence,evidencePurpose:'offline_review'});
+  }
   const started = performance.now();
   const adapter = input.adapter || createSeedreamShortChainAdapter({ model: input.model });
   const packetLogoAssetIds = input.projectContext?.visualDecisionPacket?.lockedAssets?.filter((item) => item?.type === "logo").map((item) => item.assetId) || [];
@@ -45,6 +51,11 @@ function compileShortChainGeneration(input) {
     logoUsageMode,
     referenceAssetIds
   }, { now: input.now });
+  const capturedEvidence = taskContract.deliverableFamily === 'space'
+    ? consumeCapturedSpaceEvidence(input.captureEvidence, {
+      originalPacket:input.projectContext?.visualDecisionPacket,
+      confirmation:input.userConfirmedVisualDecision,taskContract
+    }) : null;
   let continuation = taskContract.continuation;
   if (taskContract.generationBasis === "continuation" && continuation && (!continuation.targetFunctionalProgram || !continuation.continuationBoundary)) {
     const enriched = createSpaceContinuationContract({
@@ -72,6 +83,7 @@ function compileShortChainGeneration(input) {
   if (spaceMode !== null && isProductionSpaceMode(spaceMode)) {
     compiledPrompt = compileSpaceGeneration({
       input,
+      capturedEvidence,
       taskContract,
       adapter,
       referenceAssetIds,
@@ -104,7 +116,7 @@ function compileShortChainGeneration(input) {
   compiledPrompt.trace.compileDurationMs = Number((performance.now() - started).toFixed(3));
   return { taskContract, route, compiledPrompt, payload };
 }
-function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetIds, preferredLogoAssetId, started, compilerMode = SPACE_COMPILER_MODES.R8_6_GOLDEN, enforceSpatialSemantics = false }) {
+function compileSpaceGeneration({ input, capturedEvidence, taskContract, adapter, referenceAssetIds, preferredLogoAssetId, started, compilerMode = SPACE_COMPILER_MODES.R8_6_GOLDEN, enforceSpatialSemantics = false }) {
   const originalPacket = input.projectContext?.visualDecisionPacket;
   if (!originalPacket) {
     throw Object.assign(
@@ -117,6 +129,7 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
     originalPacket, input.userConfirmedVisualDecision, taskContract.projectId, taskContract.deliverableFamily
   );
   const packet = confirmedDecision.packet;
+  const sourceEvidence = bindCapturedSpaceEvidence(capturedEvidence,packet,taskContract);
   const artDirection = taskContract.generationBasis === 'art_direction_reference';
   if (artDirection) {
     assertArtDirectionModel(input.model);
@@ -124,6 +137,7 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
   }
   const result = compileSpacePrompt({
     packet,
+    sourceEvidence,
     taskContract,
     projectContext: input.projectContext,
     brandKey: input.brandKey || null,
@@ -216,6 +230,7 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
       phase9b: true,
       anchorIds: result.trace.anchorIds,
       decisionTrace: result.layers.decisionTrace,
+      compilationEvidence:result.trace.compilationEvidence,
       userConfirmedVisualDecision: confirmedDecision.confirmation,
       // R9 §20 trace schema: every space run records a structured
       // spaceGeneration block for image-level regression tracing.

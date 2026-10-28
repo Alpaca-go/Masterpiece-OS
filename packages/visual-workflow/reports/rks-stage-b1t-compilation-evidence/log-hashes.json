@@ -1,0 +1,80 @@
+[
+  {
+    "file": "e1e.txt",
+    "rawSha256": "673e475929715d5e86292dc44ff07f89b912238104c7a28a4bef1f7d08625898",
+    "sha256": "673e475929715d5e86292dc44ff07f89b912238104c7a28a4bef1f7d08625898",
+    "normalization": "CRLF to LF only"
+  },
+  {
+    "file": "e1f.txt",
+    "rawSha256": "dce9376ac6fae235b4130cc4360abf879f801ae16d25f5f7aab01c008b047fd0",
+    "sha256": "c197cb40b1ce7386f5ae45f3cf706e24628e77033c3e7fca42fd07c5829f69b3",
+    "normalization": "CRLF to LF; trailing horizontal whitespace removed"
+  },
+  {
+    "file": "e1g.txt",
+    "rawSha256": "31d4b49f77071db1dde8321f7bee1c812022b6087c45c0cbdb46a66d76417d97",
+    "sha256": "31d4b49f77071db1dde8321f7bee1c812022b6087c45c0cbdb46a66d76417d97",
+    "normalization": "CRLF to LF only"
+  },
+  {
+    "file": "repo-verify-initial.txt",
+    "rawSha256": "73d5221427219fcc16a299507c8b3c2f2ee7738f94e57205c8c29663b7808d32",
+    "sha256": "fa65826e742b205375fe9a569fc375c1ce1d5fdf79d9b3efa53fb6c164a5ee23",
+    "normalization": "CRLF to LF only"
+  },
+  {
+    "file": "repo-verify.txt",
+    "rawSha256": "3133a6ddd90217cf00226a9d7a2c352f05265165fe03e9285c79bf42a7bff394",
+    "sha256": "3133a6ddd90217cf00226a9d7a2c352f05265165fe03e9285c79bf42a7bff394",
+    "normalization": "CRLF to LF only"
+  },
+  {
+    "file": "stage-a-field.txt",
+    "rawSha256": "55389f085542542d02f4db41e4a7cb8cfe3351796e51475214b9aa4223cb8fe3",
+    "sha256": "55389f085542542d02f4db41e4a7cb8cfe3351796e51475214b9aa4223cb8fe3",
+    "normalization": "CRLF to LF only"
+  },
+  {
+    "file": "stage-a-scope.txt",
+    "rawSha256": "85a8049a30d081eb5746f75b8653502dea8151e5328b0cfd63c48232d1b1c631",
+    "sha256": "85a8049a30d081eb5746f75b8653502dea8151e5328b0cfd63c48232d1b1c631",
+    "normalization": "CRLF to LF only"
+  },
+  {
+    "file": "stage-a-visible.txt",
+    "rawSha256": "110fcbeccfc3471dde34abf855a9d656741566f86a59d874843f12f80ebf0749",
+    "sha256": "110fcbeccfc3471dde34abf855a9d656741566f86a59d874843f12f80ebf0749",
+    "normalization": "CRLF to LF only"
+  },
+  {
+    "file": "step-1-tests.txt",
+    "rawSha256": "e177062eefa8ba309b60538abe1447b04542ac8fd26105ea4e190e013b8f74ad",
+    "sha256": "d7704f8f5b37c15b3f4fff594cf83fd5f72496afe9f2ed36ab9f294254b6e6b4",
+    "normalization": "CRLF to LF only"
+  },
+  {
+    "file": "step-2-tests.txt",
+    "rawSha256": "175f6a660a152e977e84ae94118fb3d860d9a02034bd29de228e8f7a7e1739fb",
+    "sha256": "02d2a84760355187210bc7b7108466307f840b6478ca88af5f6a216af68b9f68",
+    "normalization": "CRLF to LF only"
+  },
+  {
+    "file": "step-3-4-tests.txt",
+    "rawSha256": "51c5bdc6067bc190f0493194d8c1bb3532faf1adc6cd7f8f9156f5c091522ba2",
+    "sha256": "4ffbe73712eb776eddeed80c1178c689cb62e45a9ea372148a02a3f5a7fa67d6",
+    "normalization": "CRLF to LF only"
+  },
+  {
+    "file": "vertical-final-tests.txt",
+    "rawSha256": "96df13991584b7c59cdaf937187d4f760da53fa35f96be77efb9c9ca197bf310",
+    "sha256": "7332e7ca1bfaccfd593ea4bc9e940c4eea6ac7f84f5b4b76a52563d403fac4d1",
+    "normalization": "CRLF to LF only"
+  },
+  {
+    "file": "vertical-tests.txt",
+    "rawSha256": "c4901d5408f5b67c934c57d44f545dbf7dbcb357ca9a8eac8826c586bcab37ab",
+    "sha256": "d71ac66f58a8a05d9a1e5b382ceeff21566dd94f3e453d17c2a814aafbd77147",
+    "normalization": "CRLF to LF only"
+  }
+]

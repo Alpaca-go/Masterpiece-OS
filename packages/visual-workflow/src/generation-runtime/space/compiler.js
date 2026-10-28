@@ -8,6 +8,7 @@ import {
 import { measurePromptBudget } from "./prompt-budget.js";
 import { buildTrace } from "./trace.js";
 import { validateSpatialSemantics } from "./semantic/validate-spatial-semantics.js";
+import {assertSpaceEvidenceBinding,validateSpaceProjection} from './compilation-evidence.js';
 import { renderContinuationIntentBlock } from "./continuation/build-continuation-context.js";
 import { enforceNoSourceProgramLeakage } from "./continuation/source-program-leakage-gate.js";
 import {
@@ -252,7 +253,23 @@ function renderNegatives(layers) {
   return block("negative_constraints", "Prohibited (fail-closed)", body);
 }
 function compileSpacePrompt(input) {
+  const purpose=input.evidencePurpose === 'offline_review' ? 'offline_review' : 'execution';
+  assertSpaceEvidenceBinding(input.sourceEvidence,input.packet,input.taskContract,purpose);
   const layers = adaptSpaceSource(input);
+  const evidenceGate=validateSpaceProjection(layers.compilationEvidence,input.packet,input.taskContract,layers,purpose);
+  const originalGate=validateSpatialSemantics(input.packet.mediaTranslations?.spatial || {});
+  const functionalGate=validateSpatialSemantics({
+    sceneProgram:layers._raw?.sceneProgram || [],functionalNetwork:layers._raw?.functionalNetwork || [],
+    operationConstraints:layers.architectureFunctionBridge?.operationConstraints || [],
+    mustBeVisible:layers.composition?.mustBeVisible || []
+  });
+  if (purpose === 'offline_review') return {status:'review_only',dispatchable:false,executionEligibility:'denied',payload:null,
+    text:'Offline source and projection review. No user confirmation or generation permission is granted.',
+    gates:{originalSemantics:originalGate,projectedSemantics:functionalGate,sourceAndVisibility:evidenceGate},
+    evidence:layers.compilationEvidence};
+  if (evidenceGate.status !== 'pass' || originalGate.status !== 'pass') throw Object.assign(new Error('SPACE_EXECUTION_EVIDENCE_BLOCKED'),{
+    code:'SPACE_EXECUTION_EVIDENCE_BLOCKED',evidenceGate,originalGate,functionalGate
+  });
   let anchors = [];
   let contextBlock = null;
   if (input.brandKey) {
@@ -323,11 +340,6 @@ ${referenceBoundaryText}` : baseFinalPrompt;
   if (missing.length) {
     throw new Error(`PHASE9B_COMPILER_INCOMPLETE: missing blocks ${missing.join(", ")}`);
   }
-  const functionalGate = validateSpatialSemantics({
-    functionalNetwork: layers._raw?.functionalNetwork ?? [],
-    functionalRelationships: layers.architectureFunctionBridge?.operationConstraints ?? [],
-    mustBeVisible: layers.composition?.mustBeVisible ?? []
-  });
   if (functionalGate.status === "block") {
     const codes = [...new Set(functionalGate.findings.map((f) => f.code))].join(", ");
     throw Object.assign(
@@ -370,6 +382,7 @@ ${referenceBoundaryText}` : baseFinalPrompt;
       architectureContextIncluded: anchors.length > 0,
       blockIds: presentIds,
       decisionTrace: layers.decisionTrace,
+      compilationEvidence:evidenceGate,
       blockSources: Object.fromEntries(ordered.map(b=>[b.id,blockSource(b.id,layers)])),
       // r2.0 §4.10 / B-3: record whether the Reference Boundary text block
       // was appended to the prompt. Mirrors the v1 seedream-adapter

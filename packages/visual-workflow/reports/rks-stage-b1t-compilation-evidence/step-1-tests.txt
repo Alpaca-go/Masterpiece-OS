@@ -1,0 +1,19 @@
+✔ real persisted owner capture can issue a task-bound one-use compilation identity (573.5498ms)
+✔ plain trusted flags and matching serialized snapshots cannot authorize direct compilation (180.6164ms)
+✔ needs_reconfirmation cannot issue evidence (92.5594ms)
+✔ stale confirmation snapshot cannot issue evidence (134.8797ms)
+✔ analysis fingerprint changes cannot issue evidence (68.499ms)
+✔ context Packet mismatch is rejected even with a valid capture (73.4847ms)
+✔ captured permission rejects changed projectId (76.0719ms)
+✔ captured permission rejects changed taskId (85.2244ms)
+✔ captured permission rejects changed generationBasis (103.2911ms)
+✔ captured permission rejects changed currentInstruction (86.9241ms)
+✔ post-capture Packet and confirmation mutations are rejected (112.2341ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4658.9394

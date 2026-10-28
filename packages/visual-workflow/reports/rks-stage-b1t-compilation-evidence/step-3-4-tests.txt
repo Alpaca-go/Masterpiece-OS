@@ -1,0 +1,34 @@
+✔ real persisted owner capture can issue a task-bound one-use compilation identity (312.3297ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"6ed14b62-a6c9-4263-a171-4a2a6114f4c0","taskId":"evidence-offline-task","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7185,"compileDurationMs":58.068}
+✔ vertical production service capture -> bindings -> Projection -> Adapter -> Compiler stays offline (298.0549ms)
+✔ Compiler rejects missing and serialized evidence; tampered projected values fail validation (114.743ms)
+✔ parent conditions/unknown cannot disappear: if reception equipment is present; reception equipment (120.6232ms)
+✔ parent conditions/unknown cannot disappear: reception equipment and enjoying cosmic essence (116.8579ms)
+✔ off-frame entries retain source range and no current-shot output (119.8836ms)
+✔ review_required window visibility cannot authorize generation (125.3874ms)
+✔ FTT delta ledger reaches Compiler as proposed offline evidence; no formal payload (105.7104ms)
+✔ FTT invalid delta binding rejects missing (5.878ms)
+✔ FTT invalid delta binding rejects conflict (5.4361ms)
+✔ FTT invalid delta binding rejects changed (7.8065ms)
+✔ duplicate entries bind to their declared indices; unchanged analysis never inherits confirmation (108.805ms)
+✔ effective Packet delete invalidates exact binding (91.7962ms)
+✔ effective Packet rewrite invalidates exact binding (84.3816ms)
+✔ effective Packet reorder invalidates exact binding (102.2508ms)
+✔ plain trusted flags and matching serialized snapshots cannot authorize direct compilation (95.2229ms)
+✔ needs_reconfirmation cannot issue evidence (138.0149ms)
+✔ stale confirmation snapshot cannot issue evidence (114.8335ms)
+✔ analysis fingerprint changes cannot issue evidence (69.1673ms)
+✔ context Packet mismatch is rejected even with a valid capture (72.9485ms)
+✔ captured permission rejects changed projectId (81.0929ms)
+✔ captured permission rejects changed taskId (94.7978ms)
+✔ captured permission rejects changed generationBasis (71.6349ms)
+✔ captured permission rejects changed currentInstruction (89.8598ms)
+✔ post-capture Packet and confirmation mutations are rejected (131.2285ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3326.4885

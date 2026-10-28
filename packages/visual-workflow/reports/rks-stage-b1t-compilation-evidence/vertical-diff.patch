@@ -1,0 +1,807 @@
+diff --git a/packages/visual-workflow/src/generation-runtime/generation/compile.js b/packages/visual-workflow/src/generation-runtime/generation/compile.js
+index 0fe69924..02694513 100644
+--- a/packages/visual-workflow/src/generation-runtime/generation/compile.js
++++ b/packages/visual-workflow/src/generation-runtime/generation/compile.js
+@@ -13,6 +13,7 @@ import {
+ } from "../space/index.js";
+ import crypto from "node:crypto";
+ import { applyUserConfirmedVisualDecision } from "./user-confirmed-visual-decision.js";
++import { consumeCapturedSpaceEvidence, bindCapturedSpaceEvidence } from '../space/compilation-evidence.js';
+ import { ART_DIRECTION_SOURCE, ART_DIRECTION_ROLE, digest, assertArtDirectionModel } from '../../art-direction-contract.js';
+ const SPACE_COMPILER_MODES = Object.freeze({
+   R8_6_GOLDEN: "r8_6_golden",
+@@ -26,6 +27,11 @@ function isProductionSpaceMode(mode) {
+   return mode === SPACE_COMPILER_MODES.R8_6_GOLDEN || mode === SPACE_COMPILER_MODES.PHASE9B_QUALITY;
+ }
+ function compileShortChainGeneration(input) {
++  if (input.evidencePurpose === 'offline_review') {
++    const taskContract=createShortChainTaskContract(input.task,{now:input.now});
++    return compileSpacePrompt({packet:input.projectContext?.visualDecisionPacket,taskContract,
++      projectContext:input.projectContext,sourceEvidence:input.offlineEvidence,evidencePurpose:'offline_review'});
++  }
+   const started = performance.now();
+   const adapter = input.adapter || createSeedreamShortChainAdapter({ model: input.model });
+   const packetLogoAssetIds = input.projectContext?.visualDecisionPacket?.lockedAssets?.filter((item) => item?.type === "logo").map((item) => item.assetId) || [];
+@@ -45,6 +51,11 @@ function compileShortChainGeneration(input) {
+     logoUsageMode,
+     referenceAssetIds
+   }, { now: input.now });
++  const capturedEvidence = taskContract.deliverableFamily === 'space'
++    ? consumeCapturedSpaceEvidence(input.captureEvidence, {
++      originalPacket:input.projectContext?.visualDecisionPacket,
++      confirmation:input.userConfirmedVisualDecision,taskContract
++    }) : null;
+   let continuation = taskContract.continuation;
+   if (taskContract.generationBasis === "continuation" && continuation && (!continuation.targetFunctionalProgram || !continuation.continuationBoundary)) {
+     const enriched = createSpaceContinuationContract({
+@@ -72,6 +83,7 @@ function compileShortChainGeneration(input) {
+   if (spaceMode !== null && isProductionSpaceMode(spaceMode)) {
+     compiledPrompt = compileSpaceGeneration({
+       input,
++      capturedEvidence,
+       taskContract,
+       adapter,
+       referenceAssetIds,
+@@ -104,7 +116,7 @@ function compileShortChainGeneration(input) {
+   compiledPrompt.trace.compileDurationMs = Number((performance.now() - started).toFixed(3));
+   return { taskContract, route, compiledPrompt, payload };
+ }
+-function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetIds, preferredLogoAssetId, started, compilerMode = SPACE_COMPILER_MODES.R8_6_GOLDEN, enforceSpatialSemantics = false }) {
++function compileSpaceGeneration({ input, capturedEvidence, taskContract, adapter, referenceAssetIds, preferredLogoAssetId, started, compilerMode = SPACE_COMPILER_MODES.R8_6_GOLDEN, enforceSpatialSemantics = false }) {
+   const originalPacket = input.projectContext?.visualDecisionPacket;
+   if (!originalPacket) {
+     throw Object.assign(
+@@ -117,6 +129,7 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
+     originalPacket, input.userConfirmedVisualDecision, taskContract.projectId, taskContract.deliverableFamily
+   );
+   const packet = confirmedDecision.packet;
++  const sourceEvidence = bindCapturedSpaceEvidence(capturedEvidence,packet,taskContract);
+   const artDirection = taskContract.generationBasis === 'art_direction_reference';
+   if (artDirection) {
+     assertArtDirectionModel(input.model);
+@@ -124,6 +137,7 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
+   }
+   const result = compileSpacePrompt({
+     packet,
++    sourceEvidence,
+     taskContract,
+     projectContext: input.projectContext,
+     brandKey: input.brandKey || null,
+@@ -216,6 +230,7 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
+       phase9b: true,
+       anchorIds: result.trace.anchorIds,
+       decisionTrace: result.layers.decisionTrace,
++      compilationEvidence:result.trace.compilationEvidence,
+       userConfirmedVisualDecision: confirmedDecision.confirmation,
+       // R9 §20 trace schema: every space run records a structured
+       // spaceGeneration block for image-level regression tracing.
+diff --git a/packages/visual-workflow/src/generation-runtime/space/compiler.js b/packages/visual-workflow/src/generation-runtime/space/compiler.js
+index 540e5af9..73c33d70 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/compiler.js
++++ b/packages/visual-workflow/src/generation-runtime/space/compiler.js
+@@ -8,6 +8,7 @@ import {
+ import { measurePromptBudget } from "./prompt-budget.js";
+ import { buildTrace } from "./trace.js";
+ import { validateSpatialSemantics } from "./semantic/validate-spatial-semantics.js";
++import {assertSpaceEvidenceBinding,validateSpaceProjection} from './compilation-evidence.js';
+ import { renderContinuationIntentBlock } from "./continuation/build-continuation-context.js";
+ import { enforceNoSourceProgramLeakage } from "./continuation/source-program-leakage-gate.js";
+ import {
+@@ -252,7 +253,23 @@ function renderNegatives(layers) {
+   return block("negative_constraints", "Prohibited (fail-closed)", body);
+ }
+ function compileSpacePrompt(input) {
++  const purpose=input.evidencePurpose === 'offline_review' ? 'offline_review' : 'execution';
++  assertSpaceEvidenceBinding(input.sourceEvidence,input.packet,input.taskContract,purpose);
+   const layers = adaptSpaceSource(input);
++  const evidenceGate=validateSpaceProjection(layers.compilationEvidence,input.packet,input.taskContract,layers,purpose);
++  const originalGate=validateSpatialSemantics(input.packet.mediaTranslations?.spatial || {});
++  const functionalGate=validateSpatialSemantics({
++    sceneProgram:layers._raw?.sceneProgram || [],functionalNetwork:layers._raw?.functionalNetwork || [],
++    operationConstraints:layers.architectureFunctionBridge?.operationConstraints || [],
++    mustBeVisible:layers.composition?.mustBeVisible || []
++  });
++  if (purpose === 'offline_review') return {status:'review_only',dispatchable:false,executionEligibility:'denied',payload:null,
++    text:'Offline source and projection review. No user confirmation or generation permission is granted.',
++    gates:{originalSemantics:originalGate,projectedSemantics:functionalGate,sourceAndVisibility:evidenceGate},
++    evidence:layers.compilationEvidence};
++  if (evidenceGate.status !== 'pass' || originalGate.status !== 'pass') throw Object.assign(new Error('SPACE_EXECUTION_EVIDENCE_BLOCKED'),{
++    code:'SPACE_EXECUTION_EVIDENCE_BLOCKED',evidenceGate,originalGate,functionalGate
++  });
+   let anchors = [];
+   let contextBlock = null;
+   if (input.brandKey) {
+@@ -323,11 +340,6 @@ ${referenceBoundaryText}` : baseFinalPrompt;
+   if (missing.length) {
+     throw new Error(`PHASE9B_COMPILER_INCOMPLETE: missing blocks ${missing.join(", ")}`);
+   }
+-  const functionalGate = validateSpatialSemantics({
+-    functionalNetwork: layers._raw?.functionalNetwork ?? [],
+-    functionalRelationships: layers.architectureFunctionBridge?.operationConstraints ?? [],
+-    mustBeVisible: layers.composition?.mustBeVisible ?? []
+-  });
+   if (functionalGate.status === "block") {
+     const codes = [...new Set(functionalGate.findings.map((f) => f.code))].join(", ");
+     throw Object.assign(
+@@ -370,6 +382,7 @@ ${referenceBoundaryText}` : baseFinalPrompt;
+       architectureContextIncluded: anchors.length > 0,
+       blockIds: presentIds,
+       decisionTrace: layers.decisionTrace,
++      compilationEvidence:evidenceGate,
+       blockSources: Object.fromEntries(ordered.map(b=>[b.id,blockSource(b.id,layers)])),
+       // r2.0 §4.10 / B-3: record whether the Reference Boundary text block
+       // was appended to the prompt. Mirrors the v1 seedream-adapter
+diff --git a/packages/visual-workflow/src/generation-runtime/space/scene-projection/target-scene-projection.js b/packages/visual-workflow/src/generation-runtime/space/scene-projection/target-scene-projection.js
+index 72e14a59..e339d28d 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/scene-projection/target-scene-projection.js
++++ b/packages/visual-workflow/src/generation-runtime/space/scene-projection/target-scene-projection.js
+@@ -34,7 +34,7 @@ function scopeSourceEntries(entries, targetScene) {
+     // interior description cannot acquire visibility through an adjacent
+     // reception constraint, nor can a boundary constraint disappear with it.
+     let clauseCursor = 0;
+-    const clauses = String(entry.text).split(/[;；，,。]|\.(?=\s|$)/u).map(text=>text.trim()).filter(Boolean).map(text=> {
++    let clauses = String(entry.text).split(/[;；，,。]|\.(?=\s|$)/u).map(text=>text.trim()).filter(Boolean).map(text=> {
+       const sourceStart = String(entry.text).indexOf(text,clauseCursor);
+       clauseCursor = sourceStart + text.length;
+       const entities = entitiesFor(text);
+@@ -60,7 +60,22 @@ function scopeSourceEntries(entries, targetScene) {
+         scopeReason:review ? 'visibility_or_network_authority_requires_review' : network ? 'logical_network_without_visibility_authority' : undefined,
+         visibilityAuthority:sceneScope === 'current_shot' ? 'current_shot' : sceneScope === 'cross_scene_constraint' ? 'current_boundary_only' : 'none'};
+     });
+-    const sceneScope = !known ? "unresolved" : clauses.some(clause=>clause.sceneScope === "cross_scene_constraint") ? "cross_scene_constraint" : clauses.some(clause=>clause.sceneScope === "current_shot") ? "current_shot" : clauses.some(clause=>clause.sceneScope === "review_required") ? "review_required" : "off_frame_dependency";
++    if (entry.sourceEvidence) {
++      const parent=entry.sourceEvidence;
++      if (parent.packetText !== entry.text) throw Object.assign(new Error('SPACE_EVIDENCE_INVALID: projection_input_mismatch'),{code:'SPACE_EVIDENCE_INVALID'});
++      const partial=clauses.some(clause=>clause.sceneScope !== 'current_shot');
++      clauses=clauses.map(clause=>{
++        const exactIndependent=parent.clauses.some(c=>c.start===clause.sourceStart && c.end===clause.sourceEnd);
++        const invalidParent=parent.semanticValidation==='block' || ['conditional','unconfirmed','negative_observation'].includes(parent.modality);
++        const unscoped=!clause.entities.length && !localContext;
++        // A complete parent's permission never survives as a dangling fragment.
++        const missingParent=partial && !exactIndependent && ['current_shot','cross_scene_constraint'].includes(clause.sceneScope);
++        return {...clause,...invalidParent || unscoped || missingParent ? {
++          sceneScope:'review_required',visibilityAuthority:'none',scopeReason:'parent_or_scene_evidence_requires_review'
++        } : {},parentScope:parent.parentScope,sourceEntryId:parent.entryFingerprint};
++      });
++    }
++    const sceneScope = !known ? "unresolved" : entry.sourceEvidence && clauses.some(clause=>clause.sceneScope === "review_required") ? "review_required" : clauses.some(clause=>clause.sceneScope === "cross_scene_constraint") ? "cross_scene_constraint" : clauses.some(clause=>clause.sceneScope === "current_shot") ? "current_shot" : clauses.some(clause=>clause.sceneScope === "review_required") ? "review_required" : "off_frame_dependency";
+     return {...entry,sceneScope,clauses,detectedScenes:scenes,
+       currentShotText:clauses.every(clause=>clause.sceneScope === "current_shot") ? entry.text : clauses.filter(clause=>clause.sceneScope === "current_shot").map(clause=>clause.text).join("; "),
+       boundaryConstraints:clauses.filter(clause=>clause.sceneScope === "cross_scene_constraint"),
+diff --git a/packages/visual-workflow/src/generation-runtime/space/source-adapter.js b/packages/visual-workflow/src/generation-runtime/space/source-adapter.js
+index 3736e04b..4dadd518 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/source-adapter.js
++++ b/packages/visual-workflow/src/generation-runtime/space/source-adapter.js
+@@ -24,6 +24,7 @@ import {
+ } from "./scene-projection/target-scene-projection.js";
+ import { scopeSourceEntries } from "./scene-projection/target-scene-projection.js";
+ import { sanitizeBrandItem } from "./semantic/sanitize-brand-expression.js";
++import {assertSpaceEvidenceBinding,sealSpaceProjection,bindSystemTargetProgram} from './compilation-evidence.js';
+ function cleanList(...values) {
+   const out = [];
+   const seen = /* @__PURE__ */ new Set();
+@@ -52,7 +53,8 @@ function firstString(...values) {
+ function isSpaceSourceInsufficient(err) {
+   return Boolean(err && err.code === SPACE_PHASE9B_SOURCE_INSUFFICIENT);
+ }
+-function adaptSpaceSource({ packet, taskContract, projectContext }) {
++function adaptSpaceSource({ packet, taskContract, projectContext, sourceEvidence, evidencePurpose='execution' }) {
++  if (sourceEvidence) assertSpaceEvidenceBinding(sourceEvidence,packet,taskContract,evidencePurpose);
+   if (!packet || packet.schemaVersion !== "1.0") {
+     throw Object.assign(
+       new Error(`${SPACE_PHASE9B_SOURCE_INSUFFICIENT}: V5 VisualDecisionPacket (schema 1.0) is required`),
+@@ -558,7 +560,7 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
+         : disposition === 'post_composite_only' ? 'in_scene_identity_post_composite' : disposition === 'off_frame_dependency' ? 'foreign_scene_entity'
+         : sanitizer?.reason || disposition}];
+   });
+-  return {
++  const layers = {
+     projectIdentity: {
+       brandName: projectFacts.brandName?.value || projectContext?.brandCore?.name || "",
+       industry: projectFacts.industry?.value || projectContext?.brandCore?.industry || "",
+@@ -639,6 +641,82 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
+     ...targetSceneProjection ? { targetSceneProjection } : {},
+     ...continuationOverride ? { continuationOverride } : {}
+   };
++  if (sourceEvidence) {
++    const outputs=[],records=[],systemEntries=[];
++    const emit=(entry,scope,text,range,outputPath)=>{
++      outputs.push({outputBindingId:`${entry.entryFingerprint}:${outputPath || 'withheld'}:${range.start}:${range.end}`,
++        sourceEntryIds:[entry.entryFingerprint],fieldPath:entry.fieldPath,originalIndex:entry.originalIndex,
++        originalText:entry.originalText,parentScope:entry.parentScope,semanticType:entry.semanticType,modality:entry.modality,
++        sceneScope:scope.sceneScope,visibilityAuthority:scope.visibilityAuthority || 'none',
++        outputPath,outputText:text,sourceRange:range,outputRange:{start:0,end:text?.length || 0}});
++    };
++    const project=(field,outputPath)=>{
++      const entries=sourceEvidence.entries.filter(e=>new RegExp(`^mediaTranslations\\.spatial\\.${field}\\[\\d+\\]$`,'u').test(e.fieldPath));
++      const values=[];
++      for(const entry of entries) {
++        const scoped=scopeSourceEntries([{text:entry.packetText,sourcePath:entry.fieldPath,sourceEvidence:entry}],taskContract.subtype)[0];
++        records.push(scoped);
++        if (scoped.sceneScope==='review_required' || scoped.sceneScope==='unresolved') {
++          emit(entry,{sceneScope:scoped.sceneScope},null,{start:0,end:entry.originalText.length},null);continue;
++        }
++        if (scoped.clauses.every(c=>c.sceneScope==='current_shot')) {
++          emit(entry,{sceneScope:'current_shot',visibilityAuthority:'current_shot'},entry.packetText,{start:0,end:entry.originalText.length},`${outputPath}[${values.length}]`);
++          values.push(entry.packetText);
++        } else for(const clause of scoped.clauses) {
++          const boundary=clause.sceneScope==='cross_scene_constraint';
++          const active=boundary || clause.sceneScope==='current_shot';
++          const target=boundary?'architectureFunctionBridge.crossSceneConstraints':outputPath;
++          const list=boundary?layers.architectureFunctionBridge.crossSceneConstraints:values;
++          emit(entry,clause,active?clause.text:null,{start:clause.sourceStart,end:clause.sourceEnd},active?`${target}[${list.length}]`:null);
++          if(active) list.push(clause.text);
++        }
++      }
++      return values;
++    };
++    if (['standard','art_direction_reference'].includes(taskContract.generationBasis)) {
++      layers.architectureFunctionBridge.crossSceneConstraints=[];
++      layers._raw.sceneProgram=project('sceneProgram','_raw.sceneProgram');
++      layers._raw.functionalNetwork=project('functionalNetwork','_raw.functionalNetwork');
++      layers.architectureFunctionBridge.operationConstraints=project('functionalRelationships','architectureFunctionBridge.operationConstraints');
++      layers.architectureFunctionBridge.humanExperience=project('peopleBehavior','architectureFunctionBridge.humanExperience');
++      layers.composition.mustBeVisible=project('mustBeVisible','composition.mustBeVisible');
++      layers._raw.positiveDifferentiators=project('positiveDifferentiators','_raw.positiveDifferentiators');
++      if (layers.composition.userRequirements) layers.composition.userRequirements=project('compositionRequirements','composition.userRequirements');
++      const bindObjects=(items,outputPath)=>{
++        const kept=[];
++        for(const item of items) {
++          const entry=sourceEvidence.entries.find(e=>e.fieldPath===item.sourcePath);
++          if (!entry || item.text !== entry.packetText) {
++            outputs.push({outputBindingId:`unresolved:${item.sourcePath}`,sourceEntryIds:entry?[entry.entryFingerprint]:[],
++              outputPath:null,outputText:null,sceneScope:'review_required',visibilityAuthority:'none'});continue;
++          }
++          const scoped=scopeSourceEntries([{text:entry.packetText,sourcePath:entry.fieldPath,sourceEvidence:entry}],taskContract.subtype)[0];
++          records.push(scoped);
++          if (scoped.clauses.every(c=>c.sceneScope==='current_shot')) {
++            emit(entry,{sceneScope:'current_shot',visibilityAuthority:'current_shot'},entry.packetText,{start:0,end:entry.originalText.length},`${outputPath}[${kept.length}].text`);
++            kept.push({...item,...scoped,text:entry.packetText});
++          } else emit(entry,{sceneScope:scoped.sceneScope},null,{start:0,end:entry.originalText.length},null);
++        }
++        return kept;
++      };
++      layers.decisionTrace.architectureDecisions=bindObjects(layers.decisionTrace.architectureDecisions,'decisionTrace.architectureDecisions');
++      layers.composition.artisticFocus=bindObjects(layers.composition.artisticFocus,'composition.artisticFocus');
++      // Brand lines have explicit per-input sanitizer provenance rather than a
++      // text search across unrelated fields. Unsupported rewrites stay in review.
++      const brandEntries=sourceEvidence.entries.filter(e=>/^mediaTranslations\.spatial\.brandRoleManifestation\[\d+\]$/u.test(e.fieldPath));
++      const brandItems=brandEntries.map(e=>({text:sanitizeBrandItem(e.packetText).text,sourcePath:e.fieldPath})).filter(e=>e.text);
++      const brand=bindObjects(brandItems,'brandEvidence');
++      // Convert the object output bindings to the actual renderer's string list.
++      for(const output of outputs) if (output.outputPath?.startsWith('brandEvidence[')) output.outputPath=output.outputPath.replace('brandEvidence','_raw.brandRoleManifestation').replace(/\.text$/u,'');
++      layers._raw.brandRoleManifestation=brand.map(e=>e.text);
++      layers.decisionTrace.sceneScope=records;
++    } else {
++      const system=bindSystemTargetProgram(sourceEvidence,packet,taskContract,layers,evidencePurpose);
++      outputs.push(...system.outputs);systemEntries.push(...system.entries);
++    }
++    layers.compilationEvidence=sealSpaceProjection(sourceEvidence,packet,taskContract,layers,outputs,evidencePurpose,systemEntries);
++  }
++  return layers;
+ }
+ function splitMustBeVisible(items) {
+   const safe = [];
+diff --git a/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js b/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js
+index ba493d47..b843bfa1 100644
+--- a/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js
++++ b/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js
+@@ -4,6 +4,7 @@ import path from "node:path";
+ import { createArtDirectionStore } from '../../art-direction-store.js';
+ import { ART_DIRECTION_SOURCE, digest } from '../../art-direction-contract.js';
+ import { createProjectDesignDirectionStore } from '../../project-design-direction.js';
++import { captureSpaceCompilationEvidence } from '../../generation-runtime/space/compilation-evidence.js';
+ import {
+   compileShortChainGeneration,
+   listShortChainTemplateOptions,
+@@ -172,19 +173,25 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
+       ),
+       "utf8"
+     ).then((value) => JSON.parse(value)).catch(() => void 0);
++    const compilationTask = {
++      ...input.task,
++      ...art ? {artDirection:artCapture.snapshot} : {},
++      projectId: input.projectId,
++      taskId: input.task.taskId || `vnext-task-${crypto.randomUUID()}`,
++      logoUsageMode,
++      referenceAssetIds
++    };
++    const captureEvidence = input.task.deliverableFamily === 'space'
++      ? await captureSpaceCompilationEvidence({projects,task:compilationTask,packet:context.visualDecisionPacket,captured:designDirection})
++      : undefined;
+     const result = compileShortChainGeneration({
+       projectContext: context,
+       model: input.model,
+       projectPromptAsset,
+       approvedCreativeDecision,
+       userConfirmedVisualDecision,
+-      task: {
+-        ...input.task,
+-        ...art ? {artDirection:artCapture.snapshot} : {},
+-        projectId: input.projectId,
+-        logoUsageMode,
+-        referenceAssetIds
+-      }
++      captureEvidence,
++      task: compilationTask
+     });
+     const artifactDirectory = path.join(
+       paths.root,
+diff --git a/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js b/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js
+new file mode 100644
+index 00000000..e4473452
+--- /dev/null
++++ b/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js
+@@ -0,0 +1,261 @@
++// Internal server boundary. No constructor accepts a client authorization or snapshot.
++import fs from 'node:fs/promises';
++import path from 'node:path';
++import crypto from 'node:crypto';
++import {createProjectDesignDirectionStore} from '../../project-design-direction.js';
++import {createShortChainTaskContract} from '../generation/task-contract.js';
++import {applyUserConfirmedVisualDecision} from '../generation/user-confirmed-visual-decision.js';
++import {spatialSemanticEvidence} from './semantic/validate-spatial-semantics.js';
++import {propositionModality} from './semantic/separate-space-semantics.js';
++import {resolveTargetFunctionalProgram} from './continuation/target-functional-programs.js';
++import {buildTargetSceneProjection,scopeSourceEntries} from './scene-projection/target-scene-projection.js';
++
++export const SPACE_EVIDENCE_SCHEMA = 'space-compilation-evidence/1.0';
++const captures = new WeakMap();
++const consumed = new WeakSet();
++const bindings = new WeakMap();
++const projections = new WeakMap();
++const fingerprint = value => crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
++const fail = reason => { throw Object.assign(new Error(`SPACE_EVIDENCE_INVALID: ${reason}`), {code:'SPACE_EVIDENCE_INVALID',reason}); };
++function freeze(value) {
++  if (value && typeof value === 'object') { Object.values(value).forEach(freeze); Object.freeze(value); }
++  return value;
++}
++function taskScope(task) {
++  const {createdAt, ...scope} = createShortChainTaskContract(task, {now:'capture'});
++  if (!task.taskId) fail('task_id_required');
++  if (scope.continuation) {
++    const {targetFunctionalProgram,continuationBoundary,referenceRole,...intent}=scope.continuation;
++    scope.continuation=intent;
++  }
++  return scope;
++}
++
++// projects is the server's existing filesystem authority, never an RPC field or
++// injectable capture callback. Even a matching serialized snapshot is re-read
++// through the real store. The returned identity has no serializable authority.
++export async function captureSpaceCompilationEvidence({projects, task, packet, captured}) {
++  const scope = taskScope(task);
++  if (scope.deliverableFamily !== 'space' || packet?.projectId !== scope.projectId) fail('project_scope_mismatch');
++  const owner = createProjectDesignDirectionStore(projects);
++  const current = await owner.resolve(scope.projectId, captured?.snapshot ?? null);
++  if (!current?.confirmation?.id || !current.snapshot?.recordSha256) fail('persisted_confirmation_required');
++  if (fingerprint(current.confirmation) !== current.snapshot.confirmationSha256
++    || fingerprint(captured?.confirmation) !== current.snapshot.confirmationSha256) fail('confirmation_mismatch');
++  const root = (await projects.paths(scope.projectId)).root;
++  const context = JSON.parse(await fs.readFile(path.join(root,'project-context/project-visual-context.vnext.json'),'utf8'));
++  if (fingerprint(packet) !== fingerprint(context.visualDecisionPacket)) fail('analysis_packet_mismatch');
++  await owner.resolve(scope.projectId,current.snapshot);
++  const effective = applyUserConfirmedVisualDecision(packet,current.confirmation,scope.projectId,'space');
++  if (!effective.confirmation) fail('confirmation_not_applicable');
++  const record = freeze(structuredClone({schemaVersion:SPACE_EVIDENCE_SCHEMA,scope,
++    sourceOwner:'project-design-direction.capture/resolve',snapshot:current.snapshot,
++    confirmationId:current.confirmation.id,originalPacketFingerprint:fingerprint(packet),
++    effectivePacketFingerprint:fingerprint(effective.packet),confirmation:current.confirmation,originalPacket:packet}));
++  const capability = Object.freeze(Object.create(null));
++  captures.set(capability,record);
++  return capability;
++}
++
++export function consumeCapturedSpaceEvidence(capability, {originalPacket,confirmation,taskContract}) {
++  const captured = captures.get(capability);
++  if (!captured) fail('missing_or_forged_capture');
++  // One compile attempt, including failed attempts. A copied identity cannot be replayed.
++  captures.delete(capability);
++  if (fingerprint(taskScope(taskContract)) !== fingerprint(captured.scope)) fail('task_scope_mismatch');
++  if (fingerprint(originalPacket) !== captured.originalPacketFingerprint) fail('original_packet_mismatch');
++  if (fingerprint(confirmation) !== captured.snapshot.confirmationSha256) fail('confirmation_mismatch');
++  consumed.add(captured);
++  return captured;
++}
++
++export function bindCapturedSpaceEvidence(captured, packet, taskContract) {
++  if (!consumed.has(captured)) fail('missing_or_forged_consumed_capture');
++  consumed.delete(captured);
++  if (fingerprint(taskScope(taskContract)) !== fingerprint(captured.scope)) fail('task_scope_mismatch');
++  if (fingerprint(packet) !== captured.effectivePacketFingerprint) fail('effective_packet_mismatch');
++  const evidence = freeze({schemaVersion:SPACE_EVIDENCE_SCHEMA,projectId:captured.scope.projectId,
++    taskId:captured.scope.taskId,generationBasis:captured.scope.generationBasis,
++    capture:{...captured.snapshot,confirmationId:captured.confirmationId},
++    originalPacketFingerprint:captured.originalPacketFingerprint,packetFingerprint:captured.effectivePacketFingerprint,
++    originalEntries:packetEntries(captured.originalPacket,null,captured),
++    entries:packetEntries(packet,captured.confirmation,captured)});
++  bindings.set(evidence,{packetFingerprint:evidence.packetFingerprint,scope:taskScope(taskContract)});
++  return evidence;
++}
++
++const INPUT_ROOTS = ['mediaTranslations.spatial','projectFacts','creativeDecision','colorSystem','materialSystem','lightingSystem','diagnosis','abstractions'];
++const FUNCTIONAL_FIELDS = new Set(['sceneProgram','functionalNetwork','functionalRelationships','operationConstraints','requiredSpatialElements','mustBeVisible']);
++const tokens = field => field.replace(/\[(\d+)\]/gu,'.$1').split('.');
++function valueAt(value,field) { return tokens(field).reduce((node,key)=>node?.[key],value); }
++function leaves(value,field) {
++  if (typeof value === 'string') return [{fieldPath:field,text:value}];
++  if (Array.isArray(value)) return value.flatMap((v,i)=>leaves(v,`${field}[${i}]`));
++  if (value && typeof value === 'object') return Object.entries(value).flatMap(([key,v])=>leaves(v,`${field}.${key}`));
++  return [];
++}
++function confirmationOrigin(fieldPath,confirmation,original) {
++  if (!confirmation) return null;
++  const roots = [['mediaTranslations.spatial','spatialTranslation'],['colorSystem','spatialTranslation.colorBehavior'],
++    ['materialSystem','spatialTranslation.materialLanguage'],['lightingSystem','spatialTranslation.lightingLanguage']];
++  for (const [target,source] of roots) if (fieldPath === target || fieldPath.startsWith(target+'.') || fieldPath.startsWith(target+'[')) {
++    return {sourceFieldPath:source+fieldPath.slice(target.length),transform:'identity'};
++  }
++  if (fieldPath === 'projectFacts.brandRole.value' && confirmation.projectIdentity?.brandRole) return {sourceFieldPath:'projectIdentity.brandRole',transform:'identity'};
++  if (fieldPath.startsWith('creativeDecision.')) {
++    const key=tokens(fieldPath)[1];
++    // Reproduce the existing explicit trim/dedup operation with index lineage.
++    // Equality is used to check this declared transform, never to guess ownership.
++    if (key === 'strategicNegatives') {
++      const sources=['creativeDecision.strategicNegatives','reviewTask.mustAvoid'];
++      const seen=new Set(),mapped=[];
++      for (const source of sources) for (const [index,text] of (valueAt(confirmation,source)||[]).entries()) {
++        if (typeof text !== 'string') continue;
++        const normalized=text.trim().replace(/\s+/gu,' ');
++        if (normalized && !seen.has(normalized)) { seen.add(normalized);mapped.push({sourceFieldPath:`${source}[${index}]`,transform:'trim_whitespace'}); }
++      }
++      return mapped[Number(tokens(fieldPath)[2])] || null;
++    }
++    if (Object.hasOwn(confirmation.creativeDecision || {},key)) return {sourceFieldPath:fieldPath,transform:'identity'};
++  }
++  if (fieldPath.startsWith('abstractions[') && Array.isArray(confirmation.abstractions)) return {sourceFieldPath:fieldPath,transform:'identity'};
++  const risk=fieldPath.match(/^diagnosis\.brandMisreadRisks\[(\d+)\](.*)$/u);
++  if (risk && Number(risk[1]) >= (original.diagnosis?.brandMisreadRisks || []).length) return {
++    sourceFieldPath:`brandMisreadRisks[${Number(risk[1])-(original.diagnosis?.brandMisreadRisks || []).length}]${risk[2]}`,transform:'identity'};
++  return null;
++}
++function packetEntries(packet,confirmation,captured) {
++  const packetFingerprint=fingerprint(packet);
++  return INPUT_ROOTS.flatMap(root=>leaves(valueAt(packet,root),root))
++    .filter(entry=>entry.fieldPath !== 'mediaTranslations.spatial.status').map(({fieldPath,text})=>{
++    const origin=confirmationOrigin(fieldPath,confirmation,captured.originalPacket);
++    const sourceText=origin ? valueAt(confirmation,origin.sourceFieldPath) : text;
++    if (typeof sourceText !== 'string') fail(`source_value_missing:${fieldPath}`);
++    const expected=origin?.transform === 'trim_whitespace' ? sourceText.trim().replace(/\s+/gu,' ') : sourceText;
++    if (expected !== text) fail(`source_value_mismatch:${fieldPath}`);
++    const originalIndex=Number(tokens(origin?.sourceFieldPath || fieldPath).findLast(key=>/^\d+$/u.test(key)) ?? -1);
++    const field=tokens(fieldPath)[2];
++    const typed=fieldPath.startsWith('mediaTranslations.spatial.') && FUNCTIONAL_FIELDS.has(field)
++      ? spatialSemanticEvidence(sourceText,field,originalIndex) : null;
++    const sourceKind=origin ? 'user_confirmed_design_intent' : 'analysis_packet';
++    const sourceRecordId=origin ? captured.confirmationId : `packet:${captured.originalPacketFingerprint}`;
++    return {sourceKind,sourceOwner:origin ? captured.sourceOwner : 'persisted_analysis_packet',sourceRecordId,
++      packetFingerprint,fieldPath,originalIndex,originalText:sourceText,packetText:text,
++      sourceFieldPath:origin?.sourceFieldPath || fieldPath,sourceTransform:origin?.transform || 'identity',
++      entryFingerprint:fingerprint({packetFingerprint,fieldPath,originalIndex,sourceText,sourceRecordId}),
++      sourceStatus:origin ? 'confirmed_design_intent_not_verified_property' : 'analysis_proposal',
++      confirmationStatus:origin ? 'confirmed' : 'unconfirmed',
++      evidenceRefs:origin ? [...(confirmation.evidenceRefs || [])] : [],
++      parentScope:{fieldPath,originalText:sourceText,start:0,end:sourceText.length},
++      semanticType:typed?.type || 'design_context',modality:typed?.modality || propositionModality(sourceText),
++      semanticValidation:typed?.validation || 'not_a_functional_field',clauses:typed?.clauses || []};
++  });
++}
++
++export function assertSpaceEvidenceBinding(evidence,packet,taskContract,purpose='execution') {
++  const binding = bindings.get(evidence);
++  if (!binding) fail('missing_or_forged_binding');
++  if (binding.packetFingerprint !== fingerprint(packet)) fail('bound_packet_mismatch');
++  if (fingerprint(binding.scope) !== fingerprint(taskScope(taskContract))) fail('bound_task_mismatch');
++  if (purpose !== 'offline_review' && binding.purpose === 'offline_review') fail('experiment_cannot_authorize_execution');
++  return evidence;
++}
++
++export function createOfflineSpaceEvidence({packet,basePacket,deltas,scene,task}) {
++  const replay=structuredClone(basePacket),applicable=deltas.map((delta,index)=>({...delta,recordId:`delta:${index}`}))
++    .filter(delta=>delta.scene === 'common' || delta.scene === scene);
++  for(const delta of applicable) {
++    if (fingerprint(valueAt(replay,delta.path)) !== fingerprint(delta.before)) fail(`delta_before_conflict:${delta.recordId}`);
++    const keys=tokens(delta.path),last=keys.pop();
++    const node=keys.reduce((value,key)=>value?.[key],replay);
++    if (!node || !last) fail(`delta_path_missing:${delta.recordId}`);
++    node[last]=structuredClone(delta.after);
++  }
++  if (fingerprint(replay) !== fingerprint(packet)) fail('delta_final_packet_mismatch');
++  const captured={originalPacket:basePacket,originalPacketFingerprint:fingerprint(basePacket)};
++  const entries=packetEntries(packet,null,captured).map(entry=>{
++    const delta=applicable.findLast(d=>entry.fieldPath === d.path || entry.fieldPath.startsWith(d.path+'[') || entry.fieldPath.startsWith(d.path+'.'));
++    return {...entry,sourceKind:delta?'offline_experiment_delta':'analysis_packet',
++      sourceOwner:delta?'offline_experiment':'offline_historical_packet',sourceRecordId:delta?.recordId || entry.sourceRecordId,
++      sourceStatus:delta?.status || 'unknown',confirmationStatus:delta?'proposed':'unknown',
++      evidenceRefs:[...(delta?.evidenceRefs || [])],entryFingerprint:fingerprint({entry:entry.entryFingerprint,delta:delta?.recordId,scene})};
++  });
++  const evidence=freeze({schemaVersion:SPACE_EVIDENCE_SCHEMA,projectId:task.projectId,taskId:task.taskId,generationBasis:task.generationBasis,
++    packetFingerprint:fingerprint(packet),originalPacketFingerprint:fingerprint(basePacket),entries,
++    originalEntries:packetEntries(basePacket,null,captured),executionEligibility:'denied',scene});
++  bindings.set(evidence,{packetFingerprint:fingerprint(packet),scope:taskScope(task),purpose:'offline_review'});
++  return evidence;
++}
++
++// Adapter supplies output paths and source entry identities during the actual
++// transform. This seal binds the complete IR too: a JSON sidecar is audit only.
++export function sealSpaceProjection(evidence,packet,taskContract,layers,outputs,purpose,systemEntries=[]) {
++  assertSpaceEvidenceBinding(evidence,packet,taskContract,purpose);
++  const sidecar=freeze({schemaVersion:SPACE_EVIDENCE_SCHEMA,packetFingerprint:evidence.packetFingerprint,entries:[...evidence.entries,...systemEntries],
++    originalEntries:evidence.originalEntries,capture:evidence.capture || null,outputs});
++  projections.set(sidecar,{source:evidence,layerFingerprint:fingerprint(layers),scope:taskScope(taskContract)});
++  return sidecar;
++}
++export function validateSpaceProjection(sidecar,packet,taskContract,layers,purpose) {
++  const sealed=projections.get(sidecar);
++  if (!sealed) fail('missing_or_forged_projection');
++  assertSpaceEvidenceBinding(sealed.source,packet,taskContract,purpose);
++  const {compilationEvidence,...plainLayers}=layers;
++  if (sealed.layerFingerprint !== fingerprint(plainLayers)) fail('projected_output_mismatch');
++  const findings=[];
++  for(const entry of sidecar.entries) {
++    if (entry.semanticValidation === 'block') findings.push({dimension:'semantic',fieldPath:entry.fieldPath,reason:'original_semantics_unresolved',entryFingerprint:entry.entryFingerprint});
++    if (entry.semanticValidation !== 'not_a_functional_field' && entry.confirmationStatus !== 'confirmed' && entry.sourceKind !== 'system_target_program') findings.push({dimension:'source',fieldPath:entry.fieldPath,reason:'functional_source_not_confirmed'});
++  }
++  for(const output of sidecar.outputs) {
++    if (!output.outputPath) {
++      if (['unresolved','review_required'].includes(output.sceneScope)) findings.push({dimension:'visibility',reason:'unresolved_parent_or_visibility',outputBindingId:output.outputBindingId});
++      continue;
++    }
++    if (valueAt(layers,output.outputPath) !== output.outputText) fail(`output_binding_mismatch:${output.outputPath}`);
++    for(const entryId of output.sourceEntryIds) if (!sidecar.entries.some(e=>e.entryFingerprint===entryId)) fail('output_source_missing');
++    const parent=sidecar.entries.find(e=>e.entryFingerprint===output.sourceEntryIds[0]);
++    if (!parent || parent.originalText.slice(output.sourceRange.start,output.sourceRange.end) !== output.outputText) fail('output_original_range_mismatch');
++    if (output.sceneScope !== 'current_shot' && output.sceneScope !== 'cross_scene_constraint') findings.push({dimension:'visibility',reason:'no_current_shot_permission',outputBindingId:output.outputBindingId});
++    if (output.sceneScope === 'cross_scene_constraint' && output.visibilityAuthority !== 'current_boundary_only') fail('boundary_visibility_mismatch');
++    if (output.visibilityAuthority === 'current_shot' && output.sceneScope !== 'current_shot') fail('foreign_visibility_escalation');
++    const sources=output.sourceEntryIds.map(id=>sidecar.entries.find(e=>e.entryFingerprint===id));
++    if (!sources.length || sources.some(e=>e.confirmationStatus !== 'confirmed' && e.sourceKind !== 'system_target_program')) findings.push({dimension:'source',reason:'output_source_not_confirmed',outputBindingId:output.outputBindingId});
++  }
++  return {schemaVersion:SPACE_EVIDENCE_SCHEMA,status:findings.length?'block':'pass',findings,
++    executionEligibility:purpose==='offline_review'?'denied':findings.length?'denied':'eligible',sidecar};
++}
++
++export function bindSystemTargetProgram(evidence,packet,task,layers,purpose) {
++  assertSpaceEvidenceBinding(evidence,packet,task,purpose);
++  const program=resolveTargetFunctionalProgram(task.subtype);
++  if (task.generationBasis==='continuation' && fingerprint(program)!==fingerprint(task.continuation?.targetFunctionalProgram)) fail('system_program_task_mismatch');
++  const expected=buildTargetSceneProjection({targetProgram:program});
++  const entries=[],outputs=[];
++  const lists=[['_raw.sceneProgram','functionalRequirement.sceneProgram','sceneProgram'],
++    ['_raw.functionalNetwork','functionalRequirement.functionalNetwork','functionalNetwork'],
++    ['composition.mustBeVisible','composition.mustBeVisible','mustBeVisible'],
++    ['architectureFunctionBridge.operationConstraints','architectureFunctionBridge.operationConstraints','operationConstraints']];
++  for(const [outputPath,rulePath,field] of lists) {
++    const values=valueAt(expected,rulePath);
++    if (fingerprint(valueAt(layers,outputPath)) !== fingerprint(values)) fail(`system_projection_mismatch:${outputPath}`);
++    for(const [index,text] of values.entries()) {
++      const typed=spatialSemanticEvidence(text,field,index);
++      const fieldPath=`systemTargetProgram.${rulePath}[${index}]`;
++      const entry={sourceKind:'system_target_program',sourceOwner:'target-functional-programs/target-scene-projection',
++        sourceRecordId:`${program.sceneId}:${fingerprint(program)}:${fingerprint(taskScope(task))}`,
++        packetFingerprint:evidence.packetFingerprint,fieldPath,sourceFieldPath:fieldPath,originalIndex:index,originalText:text,packetText:text,
++        entryFingerprint:fingerprint({fieldPath,text,task:taskScope(task)}),sourceStatus:'system_generated_task_scoped',
++        confirmationStatus:'not_user_confirmation',evidenceRefs:[`task:${task.taskId}`,`program:${program.sceneId}`],
++        parentScope:{fieldPath,originalText:text,start:0,end:text.length,programFingerprint:fingerprint(program)},
++        semanticType:typed.type,modality:typed.modality,semanticValidation:typed.validation,clauses:typed.clauses};
++      const scoped=scopeSourceEntries([{text,sourcePath:fieldPath,sourceEvidence:entry}],task.subtype)[0];
++      entries.push(entry);
++      outputs.push({outputBindingId:entry.entryFingerprint,sourceEntryIds:[entry.entryFingerprint],fieldPath,originalIndex:index,
++        originalText:text,parentScope:entry.parentScope,semanticType:entry.semanticType,modality:entry.modality,
++        outputPath:`${outputPath}[${index}]`,outputText:text,sourceRange:{start:0,end:text.length},outputRange:{start:0,end:text.length},
++        sceneScope:scoped.sceneScope,visibilityAuthority:scoped.sceneScope==='current_shot'?'current_shot':scoped.sceneScope==='cross_scene_constraint'?'current_boundary_only':'none'});
++    }
++  }
++  return {entries,outputs};
++}
+diff --git a/packages/visual-workflow/tests/space-compilation-evidence.test.ts b/packages/visual-workflow/tests/space-compilation-evidence.test.ts
+new file mode 100644
+index 00000000..655fe2ea
+--- /dev/null
++++ b/packages/visual-workflow/tests/space-compilation-evidence.test.ts
+@@ -0,0 +1,205 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import fs from 'node:fs/promises';
++import path from 'node:path';
++import {businessFixture} from './art-direction-business-fixture.ts';
++import {createProjectDesignDirectionStore} from '../src/project-design-direction.js';
++import {applyUserConfirmedVisualDecision} from '../src/generation-runtime/generation/user-confirmed-visual-decision.js';
++import {compileShortChainGeneration} from '../src/generation-runtime/generation/compile.js';
++import {captureSpaceCompilationEvidence,consumeCapturedSpaceEvidence,bindCapturedSpaceEvidence,assertSpaceEvidenceBinding,createOfflineSpaceEvidence,validateSpaceProjection} from '../src/generation-runtime/space/compilation-evidence.js';
++import {adaptSpaceSource} from '../src/generation-runtime/space/source-adapter.js';
++import {compileSpacePrompt} from '../src/generation-runtime/space/compiler.js';
++import {makeFinalDesignFixture} from './restaurant-knowledge/ftt-final-design-fixture.ts';
++import {networkAttempts} from './restaurant-knowledge/spatial-semantics/network-off.mjs';
++import {resolveTargetFunctionalProgram} from '../src/generation-runtime/space/continuation/target-functional-programs.js';
++
++async function confirmed(t:any,change=(confirmation:any)=>{}) {
++  const f=await businessFixture(t);
++  change(f.confirmation);
++  const owner=createProjectDesignDirectionStore(f.projects);
++  const draft=await owner.saveDraft(f.project.id,{confirmation:f.confirmation,sourceStatement:'Explicit isolated offline test decision',expectedRecordSha256:null});
++  await owner.confirm(f.project.id,{expectedRecordSha256:draft.recordSha256,confirmedByUser:true});
++  const captured=await owner.capture(f.project.id);
++  const task={...f.task,projectId:f.project.id,taskId:'evidence-offline-task',generationBasis:'standard',referenceAssetIds:[]};
++  const packet=(await f.context.getShortChain(f.project.id)).visualDecisionPacket;
++  const mint=()=>captureSpaceCompilationEvidence({projects:f.projects,task,packet,captured});
++  return {...f,owner,captured,task,packet,mint};
++}
++test('real persisted owner capture can issue a task-bound one-use compilation identity',async t=>{
++  const f=await confirmed(t),before=JSON.stringify(f.packet),cap=await f.mint();
++  const record=consumeCapturedSpaceEvidence(cap,{originalPacket:f.packet,confirmation:f.captured!.confirmation,taskContract:f.task});
++  const effective=applyUserConfirmedVisualDecision(f.packet,f.captured!.confirmation,f.project.id).packet;
++  const evidence=bindCapturedSpaceEvidence(record,effective,f.task);
++  assert.equal(evidence.capture.confirmationId,f.captured!.confirmation.id);
++  assert.equal(evidence.capture.recordSha256,f.captured!.snapshot.recordSha256);
++  assert.equal(evidence.capture.analysisFingerprint,f.captured!.snapshot.analysisFingerprint);
++  assert.equal(assertSpaceEvidenceBinding(evidence,effective,f.task),evidence);
++  assert.throws(()=>consumeCapturedSpaceEvidence(cap,{originalPacket:f.packet,confirmation:f.captured!.confirmation,taskContract:f.task}),/missing_or_forged_capture/);
++  assert.throws(()=>assertSpaceEvidenceBinding(structuredClone(evidence),effective,f.task),/missing_or_forged_binding/);
++  assert.equal(JSON.stringify(f.packet),before); assert.equal(f.requests.length,0);
++});
++const simple=(c:any)=>Object.assign(c.spatialTranslation,{
++  spatialConcept:'clear reception and waiting area',structureLanguage:['curved reception partitions'],
++  signatureSpatialMechanism:['curved reception partitions'],brandRoleManifestation:['warm reception surfaces'],
++  sceneProgram:['reception','waiting area'],functionalNetwork:['reception connects to waiting area'],
++  functionalRelationships:['keep entrance clear'],mustBeVisible:['reception equipment'],positiveDifferentiators:['clear reception circulation']
++});
++async function bound(f:any) {
++  const captured=consumeCapturedSpaceEvidence(await f.mint(),{originalPacket:f.packet,confirmation:f.captured.confirmation,taskContract:f.task});
++  const packet=applyUserConfirmedVisualDecision(f.packet,f.captured.confirmation,f.project.id).packet;
++  return {packet,evidence:bindCapturedSpaceEvidence(captured,packet,f.task)};
++}
++test('vertical production service capture -> bindings -> Projection -> Adapter -> Compiler stays offline',async t=>{
++  const f=await confirmed(t,simple),before=JSON.stringify(f.packet);
++  const compiled=await f.generation.compile({projectId:f.project.id,model:f.credentials.image.model,task:f.task});
++  const gate=compiled.compiledPrompt.trace.compilationEvidence;
++  assert.equal(gate.status,'pass');assert.equal(gate.executionEligibility,'eligible');
++  const outputs=gate.sidecar.outputs.filter(o=>o.outputPath);
++  assert(outputs.length>=5);assert(outputs.every(o=>o.sourceEntryIds.length===1));
++  assert(outputs.some(o=>o.outputPath==='architectureFunctionBridge.operationConstraints[0]' && o.semanticType==='constraint'));
++  assert.equal(gate.sidecar.capture.confirmationId,f.captured!.confirmation.id);
++  assert.equal(JSON.stringify(f.packet),before);assert.equal(f.requests.length,0);assert.equal(networkAttempts(),0);
++});
++test('Compiler rejects missing and serialized evidence; tampered projected values fail validation',async t=>{
++  const f=await confirmed(t,simple),b=await bound(f),input={packet:b.packet,taskContract:f.task,sourceEvidence:b.evidence};
++  assert.throws(()=>compileSpacePrompt({...input,sourceEvidence:undefined}),/missing_or_forged_binding/);
++  assert.throws(()=>compileSpacePrompt({...input,sourceEvidence:JSON.parse(JSON.stringify(b.evidence))}),/missing_or_forged_binding/);
++  const layers=adaptSpaceSource(input);layers._raw.sceneProgram[0]='kitchen';
++  assert.throws(()=>validateSpaceProjection(layers.compilationEvidence,b.packet,f.task,layers,'execution'),/projected_output_mismatch/);
++});
++for(const text of ['if reception equipment is present; reception equipment','reception equipment and enjoying cosmic essence']) test(`parent conditions/unknown cannot disappear: ${text}`,async t=>{
++  const f=await confirmed(t,c=>{simple(c);c.spatialTranslation.mustBeVisible=[text];}),b=await bound(f);
++  assert.throws(()=>compileSpacePrompt({packet:b.packet,taskContract:f.task,sourceEvidence:b.evidence}),error=>error.code==='SPACE_EXECUTION_EVIDENCE_BLOCKED' && error.originalGate.status==='block');
++});
++test('off-frame entries retain source range and no current-shot output',async t=>{
++  const f=await confirmed(t,c=>{simple(c);c.spatialTranslation.sceneProgram.push('kitchen');}),b=await bound(f);
++  const result=compileSpacePrompt({packet:b.packet,taskContract:f.task,sourceEvidence:b.evidence});
++  const sidecar=result.trace.compilationEvidence.sidecar;
++  const foreign=sidecar.outputs.filter(o=>o.fieldPath==='mediaTranslations.spatial.sceneProgram[2]');
++  assert(foreign.length>0);assert(foreign.every(o=>o.outputPath===null && o.visibilityAuthority==='none'));
++  assert(!result.layers._raw.sceneProgram.includes('kitchen'));
++});
++test('review_required window visibility cannot authorize generation',async t=>{
++  const f=await confirmed(t,c=>{simple(c);c.spatialTranslation.mustBeVisible=['chef preparing food in kitchen visible through reception glazing'];}),b=await bound(f);
++  assert.throws(()=>compileSpacePrompt({packet:b.packet,taskContract:f.task,sourceEvidence:b.evidence}),error=>error.code==='SPACE_EXECUTION_EVIDENCE_BLOCKED' && error.evidenceGate.findings.some(x=>x.dimension==='visibility'));
++});
++test('unknown array entry cannot disappear beside a valid visible entry',async t=>{
++  const f=await confirmed(t,c=>{simple(c);c.spatialTranslation.mustBeVisible=['equipment','reception equipment'];}),b=await bound(f);
++  assert.throws(()=>compileSpacePrompt({packet:b.packet,taskContract:f.task,sourceEvidence:b.evidence}),error=>error.code==='SPACE_EXECUTION_EVIDENCE_BLOCKED' && error.originalGate.findings.some(x=>x.original==='equipment'));
++});
++test('duplicate projected entries keep distinct source indices and bindings',async t=>{
++  const f=await confirmed(t,c=>{simple(c);c.spatialTranslation.sceneProgram=['reception','reception','waiting area'];}),b=await bound(f);
++  const result=compileSpacePrompt({packet:b.packet,taskContract:f.task,sourceEvidence:b.evidence});
++  const rows=result.trace.compilationEvidence.sidecar.outputs.filter(o=>o.outputPath?.startsWith('_raw.sceneProgram'));
++  assert.deepEqual(rows.map(o=>o.originalIndex),[0,1,2]);assert.equal(new Set(rows.map(o=>o.outputBindingId)).size,3);
++});
++test('start still re-resolves the real owner after offline compilation',async t=>{
++  const f=await confirmed(t,simple),compiled=await f.generation.compile({projectId:f.project.id,model:f.credentials.image.model,task:f.task});
++  await f.owner.markForReview(f.project.id);await assert.rejects(f.start(compiled),/RECONFIRM_REQUIRED/);
++  assert.equal(f.requests.length,0);assert.equal(f.validations.length,0);
++});
++for(const basis of ['reference_first','continuation']) test(`${basis} system program has task/registry ownership, independent semantic and visibility gates`,async t=>{
++  const f=await confirmed(t,simple);
++  Object.assign(f.task,{generationBasis:basis,subtype:'consultation',referenceAssetIds:['offline-reference'],
++    ...(basis==='continuation'?{continuation:{sourceScene:'dining',targetScene:'consultation',sourceAssetId:'offline-reference',sourceRunId:'offline-run',targetFunctionalProgram:resolveTargetFunctionalProgram('consultation')}}:{})});
++  const b=await bound(f),layers=adaptSpaceSource({packet:b.packet,taskContract:f.task,sourceEvidence:b.evidence});
++  const gate=validateSpaceProjection(layers.compilationEvidence,b.packet,f.task,layers,'execution');
++  const entries=gate.sidecar.entries.filter(e=>e.sourceKind==='system_target_program');
++  assert(entries.length>0);assert(entries.every(e=>e.confirmationStatus==='not_user_confirmation'));
++  assert(entries.every(e=>e.evidenceRefs.includes(`task:${f.task.taskId}`)));
++  // Frozen semantic grammar still rejects some registry wording. A system
++  // source cannot bypass that gate, nor can it claim user confirmation.
++  assert.equal(gate.status,'block');
++  assert.throws(()=>compileSpacePrompt({packet:b.packet,taskContract:f.task,sourceEvidence:b.evidence}),error=>error.code==='SPACE_EXECUTION_EVIDENCE_BLOCKED');
++  assert.equal(f.requests.length,0);
++});
++test('continuation cannot supply an invented system program',async t=>{
++  const f=await confirmed(t,simple);
++  Object.assign(f.task,{generationBasis:'continuation',subtype:'consultation',referenceAssetIds:['offline-reference'],continuation:{sourceScene:'dining',targetScene:'consultation',targetFunctionalProgram:{...resolveTargetFunctionalProgram('consultation'),requiredFunctions:['invented program']}}});
++  const b=await bound(f);
++  assert.throws(()=>adaptSpaceSource({packet:b.packet,taskContract:f.task,sourceEvidence:b.evidence}),/system_program_task_mismatch/);
++});
++test('FTT delta ledger reaches Compiler as proposed offline evidence; no formal payload',()=>{
++  const fixture=makeFinalDesignFixture(),before=JSON.stringify(fixture),v=fixture.variants.find(v=>v.scene.subtype==='dining')!;
++  const evidence=createOfflineSpaceEvidence({packet:v.B,basePacket:fixture.A,deltas:fixture.deltas,scene:'dining',task:v.task});
++  const row=evidence.entries.find(e=>e.fieldPath==='mediaTranslations.spatial.functionalRelationships[0]')!;
++  assert.equal(row.sourceStatus,'proposed_for_human_review_not_confirmed');assert.equal(row.confirmationStatus,'proposed');
++  assert.deepEqual(row.evidenceRefs,['knowledge:rks-observation-5','human_selection:golds[0].reason']);
++  assert.equal(row.originalText,v.B.mediaTranslations.spatial.functionalRelationships[0]);
++  const review=compileShortChainGeneration({task:v.task,projectContext:{visualDecisionPacket:v.B},offlineEvidence:evidence,evidencePurpose:'offline_review'});
++  assert.equal(review.status,'review_only');assert.equal(review.payload,null);assert.equal(review.dispatchable,false);
++  assert.equal(review.executionEligibility,'denied');assert(!('taskContract' in review));assert(!('finalPrompt' in review));
++  assert(review.evidence.entries.some(e=>e.sourceRecordId===row.sourceRecordId && e.confirmationStatus==='proposed'));
++  assert.throws(()=>compileSpacePrompt({packet:v.B,taskContract:v.task,sourceEvidence:evidence}),/experiment_cannot_authorize_execution/);
++  assert.equal(JSON.stringify(fixture),before);assert.equal(networkAttempts(),0);
++});
++for(const change of ['missing','conflict','changed']) test(`FTT invalid delta binding rejects ${change}`,()=>{
++  const f=makeFinalDesignFixture(),v=f.variants.find(v=>v.scene.subtype==='dining')!,deltas=structuredClone(f.deltas),packet=structuredClone(v.B);
++  const index=deltas.findIndex(d=>d.path==='mediaTranslations.spatial.functionalRelationships' && d.scene==='common');
++  if(change==='missing')deltas.splice(index,1);
++  if(change==='conflict')deltas[index].before=['wrong'];
++  if(change==='changed')packet.mediaTranslations.spatial.functionalRelationships[0]+=' changed';
++  assert.throws(()=>createOfflineSpaceEvidence({packet,basePacket:f.A,deltas,scene:'dining',task:v.task}),/delta_before_conflict|delta_final_packet_mismatch/);
++});
++test('duplicate entries bind to their declared indices; unchanged analysis never inherits confirmation',async t=>{
++  const f=await confirmed(t,c=>{c.spatialTranslation.functionalNetwork=['reception','reception','waiting area'];});
++  const captured=consumeCapturedSpaceEvidence(await f.mint(),{originalPacket:f.packet,confirmation:f.captured!.confirmation,taskContract:f.task});
++  const effective=applyUserConfirmedVisualDecision(f.packet,f.captured!.confirmation,f.project.id).packet;
++  const evidence=bindCapturedSpaceEvidence(captured,effective,f.task);
++  const entries=evidence.entries.filter(e=>/^mediaTranslations\.spatial\.functionalNetwork\[/u.test(e.fieldPath));
++  assert.deepEqual(entries.map(e=>[e.originalIndex,e.originalText]),[[0,'reception'],[1,'reception'],[2,'waiting area']]);
++  assert.equal(new Set(entries.map(e=>e.entryFingerprint)).size,3);
++  assert.deepEqual(entries.map(e=>e.sourceFieldPath),['spatialTranslation.functionalNetwork[0]','spatialTranslation.functionalNetwork[1]','spatialTranslation.functionalNetwork[2]']);
++  assert(entries.every(e=>e.confirmationStatus==='confirmed' && e.sourceStatus==='confirmed_design_intent_not_verified_property'));
++  assert(evidence.originalEntries.every(e=>e.confirmationStatus==='unconfirmed'));
++  assert(evidence.entries.filter(e=>e.fieldPath.startsWith('projectFacts.brandName')).every(e=>e.confirmationStatus==='unconfirmed'));
++  assert(Object.isFrozen(evidence.entries[0].parentScope));
++});
++for(const operation of ['delete','rewrite','reorder']) test(`effective Packet ${operation} invalidates exact binding`,async t=>{
++  const f=await confirmed(t,c=>{c.spatialTranslation.functionalNetwork=['reception','waiting area'];});
++  const captured=consumeCapturedSpaceEvidence(await f.mint(),{originalPacket:f.packet,confirmation:f.captured!.confirmation,taskContract:f.task});
++  const effective=applyUserConfirmedVisualDecision(f.packet,f.captured!.confirmation,f.project.id).packet;
++  if(operation==='delete')effective.mediaTranslations.spatial.functionalNetwork.pop();
++  if(operation==='rewrite')effective.mediaTranslations.spatial.functionalNetwork[0]='dining';
++  if(operation==='reorder')effective.mediaTranslations.spatial.functionalNetwork.reverse();
++  assert.throws(()=>bindCapturedSpaceEvidence(captured,effective,f.task),/effective_packet_mismatch/);
++});
++test('plain trusted flags and matching serialized snapshots cannot authorize direct compilation',async t=>{
++  const f=await confirmed(t);
++  for(const fake of [f.captured,structuredClone(await f.mint()),{trusted:true,sourceOwner:'project-design-direction.capture/resolve',...f.captured!.snapshot}]) {
++    assert.throws(()=>compileShortChainGeneration({task:f.task,projectContext:{visualDecisionPacket:f.packet},userConfirmedVisualDecision:f.captured!.confirmation,captureEvidence:fake}),/missing_or_forged_capture/);
++  }
++  assert.throws(()=>bindCapturedSpaceEvidence({effectivePacketFingerprint:'forged'},f.packet,f.task),/missing_or_forged_consumed_capture/);
++  assert.equal(f.requests.length,0);
++});
++test('needs_reconfirmation cannot issue evidence',async t=>{
++  const f=await confirmed(t);await f.owner.markForReview(f.project.id);
++  await assert.rejects(f.mint(),/RECONFIRM_REQUIRED/);
++});
++test('stale confirmation snapshot cannot issue evidence',async t=>{
++  const f=await confirmed(t);
++  await f.owner.saveDraft(f.project.id,{confirmation:f.confirmation,sourceStatement:'Changed isolated test decision',expectedRecordSha256:f.captured!.snapshot.recordSha256});
++  const next=await f.owner.get(f.project.id);await f.owner.confirm(f.project.id,{expectedRecordSha256:next.recordSha256,confirmedByUser:true});
++  await assert.rejects(f.mint(),/COMPILATION_STALE/);
++});
++test('analysis fingerprint changes cannot issue evidence',async t=>{
++  const f=await confirmed(t),p=path.join(f.paths.root,'project-context/visual-decision-packet.json');
++  const packet=JSON.parse(await fs.readFile(p,'utf8'));packet.mediaTranslations.spatial.spatialConcept+=' changed';
++  await fs.writeFile(p,JSON.stringify(packet));await assert.rejects(f.mint(),/RECONFIRM_REQUIRED/);
++});
++test('context Packet mismatch is rejected even with a valid capture',async t=>{
++  const f=await confirmed(t);f.packet.mediaTranslations.spatial.spatialConcept+=' injected';
++  await assert.rejects(f.mint(),/analysis_packet_mismatch/);
++});
++for(const field of ['projectId','taskId','generationBasis','currentInstruction']) test(`captured permission rejects changed ${field}`,async t=>{
++  const f=await confirmed(t),cap=await f.mint();
++  const task={...f.task,[field]:field==='generationBasis'?'reference_first':'changed',...(field==='generationBasis'?{referenceAssetIds:['explicit-ref']}:{})};
++  assert.throws(()=>consumeCapturedSpaceEvidence(cap,{originalPacket:f.packet,confirmation:f.captured!.confirmation,taskContract:task}),/task_scope_mismatch/);
++});
++test('post-capture Packet and confirmation mutations are rejected',async t=>{
++  const f=await confirmed(t),packet=structuredClone(f.packet);packet.mediaTranslations.spatial.sceneProgram[0]+=' changed';
++  const cap=await f.mint();
++  assert.throws(()=>consumeCapturedSpaceEvidence(cap,{originalPacket:packet,confirmation:f.captured!.confirmation,taskContract:f.task}),/original_packet_mismatch/);
++  const next=await f.mint(),confirmation=structuredClone(f.captured!.confirmation);confirmation.spatialTranslation.sceneProgram[0]+=' changed';
++  assert.throws(()=>consumeCapturedSpaceEvidence(next,{originalPacket:f.packet,confirmation,taskContract:f.task}),/confirmation_mismatch/);
++});

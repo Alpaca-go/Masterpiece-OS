@@ -1,0 +1,147 @@
+[
+  {
+    "name": "stage-a-visible",
+    "args": [
+      "--import",
+      "./packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/network-off.mjs",
+      "--import",
+      "tsx",
+      "--test",
+      "--test-reporter=tap",
+      "--test-concurrency=1",
+      "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/visible-carrier-evidence.test.ts"
+    ],
+    "exitCode": 0,
+    "durationMs": 573,
+    "counts": {
+      "tests": 14,
+      "pass": 14,
+      "fail": 0,
+      "skipped": 0
+    },
+    "sha256": "110fcbeccfc3471dde34abf855a9d656741566f86a59d874843f12f80ebf0749"
+  },
+  {
+    "name": "stage-a-field",
+    "args": [
+      "--import",
+      "./packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/network-off.mjs",
+      "--import",
+      "tsx",
+      "--test",
+      "--test-reporter=tap",
+      "--test-concurrency=1",
+      "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/field-contract.test.ts"
+    ],
+    "exitCode": 0,
+    "durationMs": 1262,
+    "counts": {
+      "tests": 101,
+      "pass": 101,
+      "fail": 0,
+      "skipped": 0
+    },
+    "sha256": "55389f085542542d02f4db41e4a7cb8cfe3351796e51475214b9aa4223cb8fe3"
+  },
+  {
+    "name": "stage-a-scope",
+    "args": [
+      "--import",
+      "./packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/network-off.mjs",
+      "--import",
+      "tsx",
+      "--test",
+      "--test-reporter=tap",
+      "--test-concurrency=1",
+      "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/scope-and-operations.test.ts"
+    ],
+    "exitCode": 0,
+    "durationMs": 1092,
+    "counts": {
+      "tests": 158,
+      "pass": 158,
+      "fail": 0,
+      "skipped": 0
+    },
+    "sha256": "85a8049a30d081eb5746f75b8653502dea8151e5328b0cfd63c48232d1b1c631"
+  },
+  {
+    "name": "e1g",
+    "args": [
+      "--import",
+      "./packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/network-off.mjs",
+      "--import",
+      "tsx",
+      "--test",
+      "--test-reporter=tap",
+      "--test-concurrency=1",
+      "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/independent-review.test.ts"
+    ],
+    "exitCode": 0,
+    "durationMs": 1156,
+    "counts": {
+      "tests": 46,
+      "pass": 46,
+      "fail": 0,
+      "skipped": 0
+    },
+    "sha256": "31d4b49f77071db1dde8321f7bee1c812022b6087c45c0cbdb46a66d76417d97"
+  },
+  {
+    "name": "e1e",
+    "args": [
+      "--import",
+      "./packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/network-off.mjs",
+      "--import",
+      "tsx",
+      "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/integrity-review-probes.mjs",
+      "packages/visual-workflow/reports/rks-stage-b1t-compilation-evidence/e1e-probes.json"
+    ],
+    "exitCode": 0,
+    "durationMs": 603,
+    "counts": {
+      "tests": 0,
+      "pass": 0,
+      "fail": 0,
+      "skipped": 0
+    },
+    "sha256": "673e475929715d5e86292dc44ff07f89b912238104c7a28a4bef1f7d08625898",
+    "probeCounts": {
+      "cases": 19,
+      "requirementsFailed": 0,
+      "modelCalls": 0
+    }
+  },
+  {
+    "name": "e1f-partial",
+    "args": [
+      "--import",
+      "./packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/network-off.mjs",
+      "--import",
+      "tsx",
+      "--test",
+      "--test-reporter=tap",
+      "--test-concurrency=1",
+      "packages/visual-workflow/tests/restaurant-knowledge/spatial-semantics/separation.test.ts",
+      "packages/visual-workflow/tests/spatial-quality.test.ts",
+      "packages/visual-workflow/tests/visible-requirement-ownership.test.ts",
+      "packages/visual-workflow/tests/scene-authority-repair.test.ts",
+      "packages/visual-workflow/tests/scene-decision-fidelity.test.ts",
+      "packages/visual-workflow/tests/cross-zone-operation-scope.test.ts",
+      "packages/visual-workflow/tests/automatic-design-proposal.test.ts",
+      "packages/visual-workflow/tests/methodology/acceptance.test.mjs"
+    ],
+    "exitCode": 1,
+    "durationMs": 3469,
+    "counts": {
+      "tests": 128,
+      "pass": 54,
+      "fail": 74,
+      "skipped": 0
+    },
+    "sha256": "c197cb40b1ce7386f5ae45f3cf706e24628e77033c3e7fca42fd07c5829f69b3",
+    "commandIssue": "Historical command slice(7) omitted evidence-boundaries.test.ts; only 128 of 159 executed. No replacement run after the stop.",
+    "status": "STOP_PROTECTED_REGRESSION",
+    "preWhitespaceNormalizationSha256": "dce9376ac6fae235b4130cc4360abf879f801ae16d25f5f7aab01c008b047fd0"
+  }
+]

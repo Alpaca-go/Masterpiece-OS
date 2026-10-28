@@ -1,0 +1,41 @@
+✔ real persisted owner capture can issue a task-bound one-use compilation identity (269.4278ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"26bead2c-7b4e-4c12-bad2-33ed1c31a870","taskId":"evidence-offline-task","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7185,"compileDurationMs":44.446}
+✔ vertical production service capture -> bindings -> Projection -> Adapter -> Compiler stays offline (140.8216ms)
+✔ Compiler rejects missing and serialized evidence; tampered projected values fail validation (86.5016ms)
+✔ parent conditions/unknown cannot disappear: if reception equipment is present; reception equipment (119.5614ms)
+✔ parent conditions/unknown cannot disappear: reception equipment and enjoying cosmic essence (121.0008ms)
+✔ off-frame entries retain source range and no current-shot output (95.921ms)
+✔ review_required window visibility cannot authorize generation (90.7975ms)
+✔ unknown array entry cannot disappear beside a valid visible entry (87.784ms)
+✔ duplicate projected entries keep distinct source indices and bindings (88.5516ms)
+{"event":"VNEXT_IMAGE_PROMPT_COMPILED","projectId":"de6aaca2-4367-46e1-ae36-c8310b504841","taskId":"evidence-offline-task","deliverableFamily":"space","subtype":"reception","shot":"entrance_view","templateIds":[],"adapterId":"seedream-5.0-pro","promptCharacters":7185,"compileDurationMs":23.334}
+✔ start still re-resolves the real owner after offline compilation (135.8564ms)
+✔ reference_first system program has task/registry ownership, independent semantic and visibility gates (155.7286ms)
+✔ continuation system program has task/registry ownership, independent semantic and visibility gates (119.5855ms)
+✔ continuation cannot supply an invented system program (72.399ms)
+✔ FTT delta ledger reaches Compiler as proposed offline evidence; no formal payload (64.3763ms)
+✔ FTT invalid delta binding rejects missing (6.0893ms)
+✔ FTT invalid delta binding rejects conflict (5.1124ms)
+✔ FTT invalid delta binding rejects changed (5.8332ms)
+✔ duplicate entries bind to their declared indices; unchanged analysis never inherits confirmation (77.2962ms)
+✔ effective Packet delete invalidates exact binding (61.4055ms)
+✔ effective Packet rewrite invalidates exact binding (60.3491ms)
+✔ effective Packet reorder invalidates exact binding (63.4212ms)
+✔ plain trusted flags and matching serialized snapshots cannot authorize direct compilation (60.5498ms)
+✔ needs_reconfirmation cannot issue evidence (93.2385ms)
+✔ stale confirmation snapshot cannot issue evidence (88.9494ms)
+✔ analysis fingerprint changes cannot issue evidence (61.7174ms)
+✔ context Packet mismatch is rejected even with a valid capture (56.0005ms)
+✔ captured permission rejects changed projectId (69.1765ms)
+✔ captured permission rejects changed taskId (62.1297ms)
+✔ captured permission rejects changed generationBasis (61.7057ms)
+✔ captured permission rejects changed currentInstruction (63.1487ms)
+✔ post-capture Packet and confirmation mutations are rejected (65.113ms)
+ℹ tests 31
+ℹ suites 0
+ℹ pass 31
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2976.8435

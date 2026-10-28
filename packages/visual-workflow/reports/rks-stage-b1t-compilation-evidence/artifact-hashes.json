@@ -1,0 +1,125 @@
+{
+  "note": "Capture before candidate commit; excludes this self-referential index.",
+  "files": [
+    {
+      "file": "e1e-probes.json",
+      "bytes": 153559,
+      "sha256": "d4e07e7b7aef21105fc2618104e60b5b07f2769f11bc7f67cf478ca823b74954"
+    },
+    {
+      "file": "e1e.txt",
+      "bytes": 322,
+      "sha256": "673e475929715d5e86292dc44ff07f89b912238104c7a28a4bef1f7d08625898"
+    },
+    {
+      "file": "e1f.txt",
+      "bytes": 128701,
+      "sha256": "c197cb40b1ce7386f5ae45f3cf706e24628e77033c3e7fca42fd07c5829f69b3"
+    },
+    {
+      "file": "e1g.txt",
+      "bytes": 10055,
+      "sha256": "31d4b49f77071db1dde8321f7bee1c812022b6087c45c0cbdb46a66d76417d97"
+    },
+    {
+      "file": "failure-attribution.json",
+      "bytes": 38530,
+      "sha256": "8ad350d07c5888a72fe9713b39df759abaa5f55ea21d220671c94aec5d5e8fc8"
+    },
+    {
+      "file": "log-hashes.json",
+      "bytes": 3245,
+      "sha256": "8b2cfc59e11346762b48ebfe17f824f45f29de355a400fbd1c6ce8b4e05a1d61"
+    },
+    {
+      "file": "preservation.json",
+      "bytes": 45944,
+      "sha256": "256e4abcb99b3dcc752705b921385fa28d656bb2fc0b489c7c3a1ed0c9e82a09"
+    },
+    {
+      "file": "production-diff.patch",
+      "bytes": 42301,
+      "sha256": "0835c0910b0c89dee98459ac64304b7e50ee5d64d39928e574cb7807a4dcfe24"
+    },
+    {
+      "file": "README.md",
+      "bytes": 16543,
+      "sha256": "49e0f3f78202e5f8d6e9ce11301827979e503230c1fb07ca3fa35e8ec0409331"
+    },
+    {
+      "file": "regressions.json",
+      "bytes": 4536,
+      "sha256": "d9ce5195d6ffe5abd2d7c480c2b2e109adb818e720a850d15b35f19bfd06f716"
+    },
+    {
+      "file": "repo-verify-initial.txt",
+      "bytes": 1481,
+      "sha256": "fa65826e742b205375fe9a569fc375c1ce1d5fdf79d9b3efa53fb6c164a5ee23"
+    },
+    {
+      "file": "repo-verify.txt",
+      "bytes": 1272,
+      "sha256": "3133a6ddd90217cf00226a9d7a2c352f05265165fe03e9285c79bf42a7bff394"
+    },
+    {
+      "file": "stage-a-field.txt",
+      "bytes": 21731,
+      "sha256": "55389f085542542d02f4db41e4a7cb8cfe3351796e51475214b9aa4223cb8fe3"
+    },
+    {
+      "file": "stage-a-scope.txt",
+      "bytes": 37874,
+      "sha256": "85a8049a30d081eb5746f75b8653502dea8151e5328b0cfd63c48232d1b1c631"
+    },
+    {
+      "file": "stage-a-visible.txt",
+      "bytes": 2758,
+      "sha256": "110fcbeccfc3471dde34abf855a9d656741566f86a59d874843f12f80ebf0749"
+    },
+    {
+      "file": "step-1-diff.patch",
+      "bytes": 17028,
+      "sha256": "a13cfa045eb5a9bdeb7d746f9dbb9ba31b879e4d1e7d85692660e3c4d579d939"
+    },
+    {
+      "file": "step-1-tests.txt",
+      "bytes": 929,
+      "sha256": "d7704f8f5b37c15b3f4fff594cf83fd5f72496afe9f2ed36ab9f294254b6e6b4"
+    },
+    {
+      "file": "step-2-diff.patch",
+      "bytes": 25030,
+      "sha256": "855d9a73c36ed63e020c3ea041d3a40df204109a9694674cb65c2c96f6508951"
+    },
+    {
+      "file": "step-2-tests.txt",
+      "bytes": 1241,
+      "sha256": "02d2a84760355187210bc7b7108466307f840b6478ca88af5f6a216af68b9f68"
+    },
+    {
+      "file": "step-3-4-tests.txt",
+      "bytes": 2419,
+      "sha256": "4ffbe73712eb776eddeed80c1178c689cb62e45a9ea372148a02a3f5a7fa67d6"
+    },
+    {
+      "file": "unexpanded-tests.json",
+      "bytes": 12810,
+      "sha256": "9c12c9c27e16b5f5044900cab28d6d5468d576d183754145eb9e5f93fef9d3b6"
+    },
+    {
+      "file": "vertical-diff.patch",
+      "bytes": 61411,
+      "sha256": "28f7580f9b34f52778776d22e9c5ac8671b2695a5ba453cc6dff13cf0aa228e6"
+    },
+    {
+      "file": "vertical-final-tests.txt",
+      "bytes": 3260,
+      "sha256": "7332e7ca1bfaccfd593ea4bc9e940c4eea6ac7f84f5b4b76a52563d403fac4d1"
+    },
+    {
+      "file": "vertical-tests.txt",
+      "bytes": 3269,
+      "sha256": "d71ac66f58a8a05d9a1e5b382ceeff21566dd94f3e453d17c2a814aafbd77147"
+    }
+  ]
+}

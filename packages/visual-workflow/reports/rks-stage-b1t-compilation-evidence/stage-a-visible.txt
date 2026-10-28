@@ -1,0 +1,94 @@
+TAP version 13
+# Subtest: visibility carrier evidence block: equipment
+ok 1 - visibility carrier evidence block: equipment
+  ---
+  duration_ms: 56.9226
+  type: 'test'
+  ...
+# Subtest: visibility carrier evidence pass: reception equipment
+ok 2 - visibility carrier evidence pass: reception equipment
+  ---
+  duration_ms: 9.9712
+  type: 'test'
+  ...
+# Subtest: visibility carrier evidence block: table
+ok 3 - visibility carrier evidence block: table
+  ---
+  duration_ms: 2.6635
+  type: 'test'
+  ...
+# Subtest: visibility carrier evidence pass: dining table
+ok 4 - visibility carrier evidence pass: dining table
+  ---
+  duration_ms: 2.7787
+  type: 'test'
+  ...
+# Subtest: visibility carrier evidence block: 设备
+ok 5 - visibility carrier evidence block: 设备
+  ---
+  duration_ms: 117.9619
+  type: 'test'
+  ...
+# Subtest: visibility carrier evidence pass: 入口处的咨询设备
+ok 6 - visibility carrier evidence pass: 入口处的咨询设备
+  ---
+  duration_ms: 2.0877
+  type: 'test'
+  ...
+# Subtest: visibility carrier evidence block: equipment near it
+ok 7 - visibility carrier evidence block: equipment near it
+  ---
+  duration_ms: 28.1773
+  type: 'test'
+  ...
+# Subtest: visibility carrier evidence pass: equipment near reception counter
+ok 8 - visibility carrier evidence pass: equipment near reception counter
+  ---
+  duration_ms: 2.1375
+  type: 'test'
+  ...
+# Subtest: visibility carrier evidence block: reception equipment is not present
+ok 9 - visibility carrier evidence block: reception equipment is not present
+  ---
+  duration_ms: 1.6419
+  type: 'test'
+  ...
+# Subtest: visibility carrier evidence block: if reception equipment is present
+ok 10 - visibility carrier evidence block: if reception equipment is present
+  ---
+  duration_ms: 0.8212
+  type: 'test'
+  ...
+# Subtest: visibility carrier evidence block: 未确认入口处的咨询设备
+ok 11 - visibility carrier evidence block: 未确认入口处的咨询设备
+  ---
+  duration_ms: 0.6754
+  type: 'test'
+  ...
+# Subtest: visibility carrier evidence block: reception equipment and enjoying cosmic essence
+ok 12 - visibility carrier evidence block: reception equipment and enjoying cosmic essence
+  ---
+  duration_ms: 3.4493
+  type: 'test'
+  ...
+# Subtest: a valid array item cannot authorize a bare carrier or disappear during separation
+ok 13 - a valid array item cannot authorize a bare carrier or disappear during separation
+  ---
+  duration_ms: 3.5469
+  type: 'test'
+  ...
+# Subtest: node field contracts remain independent of visibility permission
+ok 14 - node field contracts remain independent of visibility permission
+  ---
+  duration_ms: 1.358
+  type: 'test'
+  ...
+1..14
+# tests 14
+# suites 0
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 499.6651

@@ -34,7 +34,7 @@ function scopeSourceEntries(entries, targetScene) {
     // interior description cannot acquire visibility through an adjacent
     // reception constraint, nor can a boundary constraint disappear with it.
     let clauseCursor = 0;
-    const clauses = String(entry.text).split(/[;；，,。]|\.(?=\s|$)/u).map(text=>text.trim()).filter(Boolean).map(text=> {
+    let clauses = String(entry.text).split(/[;；，,。]|\.(?=\s|$)/u).map(text=>text.trim()).filter(Boolean).map(text=> {
       const sourceStart = String(entry.text).indexOf(text,clauseCursor);
       clauseCursor = sourceStart + text.length;
       const entities = entitiesFor(text);
@@ -60,7 +60,22 @@ function scopeSourceEntries(entries, targetScene) {
         scopeReason:review ? 'visibility_or_network_authority_requires_review' : network ? 'logical_network_without_visibility_authority' : undefined,
         visibilityAuthority:sceneScope === 'current_shot' ? 'current_shot' : sceneScope === 'cross_scene_constraint' ? 'current_boundary_only' : 'none'};
     });
-    const sceneScope = !known ? "unresolved" : clauses.some(clause=>clause.sceneScope === "cross_scene_constraint") ? "cross_scene_constraint" : clauses.some(clause=>clause.sceneScope === "current_shot") ? "current_shot" : clauses.some(clause=>clause.sceneScope === "review_required") ? "review_required" : "off_frame_dependency";
+    if (entry.sourceEvidence) {
+      const parent=entry.sourceEvidence;
+      if (parent.packetText !== entry.text) throw Object.assign(new Error('SPACE_EVIDENCE_INVALID: projection_input_mismatch'),{code:'SPACE_EVIDENCE_INVALID'});
+      const partial=clauses.some(clause=>clause.sceneScope !== 'current_shot');
+      clauses=clauses.map(clause=>{
+        const exactIndependent=parent.clauses.some(c=>c.start===clause.sourceStart && c.end===clause.sourceEnd);
+        const invalidParent=parent.semanticValidation==='block' || ['conditional','unconfirmed','negative_observation'].includes(parent.modality);
+        const unscoped=!clause.entities.length && !localContext;
+        // A complete parent's permission never survives as a dangling fragment.
+        const missingParent=partial && !exactIndependent && ['current_shot','cross_scene_constraint'].includes(clause.sceneScope);
+        return {...clause,...invalidParent || unscoped || missingParent ? {
+          sceneScope:'review_required',visibilityAuthority:'none',scopeReason:'parent_or_scene_evidence_requires_review'
+        } : {},parentScope:parent.parentScope,sourceEntryId:parent.entryFingerprint};
+      });
+    }
+    const sceneScope = !known ? "unresolved" : entry.sourceEvidence && clauses.some(clause=>clause.sceneScope === "review_required") ? "review_required" : clauses.some(clause=>clause.sceneScope === "cross_scene_constraint") ? "cross_scene_constraint" : clauses.some(clause=>clause.sceneScope === "current_shot") ? "current_shot" : clauses.some(clause=>clause.sceneScope === "review_required") ? "review_required" : "off_frame_dependency";
     return {...entry,sceneScope,clauses,detectedScenes:scenes,
       currentShotText:clauses.every(clause=>clause.sceneScope === "current_shot") ? entry.text : clauses.filter(clause=>clause.sceneScope === "current_shot").map(clause=>clause.text).join("; "),
       boundaryConstraints:clauses.filter(clause=>clause.sceneScope === "cross_scene_constraint"),

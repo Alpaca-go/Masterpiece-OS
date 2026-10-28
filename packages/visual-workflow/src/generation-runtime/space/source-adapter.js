@@ -24,6 +24,7 @@ import {
 } from "./scene-projection/target-scene-projection.js";
 import { scopeSourceEntries } from "./scene-projection/target-scene-projection.js";
 import { sanitizeBrandItem } from "./semantic/sanitize-brand-expression.js";
+import {assertSpaceEvidenceBinding,sealSpaceProjection,bindSystemTargetProgram} from './compilation-evidence.js';
 function cleanList(...values) {
   const out = [];
   const seen = /* @__PURE__ */ new Set();
@@ -52,7 +53,8 @@ function firstString(...values) {
 function isSpaceSourceInsufficient(err) {
   return Boolean(err && err.code === SPACE_PHASE9B_SOURCE_INSUFFICIENT);
 }
-function adaptSpaceSource({ packet, taskContract, projectContext }) {
+function adaptSpaceSource({ packet, taskContract, projectContext, sourceEvidence, evidencePurpose='execution' }) {
+  if (sourceEvidence) assertSpaceEvidenceBinding(sourceEvidence,packet,taskContract,evidencePurpose);
   if (!packet || packet.schemaVersion !== "1.0") {
     throw Object.assign(
       new Error(`${SPACE_PHASE9B_SOURCE_INSUFFICIENT}: V5 VisualDecisionPacket (schema 1.0) is required`),
@@ -558,7 +560,7 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
         : disposition === 'post_composite_only' ? 'in_scene_identity_post_composite' : disposition === 'off_frame_dependency' ? 'foreign_scene_entity'
         : sanitizer?.reason || disposition}];
   });
-  return {
+  const layers = {
     projectIdentity: {
       brandName: projectFacts.brandName?.value || projectContext?.brandCore?.name || "",
       industry: projectFacts.industry?.value || projectContext?.brandCore?.industry || "",
@@ -639,6 +641,82 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
     ...targetSceneProjection ? { targetSceneProjection } : {},
     ...continuationOverride ? { continuationOverride } : {}
   };
+  if (sourceEvidence) {
+    const outputs=[],records=[],systemEntries=[];
+    const emit=(entry,scope,text,range,outputPath)=>{
+      outputs.push({outputBindingId:`${entry.entryFingerprint}:${outputPath || 'withheld'}:${range.start}:${range.end}`,
+        sourceEntryIds:[entry.entryFingerprint],fieldPath:entry.fieldPath,originalIndex:entry.originalIndex,
+        originalText:entry.originalText,parentScope:entry.parentScope,semanticType:entry.semanticType,modality:entry.modality,
+        sceneScope:scope.sceneScope,visibilityAuthority:scope.visibilityAuthority || 'none',
+        outputPath,outputText:text,sourceRange:range,outputRange:{start:0,end:text?.length || 0}});
+    };
+    const project=(field,outputPath)=>{
+      const entries=sourceEvidence.entries.filter(e=>new RegExp(`^mediaTranslations\\.spatial\\.${field}\\[\\d+\\]$`,'u').test(e.fieldPath));
+      const values=[];
+      for(const entry of entries) {
+        const scoped=scopeSourceEntries([{text:entry.packetText,sourcePath:entry.fieldPath,sourceEvidence:entry}],taskContract.subtype)[0];
+        records.push(scoped);
+        if (scoped.sceneScope==='review_required' || scoped.sceneScope==='unresolved') {
+          emit(entry,{sceneScope:scoped.sceneScope},null,{start:0,end:entry.originalText.length},null);continue;
+        }
+        if (scoped.clauses.every(c=>c.sceneScope==='current_shot')) {
+          emit(entry,{sceneScope:'current_shot',visibilityAuthority:'current_shot'},entry.packetText,{start:0,end:entry.originalText.length},`${outputPath}[${values.length}]`);
+          values.push(entry.packetText);
+        } else for(const clause of scoped.clauses) {
+          const boundary=clause.sceneScope==='cross_scene_constraint';
+          const active=boundary || clause.sceneScope==='current_shot';
+          const target=boundary?'architectureFunctionBridge.crossSceneConstraints':outputPath;
+          const list=boundary?layers.architectureFunctionBridge.crossSceneConstraints:values;
+          emit(entry,clause,active?clause.text:null,{start:clause.sourceStart,end:clause.sourceEnd},active?`${target}[${list.length}]`:null);
+          if(active) list.push(clause.text);
+        }
+      }
+      return values;
+    };
+    if (['standard','art_direction_reference'].includes(taskContract.generationBasis)) {
+      layers.architectureFunctionBridge.crossSceneConstraints=[];
+      layers._raw.sceneProgram=project('sceneProgram','_raw.sceneProgram');
+      layers._raw.functionalNetwork=project('functionalNetwork','_raw.functionalNetwork');
+      layers.architectureFunctionBridge.operationConstraints=project('functionalRelationships','architectureFunctionBridge.operationConstraints');
+      layers.architectureFunctionBridge.humanExperience=project('peopleBehavior','architectureFunctionBridge.humanExperience');
+      layers.composition.mustBeVisible=project('mustBeVisible','composition.mustBeVisible');
+      layers._raw.positiveDifferentiators=project('positiveDifferentiators','_raw.positiveDifferentiators');
+      if (layers.composition.userRequirements) layers.composition.userRequirements=project('compositionRequirements','composition.userRequirements');
+      const bindObjects=(items,outputPath)=>{
+        const kept=[];
+        for(const item of items) {
+          const entry=sourceEvidence.entries.find(e=>e.fieldPath===item.sourcePath);
+          if (!entry || item.text !== entry.packetText) {
+            outputs.push({outputBindingId:`unresolved:${item.sourcePath}`,sourceEntryIds:entry?[entry.entryFingerprint]:[],
+              outputPath:null,outputText:null,sceneScope:'review_required',visibilityAuthority:'none'});continue;
+          }
+          const scoped=scopeSourceEntries([{text:entry.packetText,sourcePath:entry.fieldPath,sourceEvidence:entry}],taskContract.subtype)[0];
+          records.push(scoped);
+          if (scoped.clauses.every(c=>c.sceneScope==='current_shot')) {
+            emit(entry,{sceneScope:'current_shot',visibilityAuthority:'current_shot'},entry.packetText,{start:0,end:entry.originalText.length},`${outputPath}[${kept.length}].text`);
+            kept.push({...item,...scoped,text:entry.packetText});
+          } else emit(entry,{sceneScope:scoped.sceneScope},null,{start:0,end:entry.originalText.length},null);
+        }
+        return kept;
+      };
+      layers.decisionTrace.architectureDecisions=bindObjects(layers.decisionTrace.architectureDecisions,'decisionTrace.architectureDecisions');
+      layers.composition.artisticFocus=bindObjects(layers.composition.artisticFocus,'composition.artisticFocus');
+      // Brand lines have explicit per-input sanitizer provenance rather than a
+      // text search across unrelated fields. Unsupported rewrites stay in review.
+      const brandEntries=sourceEvidence.entries.filter(e=>/^mediaTranslations\.spatial\.brandRoleManifestation\[\d+\]$/u.test(e.fieldPath));
+      const brandItems=brandEntries.map(e=>({text:sanitizeBrandItem(e.packetText).text,sourcePath:e.fieldPath})).filter(e=>e.text);
+      const brand=bindObjects(brandItems,'brandEvidence');
+      // Convert the object output bindings to the actual renderer's string list.
+      for(const output of outputs) if (output.outputPath?.startsWith('brandEvidence[')) output.outputPath=output.outputPath.replace('brandEvidence','_raw.brandRoleManifestation').replace(/\.text$/u,'');
+      layers._raw.brandRoleManifestation=brand.map(e=>e.text);
+      layers.decisionTrace.sceneScope=records;
+    } else {
+      const system=bindSystemTargetProgram(sourceEvidence,packet,taskContract,layers,evidencePurpose);
+      outputs.push(...system.outputs);systemEntries.push(...system.entries);
+    }
+    layers.compilationEvidence=sealSpaceProjection(sourceEvidence,packet,taskContract,layers,outputs,evidencePurpose,systemEntries);
+  }
+  return layers;
 }
 function splitMustBeVisible(items) {
   const safe = [];

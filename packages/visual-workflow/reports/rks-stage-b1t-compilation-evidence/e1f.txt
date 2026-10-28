@@ -1,0 +1,1895 @@
+TAP version 13
+# Subtest: default model request asks for automatic proposals while retaining evidence and unknown-fact boundaries
+ok 1 - default model request asks for automatic proposals while retaining evidence and unknown-fact boundaries
+  ---
+  duration_ms: 1.1389
+  type: 'test'
+  ...
+# Subtest: model output keeps scoped colors, composition and proposal provenance through normalization and autofill
+ok 2 - model output keeps scoped colors, composition and proposal provenance through normalization and autofill
+  ---
+  duration_ms: 15.9338
+  type: 'test'
+  ...
+# Subtest: invalid scope or claimed confirmation cannot acquire proposal authority
+ok 3 - invalid scope or claimed confirmation cannot acquire proposal authority
+  ---
+  duration_ms: 1.0831
+  type: 'test'
+  ...
+# Subtest: functional relation recognition does not grant authority to identity, motifs or color geometry
+ok 4 - functional relation recognition does not grant authority to identity, motifs or color geometry
+  ---
+  duration_ms: 31.2416
+  type: 'test'
+  ...
+# Subtest: automatic suggestion can be confirmed without field rewriting and reaches actual offline image adapter
+not ok 5 - automatic suggestion can be confirmed without field rewriting and reaches actual offline image adapter
+  ---
+  duration_ms: 225.6285
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\automatic-design-proposal.test.ts:1:4864'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EXECUTION_EVIDENCE_BLOCKED'
+  code: 'SPACE_EXECUTION_EVIDENCE_BLOCKED'
+  stack: |-
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:270:93)
+    compileSpaceGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:138:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:84:22)
+    Object.compile (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js:187:20)
+    async TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\automatic-design-proposal.test.ts:83:18)
+    async Test.run (node:internal/test_runner/test:1404:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: cross-zone relationship remains a current boundary constraint: Reception circulation connects to treatment through a screened access route
+ok 6 - cross-zone relationship remains a current boundary constraint: Reception circulation connects to treatment through a screened access route
+  ---
+  duration_ms: 4.4602
+  type: 'test'
+  ...
+# Subtest: cross-zone relationship remains a current boundary constraint: Reception waiting must not expose consultation conversations
+ok 7 - cross-zone relationship remains a current boundary constraint: Reception waiting must not expose consultation conversations
+  ---
+  duration_ms: 0.9363
+  type: 'test'
+  ...
+# Subtest: cross-zone relationship remains a current boundary constraint: Recovery return traffic must avoid the reception queue
+ok 8 - cross-zone relationship remains a current boundary constraint: Recovery return traffic must avoid the reception queue
+  ---
+  duration_ms: 0.171
+  type: 'test'
+  ...
+# Subtest: cross-zone relationship remains a current boundary constraint: Reception is adjacent to consultation with an acoustic privacy boundary
+ok 9 - cross-zone relationship remains a current boundary constraint: Reception is adjacent to consultation with an acoustic privacy boundary
+  ---
+  duration_ms: 0.1579
+  type: 'test'
+  ...
+# Subtest: cross-zone relationship remains a current boundary constraint: 接待区到治疗区的患者动线与员工通道分离
+ok 10 - cross-zone relationship remains a current boundary constraint: 接待区到治疗区的患者动线与员工通道分离
+  ---
+  duration_ms: 1.8428
+  type: 'test'
+  ...
+# Subtest: cross-zone relationship remains a current boundary constraint: 接待区与治疗区之间应保持隔声边界
+ok 11 - cross-zone relationship remains a current boundary constraint: 接待区与治疗区之间应保持隔声边界
+  ---
+  duration_ms: 0.2107
+  type: 'test'
+  ...
+# Subtest: cross-zone relationship remains a current boundary constraint: 咨询区入口不得从接待座位直接看到，保护隐私
+ok 12 - cross-zone relationship remains a current boundary constraint: 咨询区入口不得从接待座位直接看到，保护隐私
+  ---
+  duration_ms: 0.4287
+  type: 'test'
+  ...
+# Subtest: cross-zone relationship remains a current boundary constraint: 恢复区返回人流不得与接待候客队列交叉
+ok 13 - cross-zone relationship remains a current boundary constraint: 恢复区返回人流不得与接待候客队列交叉
+  ---
+  duration_ms: 0.2308
+  type: 'test'
+  ...
+# Subtest: foreign interior remains off frame: Treatment room contains procedure beds
+ok 14 - foreign interior remains off frame: Treatment room contains procedure beds
+  ---
+  duration_ms: 0.3679
+  type: 'test'
+  ...
+# Subtest: foreign interior remains off frame: Consultation room furniture and display walls
+ok 15 - foreign interior remains off frame: Consultation room furniture and display walls
+  ---
+  duration_ms: 0.3091
+  type: 'test'
+  ...
+# Subtest: foreign interior remains off frame: Recovery room equipped with lounge beds
+ok 16 - foreign interior remains off frame: Recovery room equipped with lounge beds
+  ---
+  duration_ms: 0.1245
+  type: 'test'
+  ...
+# Subtest: foreign interior remains off frame: 治疗室内有诊疗设备
+ok 17 - foreign interior remains off frame: 治疗室内有诊疗设备
+  ---
+  duration_ms: 0.1643
+  type: 'test'
+  ...
+# Subtest: mixed clauses preserve the local operational relation without granting interior visibility
+ok 18 - mixed clauses preserve the local operational relation without granting interior visibility
+  ---
+  duration_ms: 1.0353
+  type: 'test'
+  ...
+# Subtest: a foreign-only privacy statement is retained only in an operational source context
+ok 19 - a foreign-only privacy statement is retained only in an operational source context
+  ---
+  duration_ms: 1.765
+  type: 'test'
+  ...
+# Subtest: formal compiler retains legitimate relationships once without exposing foreign interiors or mutating input
+not ok 20 - formal compiler retains legitimate relationships once without exposing foreign interiors or mutating input
+  ---
+  duration_ms: 1.4756
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\cross-zone-operation-scope.test.ts:1:3281'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\cross-zone-operation-scope.test.ts:55:18)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: bakery-methodology: current-project relations and scope reach suggestion and compiler without mutation
+not ok 21 - bakery-methodology: current-project relations and scope reach suggestion and compiler without mutation
+  ---
+  duration_ms: 3.4249
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\methodology\\acceptance.test.mjs:61:3'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/methodology/acceptance.test.mjs:71:20)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.start (node:internal/test_runner/test:1257:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+  ...
+# Subtest: outdoor-methodology: current-project relations and scope reach suggestion and compiler without mutation
+not ok 22 - outdoor-methodology: current-project relations and scope reach suggestion and compiler without mutation
+  ---
+  duration_ms: 0.3346
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\methodology\\acceptance.test.mjs:61:3'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/methodology/acceptance.test.mjs:71:20)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: insufficient evidence remains absent rather than acquiring another project decision
+ok 23 - insufficient evidence remains absent rather than acquiring another project decision
+  ---
+  duration_ms: 0.7585
+  type: 'test'
+  ...
+# Subtest: brand or industry renaming alone does not change functional decisions or invent artwork
+not ok 24 - brand or industry renaming alone does not change functional decisions or invent artwork
+  ---
+  duration_ms: 0.4556
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\methodology\\acceptance.test.mjs:98:1'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/methodology/acceptance.test.mjs:105:18)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: relationship mutation is preserved as a change, not accepted on object counts
+not ok 25 - relationship mutation is preserved as a change, not accepted on object counts
+  ---
+  duration_ms: 0.1658
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\methodology\\acceptance.test.mjs:110:1'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/tests/methodology/acceptance.test.mjs:112:18)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: historical P7a formal and provider prompts retain their recorded text hashes
+ok 26 - historical P7a formal and provider prompts retain their recorded text hashes
+  ---
+  duration_ms: 15.4873
+  type: 'test'
+  ...
+# Subtest: archived mixed records remain rejected as whole phrases; only evidenced clauses are separated
+ok 27 - archived mixed records remain rejected as whole phrases; only evidenced clauses are separated
+  ---
+  duration_ms: 260.4575
+  type: 'test'
+  ...
+# Subtest: mixed scene nodes preserve menu, seating, lighting and pickup; brand imagery has a separate owner
+ok 28 - mixed scene nodes preserve menu, seating, lighting and pickup; brand imagery has a separate owner
+  ---
+  duration_ms: 73.2921
+  type: 'test'
+  ...
+# Subtest: deterministic separation runs before any optional model repair, revalidates and keeps input packet immutable
+ok 29 - deterministic separation runs before any optional model repair, revalidates and keeps input packet immutable
+  ---
+  duration_ms: 107.8066
+  type: 'test'
+  ...
+# Subtest: dedicated visible evidence retains actual activity: 厨师正在备餐
+ok 30 - dedicated visible evidence retains actual activity: 厨师正在备餐
+  ---
+  duration_ms: 0.467
+  type: 'test'
+  ...
+# Subtest: dedicated visible evidence retains actual activity: 顾客在餐桌用餐
+ok 31 - dedicated visible evidence retains actual activity: 顾客在餐桌用餐
+  ---
+  duration_ms: 0.4076
+  type: 'test'
+  ...
+# Subtest: dedicated visible evidence retains actual activity: 店员为顾客打包商品
+ok 32 - dedicated visible evidence retains actual activity: 店员为顾客打包商品
+  ---
+  duration_ms: 0.4143
+  type: 'test'
+  ...
+# Subtest: dedicated visible evidence retains actual activity: 员工操作收银机
+ok 33 - dedicated visible evidence retains actual activity: 员工操作收银机
+  ---
+  duration_ms: 0.4149
+  type: 'test'
+  ...
+# Subtest: dedicated visible evidence retains actual activity: 操作员使用检测设备
+ok 34 - dedicated visible evidence retains actual activity: 操作员使用检测设备
+  ---
+  duration_ms: 0.3967
+  type: 'test'
+  ...
+# Subtest: dedicated visible evidence retains actual activity: staff operating a cash register
+ok 35 - dedicated visible evidence retains actual activity: staff operating a cash register
+  ---
+  duration_ms: 17.0934
+  type: 'test'
+  ...
+# Subtest: dedicated visible evidence retains actual activity: technicians using equipment
+ok 36 - dedicated visible evidence retains actual activity: technicians using equipment
+  ---
+  duration_ms: 0.522
+  type: 'test'
+  ...
+# Subtest: dedicated visible evidence retains actual activity: guests checking in at reception
+ok 37 - dedicated visible evidence retains actual activity: guests checking in at reception
+  ---
+  duration_ms: 0.4137
+  type: 'test'
+  ...
+# Subtest: existing concrete visible carriers keep renderer ownership while analysis uses positive carrier evidence
+ok 38 - existing concrete visible carriers keep renderer ownership while analysis uses positive carrier evidence
+  ---
+  duration_ms: 10.1874
+  type: 'test'
+  ...
+# Subtest: payment equipment is not a silver color declaration; explicit silver finish still remains styling
+ok 39 - payment equipment is not a silver color declaration; explicit silver finish still remains styling
+  ---
+  duration_ms: 0.382
+  type: 'test'
+  ...
+# Subtest: unknown, decorative or negated visibility gets no functional grant: unresolved rendezvous
+ok 40 - unknown, decorative or negated visibility gets no functional grant: unresolved rendezvous
+  ---
+  duration_ms: 21.0734
+  type: 'test'
+  ...
+# Subtest: unknown, decorative or negated visibility gets no functional grant: customers enjoying the cosmic essence at tables
+ok 41 - unknown, decorative or negated visibility gets no functional grant: customers enjoying the cosmic essence at tables
+  ---
+  duration_ms: 0.7467
+  type: 'test'
+  ...
+# Subtest: unknown, decorative or negated visibility gets no functional grant: maybe staff operating equipment
+ok 42 - unknown, decorative or negated visibility gets no functional grant: maybe staff operating equipment
+  ---
+  duration_ms: 0.2608
+  type: 'test'
+  ...
+# Subtest: unknown, decorative or negated visibility gets no functional grant: staff not operating equipment
+ok 43 - unknown, decorative or negated visibility gets no functional grant: staff not operating equipment
+  ---
+  duration_ms: 0.6882
+  type: 'test'
+  ...
+# Subtest: unknown, decorative or negated visibility gets no functional grant: 文字招牌与标语
+ok 44 - unknown, decorative or negated visibility gets no functional grant: 文字招牌与标语
+  ---
+  duration_ms: 0.3232
+  type: 'test'
+  ...
+# Subtest: unknown, decorative or negated visibility gets no functional grant: Logo wordmark
+ok 45 - unknown, decorative or negated visibility gets no functional grant: Logo wordmark
+  ---
+  duration_ms: 0.3258
+  type: 'test'
+  ...
+# Subtest: unknown, decorative or negated visibility gets no functional grant: 品牌色彩系统的层次化应用
+ok 46 - unknown, decorative or negated visibility gets no functional grant: 品牌色彩系统的层次化应用
+  ---
+  duration_ms: 0.3085
+  type: 'test'
+  ...
+# Subtest: unknown, decorative or negated visibility gets no functional grant: 品牌标识→未知愿景
+ok 47 - unknown, decorative or negated visibility gets no functional grant: 品牌标识→未知愿景
+  ---
+  duration_ms: 0.2305
+  type: 'test'
+  ...
+# Subtest: inseparable or unknown mixed clauses stay blocked; word deletion is not a repair
+ok 48 - inseparable or unknown mixed clauses stay blocked; word deletion is not a repair
+  ---
+  duration_ms: 5.3778
+  type: 'test'
+  ...
+# Subtest: pure brand data cannot empty required fields to earn a pass or invent functions
+ok 49 - pure brand data cannot empty required fields to earn a pass or invent functions
+  ---
+  duration_ms: 4.7673
+  type: 'test'
+  ...
+# Subtest: missing source functions remain missing after separation
+ok 50 - missing source functions remain missing after separation
+  ---
+  duration_ms: 0.1365
+  type: 'test'
+  ...
+# Subtest: a failed deterministic callback cannot fall through to a model call
+ok 51 - a failed deterministic callback cannot fall through to a model call
+  ---
+  duration_ms: 7.6468
+  type: 'test'
+  ...
+# Subtest: non-food service sequence is separated without adding a room or changing service content
+ok 52 - non-food service sequence is separated without adding a room or changing service content
+  ---
+  duration_ms: 9.9039
+  type: 'test'
+  ...
+# Subtest: motif, sculpture and color geometry cannot acquire functional or architectural authority
+ok 53 - motif, sculpture and color geometry cannot acquire functional or architectural authority
+  ---
+  duration_ms: 3.5444
+  type: 'test'
+  ...
+# Subtest: all targeted tests used zero network primitives
+ok 54 - all targeted tests used zero network primitives
+  ---
+  duration_ms: 0.0794
+  type: 'test'
+  ...
+# Subtest: storefront/front preserves explicit requester, exterior program and exact camera through formal and Provider prompts
+not ok 55 - storefront/front preserves explicit requester, exterior program and exact camera through formal and Provider prompts
+  ---
+  duration_ms: 3.0372
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:970'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:15:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.start (node:internal/test_runner/test:1257:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+  ...
+# Subtest: all public subtype/shot choices have resolved authority or explicitly fail closed
+not ok 56 - all public subtype/shot choices have resolved authority or explicitly fail closed
+  ---
+  duration_ms: 0.3425
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:2228'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:37:21)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+  ...
+# Subtest: exterior default camera uses exterior authority: legacy_project_default
+not ok 57 - exterior default camera uses exterior authority: legacy_project_default
+  ---
+  duration_ms: 0.1869
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:2960'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:45:19)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+  ...
+# Subtest: exterior default camera uses exterior authority: target_scene_default
+not ok 58 - exterior default camera uses exterior authority: target_scene_default
+  ---
+  duration_ms: 0.1619
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:2960'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:45:19)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+  ...
+# Subtest: unknown targets cannot turn an unresolved visible requirement into executable content
+not ok 59 - unknown targets cannot turn an unresolved visible requirement into executable content
+  ---
+  duration_ms: 2.803
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:3330'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /No vNext template registered/. Input:
+
+    'Error: SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    <anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:52:23)
+    getActual (node:assert:611:5)
+    strict.throws (node:assert:759:24)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:52:12)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+  operator: 'throws'
+  stack: |-
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:52:12)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: complete functional dependencies are preserved without acquiring shot visibility: 点餐区 → 明档制作区 → 取餐区 → 就餐区
+not ok 60 - complete functional dependencies are preserved without acquiring shot visibility: 点餐区 → 明档制作区 → 取餐区 → 就餐区
+  ---
+  duration_ms: 0.2913
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:3975'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:63:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+  ...
+# Subtest: complete functional dependencies are preserved without acquiring shot visibility: ordering area -> food preparation area -> pickup area -> dining area
+not ok 61 - complete functional dependencies are preserved without acquiring shot visibility: ordering area -> food preparation area -> pickup area -> dining area
+  ---
+  duration_ms: 0.2045
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:3975'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:63:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+  ...
+# Subtest: source clauses retain exact ranges and mixed local/dependency/review dispositions
+not ok 62 - source clauses retain exact ranges and mixed local/dependency/review dispositions
+  ---
+  duration_ms: 0.2243
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:4794'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:74:56)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+  ...
+# Subtest: unsafe networks stay reviewable: 点餐制作取餐就餐的完整关系
+not ok 63 - unsafe networks stay reviewable: 点餐制作取餐就餐的完整关系
+  ---
+  duration_ms: 0.2285
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:5848'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:83:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+  ...
+# Subtest: unsafe networks stay reviewable: 入口 → 无法确定的节点
+not ok 64 - unsafe networks stay reviewable: 入口 → 无法确定的节点
+  ---
+  duration_ms: 0.5458
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:5848'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:83:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+  ...
+# Subtest: unsafe networks stay reviewable: whole project operating network
+not ok 65 - unsafe networks stay reviewable: whole project operating network
+  ---
+  duration_ms: 0.2633
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:5848'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:83:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+  ...
+# Subtest: kitchen relationships cannot inherit a boundary authority merely from their container or another entrance clause
+not ok 66 - kitchen relationships cannot inherit a boundary authority merely from their container or another entrance clause
+  ---
+  duration_ms: 0.1963
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:6202'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:93:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+  ...
+# Subtest: dining operations and Chinese actors remain visible with exactly one rendered owner
+not ok 67 - dining operations and Chinese actors remain visible with exactly one rendered owner
+  ---
+  duration_ms: 0.1838
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:6874'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:105:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+  ...
+# Subtest: unlocated storefront activity requires review: chef preparing food
+not ok 68 - unlocated storefront activity requires review: chef preparing food
+  ---
+  duration_ms: 0.135
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:7783'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:115:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+  ...
+# Subtest: unlocated storefront activity requires review: steam above dishes
+not ok 69 - unlocated storefront activity requires review: steam above dishes
+  ---
+  duration_ms: 0.0919
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:7783'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:115:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+  ...
+# Subtest: interior sightline request awaits a reviewed interface: chef preparing food in kitchen visible through storefront glazing
+not ok 70 - interior sightline request awaits a reviewed interface: chef preparing food in kitchen visible through storefront glazing
+  ---
+  duration_ms: 0.135
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:8354'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:123:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+  ...
+# Subtest: interior sightline request awaits a reviewed interface: 厨师在厨房制作食品并透过临街橱窗玻璃可见
+not ok 71 - interior sightline request awaits a reviewed interface: 厨师在厨房制作食品并透过临街橱窗玻璃可见
+  ---
+  duration_ms: 0.1189
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:8354'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:123:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+  ...
+# Subtest: interior sightline request awaits a reviewed interface: 入口视线可见厨房制作活动
+not ok 72 - interior sightline request awaits a reviewed interface: 入口视线可见厨房制作活动
+  ---
+  duration_ms: 0.1407
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:8354'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:123:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+  ...
+# Subtest: an exterior prohibition protects interior privacy as a boundary, never as a rendered interior
+not ok 73 - an exterior prohibition protects interior privacy as a boundary, never as a rendered interior
+  ---
+  duration_ms: 0.1551
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:8809'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:131:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+  ...
+# Subtest: cross-project exterior projection follows sources, not industry: 临街外带档口
+not ok 74 - cross-project exterior projection follows sources, not industry: 临街外带档口
+  ---
+  duration_ms: 0.1699
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:9399'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:140:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+  ...
+# Subtest: cross-project exterior projection follows sources, not industry: 现代连锁快餐
+not ok 75 - cross-project exterior projection follows sources, not industry: 现代连锁快餐
+  ---
+  duration_ms: 0.0962
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:9399'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:140:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+  ...
+# Subtest: cross-project exterior projection follows sources, not industry: 社区咖啡馆
+not ok 76 - cross-project exterior projection follows sources, not industry: 社区咖啡馆
+  ---
+  duration_ms: 0.0989
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:9399'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:140:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+  ...
+# Subtest: cross-project exterior projection follows sources, not industry: 日本料理餐厅
+not ok 77 - cross-project exterior projection follows sources, not industry: 日本料理餐厅
+  ---
+  duration_ms: 0.0868
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:9399'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:140:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+  ...
+# Subtest: cross-project exterior projection follows sources, not industry: 零售商店
+not ok 78 - cross-project exterior projection follows sources, not industry: 零售商店
+  ---
+  duration_ms: 0.0871
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:9399'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:140:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+  ...
+# Subtest: cross-project exterior projection follows sources, not industry: 旅宿服务
+not ok 79 - cross-project exterior projection follows sources, not industry: 旅宿服务
+  ---
+  duration_ms: 0.2141
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:9399'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:140:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+  ...
+# Subtest: other established commercial scene authorities retain their own local activities
+not ok 80 - other established commercial scene authorities retain their own local activities
+  ---
+  duration_ms: 0.799
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:9950'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:152:18)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: negative project guards are preserved even when they name a foreign exterior
+not ok 81 - negative project guards are preserved even when they name a foreign exterior
+  ---
+  duration_ms: 0.1884
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:10545'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:161:22)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+  ...
+# Subtest: explicit off-frame operational prohibitions remain boundary-only
+not ok 82 - explicit off-frame operational prohibitions remain boundary-only
+  ---
+  duration_ms: 0.227
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-authority-repair.test.ts:1:11013'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    compileScene (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-cases.ts:26:18)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-authority-repair.test.ts:167:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+  ...
+# Subtest: artistic focus is composed once and remains distinct from operations
+not ok 83 - artistic focus is composed once and remains distinct from operations
+  ---
+  duration_ms: 1.6331
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-decision-fidelity.test.ts:1:1245'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-decision-fidelity.test.ts:20:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.start (node:internal/test_runner/test:1257:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+  ...
+# Subtest: optional artwork stays optional and a source without art does not acquire an installation
+not ok 84 - optional artwork stays optional and a source without art does not acquire an installation
+  ---
+  duration_ms: 0.1688
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-decision-fidelity.test.ts:1:2195'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-decision-fidelity.test.ts:31:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: single reception shot keeps other program nodes in the trace rather than displaying their interiors
+not ok 85 - single reception shot keeps other program nodes in the trace rather than displaying their interiors
+  ---
+  duration_ms: 0.2043
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-decision-fidelity.test.ts:1:2603'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-decision-fidelity.test.ts:43:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: scene projection preserves trace and does not translate a color or transparency keyword into new geometry
+not ok 86 - scene projection preserves trace and does not translate a color or transparency keyword into new geometry
+  ---
+  duration_ms: 0.1758
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-decision-fidelity.test.ts:1:3980'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-decision-fidelity.test.ts:53:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: gallery character passes sanitization while identity text remains protected
+not ok 87 - gallery character passes sanitization while identity text remains protected
+  ---
+  duration_ms: 5.9959
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-decision-fidelity.test.ts:1:4503'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-decision-fidelity.test.ts:63:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: source-scoped decisions occur once instead of being repeated through strategy/form/organization
+not ok 88 - source-scoped decisions occur once instead of being repeated through strategy/form/organization
+  ---
+  duration_ms: 0.184
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-decision-fidelity.test.ts:1:5440'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-decision-fidelity.test.ts:71:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: unconfirmed color scopes and ratios remain proposals without mandatory large-area authority
+not ok 89 - unconfirmed color scopes and ratios remain proposals without mandatory large-area authority
+  ---
+  duration_ms: 0.1901
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-decision-fidelity.test.ts:1:5984'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-decision-fidelity.test.ts:79:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: brand names and stored brand keys cannot auto-select architecture examples
+not ok 90 - brand names and stored brand keys cannot auto-select architecture examples
+  ---
+  duration_ms: 2.1522
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-decision-fidelity.test.ts:1:6907'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-decision-fidelity.test.ts:91:11)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: explicit optional examples require scene and mechanism compatibility and cannot outrank the project
+not ok 91 - explicit optional examples require scene and mechanism compatibility and cannot outrank the project
+  ---
+  duration_ms: 21.8799
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-decision-fidelity.test.ts:1:7579'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-decision-fidelity.test.ts:107:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: Medical aesthetics: formal route retains complex architecture and explicit strong color without manufacturing art
+not ok 92 - Medical aesthetics: formal route retains complex architecture and explicit strong color without manufacturing art
+  ---
+  duration_ms: 1.8291
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-decision-fidelity.test.ts:1:9166'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-decision-fidelity.test.ts:119:18)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: Hospitality: formal route retains complex architecture and explicit strong color without manufacturing art
+not ok 93 - Hospitality: formal route retains complex architecture and explicit strong color without manufacturing art
+  ---
+  duration_ms: 0.8503
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-decision-fidelity.test.ts:1:9166'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-decision-fidelity.test.ts:119:18)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: Restaurant: formal route retains complex architecture and explicit strong color without manufacturing art
+not ok 94 - Restaurant: formal route retains complex architecture and explicit strong color without manufacturing art
+  ---
+  duration_ms: 0.7792
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\scene-decision-fidelity.test.ts:1:9166'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\scene-decision-fidelity.test.ts:119:18)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: source scopes retain provenance and unknown scenes remain explicitly unresolved
+ok 95 - source scopes retain provenance and unknown scenes remain explicitly unresolved
+  ---
+  duration_ms: 11.0259
+  type: 'test'
+  ...
+# Subtest: Packet and source adapter reject empty functional data even with a stale ready flag
+ok 96 - Packet and source adapter reject empty functional data even with a stale ready flag
+  ---
+  duration_ms: 131.2361
+  type: 'test'
+  ...
+# Subtest: blank string arrays cannot satisfy spatial decision repair
+ok 97 - blank string arrays cannot satisfy spatial decision repair
+  ---
+  duration_ms: 1.0002
+  type: 'test'
+  ...
+# Subtest: stale ready packet cannot compile when all functional entries are removed by cleanup
+ok 98 - stale ready packet cannot compile when all functional entries are removed by cleanup
+  ---
+  duration_ms: 9.455
+  type: 'test'
+  ...
+# Subtest: semantic cleanup cannot erase required data and still complete analysis
+ok 99 - semantic cleanup cannot erase required data and still complete analysis
+  ---
+  duration_ms: 15.2765
+  type: 'test'
+  ...
+# Subtest: explicit material installation survives in brand layer, outside the functional and architectural layers
+not ok 100 - explicit material installation survives in brand layer, outside the functional and architectural layers
+  ---
+  duration_ms: 22.1982
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\spatial-quality.test.ts:1:3770'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\spatial-quality.test.ts:70:20)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: installation preservation retains identity protection without inventing gradient area authority
+not ok 101 - installation preservation retains identity protection without inventing gradient area authority
+  ---
+  duration_ms: 0.9859
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\spatial-quality.test.ts:1:5410'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\spatial-quality.test.ts:87:20)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: ordinary hospitality space needs no art object and packaging is unaffected
+ok 102 - ordinary hospitality space needs no art object and packaging is unaffected
+  ---
+  duration_ms: 14.1956
+  type: 'test'
+  ...
+# Subtest: visible operations have one actual execution owner: lobby/default
+not ok 103 - visible operations have one actual execution owner: lobby/default
+  ---
+  duration_ms: 1.9936
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:1:1722'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\visible-requirement-ownership.test.ts:29:20)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.start (node:internal/test_runner/test:1257:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+  ...
+# Subtest: visible operations have one actual execution owner: lobby/entrance_view
+not ok 104 - visible operations have one actual execution owner: lobby/entrance_view
+  ---
+  duration_ms: 0.2076
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:1:1722'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\visible-requirement-ownership.test.ts:29:20)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: visible operations have one actual execution owner: lobby/three_quarter_wide
+not ok 105 - visible operations have one actual execution owner: lobby/three_quarter_wide
+  ---
+  duration_ms: 0.1605
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:1:1722'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\visible-requirement-ownership.test.ts:29:20)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: visible operations have one actual execution owner: dining/default
+not ok 106 - visible operations have one actual execution owner: dining/default
+  ---
+  duration_ms: 0.1728
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:1:1722'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\visible-requirement-ownership.test.ts:29:20)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: visible operations have one actual execution owner: dining/entrance_view
+not ok 107 - visible operations have one actual execution owner: dining/entrance_view
+  ---
+  duration_ms: 0.1643
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:1:1722'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\visible-requirement-ownership.test.ts:29:20)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: visible operations have one actual execution owner: dining/three_quarter_wide
+not ok 108 - visible operations have one actual execution owner: dining/three_quarter_wide
+  ---
+  duration_ms: 0.1559
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:1:1722'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\visible-requirement-ownership.test.ts:29:20)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: bilingual activity/effect has functional evidence and ownership: 厨师正在备餐
+not ok 109 - bilingual activity/effect has functional evidence and ownership: 厨师正在备餐
+  ---
+  duration_ms: 0.1793
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:1:3953'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\visible-requirement-ownership.test.ts:61:20)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: bilingual activity/effect has functional evidence and ownership: 菜品上方升起热气
+not ok 110 - bilingual activity/effect has functional evidence and ownership: 菜品上方升起热气
+  ---
+  duration_ms: 0.1415
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:1:3953'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\visible-requirement-ownership.test.ts:61:20)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: bilingual activity/effect has functional evidence and ownership: 顾客在餐桌用餐
+not ok 111 - bilingual activity/effect has functional evidence and ownership: 顾客在餐桌用餐
+  ---
+  duration_ms: 0.2111
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:1:3953'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\visible-requirement-ownership.test.ts:61:20)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: bilingual activity/effect has functional evidence and ownership: 店员为顾客打包商品
+not ok 112 - bilingual activity/effect has functional evidence and ownership: 店员为顾客打包商品
+  ---
+  duration_ms: 0.238
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:1:3953'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\visible-requirement-ownership.test.ts:61:20)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: bilingual activity/effect has functional evidence and ownership: customers browsing products
+not ok 113 - bilingual activity/effect has functional evidence and ownership: customers browsing products
+  ---
+  duration_ms: 0.1027
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:1:3953'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\visible-requirement-ownership.test.ts:61:20)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: bilingual activity/effect has functional evidence and ownership: staff handing parcels to visitors
+not ok 114 - bilingual activity/effect has functional evidence and ownership: staff handing parcels to visitors
+  ---
+  duration_ms: 0.0812
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:1:3953'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\visible-requirement-ownership.test.ts:61:20)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: bilingual activity/effect has functional evidence and ownership: guests checking in at reception
+not ok 115 - bilingual activity/effect has functional evidence and ownership: guests checking in at reception
+  ---
+  duration_ms: 0.0754
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:1:3953'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\visible-requirement-ownership.test.ts:61:20)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: bilingual activity/effect has functional evidence and ownership: receptionist greeting visitors
+not ok 116 - bilingual activity/effect has functional evidence and ownership: receptionist greeting visitors
+  ---
+  duration_ms: 0.0963
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:1:3953'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\visible-requirement-ownership.test.ts:61:20)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: bilingual activity/effect has functional evidence and ownership: water flowing into the basin
+not ok 117 - bilingual activity/effect has functional evidence and ownership: water flowing into the basin
+  ---
+  duration_ms: 0.0657
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:1:3953'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\visible-requirement-ownership.test.ts:61:20)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: de-duplication retains an actual rendered owner, not mere raw membership; original indices survive
+not ok 118 - de-duplication retains an actual rendered owner, not mere raw membership; original indices survive
+  ---
+  duration_ms: 0.1429
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:1:4384'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\visible-requirement-ownership.test.ts:74:18)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: foreign operations cannot re-enter through the brand branch after scope rejection
+not ok 119 - foreign operations cannot re-enter through the brand branch after scope rejection
+  ---
+  duration_ms: 0.1147
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:1:5118'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\visible-requirement-ownership.test.ts:89:18)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: an activity also supplied in a signature source has one rendered visible owner
+not ok 120 - an activity also supplied in a signature source has one rendered visible owner
+  ---
+  duration_ms: 0.1069
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:1:5608'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\visible-requirement-ownership.test.ts:99:18)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: brand duplicate is removed only after the current visible owner exists
+not ok 121 - brand duplicate is removed only after the current visible owner exists
+  ---
+  duration_ms: 0.1008
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:1:6071'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\visible-requirement-ownership.test.ts:109:18)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: a prohibitive list never receives credit as the positive visible execution owner
+not ok 122 - a prohibitive list never receives credit as the positive visible execution owner
+  ---
+  duration_ms: 0.0986
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:1:6515'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\visible-requirement-ownership.test.ts:119:18)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: unknown or wishful fragments stay reviewable without becoming a hard operating requirement
+not ok 123 - unknown or wishful fragments stay reviewable without becoming a hard operating requirement
+  ---
+  duration_ms: 0.1179
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:1:6950'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\visible-requirement-ownership.test.ts:129:18)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: identity, motif, color, decoration and architecture retain distinct semantic routes
+not ok 124 - identity, motif, color, decoration and architecture retain distinct semantic routes
+  ---
+  duration_ms: 0.1263
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:1:7549'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\visible-requirement-ownership.test.ts:141:18)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: mixed clauses retain only the local activity and boundary, with foreign interiors rejected in trace
+not ok 125 - mixed clauses retain only the local activity and boundary, with foreign interiors rejected in trace
+  ---
+  duration_ms: 0.1099
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:1:8361'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\visible-requirement-ownership.test.ts:155:18)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: sourceMap reflects actual renderer ownership, not a broad promise of preservation
+not ok 126 - sourceMap reflects actual renderer ownership, not a broad promise of preservation
+  ---
+  duration_ms: 2.1187
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:1:9127'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\visible-requirement-ownership.test.ts:167:18)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: reference-first target program still replaces source operations instead of inheriting standard fallback
+not ok 127 - reference-first target program still replaces source operations instead of inheriting standard fallback
+  ---
+  duration_ms: 0.1564
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:1:9665'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_binding'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    assertSpaceEvidenceBinding (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:157:17)
+    compileSpacePrompt (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compiler.js:257:3)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\visible-requirement-ownership.test.ts:175:18)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+# Subtest: continuation keeps the target program authoritative and does not expose source dining operations
+not ok 128 - continuation keeps the target program authoritative and does not expose source dining operations
+  ---
+  duration_ms: 0.4051
+  type: 'test'
+  location: 'E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\packages\\visual-workflow\\tests\\visible-requirement-ownership.test.ts:1:10338'
+  failureType: 'testCodeFailure'
+  error: 'SPACE_EVIDENCE_INVALID: missing_or_forged_capture'
+  code: 'SPACE_EVIDENCE_INVALID'
+  stack: |-
+    fail (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:19:46)
+    consumeCapturedSpaceEvidence (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js:62:18)
+    compileShortChainGeneration (file:///E:/Masterpiece-OS-Main-Publish-20261015-Verified/packages/visual-workflow/src/generation-runtime/generation/compile.js:55:7)
+    TestContext.<anonymous> (E:\Masterpiece-OS-Main-Publish-20261015-Verified\packages\visual-workflow\tests\visible-requirement-ownership.test.ts:190:18)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1397:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+    Test.postRun (node:internal/test_runner/test:1537:19)
+    Test.run (node:internal/test_runner/test:1462:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+  ...
+1..128
+# tests 128
+# suites 0
+# pass 54
+# fail 74
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3402.2301

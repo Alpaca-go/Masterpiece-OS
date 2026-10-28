@@ -4,6 +4,7 @@ import path from "node:path";
 import { createArtDirectionStore } from '../../art-direction-store.js';
 import { ART_DIRECTION_SOURCE, digest } from '../../art-direction-contract.js';
 import { createProjectDesignDirectionStore } from '../../project-design-direction.js';
+import { captureSpaceCompilationEvidence } from '../../generation-runtime/space/compilation-evidence.js';
 import {
   compileShortChainGeneration,
   listShortChainTemplateOptions,
@@ -172,19 +173,25 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
       ),
       "utf8"
     ).then((value) => JSON.parse(value)).catch(() => void 0);
+    const compilationTask = {
+      ...input.task,
+      ...art ? {artDirection:artCapture.snapshot} : {},
+      projectId: input.projectId,
+      taskId: input.task.taskId || `vnext-task-${crypto.randomUUID()}`,
+      logoUsageMode,
+      referenceAssetIds
+    };
+    const captureEvidence = input.task.deliverableFamily === 'space'
+      ? await captureSpaceCompilationEvidence({projects,task:compilationTask,packet:context.visualDecisionPacket,captured:designDirection})
+      : undefined;
     const result = compileShortChainGeneration({
       projectContext: context,
       model: input.model,
       projectPromptAsset,
       approvedCreativeDecision,
       userConfirmedVisualDecision,
-      task: {
-        ...input.task,
-        ...art ? {artDirection:artCapture.snapshot} : {},
-        projectId: input.projectId,
-        logoUsageMode,
-        referenceAssetIds
-      }
+      captureEvidence,
+      task: compilationTask
     });
     const artifactDirectory = path.join(
       paths.root,

@@ -1,0 +1,364 @@
+diff --git a/packages/visual-workflow/src/generation-runtime/generation/compile.js b/packages/visual-workflow/src/generation-runtime/generation/compile.js
+index 0fe69924..729b1470 100644
+--- a/packages/visual-workflow/src/generation-runtime/generation/compile.js
++++ b/packages/visual-workflow/src/generation-runtime/generation/compile.js
+@@ -13,6 +13,7 @@ import {
+ } from "../space/index.js";
+ import crypto from "node:crypto";
+ import { applyUserConfirmedVisualDecision } from "./user-confirmed-visual-decision.js";
++import { consumeCapturedSpaceEvidence, bindCapturedSpaceEvidence } from '../space/compilation-evidence.js';
+ import { ART_DIRECTION_SOURCE, ART_DIRECTION_ROLE, digest, assertArtDirectionModel } from '../../art-direction-contract.js';
+ const SPACE_COMPILER_MODES = Object.freeze({
+   R8_6_GOLDEN: "r8_6_golden",
+@@ -45,6 +46,11 @@ function compileShortChainGeneration(input) {
+     logoUsageMode,
+     referenceAssetIds
+   }, { now: input.now });
++  const capturedEvidence = taskContract.deliverableFamily === 'space'
++    ? consumeCapturedSpaceEvidence(input.captureEvidence, {
++      originalPacket:input.projectContext?.visualDecisionPacket,
++      confirmation:input.userConfirmedVisualDecision,taskContract
++    }) : null;
+   let continuation = taskContract.continuation;
+   if (taskContract.generationBasis === "continuation" && continuation && (!continuation.targetFunctionalProgram || !continuation.continuationBoundary)) {
+     const enriched = createSpaceContinuationContract({
+@@ -72,6 +78,7 @@ function compileShortChainGeneration(input) {
+   if (spaceMode !== null && isProductionSpaceMode(spaceMode)) {
+     compiledPrompt = compileSpaceGeneration({
+       input,
++      capturedEvidence,
+       taskContract,
+       adapter,
+       referenceAssetIds,
+@@ -104,7 +111,7 @@ function compileShortChainGeneration(input) {
+   compiledPrompt.trace.compileDurationMs = Number((performance.now() - started).toFixed(3));
+   return { taskContract, route, compiledPrompt, payload };
+ }
+-function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetIds, preferredLogoAssetId, started, compilerMode = SPACE_COMPILER_MODES.R8_6_GOLDEN, enforceSpatialSemantics = false }) {
++function compileSpaceGeneration({ input, capturedEvidence, taskContract, adapter, referenceAssetIds, preferredLogoAssetId, started, compilerMode = SPACE_COMPILER_MODES.R8_6_GOLDEN, enforceSpatialSemantics = false }) {
+   const originalPacket = input.projectContext?.visualDecisionPacket;
+   if (!originalPacket) {
+     throw Object.assign(
+@@ -117,6 +124,7 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
+     originalPacket, input.userConfirmedVisualDecision, taskContract.projectId, taskContract.deliverableFamily
+   );
+   const packet = confirmedDecision.packet;
++  const sourceEvidence = bindCapturedSpaceEvidence(capturedEvidence,packet,taskContract);
+   const artDirection = taskContract.generationBasis === 'art_direction_reference';
+   if (artDirection) {
+     assertArtDirectionModel(input.model);
+@@ -124,6 +132,7 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
+   }
+   const result = compileSpacePrompt({
+     packet,
++    sourceEvidence,
+     taskContract,
+     projectContext: input.projectContext,
+     brandKey: input.brandKey || null,
+diff --git a/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js b/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js
+index ba493d47..b843bfa1 100644
+--- a/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js
++++ b/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js
+@@ -4,6 +4,7 @@ import path from "node:path";
+ import { createArtDirectionStore } from '../../art-direction-store.js';
+ import { ART_DIRECTION_SOURCE, digest } from '../../art-direction-contract.js';
+ import { createProjectDesignDirectionStore } from '../../project-design-direction.js';
++import { captureSpaceCompilationEvidence } from '../../generation-runtime/space/compilation-evidence.js';
+ import {
+   compileShortChainGeneration,
+   listShortChainTemplateOptions,
+@@ -172,19 +173,25 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
+       ),
+       "utf8"
+     ).then((value) => JSON.parse(value)).catch(() => void 0);
++    const compilationTask = {
++      ...input.task,
++      ...art ? {artDirection:artCapture.snapshot} : {},
++      projectId: input.projectId,
++      taskId: input.task.taskId || `vnext-task-${crypto.randomUUID()}`,
++      logoUsageMode,
++      referenceAssetIds
++    };
++    const captureEvidence = input.task.deliverableFamily === 'space'
++      ? await captureSpaceCompilationEvidence({projects,task:compilationTask,packet:context.visualDecisionPacket,captured:designDirection})
++      : undefined;
+     const result = compileShortChainGeneration({
+       projectContext: context,
+       model: input.model,
+       projectPromptAsset,
+       approvedCreativeDecision,
+       userConfirmedVisualDecision,
+-      task: {
+-        ...input.task,
+-        ...art ? {artDirection:artCapture.snapshot} : {},
+-        projectId: input.projectId,
+-        logoUsageMode,
+-        referenceAssetIds
+-      }
++      captureEvidence,
++      task: compilationTask
+     });
+     const artifactDirectory = path.join(
+       paths.root,
+diff --git a/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js b/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js
+new file mode 100644
+index 00000000..892fc975
+--- /dev/null
++++ b/packages/visual-workflow/src/generation-runtime/space/compilation-evidence.js
+@@ -0,0 +1,153 @@
++// Internal server boundary. No constructor accepts a client authorization or snapshot.
++import fs from 'node:fs/promises';
++import path from 'node:path';
++import crypto from 'node:crypto';
++import {createProjectDesignDirectionStore} from '../../project-design-direction.js';
++import {createShortChainTaskContract} from '../generation/task-contract.js';
++import {applyUserConfirmedVisualDecision} from '../generation/user-confirmed-visual-decision.js';
++import {spatialSemanticEvidence} from './semantic/validate-spatial-semantics.js';
++import {propositionModality} from './semantic/separate-space-semantics.js';
++
++export const SPACE_EVIDENCE_SCHEMA = 'space-compilation-evidence/1.0';
++const captures = new WeakMap();
++const consumed = new WeakSet();
++const bindings = new WeakMap();
++const fingerprint = value => crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
++const fail = reason => { throw Object.assign(new Error(`SPACE_EVIDENCE_INVALID: ${reason}`), {code:'SPACE_EVIDENCE_INVALID',reason}); };
++function freeze(value) {
++  if (value && typeof value === 'object') { Object.values(value).forEach(freeze); Object.freeze(value); }
++  return value;
++}
++function taskScope(task) {
++  const {createdAt, ...scope} = createShortChainTaskContract(task, {now:'capture'});
++  if (!task.taskId) fail('task_id_required');
++  return scope;
++}
++
++// projects is the server's existing filesystem authority, never an RPC field or
++// injectable capture callback. Even a matching serialized snapshot is re-read
++// through the real store. The returned identity has no serializable authority.
++export async function captureSpaceCompilationEvidence({projects, task, packet, captured}) {
++  const scope = taskScope(task);
++  if (scope.deliverableFamily !== 'space' || packet?.projectId !== scope.projectId) fail('project_scope_mismatch');
++  const owner = createProjectDesignDirectionStore(projects);
++  const current = await owner.resolve(scope.projectId, captured?.snapshot ?? null);
++  if (!current?.confirmation?.id || !current.snapshot?.recordSha256) fail('persisted_confirmation_required');
++  if (fingerprint(current.confirmation) !== current.snapshot.confirmationSha256
++    || fingerprint(captured?.confirmation) !== current.snapshot.confirmationSha256) fail('confirmation_mismatch');
++  const root = (await projects.paths(scope.projectId)).root;
++  const context = JSON.parse(await fs.readFile(path.join(root,'project-context/project-visual-context.vnext.json'),'utf8'));
++  if (fingerprint(packet) !== fingerprint(context.visualDecisionPacket)) fail('analysis_packet_mismatch');
++  await owner.resolve(scope.projectId,current.snapshot);
++  const effective = applyUserConfirmedVisualDecision(packet,current.confirmation,scope.projectId,'space');
++  if (!effective.confirmation) fail('confirmation_not_applicable');
++  const record = freeze(structuredClone({schemaVersion:SPACE_EVIDENCE_SCHEMA,scope,
++    sourceOwner:'project-design-direction.capture/resolve',snapshot:current.snapshot,
++    confirmationId:current.confirmation.id,originalPacketFingerprint:fingerprint(packet),
++    effectivePacketFingerprint:fingerprint(effective.packet),confirmation:current.confirmation,originalPacket:packet}));
++  const capability = Object.freeze(Object.create(null));
++  captures.set(capability,record);
++  return capability;
++}
++
++export function consumeCapturedSpaceEvidence(capability, {originalPacket,confirmation,taskContract}) {
++  const captured = captures.get(capability);
++  if (!captured) fail('missing_or_forged_capture');
++  // One compile attempt, including failed attempts. A copied identity cannot be replayed.
++  captures.delete(capability);
++  if (fingerprint(taskScope(taskContract)) !== fingerprint(captured.scope)) fail('task_scope_mismatch');
++  if (fingerprint(originalPacket) !== captured.originalPacketFingerprint) fail('original_packet_mismatch');
++  if (fingerprint(confirmation) !== captured.snapshot.confirmationSha256) fail('confirmation_mismatch');
++  consumed.add(captured);
++  return captured;
++}
++
++export function bindCapturedSpaceEvidence(captured, packet, taskContract) {
++  if (!consumed.has(captured)) fail('missing_or_forged_consumed_capture');
++  consumed.delete(captured);
++  if (fingerprint(packet) !== captured.effectivePacketFingerprint) fail('effective_packet_mismatch');
++  const evidence = freeze({schemaVersion:SPACE_EVIDENCE_SCHEMA,projectId:captured.scope.projectId,
++    taskId:captured.scope.taskId,generationBasis:captured.scope.generationBasis,
++    capture:{...captured.snapshot,confirmationId:captured.confirmationId},
++    originalPacketFingerprint:captured.originalPacketFingerprint,packetFingerprint:captured.effectivePacketFingerprint,
++    originalEntries:packetEntries(captured.originalPacket,null,captured),
++    entries:packetEntries(packet,captured.confirmation,captured)});
++  bindings.set(evidence,{packetFingerprint:evidence.packetFingerprint,scope:taskScope(taskContract)});
++  return evidence;
++}
++
++const INPUT_ROOTS = ['mediaTranslations.spatial','projectFacts','creativeDecision','colorSystem','materialSystem','lightingSystem','diagnosis','abstractions'];
++const FUNCTIONAL_FIELDS = new Set(['sceneProgram','functionalNetwork','functionalRelationships','operationConstraints','requiredSpatialElements','mustBeVisible']);
++const tokens = field => field.replace(/\[(\d+)\]/gu,'.$1').split('.');
++function valueAt(value,field) { return tokens(field).reduce((node,key)=>node?.[key],value); }
++function leaves(value,field) {
++  if (typeof value === 'string') return [{fieldPath:field,text:value}];
++  if (Array.isArray(value)) return value.flatMap((v,i)=>leaves(v,`${field}[${i}]`));
++  if (value && typeof value === 'object') return Object.entries(value).flatMap(([key,v])=>leaves(v,`${field}.${key}`));
++  return [];
++}
++function confirmationOrigin(fieldPath,confirmation,original) {
++  if (!confirmation) return null;
++  const roots = [['mediaTranslations.spatial','spatialTranslation'],['colorSystem','spatialTranslation.colorBehavior'],
++    ['materialSystem','spatialTranslation.materialLanguage'],['lightingSystem','spatialTranslation.lightingLanguage']];
++  for (const [target,source] of roots) if (fieldPath === target || fieldPath.startsWith(target+'.') || fieldPath.startsWith(target+'[')) {
++    return {sourceFieldPath:source+fieldPath.slice(target.length),transform:'identity'};
++  }
++  if (fieldPath === 'projectFacts.brandRole.value' && confirmation.projectIdentity?.brandRole) return {sourceFieldPath:'projectIdentity.brandRole',transform:'identity'};
++  if (fieldPath.startsWith('creativeDecision.')) {
++    const key=tokens(fieldPath)[1];
++    // Reproduce the existing explicit trim/dedup operation with index lineage.
++    // Equality is used to check this declared transform, never to guess ownership.
++    if (key === 'strategicNegatives') {
++      const sources=['creativeDecision.strategicNegatives','reviewTask.mustAvoid'];
++      const seen=new Set(),mapped=[];
++      for (const source of sources) for (const [index,text] of (valueAt(confirmation,source)||[]).entries()) {
++        if (typeof text !== 'string') continue;
++        const normalized=text.trim().replace(/\s+/gu,' ');
++        if (normalized && !seen.has(normalized)) { seen.add(normalized);mapped.push({sourceFieldPath:`${source}[${index}]`,transform:'trim_whitespace'}); }
++      }
++      return mapped[Number(tokens(fieldPath)[2])] || null;
++    }
++    if (Object.hasOwn(confirmation.creativeDecision || {},key)) return {sourceFieldPath:fieldPath,transform:'identity'};
++  }
++  if (fieldPath.startsWith('abstractions[') && Array.isArray(confirmation.abstractions)) return {sourceFieldPath:fieldPath,transform:'identity'};
++  const risk=fieldPath.match(/^diagnosis\.brandMisreadRisks\[(\d+)\](.*)$/u);
++  if (risk && Number(risk[1]) >= (original.diagnosis?.brandMisreadRisks || []).length) return {
++    sourceFieldPath:`brandMisreadRisks[${Number(risk[1])-(original.diagnosis?.brandMisreadRisks || []).length}]${risk[2]}`,transform:'identity'};
++  return null;
++}
++function packetEntries(packet,confirmation,captured) {
++  const packetFingerprint=fingerprint(packet);
++  return INPUT_ROOTS.flatMap(root=>leaves(valueAt(packet,root),root))
++    .filter(entry=>entry.fieldPath !== 'mediaTranslations.spatial.status').map(({fieldPath,text})=>{
++    const origin=confirmationOrigin(fieldPath,confirmation,captured.originalPacket);
++    const sourceText=origin ? valueAt(confirmation,origin.sourceFieldPath) : text;
++    if (typeof sourceText !== 'string') fail(`source_value_missing:${fieldPath}`);
++    const expected=origin?.transform === 'trim_whitespace' ? sourceText.trim().replace(/\s+/gu,' ') : sourceText;
++    if (expected !== text) fail(`source_value_mismatch:${fieldPath}`);
++    const originalIndex=Number(tokens(origin?.sourceFieldPath || fieldPath).findLast(key=>/^\d+$/u.test(key)) ?? -1);
++    const field=tokens(fieldPath)[2];
++    const typed=fieldPath.startsWith('mediaTranslations.spatial.') && FUNCTIONAL_FIELDS.has(field)
++      ? spatialSemanticEvidence(sourceText,field,originalIndex) : null;
++    const sourceKind=origin ? 'user_confirmed_design_intent' : 'analysis_packet';
++    const sourceRecordId=origin ? captured.confirmationId : `packet:${captured.originalPacketFingerprint}`;
++    return {sourceKind,sourceOwner:origin ? captured.sourceOwner : 'persisted_analysis_packet',sourceRecordId,
++      packetFingerprint,fieldPath,originalIndex,originalText:sourceText,packetText:text,
++      sourceFieldPath:origin?.sourceFieldPath || fieldPath,sourceTransform:origin?.transform || 'identity',
++      entryFingerprint:fingerprint({packetFingerprint,fieldPath,originalIndex,sourceText,sourceRecordId}),
++      sourceStatus:origin ? 'confirmed_design_intent_not_verified_property' : 'analysis_proposal',
++      confirmationStatus:origin ? 'confirmed' : 'unconfirmed',
++      evidenceRefs:origin ? [...(confirmation.evidenceRefs || [])] : [],
++      parentScope:{fieldPath,originalText:sourceText,start:0,end:sourceText.length},
++      semanticType:typed?.type || 'design_context',modality:typed?.modality || propositionModality(sourceText),
++      semanticValidation:typed?.validation || 'not_a_functional_field',clauses:typed?.clauses || []};
++  });
++}
++
++export function assertSpaceEvidenceBinding(evidence,packet,taskContract) {
++  const binding = bindings.get(evidence);
++  if (!binding) fail('missing_or_forged_binding');
++  if (binding.packetFingerprint !== fingerprint(packet)) fail('bound_packet_mismatch');
++  if (fingerprint(binding.scope) !== fingerprint(taskScope(taskContract))) fail('bound_task_mismatch');
++  return evidence;
++}
+diff --git a/packages/visual-workflow/tests/space-compilation-evidence.test.ts b/packages/visual-workflow/tests/space-compilation-evidence.test.ts
+new file mode 100644
+index 00000000..f27ef774
+--- /dev/null
++++ b/packages/visual-workflow/tests/space-compilation-evidence.test.ts
+@@ -0,0 +1,97 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import fs from 'node:fs/promises';
++import path from 'node:path';
++import {businessFixture} from './art-direction-business-fixture.ts';
++import {createProjectDesignDirectionStore} from '../src/project-design-direction.js';
++import {applyUserConfirmedVisualDecision} from '../src/generation-runtime/generation/user-confirmed-visual-decision.js';
++import {compileShortChainGeneration} from '../src/generation-runtime/generation/compile.js';
++import {captureSpaceCompilationEvidence,consumeCapturedSpaceEvidence,bindCapturedSpaceEvidence,assertSpaceEvidenceBinding} from '../src/generation-runtime/space/compilation-evidence.js';
++
++async function confirmed(t:any,change=(confirmation:any)=>{}) {
++  const f=await businessFixture(t);
++  change(f.confirmation);
++  const owner=createProjectDesignDirectionStore(f.projects);
++  const draft=await owner.saveDraft(f.project.id,{confirmation:f.confirmation,sourceStatement:'Explicit isolated offline test decision',expectedRecordSha256:null});
++  await owner.confirm(f.project.id,{expectedRecordSha256:draft.recordSha256,confirmedByUser:true});
++  const captured=await owner.capture(f.project.id);
++  const task={...f.task,projectId:f.project.id,taskId:'evidence-offline-task',generationBasis:'standard',referenceAssetIds:[]};
++  const packet=(await f.context.getShortChain(f.project.id)).visualDecisionPacket;
++  const mint=()=>captureSpaceCompilationEvidence({projects:f.projects,task,packet,captured});
++  return {...f,owner,captured,task,packet,mint};
++}
++test('real persisted owner capture can issue a task-bound one-use compilation identity',async t=>{
++  const f=await confirmed(t),before=JSON.stringify(f.packet),cap=await f.mint();
++  const record=consumeCapturedSpaceEvidence(cap,{originalPacket:f.packet,confirmation:f.captured!.confirmation,taskContract:f.task});
++  const effective=applyUserConfirmedVisualDecision(f.packet,f.captured!.confirmation,f.project.id).packet;
++  const evidence=bindCapturedSpaceEvidence(record,effective,f.task);
++  assert.equal(evidence.capture.confirmationId,f.captured!.confirmation.id);
++  assert.equal(evidence.capture.recordSha256,f.captured!.snapshot.recordSha256);
++  assert.equal(evidence.capture.analysisFingerprint,f.captured!.snapshot.analysisFingerprint);
++  assert.equal(assertSpaceEvidenceBinding(evidence,effective,f.task),evidence);
++  assert.throws(()=>consumeCapturedSpaceEvidence(cap,{originalPacket:f.packet,confirmation:f.captured!.confirmation,taskContract:f.task}),/missing_or_forged_capture/);
++  assert.throws(()=>assertSpaceEvidenceBinding(structuredClone(evidence),effective,f.task),/missing_or_forged_binding/);
++  assert.equal(JSON.stringify(f.packet),before); assert.equal(f.requests.length,0);
++});
++test('duplicate entries bind to their declared indices; unchanged analysis never inherits confirmation',async t=>{
++  const f=await confirmed(t,c=>{c.spatialTranslation.functionalNetwork=['reception','reception','waiting area'];});
++  const captured=consumeCapturedSpaceEvidence(await f.mint(),{originalPacket:f.packet,confirmation:f.captured!.confirmation,taskContract:f.task});
++  const effective=applyUserConfirmedVisualDecision(f.packet,f.captured!.confirmation,f.project.id).packet;
++  const evidence=bindCapturedSpaceEvidence(captured,effective,f.task);
++  const entries=evidence.entries.filter(e=>/^mediaTranslations\.spatial\.functionalNetwork\[/u.test(e.fieldPath));
++  assert.deepEqual(entries.map(e=>[e.originalIndex,e.originalText]),[[0,'reception'],[1,'reception'],[2,'waiting area']]);
++  assert.equal(new Set(entries.map(e=>e.entryFingerprint)).size,3);
++  assert.deepEqual(entries.map(e=>e.sourceFieldPath),['spatialTranslation.functionalNetwork[0]','spatialTranslation.functionalNetwork[1]','spatialTranslation.functionalNetwork[2]']);
++  assert(entries.every(e=>e.confirmationStatus==='confirmed' && e.sourceStatus==='confirmed_design_intent_not_verified_property'));
++  assert(evidence.originalEntries.every(e=>e.confirmationStatus==='unconfirmed'));
++  assert(evidence.entries.filter(e=>e.fieldPath.startsWith('projectFacts.brandName')).every(e=>e.confirmationStatus==='unconfirmed'));
++  assert(Object.isFrozen(evidence.entries[0].parentScope));
++});
++for(const operation of ['delete','rewrite','reorder']) test(`effective Packet ${operation} invalidates exact binding`,async t=>{
++  const f=await confirmed(t,c=>{c.spatialTranslation.functionalNetwork=['reception','waiting area'];});
++  const captured=consumeCapturedSpaceEvidence(await f.mint(),{originalPacket:f.packet,confirmation:f.captured!.confirmation,taskContract:f.task});
++  const effective=applyUserConfirmedVisualDecision(f.packet,f.captured!.confirmation,f.project.id).packet;
++  if(operation==='delete')effective.mediaTranslations.spatial.functionalNetwork.pop();
++  if(operation==='rewrite')effective.mediaTranslations.spatial.functionalNetwork[0]='dining';
++  if(operation==='reorder')effective.mediaTranslations.spatial.functionalNetwork.reverse();
++  assert.throws(()=>bindCapturedSpaceEvidence(captured,effective,f.task),/effective_packet_mismatch/);
++});
++test('plain trusted flags and matching serialized snapshots cannot authorize direct compilation',async t=>{
++  const f=await confirmed(t);
++  for(const fake of [f.captured,structuredClone(await f.mint()),{trusted:true,sourceOwner:'project-design-direction.capture/resolve',...f.captured!.snapshot}]) {
++    assert.throws(()=>compileShortChainGeneration({task:f.task,projectContext:{visualDecisionPacket:f.packet},userConfirmedVisualDecision:f.captured!.confirmation,captureEvidence:fake}),/missing_or_forged_capture/);
++  }
++  assert.throws(()=>bindCapturedSpaceEvidence({effectivePacketFingerprint:'forged'},f.packet,f.task),/missing_or_forged_consumed_capture/);
++  assert.equal(f.requests.length,0);
++});
++test('needs_reconfirmation cannot issue evidence',async t=>{
++  const f=await confirmed(t);await f.owner.markForReview(f.project.id);
++  await assert.rejects(f.mint(),/RECONFIRM_REQUIRED/);
++});
++test('stale confirmation snapshot cannot issue evidence',async t=>{
++  const f=await confirmed(t);
++  await f.owner.saveDraft(f.project.id,{confirmation:f.confirmation,sourceStatement:'Changed isolated test decision',expectedRecordSha256:f.captured!.snapshot.recordSha256});
++  const next=await f.owner.get(f.project.id);await f.owner.confirm(f.project.id,{expectedRecordSha256:next.recordSha256,confirmedByUser:true});
++  await assert.rejects(f.mint(),/COMPILATION_STALE/);
++});
++test('analysis fingerprint changes cannot issue evidence',async t=>{
++  const f=await confirmed(t),p=path.join(f.paths.root,'project-context/visual-decision-packet.json');
++  const packet=JSON.parse(await fs.readFile(p,'utf8'));packet.mediaTranslations.spatial.spatialConcept+=' changed';
++  await fs.writeFile(p,JSON.stringify(packet));await assert.rejects(f.mint(),/RECONFIRM_REQUIRED/);
++});
++test('context Packet mismatch is rejected even with a valid capture',async t=>{
++  const f=await confirmed(t);f.packet.mediaTranslations.spatial.spatialConcept+=' injected';
++  await assert.rejects(f.mint(),/analysis_packet_mismatch/);
++});
++for(const field of ['projectId','taskId','generationBasis','currentInstruction']) test(`captured permission rejects changed ${field}`,async t=>{
++  const f=await confirmed(t),cap=await f.mint();
++  const task={...f.task,[field]:field==='generationBasis'?'reference_first':'changed',...(field==='generationBasis'?{referenceAssetIds:['explicit-ref']}:{})};
++  assert.throws(()=>consumeCapturedSpaceEvidence(cap,{originalPacket:f.packet,confirmation:f.captured!.confirmation,taskContract:task}),/task_scope_mismatch/);
++});
++test('post-capture Packet and confirmation mutations are rejected',async t=>{
++  const f=await confirmed(t),packet=structuredClone(f.packet);packet.mediaTranslations.spatial.sceneProgram[0]+=' changed';
++  const cap=await f.mint();
++  assert.throws(()=>consumeCapturedSpaceEvidence(cap,{originalPacket:packet,confirmation:f.captured!.confirmation,taskContract:f.task}),/original_packet_mismatch/);
++  const next=await f.mint(),confirmation=structuredClone(f.captured!.confirmation);confirmation.spatialTranslation.sceneProgram[0]+=' changed';
++  assert.throws(()=>consumeCapturedSpaceEvidence(next,{originalPacket:f.packet,confirmation,taskContract:f.task}),/confirmation_mismatch/);
++});
