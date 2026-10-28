@@ -94,7 +94,36 @@
 
 **Guardrail 观察**：第一次反例把经验写进 `currentInstruction` 时，模型发明了摩托车；改用独立 `knowledgeContext` + guardrail 后，同一项目的干净对照没有再出现品牌道具。样本只有一对，不能证明因果，但值得继续观察。
 
-## 8. 与代码的关系
+## 8. 案例提取器
+
+验收之后用 `scripts/extract-case.mjs` 生成草稿卡，减少手工录入：
+
+```bash
+# 已验收项目：自动填分析 + 验收证据
+node scripts/extract-case.mjs \
+  --project <projectId> \
+  --acceptance docs/evidence/visual-workflow/<record>.md \
+  --out .codex-smoke/case-drafts/<slug>-draft.md \
+  --json .codex-smoke/case-drafts/<slug>-draft.json
+
+# 未验收项目：只标注“最近一次成功运行”，不会冒充验收
+node scripts/extract-case.mjs --project <projectId> --out <draft.md>
+```
+
+自动填充：
+
+- 项目事实、创意决策、空间提案、材料/色彩/灯光、诊断；
+- 最近一次成功运行的 task/run/model/图片 hash/校验状态；
+- 证据路径。
+
+必须人工填写：
+
+- 第 4 节“人工覆盖”（材料、灯光、色彩面积、结构/烟罩、密度、品牌文字、构图）：最终接受什么、为什么改、证据；
+- 第 5 节“规则使用”：这次注入了哪些 slug、是否适用。
+
+定位：把单项目录入从约 60 分钟压到 15–30 分钟；**提取器不写“为什么”**。
+
+## 9. 与代码的关系
 
 - 字段：`packages/visual-workflow/src/generation-runtime/generation/task-contract.js`
 - 渲染：`packages/visual-workflow/src/generation-runtime/space/compiler.js`（`knowledge_context` block）
