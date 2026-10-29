@@ -1,5 +1,7 @@
 # 交接文档：视觉工作流 + 餐厅知识库（2026-10-28）
 
+> 更新（2026-10-29）：参考图集、`styleControls` UI、`textDensity`、规则复核与 dense+minimal 结果见 [2026-10-29-session-handoff.md](2026-10-29-session-handoff.md)。两份冲突时以新文档为准；本文的测试数字（129）已过期。
+
 接手人：Codex
 交接人：本轮 AI 会话
 决策人：用户（Kyries）——质量验收、预算、真实素材与对外发布均需用户确认。
