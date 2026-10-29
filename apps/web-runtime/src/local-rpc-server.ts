@@ -21,6 +21,10 @@ const MAX_BODY_BYTES = 10 * 1024 * 1024;
 // of up to 8 MiB of image bytes (≈10.7 MiB base64 + JSON wrapper).
 // Only these channels get a 64 MiB cap; all other RPC channels keep
 // the general 10 MiB limit. Channel-aware, not a global raise.
+// `visual-workflow:atlas-upload` carries up to 12 reference images per
+// batch (single image ≤12 MiB), sent as base64 in one JSON body; without
+// the upload cap a single ordinary 8 MiB photo was rejected as
+// WEB_RPC_BODY_TOO_LARGE even though it is under the atlas image limit.
 const UPLOAD_CHANNELS = new Set([
   'projects:import-file-bytes',
   'projects:create-from-browser-files',
@@ -29,6 +33,7 @@ const UPLOAD_CHANNELS = new Set([
   'reference-anchor:import-reference-assets',
   'creative-research:import-curated-references',
   'visual-workflow:import-files',
+  'visual-workflow:atlas-upload',
 ]);
 const UPLOAD_BODY_BYTES = 64 * 1024 * 1024;
 
