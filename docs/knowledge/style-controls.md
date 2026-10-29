@@ -89,9 +89,9 @@
 - 校验提示：`packages/visual-workflow/src/runtime/image-generation/deliverable-validator-service.js`
 - 测试：`packages/visual-workflow/tests/style-controls.test.ts`
 
-## 9. dense + minimal 组合对照（2026-10-29，待预算确认）
+## 9. dense + minimal 组合对照（2026-10-29，单对单图观察）
 
-项目：潮牛帮 `b2bc6cf8-fad4-4770-a49b-b6fbee59745b`。本轮仅完成离线编译，尚未收到两张图的预算确认，**真实生图调用 0 次，无图片观察或验收结论**。不复用旧图冒充本轮对照。
+项目：潮牛帮 `b2bc6cf8-fad4-4770-a49b-b6fbee59745b`。用户确认本轮两张预算后，各生成 1 张，共 2 次真实生图请求，重试 0 次。**本节是单对单图观察，不升级规则，也不代表用户质量验收。**
 
 两组均显式传入以下 `styleControls`，实验组只把 `textDensity` 从 `moderate` 改为 `minimal`：
 
@@ -117,8 +117,13 @@ mustAvoid: 民俗表演 / 红灯笼 / 脸谱 / 假古董 / 白墙冷光 / 杂乱
 
 | 组别 | taskId | runId | 编译 preflight | 图片 validation | 图片路径 |
 |---|---|---|---|---|---|
-| dense + moderate | `vnext-task-405e5a9d-4fc7-4008-90ae-78cfff735964` | 未运行 | `pass` | 未执行 | 未生成 |
-| dense + minimal | `vnext-task-5b47b09b-12b4-41e0-b529-9a05446baa79` | 未运行 | `pass` | 未执行 | 未生成 |
+| dense + moderate | `vnext-task-405e5a9d-4fc7-4008-90ae-78cfff735964` | `27192ac1-e3e9-4f5a-a06d-7401e28407f8` | `pass` | `passed` | `C:/Users/kyrie/AppData/Roaming/masterpiece-os-desktop/visual-workflow/runs/27192ac1-e3e9-4f5a-a06d-7401e28407f8/images/output.png` |
+| dense + minimal | `vnext-task-5b47b09b-12b4-41e0-b529-9a05446baa79` | `4eeb2645-e4d1-467b-934a-5b9f9bbe4b5d` | `pass` | `passed` | `C:/Users/kyrie/AppData/Roaming/masterpiece-os-desktop/visual-workflow/runs/4eeb2645-e4d1-467b-934a-5b9f9bbe4b5d/images/output.png` |
+
+- 生图：Volcengine / `doubao-seedream-5-0-pro-260628`；两图均为 2816×1584，原始 Logo 未另行合成（`in_image`）。
+- 校验：Qwen / `qwen3.6-plus`；应用层调用为 2 次生图 + 2 次图像校验，没有重生图。两版 `brandMatch: matched`、`brandToneMatch: matched`、`sceneCompleteness: complete`、`logoTextStatus: correct`，blocking findings 均为空。
+- 时长（含校验）：moderate 131.992 秒，minimal 129.300 秒，合计 261.292 秒。
+- 图片 SHA-256：moderate `2dff8b9c1a99de29d357f2be97859a30b37edda29dcabf78dbb13552d86fe05b`；minimal `af2b1441d6e39588e597af37bb57a0090a970b7829e4c6fdb23591b4c602d766`。
 
 `style_controls` 区块只有以下一行不同；暖光、密度、材质、色彩面积、传统度、道具与价格禁令相同，`shot: designer_choice` 不渲染取景覆盖：
 
@@ -129,6 +134,22 @@ mustAvoid: 民俗表演 / 红灯笼 / 脸谱 / 假古董 / 白墙冷光 / 杂乱
 
 实验组另由既有编译逻辑在 `negative_constraints` 追加 `no wall of text panels, menu walls or long copy`；其它区块相同。没有修改生产 Prompt、映射或 Golden。
 
-本机准备记录：`.codex-smoke/dense-minimal-2026-10-29/plan.json`；两份任务与 Prompt 保存在同目录，均不提交。分析上下文与 decision packet 的 SHA-256 在两次编译前后相同。
+### 图像观察与边界
 
-待预算确认后各生成 1 张、总计最多 2 张、不自动重试；逐图记录文字板数量（并区分品牌字标与功能标识）、数字价格、密度与动线可读性、素材外道具及自动校验状态。单对单图仅记录“观察”，不升级为规则；生成或校验失败按实际状态保留，不以重试消除失败。
+文字板按独立物理载体计数，包含品牌字标、菜单与功能牌，纯图形牛角不计；一条连续四格菜单算 1 个载体，并注明格数。先采用这一口径，再单列去掉品牌识别后的数量，避免把品牌字标排除后误判达标。
+
+| 检查项 | dense + moderate | dense + minimal |
+|---|---|---|
+| 文字板数量 | 明确可辨 8 处：左墙品牌/品类 2、立柱品牌 1、厨房背墙菜单/说明 2、明档顶招 1、点餐牌 1、右墙说明 1；另有远景小牌 1 处无法可靠判读 | 明确可辨 5 处：前柱品牌 1、厨房上方连续四格菜单 1、点餐牌 1、取餐牌 1、后墙品牌 1 |
+| 排除品牌识别后 | 5 处明确菜单/说明/功能载体，另有远景小牌 | 3 处菜单/功能载体；仍超过 ≤2，未达到目标 |
+| 数字价格 | 未见数字价格、阿拉伯数字或货币符号；自动校验未报价格违规 | 同左；菜单仍有菜名，但无数字价格 |
+| 密度与可读性 | 有食材展示、蒸汽、锅具及后景用餐人群；入口与通道可读，前景偏空，就餐区偏后 | 明档锅具、备餐台下器皿、两名操作人员与后景顾客保留生活密度，通道可读；就餐区仍偏后，画面重心更偏操作现场 |
+| 素材外道具核对 | 有一盆灰色落地盆栽 | 左侧有一盆深色落地盆栽 |
+
+盆栽核对：本项目 28 张输入素材中，街景插画（asset `d57eca0b-f629-43b9-9a33-3e469afbf081`）确有窗口盆栽与街树；未找到两张生成图中同款落地花盆的造型与摆位。因此，**盆栽类别有素材依据，具体落地布景属于模型补充；无法确认严格满足“仅素材支持的道具”**。未见摩托车、头盔蛙等新的叙事道具或角色。本判断没有把“自动校验 passed”当成道具来源证明。
+
+**观察结论：部分达到目标。** minimal 相比 moderate 减少了明确文字载体（8 → 5），两版均未见数字价格；人物、锅具与蒸汽仍提供一定生活密度，未完全退回空旷画面。但 minimal 仍有多个文字载体（即使去掉品牌识别也有 3 处），未达到“文字板 ≤2”，更未满足 Prompt 的“最多一块”；同时未证明就餐氛围优于偏后厨的构图，落地盆栽来源也有边界。故不能写成“dense + minimal 组合验收通过”或推广为规则。自动校验只覆盖既有交付闸门，不检查文字板数量、tag 命中率或逐道具来源。
+
+本机证据：`.codex-smoke/dense-minimal-2026-10-29/` 内的 `plan.json`、`moderate-task.json`、`minimal-task.json`、两份 `*-prompt.txt`、`*-result.json` 与 `image-request-*.sent`；均不提交。生产任务与校验记录仍在独立工作流用户数据目录。分析上下文与 decision packet 的 SHA-256 在两次编译及生成前后相同，未重新分析。
+
+本轮预算已用完，不继续生成。三条假设的状态仍按既有独立证据复核，见 [candidate-rules.md](restaurant-cases/candidate-rules.md)；这次两组共有暖光与道具控制，不能用来单独归因暖光、烟罩或生活细节假设。
