@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { createVisualWorkflow } from '../src/service.js';
 import { listStylePresets, findStylePreset, scanPromptForDrift } from '../src/knowledge/style-presets.js';
-import { STYLE_AXES } from '../src/generation-runtime/generation/task-contract.js';
+import { STYLE_AXES, createShortChainTaskContract } from '../src/generation-runtime/generation/task-contract.js';
 
 async function withWorkflow(run: (workflow: any, root: string) => Promise<void>) {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'style-presets-'));
@@ -106,4 +106,55 @@ test('applying a preset keeps the prompt unchanged until the task carries styleC
     assert.equal(typeof preset.styleControls, 'object');
     assert.equal('knowledgeContext' in preset, false);
   });
+});
+
+const BASE_TASK = {
+  projectId: 'b2bc6cf8-fad4-4770-a49b-b6fbee59745b',
+  deliverableFamily: 'space',
+  subtype: 'dining',
+  shot: 'three_quarter_wide',
+  currentInstruction: '临街社区店，中央明档',
+  aspectRatio: '16:9',
+  count: 1,
+};
+
+test('selecting a preset records its axes and applies them when no explicit controls', () => {
+  const task = createShortChainTaskContract({ ...BASE_TASK, stylePresetId: 'community-street-smoke' });
+  assert.equal(task.stylePreset.id, 'community-street-smoke');
+  assert.equal(task.stylePreset.label, '社区底商 · 烟火气');
+  assert.equal(task.styleControls.lighting, 'warm_dim');
+  assert.deepEqual(task.stylePreset.axes, task.styleControls);
+});
+
+test('explicit controls override the preset while the preset axes stay for the delta', () => {
+  const task = createShortChainTaskContract({
+    ...BASE_TASK,
+    stylePresetId: 'community-street-smoke',
+    styleControls: { lighting: 'bright', density: 'dense' },
+  });
+  assert.equal(task.styleControls.lighting, 'bright', 'the explicit override wins');
+  assert.equal(task.stylePreset.axes.lighting, 'warm_dim', 'the anchor value is kept for statistics');
+  assert.equal(task.styleControls.textDensity, 'designer_choice');
+});
+
+test('unknown or malformed preset ids fail loudly instead of falling back', () => {
+  assert.throws(() => createShortChainTaskContract({ ...BASE_TASK, stylePresetId: 'no-such-preset' }), /STYLE_PRESET_UNKNOWN/);
+  assert.throws(() => createShortChainTaskContract({ ...BASE_TASK, stylePresetId: 'Bad Slug' }), /STYLE_PRESET_ID_INVALID/);
+});
+
+test('a contract without a preset keeps no preset key, so the baseline body is unchanged', () => {
+  const task = createShortChainTaskContract({ ...BASE_TASK, styleControls: { lighting: 'warm_dim' } });
+  assert.equal('stylePreset' in task, false);
+});
+
+test('the prompt compiler never reads the preset, so the prompt text stays identical', async () => {
+  const files = [
+    '../src/generation-runtime/space/compiler.js',
+    '../src/generation-runtime/generation/compile.js',
+    '../src/generation-runtime/space/semantic/compile-spatial-mechanisms.js',
+  ];
+  for (const relative of files) {
+    const body = await fs.readFile(new URL(relative, import.meta.url), 'utf8');
+    assert.equal(body.includes('stylePreset'), false, `${relative} must not read stylePreset`);
+  }
 });

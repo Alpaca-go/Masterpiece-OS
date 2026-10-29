@@ -217,7 +217,7 @@
     },
     {
       "path": "src/generation-runtime/generation/task-contract.js",
-      "sha256": "c31c5dbc1d2040f8330e3150b31c176713c4c165dbf9eba74a601c449f8cac31"
+      "sha256": "2d37d1c9cbc2abfe9ce0264c9053e9dd5bcc5878dab27642dea1dcab45c86022"
     },
     {
       "path": "src/generation-runtime/generation/template-registry.js",
@@ -537,17 +537,21 @@
     },
     {
       "path": "src/knowledge/style-presets.js",
-      "sha256": "8abb5c5e4b4ce4904ec68e2d27eaf5d4cf0d8b2a0b3e051112e8dad73a1985c2"
+      "sha256": "aaf3d4c9965dd05714c58f1ed8374078ae5f1123e520ac13b9c0490375f281b4"
+    },
+    {
+      "path": "src/generation-runtime/generation/style-axes.js",
+      "sha256": "713432519366eee3256299c86f2e516afcede82cc394e5a6d2953207d1e18c9b"
     }
   ],
   "frontendFiles": [
     {
       "path": "apps/web/src/features/visual-workflow/VisualWorkflowWorkspace.tsx",
-      "sha256": "fb3d83ffd714042954c7da5a9876e87f9c80d27f8bef871652885037afa367c4"
+      "sha256": "006cda58c323f236118859d2e824da647dd46daecdfa1da4ddb43784aa2a5919"
     },
     {
       "path": "apps/web/src/features/visual-workflow/api.ts",
-      "sha256": "0f53ba69d224dcd425eeea1a22552514e0d3bc227389b5144657392f01add4c6"
+      "sha256": "9f423be19f2f86bc37f48a8ad2de19847edd0e456c2fa2f7540c07d1ecd77b4e"
     },
     {
       "path": "apps/web/src/features/visual-workflow/visual-workflow.css",

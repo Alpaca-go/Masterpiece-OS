@@ -1,42 +1,12 @@
 import crypto from "node:crypto";
 import { assertArtDirectionSnapshot } from '../../art-direction-contract.js';
+import { cleanStyleControls } from './style-axes.js';
+import { findStylePreset } from '../../knowledge/style-presets.js';
+export { STYLE_AXES } from './style-axes.js';
 const FAMILIES = /* @__PURE__ */ new Set(["space", "packaging", "vi", "poster"]);
 const RATIOS = /* @__PURE__ */ new Set(["1:1", "4:3", "3:4", "16:9", "9:16"]);
 const LOGO_USAGE_MODES = /* @__PURE__ */ new Set(["reference", "blank_area", "post_composite", "in_image"]);
-// Explicit, coarse controls. Every axis has a designer-choice default; unknown
-// values fall back to it instead of failing the task.
-export const STYLE_AXES = Object.freeze({
-  lighting: ["bright", "warm_dim", "natural", "designer_choice"],
-  density: ["sparse", "balanced", "dense", "designer_choice"],
-  materials: ["brick_wood", "metal", "stone", "plaster", "mixed", "designer_choice"],
-  brandColorArea: ["accent", "half", "dominant", "designer_choice"],
-  tradition: ["modern", "balanced", "traditional", "designer_choice"],
-  props: ["none", "lived_in", "designer_choice"],
-  shot: ["entrance", "interior", "detail", "designer_choice"],
-  textDensity: ["minimal", "moderate", "rich", "designer_choice"],
-  priceDisplay: ["none", "real_menu", "placeholder"]
-});
-const STYLE_DEFAULTS = Object.freeze({
-  lighting: "designer_choice",
-  density: "designer_choice",
-  materials: "designer_choice",
-  brandColorArea: "designer_choice",
-  tradition: "designer_choice",
-  props: "designer_choice",
-  shot: "designer_choice",
-  textDensity: "designer_choice",
-  // Policy A: no numeric prices in generated images unless a real menu is supplied.
-  priceDisplay: "none"
-});
-function cleanStyleControls(value) {
-  const source = value && typeof value === "object" ? value : {};
-  const out = {};
-  for (const [axis, allowed] of Object.entries(STYLE_AXES)) {
-    const candidate = String(source[axis] ?? "").trim();
-    out[axis] = allowed.includes(candidate) ? candidate : STYLE_DEFAULTS[axis];
-  }
-  return out;
-}
+const STYLE_PRESET_ID = /^[a-z0-9][a-z0-9-]{1,60}$/;
 function cleanList(value) {
   return [...new Set((Array.isArray(value) ? value : []).filter((item) => typeof item === "string").map((item) => item.trim()).filter(Boolean))];
 }
@@ -107,10 +77,22 @@ function createShortChainTaskContract(input, options = {}) {
         text: item.text.trim().slice(0, 1200)
       }))
     : [];
-  // Only an explicitly supplied object activates style controls, so legacy
-  // standard requests keep their byte-identical prompt bodies.
-  const hasStyleControls = Boolean(input?.styleControls) && typeof input.styleControls === "object";
-  const styleControls = hasStyleControls ? cleanStyleControls(input.styleControls) : null;
+  // An explicitly selected atmosphere anchor is recorded together with the axes
+  // it was applied with, so a later override is visible as a delta. It never
+  // reaches the prompt: the compiler reads styleControls only.
+  const rawStylePresetId = String(input?.stylePresetId ?? "").trim();
+  let stylePreset = null;
+  if (rawStylePresetId) {
+    if (!STYLE_PRESET_ID.test(rawStylePresetId)) throw new Error("STYLE_PRESET_ID_INVALID");
+    const preset = findStylePreset(rawStylePresetId);
+    if (!preset) throw new Error("STYLE_PRESET_UNKNOWN");
+    stylePreset = { id: preset.id, label: preset.label, axes: cleanStyleControls(preset.styleControls) };
+  }
+  // Only an explicitly supplied object (or an explicitly selected preset)
+  // activates style controls, so legacy standard requests keep their
+  // byte-identical prompt bodies.
+  const hasStyleControls = (Boolean(input?.styleControls) && typeof input.styleControls === "object") || Boolean(stylePreset);
+  const styleControls = hasStyleControls ? cleanStyleControls(input?.styleControls ?? stylePreset?.axes) : null;
   return {
     schemaVersion: "1.0",
     taskId: input.taskId || `vnext-task-${crypto.randomUUID()}`,
@@ -128,6 +110,7 @@ function createShortChainTaskContract(input, options = {}) {
     mustAvoid: cleanList(input.mustAvoid),
     ...knowledgeContext.length ? { knowledgeContext } : {},
     ...styleControls ? { styleControls } : {},
+    ...stylePreset ? { stylePreset } : {},
     referenceAssetIds,
     logoUsageMode,
     ...continuation ? { continuation } : {},

@@ -136,7 +136,7 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
       const currentDirection=await workflowCall<ProjectDesignDirection>('report',project.id,'project_design_direction');
       if (family==='space' && (directionUnsaved || !designDirection || currentDirection.recordSha256!==designDirection.recordSha256 || !['missing','confirmed'].includes(currentDirection.status))) throw new Error('项目设计方向已变化或尚未确认，请核对并确认后再生图。');
       setImage(''); setRun(null); setResultLabel('');
-      const compiled = await workflowCall<{taskContract: {taskId: string}}>('compile', createStandardGenerationInput({projectId:project.id,family,subtype,shot,shotExplicit,ratio,instruction,include,avoid,hasLogo:project.assets.some(a=>a.role==='logo'),directionRecordSha256:currentDirection.recordSha256,styleControls}));
+      const compiled = await workflowCall<{taskContract: {taskId: string}}>('compile', createStandardGenerationInput({projectId:project.id,family,subtype,shot,shotExplicit,ratio,instruction,include,avoid,hasLogo:project.assets.some(a=>a.role==='logo'),directionRecordSha256:currentDirection.recordSha256,styleControls,stylePresetId:presetId||undefined}));
       const result = await workflowCall<{initialRun: WorkflowRun; correctionRun?: WorkflowRun; firstImage?: {runId: string; imageId: string}; terminalStatus: string; automaticRetryCount: number}>('generate', { projectId: project.id, taskId: compiled.taskContract.taskId });
       const selected = result.correctionRun?.status === 'succeeded' ? result.correctionRun : result.initialRun;
       setRun(selected); setResultLabel(`${result.terminalStatus === 'passed' ? '校验通过' : result.terminalStatus === 'failed' ? '未通过校验，请检查结果' : '生成完成，请确认结果'}${result.automaticRetryCount ? ' · 已执行一次纠偏' : ''}`);
@@ -156,7 +156,7 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
     if (!project || !presetId) return;
     await action('正在按气质预检', async () => {
       const currentDirection = await workflowCall<ProjectDesignDirection>('report', project.id, 'project_design_direction');
-      const compiled = await workflowCall<{ taskContract: { taskId: string }; compiledPrompt?: { finalPrompt?: string } }>('compile', createStandardGenerationInput({projectId:project.id,family,subtype,shot,shotExplicit,ratio,instruction,include,avoid,hasLogo:project.assets.some(a=>a.role==='logo'),directionRecordSha256:currentDirection.recordSha256,styleControls}));
+      const compiled = await workflowCall<{ taskContract: { taskId: string }; compiledPrompt?: { finalPrompt?: string } }>('compile', createStandardGenerationInput({projectId:project.id,family,subtype,shot,shotExplicit,ratio,instruction,include,avoid,hasLogo:project.assets.some(a=>a.role==='logo'),directionRecordSha256:currentDirection.recordSha256,styleControls,stylePresetId:presetId||undefined}));
       setPreflight(await stylePreflight(presetId, compiled.compiledPrompt?.finalPrompt || ''));
     });
   }

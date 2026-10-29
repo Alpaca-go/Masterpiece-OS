@@ -21,7 +21,7 @@
 // Keep the two in sync; the card carries the evidence, this file carries the
 // values the generator consumes.
 
-import { STYLE_AXES } from '../generation-runtime/generation/task-contract.js';
+import { STYLE_AXES } from '../generation-runtime/generation/style-axes.js';
 
 export const STYLE_PRESETS_SCHEMA_VERSION = '1.0';
 
