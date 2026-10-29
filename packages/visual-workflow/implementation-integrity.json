@@ -501,7 +501,7 @@
     },
     {
       "path": "src/service.js",
-      "sha256": "9b2f7ab0d11f2135459a6b5ec40629effb11656a76a0dc7009f872566fc80544"
+      "sha256": "31e725e287ec3f7f90db49dd01cee4207fbf1188560600474bac829cc600f9fd"
     },
     {
       "path": "src/support/creative-production-runtime/src/packaging-translation.js",
@@ -539,7 +539,7 @@
   "frontendFiles": [
     {
       "path": "apps/web/src/features/visual-workflow/VisualWorkflowWorkspace.tsx",
-      "sha256": "85477c59c99d2f22921d399488064cc662f117eea36147148ae9a4d7925aa538"
+      "sha256": "27aba7601a43d264c296eb500dcebf649723b0ad8981c4b43fe73b7ea5b59d1d"
     },
     {
       "path": "apps/web/src/features/visual-workflow/api.ts",
@@ -552,6 +552,10 @@
     {
       "path": "apps/web/src/features/visual-workflow/ProjectDesignDirectionPanel.tsx",
       "sha256": "f18a3cecdad3e0c888be6212540af05ec2735711c847a6178ddeabc7f1e61f5f"
+    },
+    {
+      "path": "apps/web/src/features/visual-workflow/ReferenceAtlasPanel.tsx",
+      "sha256": "99f94760a7a2f7278306015dfc27b06a6cd4cfe2b57fbded517d9ffb7a645972"
     }
   ]
 }

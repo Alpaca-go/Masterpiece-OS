@@ -4,6 +4,7 @@ import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import { filePayload, workflowCall, createStandardGenerationInput, DEFAULT_STYLE_CONTROLS, type StyleControls, type WorkflowOptions, type WorkflowProfile, type WorkflowProject, type WorkflowRun, type WorkflowSettings, type ProjectDesignDirection } from './api';
 import { ProjectDesignDirectionPanel } from './ProjectDesignDirectionPanel';
+import { ReferenceAtlasPanel } from './ReferenceAtlasPanel';
 import './visual-workflow.css';
 
 const FAMILY_LABELS: Record<string, string> = { space: '空间效果图', packaging: '包装效果图', vi: 'VI 应用', poster: '海报' };
@@ -56,6 +57,7 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
   const [include, setInclude] = useState('');
   const [avoid, setAvoid] = useState('');
   const [styleControls, setStyleControls] = useState<StyleControls>(DEFAULT_STYLE_CONTROLS);
+  const [showAtlas, setShowAtlas] = useState(false);
   const [profile, setProfile] = useState({ name: '', provider: 'dashscope', modelType: 'analysis', modelId: '', baseUrl: '', apiKey: '', protocol: 'openai-chat-multimodal' });
 
   async function refresh() {
@@ -154,10 +156,13 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
   const canGenerate = !metadataUnsaved && project?.status === 'completed' && project.visualContextVNextStatus === 'ready';
   const html = DOMPurify.sanitize(marked.parse(report, { async: false }));
 
+  if (showAtlas) return <ReferenceAtlasPanel onClose={() => setShowAtlas(false)} />;
+
   return <div className="visual-workflow">
     <header className="visual-workflow__header">
       <button type="button" onClick={onBack} disabled={Boolean(busy)}>← 返回首页</button>
       <div><h1>视觉分析与生图</h1><p>导入素材 → 视觉分析 → 查看报告 → 智能生图</p></div>
+      <button type="button" onClick={() => setShowAtlas(true)} disabled={Boolean(busy)}>参考图集</button>
       <button type="button" onClick={() => setShowSettings(!showSettings)} disabled={Boolean(busy)}>独立模型设置</button>
     </header>
     {error && <div className="visual-workflow__error" role="alert">{error}</div>}

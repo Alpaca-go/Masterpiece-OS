@@ -120,6 +120,140 @@ export function createVisualWorkflow(options) {
       throw error;
     }
   }
+  // Reference atlas: curated style references, stored outside the repository.
+  // Export is explicit and writes only to <root>/reference-atlas/exports/.
+  const atlasRoot = path.join(root, 'reference-atlas');
+  const ATLAS_SLUG = /^[a-z0-9][a-z0-9-]{1,60}$/;
+  const ATLAS_IMAGE_EXT = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/gif': 'gif' };
+  function assertAtlasSlug(value) {
+    const slug = String(value || '').trim().toLowerCase();
+    if (!ATLAS_SLUG.test(slug)) throw new Error('REFERENCE_ATLAS_SLUG_INVALID');
+    return slug;
+  }
+  async function atlasEntryDir(slug) {
+    const dir = path.join(atlasRoot, assertAtlasSlug(slug));
+    if (!inside(atlasRoot, path.relative(atlasRoot, dir))) throw new Error('REFERENCE_ATLAS_PATH_INVALID');
+    return dir;
+  }
+  function atlasFields(input, now) {
+    const take = (value, max) => String(value ?? '').trim().slice(0, max);
+    return {
+      schemaVersion: '1.0',
+      slug: assertAtlasSlug(input.slug),
+      title: take(input.title, 120),
+      styleScope: take(input.styleScope, 80),
+      brandCategory: take(input.brandCategory, 120),
+      site: take(input.site, 200),
+      likes: take(input.likes, 1200),
+      rejected: take(input.rejected, 1200),
+      landed: take(input.landed, 1200),
+      createdAt: input.createdAt || now,
+      updatedAt: now,
+      images: Array.isArray(input.images) ? input.images : []
+    };
+  }
+  async function atlasList() {
+    let entries = [];
+    try { entries = await fs.readdir(atlasRoot, { withFileTypes: true }); } catch { return []; }
+    const result = [];
+    for (const entry of entries) {
+      if (!entry.isDirectory() || entry.name === 'exports' || !ATLAS_SLUG.test(entry.name)) continue;
+      const meta = await readJson(path.join(atlasRoot, entry.name, 'meta.json'), null);
+      if (meta) result.push({ ...meta, imageCount: (meta.images || []).length });
+    }
+    return result.sort((a, b) => String(b.updatedAt).localeCompare(String(a.updatedAt)));
+  }
+  async function atlasCreate(input) {
+    const now = new Date().toISOString();
+    const meta = atlasFields(input, now);
+    const dir = await atlasEntryDir(meta.slug);
+    try { await fs.access(path.join(dir, 'meta.json')); throw new Error('REFERENCE_ATLAS_EXISTS'); } catch (error) { if (error.message === 'REFERENCE_ATLAS_EXISTS') throw error; }
+    await fs.mkdir(path.join(dir, 'images'), { recursive: true });
+    await writeJson(path.join(dir, 'meta.json'), meta);
+    return meta;
+  }
+  async function atlasUpdate(slug, patch) {
+    const dir = await atlasEntryDir(slug);
+    const meta = await readJson(path.join(dir, 'meta.json'), null);
+    if (!meta) throw new Error('REFERENCE_ATLAS_NOT_FOUND');
+    const next = atlasFields({ ...meta, ...patch, slug: meta.slug, createdAt: meta.createdAt, images: meta.images }, new Date().toISOString());
+    await writeJson(path.join(dir, 'meta.json'), next);
+    return next;
+  }
+  async function atlasUpload(slug, files) {
+    const dir = await atlasEntryDir(slug);
+    const meta = await readJson(path.join(dir, 'meta.json'), null);
+    if (!meta) throw new Error('REFERENCE_ATLAS_NOT_FOUND');
+    if (!Array.isArray(files) || !files.length) throw new Error('REFERENCE_ATLAS_FILES_REQUIRED');
+    const stored = [];
+    for (const file of files.slice(0, 12)) {
+      const mimeType = String(file?.mimeType || '');
+      const ext = ATLAS_IMAGE_EXT[mimeType];
+      if (!ext) throw new Error('REFERENCE_ATLAS_IMAGE_TYPE_UNSUPPORTED');
+      const buffer = Buffer.from(String(file?.content || ''), 'base64');
+      if (!buffer.length || buffer.length > 12 * 1024 * 1024) throw new Error('REFERENCE_ATLAS_IMAGE_SIZE_INVALID');
+      const imageId = `img-${crypto.randomUUID()}`;
+      const fileName = `${imageId}.${ext}`;
+      await fs.mkdir(path.join(dir, 'images'), { recursive: true });
+      await fs.writeFile(path.join(dir, 'images', fileName), buffer);
+      stored.push({ id: imageId, file: fileName, originalName: String(file?.name || fileName).slice(0, 160), mimeType, sizeBytes: buffer.length });
+    }
+    meta.images = [...(meta.images || []), ...stored];
+    meta.updatedAt = new Date().toISOString();
+    await writeJson(path.join(dir, 'meta.json'), meta);
+    return meta;
+  }
+  async function atlasDelete(slug) {
+    const dir = await atlasEntryDir(slug);
+    await fs.rm(dir, { recursive: true, force: true });
+    return { deleted: true, slug: assertAtlasSlug(slug) };
+  }
+  async function atlasImage(slug, imageId) {
+    const dir = await atlasEntryDir(slug);
+    const meta = await readJson(path.join(dir, 'meta.json'), null);
+    if (!meta) throw new Error('REFERENCE_ATLAS_NOT_FOUND');
+    const image = (meta.images || []).find((item) => item.id === imageId);
+    if (!image) throw new Error('REFERENCE_ATLAS_IMAGE_NOT_FOUND');
+    const file = inside(path.join(dir, 'images'), image.file);
+    return { dataUrl: `data:${image.mimeType};base64,${(await fs.readFile(file)).toString('base64')}` };
+  }
+  async function atlasExport(slug) {
+    const dir = await atlasEntryDir(slug);
+    const meta = await readJson(path.join(dir, 'meta.json'), null);
+    if (!meta) throw new Error('REFERENCE_ATLAS_NOT_FOUND');
+    const out = inside(atlasRoot, path.join('exports', meta.slug));
+    await fs.mkdir(path.join(out, 'images'), { recursive: true });
+    for (const image of meta.images || []) {
+      await fs.copyFile(path.join(dir, 'images', image.file), path.join(out, 'images', image.file));
+    }
+    const markdown = [
+      `# ${meta.title || meta.slug}`,
+      '',
+      `- slug：${meta.slug}`,
+      `- 风格作用域：${meta.styleScope || '-'}`,
+      `- 品牌 / 品类：${meta.brandCategory || '-'}`,
+      `- 场地：${meta.site || '-'}`,
+      '',
+      '## 喜欢的三点',
+      '',
+      meta.likes || '-',
+      '',
+      '## 当时否掉了什么',
+      '',
+      meta.rejected || '-',
+      '',
+      '## 落地与修改',
+      '',
+      meta.landed || '-',
+      '',
+      '## 图片',
+      '',
+      ...(meta.images || []).map((image) => `![${image.originalName}](images/${image.file})`),
+      ''
+    ].join('\n');
+    await fs.writeFile(path.join(out, 'notes.md'), markdown, 'utf8');
+    return { path: out, markdown };
+  }
   async function report(id) {
     const project = await projects.get(id);
     if (!project.lastReportFilename) return null;
@@ -132,6 +266,13 @@ export function createVisualWorkflow(options) {
     'visual-workflow:save-profile': (_context, input) => configuration.saveProfile(input),
     'visual-workflow:select-profiles': (_context, input) => configuration.select(input),
     'visual-workflow:import-configuration': () => importConfiguration(),
+    'visual-workflow:atlas-list': () => atlasList(),
+    'visual-workflow:atlas-create': (_context, input) => atlasCreate(input),
+    'visual-workflow:atlas-update': (_context, slug, patch) => atlasUpdate(slug, patch),
+    'visual-workflow:atlas-upload': (_context, slug, files) => atlasUpload(slug, files),
+    'visual-workflow:atlas-delete': (_context, slug) => atlasDelete(slug),
+    'visual-workflow:atlas-image': (_context, slug, imageId) => atlasImage(slug, imageId),
+    'visual-workflow:atlas-export': (_context, slug) => atlasExport(slug),
     'visual-workflow:list-projects': async () => Promise.all((await projects.list()).map(pipeline.reconcileOrphanedProject)),
     'visual-workflow:create-project': (_context, input) => projects.create(input),
     'visual-workflow:update-project': (_context, id, input) => {
@@ -181,7 +322,8 @@ export function createVisualWorkflow(options) {
   const operations = Object.freeze(Object.fromEntries(Object.entries(handlers).map(([channel, handler]) => [channel, async (...args) => {
     verified ||= verifyImplementation();
     const implementation = await verified;
-    await baselineGuard(channel,args.slice(1),implementation);
+    // Atlas operations are project-independent and carry a slug, not a project id.
+    if (!channel.startsWith('visual-workflow:atlas-')) await baselineGuard(channel,args.slice(1),implementation);
     const result = await handler(...args);
     if ((channel === 'visual-workflow:analyze' || channel === 'visual-workflow:compile') && result) {
       const directory = result.artifactDirectory || (await projects.paths(args[1])).runtime;
