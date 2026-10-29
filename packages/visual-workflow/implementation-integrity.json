@@ -217,7 +217,7 @@
     },
     {
       "path": "src/generation-runtime/generation/task-contract.js",
-      "sha256": "eb25a41f092bae7c3825cfa6cb77dc69e24f3dac00f72fed95b6615dcb18c4a3"
+      "sha256": "c31c5dbc1d2040f8330e3150b31c176713c4c165dbf9eba74a601c449f8cac31"
     },
     {
       "path": "src/generation-runtime/generation/template-registry.js",
@@ -501,7 +501,7 @@
     },
     {
       "path": "src/service.js",
-      "sha256": "31e725e287ec3f7f90db49dd01cee4207fbf1188560600474bac829cc600f9fd"
+      "sha256": "ff710787761f2e78a292fbb3c3244de0f261b22e8511c33d6e0faadb0ae9a30c"
     },
     {
       "path": "src/support/creative-production-runtime/src/packaging-translation.js",
@@ -534,16 +534,20 @@
     {
       "path": "src/generation-baseline-lock.js",
       "sha256": "dd13f84fa39cefd9941f242428abe0418d6537b1cb3ddaa25552deb3e82d6111"
+    },
+    {
+      "path": "src/knowledge/style-presets.js",
+      "sha256": "8abb5c5e4b4ce4904ec68e2d27eaf5d4cf0d8b2a0b3e051112e8dad73a1985c2"
     }
   ],
   "frontendFiles": [
     {
       "path": "apps/web/src/features/visual-workflow/VisualWorkflowWorkspace.tsx",
-      "sha256": "27aba7601a43d264c296eb500dcebf649723b0ad8981c4b43fe73b7ea5b59d1d"
+      "sha256": "fb3d83ffd714042954c7da5a9876e87f9c80d27f8bef871652885037afa367c4"
     },
     {
       "path": "apps/web/src/features/visual-workflow/api.ts",
-      "sha256": "2770f578abbbda096b6f7c1dbb0c94e029a70003440abb89bb04268b29357598"
+      "sha256": "0f53ba69d224dcd425eeea1a22552514e0d3bc227389b5144657392f01add4c6"
     },
     {
       "path": "apps/web/src/features/visual-workflow/visual-workflow.css",

@@ -5,7 +5,7 @@ const RATIOS = /* @__PURE__ */ new Set(["1:1", "4:3", "3:4", "16:9", "9:16"]);
 const LOGO_USAGE_MODES = /* @__PURE__ */ new Set(["reference", "blank_area", "post_composite", "in_image"]);
 // Explicit, coarse controls. Every axis has a designer-choice default; unknown
 // values fall back to it instead of failing the task.
-const STYLE_AXES = Object.freeze({
+export const STYLE_AXES = Object.freeze({
   lighting: ["bright", "warm_dim", "natural", "designer_choice"],
   density: ["sparse", "balanced", "dense", "designer_choice"],
   materials: ["brick_wood", "metal", "stone", "plaster", "mixed", "designer_choice"],

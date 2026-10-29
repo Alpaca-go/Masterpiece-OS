@@ -58,6 +58,7 @@
 - **分析提案**：tag 为空时完全跟随分析；有 tag 时覆盖冲突项。
 - **knowledgeContext**：经验是“建议”，tag 是“决定”；两者冲突时以 tag 为准。
 - **校验器**：价格策略会改变 forbidden 判定；其它 tag 只影响 Prompt，不新增自动校验。
+- **气质预设（只读）**：`visual-workflow:style-presets` 提供人工策展的气质锚点（8 轴取值 + 反漂移清单），`visual-workflow:style-preflight` 扫描编译后的 Prompt 给出只读告警。选中预设只填轴、不注入文字；见 [style-framework](style-framework/README.md)。
 - **UI**：已接入生图页的“风格约束（可选）”折叠面板（8 个下拉，默认跟随分析；价格默认“不出现数字”）。2026-10-29 隐藏面板内与取景重叠的 `shot`，统一由表单“镜头 / 构图”选择；任务契约仍支持显式 `styleControls.shot`，UI 保持其默认 `designer_choice`。
 
 ## 6. 首轮对照（潮牛帮，2026-10-28）

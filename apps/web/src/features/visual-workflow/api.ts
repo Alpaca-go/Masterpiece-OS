@@ -79,3 +79,20 @@ export function filePayload(file: File): Promise<{name: string; size: number; co
     reader.readAsDataURL(file);
   });
 }
+
+// Curated style anchors ("atmosphere" presets). Selecting one fills the style
+// axes; it never edits the prompt on its own, and the preflight is advisory.
+export interface StylePresetAntiDriftRule { signal: string; label: string; why: string; matches: string[] }
+export interface StylePreset {
+  id: string; label: string; status: string; summary: string; appliesTo: string; notFor: string;
+  styleControls: StyleControls; knowledgeText: string; antiDrift: StylePresetAntiDriftRule[]; sources: string[];
+}
+export interface StylePreflightWarning { signal: string; label: string; why: string; line: string }
+export interface StylePreflightResult { presetId: string; ok: boolean; warnings: StylePreflightWarning[]; checkedSignals: number; note: string }
+export async function stylePresets(): Promise<StylePreset[]> {
+  const value = await workflowCall<{ schemaVersion: string; presets: StylePreset[] }>('style-presets');
+  return Array.isArray(value?.presets) ? value.presets : [];
+}
+export function stylePreflight(presetId: string, prompt: string): Promise<StylePreflightResult> {
+  return workflowCall<StylePreflightResult>('style-preflight', { presetId, prompt });
+}

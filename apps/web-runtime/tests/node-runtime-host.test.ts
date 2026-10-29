@@ -34,15 +34,15 @@ test('Node Runtime Host binds shared and independently owned channels without El
   // Preserve the shared/native channel count and verify the independently
   // owned workflow registration separately.
   // The independent channel count follows the workflow's own registry
-  // (28 channels: the 21 pre-existing workflow operations plus the 7
-  // `atlas-*` reference-atlas operations). It is a bookkeeping constant,
+  // (30 channels: the 21 pre-existing workflow operations, the 7 `atlas-*`
+  // reference-atlas operations and the 2 read-only style-anchor operations). It is a bookkeeping constant,
   // not a quality expectation: a genuine duplicate registration is caught
   // by the uniqueness assertion below.
   const channels: string[] = host.registry.list();
   const independentChannels = channels.filter(channel => channel.startsWith('visual-workflow:'));
   assert.equal(channels.length - independentChannels.length, 236);
-  assert.equal(independentChannels.length, 28);
-  assert.equal(host.operationCount, 264);
+  assert.equal(independentChannels.length, 30);
+  assert.equal(host.operationCount, 266);
   assert.equal(new Set(channels).size, channels.length);
   for (const channel of ['visual-workflow:select-logo','visual-workflow:analyze','visual-workflow:compile','visual-workflow:generate']) assert.ok(independentChannels.includes(channel));
   const healthResponse = await fetch(`${host.url}/_masterpiece/health`);

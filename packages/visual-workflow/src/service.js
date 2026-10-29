@@ -14,6 +14,7 @@ import { createArtDirectionStore } from './art-direction-store.js';
 import { assertArtDirectionModel } from './art-direction-contract.js';
 import { createProjectDesignDirectionStore } from './project-design-direction.js';
 import { createGenerationBaselineGuard } from './generation-baseline-lock.js';
+import { listStylePresets, stylePreflight } from './knowledge/style-presets.js';
 
 // This is the only production composition root for this bounded workflow.
 // Other product domains receive neither its services nor its storage paths.
@@ -273,6 +274,13 @@ export function createVisualWorkflow(options) {
     'visual-workflow:atlas-delete': (_context, slug) => atlasDelete(slug),
     'visual-workflow:atlas-image': (_context, slug, imageId) => atlasImage(slug, imageId),
     'visual-workflow:atlas-export': (_context, slug) => atlasExport(slug),
+    // Read-only style anchors: the curated presets and the advisory drift check.
+    // Neither touches storage, the task contract or the compiled prompt.
+    'visual-workflow:style-presets': () => ({
+      schemaVersion: '1.0',
+      presets: listStylePresets()
+    }),
+    'visual-workflow:style-preflight': (_context, input) => stylePreflight(input),
     'visual-workflow:list-projects': async () => Promise.all((await projects.list()).map(pipeline.reconcileOrphanedProject)),
     'visual-workflow:create-project': (_context, input) => projects.create(input),
     'visual-workflow:update-project': (_context, id, input) => {
@@ -323,7 +331,12 @@ export function createVisualWorkflow(options) {
     verified ||= verifyImplementation();
     const implementation = await verified;
     // Atlas operations are project-independent and carry a slug, not a project id.
-    if (!channel.startsWith('visual-workflow:atlas-')) await baselineGuard(channel,args.slice(1),implementation);
+    // The style preset/preflight channels are project-independent too: they read
+    // the curated anchor list and scan a prompt, with no project baseline.
+    const projectIndependent = channel.startsWith('visual-workflow:atlas-')
+      || channel === 'visual-workflow:style-presets'
+      || channel === 'visual-workflow:style-preflight';
+    if (!projectIndependent) await baselineGuard(channel,args.slice(1),implementation);
     const result = await handler(...args);
     if ((channel === 'visual-workflow:analyze' || channel === 'visual-workflow:compile') && result) {
       const directory = result.artifactDirectory || (await projects.paths(args[1])).runtime;

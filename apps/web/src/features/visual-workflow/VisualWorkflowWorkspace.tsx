@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
-import { filePayload, workflowCall, createStandardGenerationInput, DEFAULT_STYLE_CONTROLS, type StyleControls, type WorkflowOptions, type WorkflowProfile, type WorkflowProject, type WorkflowRun, type WorkflowSettings, type ProjectDesignDirection } from './api';
+import { filePayload, workflowCall, createStandardGenerationInput, DEFAULT_STYLE_CONTROLS, stylePresets, stylePreflight, type StyleControls, type StylePreset, type StylePreflightResult, type WorkflowOptions, type WorkflowProfile, type WorkflowProject, type WorkflowRun, type WorkflowSettings, type ProjectDesignDirection } from './api';
 import { ProjectDesignDirectionPanel } from './ProjectDesignDirectionPanel';
 import { ReferenceAtlasPanel } from './ReferenceAtlasPanel';
 import './visual-workflow.css';
@@ -57,6 +57,9 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
   const [include, setInclude] = useState('');
   const [avoid, setAvoid] = useState('');
   const [styleControls, setStyleControls] = useState<StyleControls>(DEFAULT_STYLE_CONTROLS);
+  const [presets, setPresets] = useState<StylePreset[]>([]);
+  const [presetId, setPresetId] = useState('');
+  const [preflight, setPreflight] = useState<StylePreflightResult | null>(null);
   const [showAtlas, setShowAtlas] = useState(false);
   const [profile, setProfile] = useState({ name: '', provider: 'dashscope', modelType: 'analysis', modelId: '', baseUrl: '', apiKey: '', protocol: 'openai-chat-multimodal' });
 
@@ -69,6 +72,7 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
     return nextProjects;
   }
   useEffect(() => { void refresh().catch(reason => setError(String(reason.message))); }, []);
+  useEffect(() => { void stylePresets().then(setPresets).catch(() => setPresets([])); }, []);
   useEffect(() => {
     const imported = projects.find(item => item.id === legacyId);
     if (legacyId && imported && openedImport.current !== legacyId) {
@@ -142,6 +146,20 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
     });
   }
   const available = options[family];
+  const selectedPreset = presets.find(item => item.id === presetId) || null;
+  function applyPreset(nextId: string) {
+    setPresetId(nextId); setPreflight(null);
+    const preset = presets.find(item => item.id === nextId);
+    if (preset) setStyleControls({ ...preset.styleControls });
+  }
+  async function preflightCheck() {
+    if (!project || !presetId) return;
+    await action('正在按气质预检', async () => {
+      const currentDirection = await workflowCall<ProjectDesignDirection>('report', project.id, 'project_design_direction');
+      const compiled = await workflowCall<{ taskContract: { taskId: string }; compiledPrompt?: { finalPrompt?: string } }>('compile', createStandardGenerationInput({projectId:project.id,family,subtype,shot,shotExplicit,ratio,instruction,include,avoid,hasLogo:project.assets.some(a=>a.role==='logo'),directionRecordSha256:currentDirection.recordSha256,styleControls}));
+      setPreflight(await stylePreflight(presetId, compiled.compiledPrompt?.finalPrompt || ''));
+    });
+  }
   const logo=project?.assets.find(asset=>asset.role==='logo');
   async function compositeLogo() {
     const target=run?.images[0];
@@ -205,7 +223,20 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
           <label>子类型<select value={subtype} onChange={event => setSubtype(event.target.value)}>{available?.subtypes.map(item => <option key={item} value={item}>{LABELS[item] || item}</option>)}</select></label>
           <label>镜头 / 构图<select value={shot} onChange={event => {setShot(event.target.value); setShotExplicit(true);}}>{available?.shots.map(item => <option key={item} value={item}>{LABELS[item] || item}</option>)}</select></label>
           <label>必须包含（每行一项）<textarea value={include} onChange={event => setInclude(event.target.value)} /></label><label>必须避免（每行一项）<textarea value={avoid} onChange={event => setAvoid(event.target.value)} /></label>
-          <details className="visual-workflow__style"><summary>风格约束（可选，默认跟随分析）</summary><div className="visual-workflow__fields">{STYLE_FIELDS.map(field => <label key={field.key}>{field.label}<select value={styleControls[field.key]} onChange={event => setStyleControls({ ...styleControls, [field.key]: event.target.value })}>{field.options.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>)}</div><p>“不出现数字”是当前默认价格策略；选择“仅真实菜单”前请先确认菜单内容。</p></details>
+          <details className="visual-workflow__style"><summary>风格约束（可选，默认跟随分析）</summary>
+            {presets.length > 0 && <div className="visual-workflow__fields">
+              <label>气质预设（草案）<select value={presetId} disabled={Boolean(busy)} onChange={event => applyPreset(event.target.value)}><option value="">不套用（跟随分析）</option>{presets.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}</select></label>
+            </div>}
+            {selectedPreset && <div>
+              <p>{selectedPreset.summary}</p>
+              <p><small>适用：{selectedPreset.appliesTo}<br />不适用：{selectedPreset.notFor}</small></p>
+              <details><summary>反漂移信号（{selectedPreset.antiDrift.length} 条）</summary><ul>{selectedPreset.antiDrift.map(rule => <li key={rule.signal}><strong>{rule.label}</strong>：{rule.why}</li>)}</ul></details>
+              <button type="button" disabled={Boolean(busy) || !project} onClick={() => void preflightCheck()}>按气质预检</button>
+              {preflight && <div role="status">{preflight.ok
+                ? `预检通过：未命中 ${preflight.checkedSignals} 条反漂移信号（只读提示，不代表验收）`
+                : <><p>可能跑偏：命中 {preflight.warnings.length} 条反漂移信号（只读提示，仍可继续生成）</p><ul>{preflight.warnings.map(item => <li key={item.signal}><strong>{item.label}</strong>：{item.why}<br /><small>{item.line}</small></li>)}</ul></>}</div>}
+            </div>}
+            <div className="visual-workflow__fields">{STYLE_FIELDS.map(field => <label key={field.key}>{field.label}<select value={styleControls[field.key]} onChange={event => {setStyleControls({ ...styleControls, [field.key]: event.target.value }); setPreflight(null);}}>{field.options.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>)}</div><p>“不出现数字”是当前默认价格策略；选择“仅真实菜单”前请先确认菜单内容。</p></details>
           <p>Logo：{project?.assets.some(a => a.role === 'logo') ? '预留区域，原始 Logo 后期合成' : '预留干净区域'}</p>
           <button disabled={Boolean(busy) || !canGenerate || !settings?.imageProfileId || family==='space' && (directionUnsaved || !designDirection || !['missing','confirmed'].includes(designDirection.status))}>智能生成</button>
           {busy && run?.status === 'running' && <button type="button" onClick={() => void workflowCall('cancel-generation', run.runId)}>取消生成</button>}
