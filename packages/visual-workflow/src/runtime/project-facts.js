@@ -89,6 +89,23 @@ export function projectFactsLines(facts) {
   return lines;
 }
 
+// Readable entries for the deterministic packet override: one entry per fact,
+// carrying the human value plus the unit, so the packet can record a
+// user_provided fact instead of a model inference.
+export function projectFactEntries(facts) {
+  if (!hasProjectFacts(facts)) return [];
+  const entries = [];
+  const push = (field, value, text, unit) => entries.push({ field, value, text, ...(unit ? { unit } : {}) });
+  if (facts.floorArea) push('floorArea', facts.floorArea, `${facts.floorArea} ㎡`, '㎡');
+  if (facts.ceilingHeight) push('ceilingHeight', facts.ceilingHeight, `${facts.ceilingHeight} m`, 'm');
+  if (facts.locationType) push('locationType', facts.locationType, labelOf('locationType', facts.locationType));
+  if (facts.dineInShare) push('dineInShare', facts.dineInShare, labelOf('dineInShare', facts.dineInShare));
+  if (facts.servicePeriod) push('servicePeriod', facts.servicePeriod, labelOf('servicePeriod', facts.servicePeriod));
+  if (facts.budgetBand) push('budgetBand', facts.budgetBand, labelOf('budgetBand', facts.budgetBand));
+  if (facts.kitchenExhaust) push('kitchenExhaust', facts.kitchenExhaust, labelOf('kitchenExhaust', facts.kitchenExhaust));
+  return entries;
+}
+
 // Locked-fact entries for the analysis prompt's factualConstraints channel.
 // Empty for projects without facts, so their analysis request stays unchanged.
 // The trailing line matters: without it the model still fills its own

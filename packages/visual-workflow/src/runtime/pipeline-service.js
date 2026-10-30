@@ -36,6 +36,7 @@ import {
 import { compileVisualDecisionReport } from "./visual-decision-report-compiler.js";
 import { createAnalysisRepairStore } from "./analysis-repair-store.js";
 import { projectFactsConstraints } from "./project-facts.js";
+import { applyProjectFactsToPacket } from "./project-facts-override.js";
 import { isAnalysisSourceAsset } from "./project-assets.js";
 import {
   throwForValidationIssues
@@ -477,6 +478,9 @@ mustBeVisible \u53EA\u80FD\u5217\u51FA\u771F\u5B9E\u8FD0\u8425\u4E2D\u5FC5\u987B
         visualDecisionPacket = completion.packet;
         visualDecisionPacket.validation.executionDataStatus = "ready";
         visualDecisionPacket.validation.missingExecutionFields = [];
+        // Facts are authoritative over model inference: apply them before the
+        // prompt source, the report and the compiled context are derived.
+        applyProjectFactsToPacket(visualDecisionPacket, project.facts);
         promptSourceObject = visualDecisionPacketToPromptSourceObject(visualDecisionPacket);
         promptSourceObject.provenance.structuredAnalysisRunId = uvuResponse.runId || void 0;
         report = compileVisualDecisionReport(visualDecisionPacket, {

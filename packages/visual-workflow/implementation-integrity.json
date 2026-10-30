@@ -461,7 +461,7 @@
     },
     {
       "path": "src/runtime/pipeline-service.js",
-      "sha256": "8b5f19020a0d877bdc997d7d996e5e0c9d1207bca52f8beb853d63485f20976a"
+      "sha256": "08cdb63b066cd413ff46ae56a72e826e10308fc80b1697460ac7ad84df451b55"
     },
     {
       "path": "src/runtime/project-assets.js",
@@ -545,7 +545,11 @@
     },
     {
       "path": "src/runtime/project-facts.js",
-      "sha256": "2e3a9e5571187e10f56a174cb67a8e37a7791c5d4799ea4fdfc59811d2031716"
+      "sha256": "c9704a52ccdaa290809217b6650ef9b43ce80e47612b8bd21298c0c4e24f0c82"
+    },
+    {
+      "path": "src/runtime/project-facts-override.js",
+      "sha256": "eec1b3fc19868034f5f902405e7b8c7dba6f837d1000283fa140d2f8691d9cca"
     }
   ],
   "frontendFiles": [
