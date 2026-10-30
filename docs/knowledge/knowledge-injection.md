@@ -123,7 +123,11 @@ node scripts/extract-case.mjs --project <projectId> --out <draft.md>
 
 定位：把单项目录入从约 60 分钟压到 15–30 分钟；**提取器不写“为什么”**。
 
-## 9. 与代码的关系
+## 9. 怎么找到该注入哪几条
+
+手工翻卡片之外，有一个只读检索原型：`node scripts/knowledge-search.mjs --category ... --json`。它返回 3 条先例 + 1 条反例候选 + 2 条风格参考，**只读、不自动注入**；口径与限制见 [retrieval-prototype.md](retrieval-prototype.md)。
+
+## 10. 与代码的关系
 
 显式风格约束（光照/密度/材质/品牌色面积/传统度/道具/镜头/价格）见 [style-controls.md](style-controls.md)。
 

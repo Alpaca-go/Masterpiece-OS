@@ -303,6 +303,18 @@ export function createVisualWorkflow(options) {
       return projects.update(id, { assets: project.assets.map(item => ({ ...item, role: item.id === assetId ? 'logo' : 'visual' })), logoFiles: [asset.relativePath], visualContextStatus: 'missing', visualContextVNextStatus: 'missing', status: 'ready' });
     },
     'visual-workflow:import-project': (_context, id) => importProject(id),
+    // Brand IP / mascot artwork: recorded as a project asset so generation can
+    // pass it as a reference. A mascot cannot be described into existence (see
+    // the Woye acceptance record); it has to be an image the model can see.
+    'visual-workflow:select-ip': async (_context, id, assetId) => {
+      const project = await projects.get(id);
+      if (pipeline.isActive(id)) throw new Error('分析期间不能修改 IP 资产');
+      if (assetId) {
+        const asset = project.assets.find(item => item.id === assetId && item.mimeType.startsWith('image/'));
+        if (!asset) throw new Error('请选择本项目已导入的图片作为 IP / 吉祥物资产');
+      }
+      return projects.update(id, { ipAssetId: assetId || null, ipAssetName: assetId ? project.assets.find(item => item.id === assetId)?.originalName || null : null });
+    },
     'visual-workflow:analyze': async (_context, id, force = true) => {
       if (pipeline.isActive(id)) throw new Error('分析已在进行中');
       const settings = await configuration.get();
@@ -317,6 +329,14 @@ export function createVisualWorkflow(options) {
     'visual-workflow:image': (_context, runId, imageId) => images.imageData(runId, imageId),
     'visual-workflow:cancel-generation': (_context, id) => images.cancel(id),
     'visual-workflow:logo-source': (_context, id, assetId) => images.logoSource(id,assetId),
+    // Brand IP after-composite: the mascot is the user's own artwork, so the
+    // only correct way to keep the likeness is to place that exact file.
+    'visual-workflow:post-composite-ip': async (_context, input) => {
+      const audit = await generation.postCompositeLogo({ ...input, logoAssetId: input.ipAssetId, compositeKind: 'brand_ip' });
+      const directory = await images.runRoot(input.runId);
+      const output = inside(directory, path.relative(directory, audit.outputPath));
+      return { audit, dataUrl: `data:image/png;base64,${(await fs.readFile(output)).toString('base64')}` };
+    },
     'visual-workflow:post-composite-logo': async (_context, input) => {
       const audit=await generation.postCompositeLogo(input);
       const directory=await images.runRoot(input.runId);

@@ -994,14 +994,18 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
       path.join(runRoot, "source-context-snapshot.json"),
       "utf8"
     ).then((value) => JSON.parse(value)).catch(() => null);
-    if (snapshot?.taskContract?.logoUsageMode !== "post_composite") {
+    // A brand IP is placed by the user wherever it belongs, so it does not need
+    // the blank post-composite area that a Logo requires. The Logo path keeps
+    // the strict gate; only the explicit brand_ip kind may skip it.
+    const compositeKind = input.compositeKind === "brand_ip" ? "brand_ip" : "logo";
+    if (compositeKind === "logo" && snapshot?.taskContract?.logoUsageMode !== "post_composite") {
       throw Object.assign(new Error("Selected run was not generated with a blank post-composite identity area"), {
         code: "LOGO_POST_COMPOSITE_MODE_REQUIRED"
       });
     }
     const scenePath = path.resolve(runRoot, image.relativePath);
     const logoPath = path.resolve(paths.input, logoAsset.relativePath);
-    const outputPath = path.join(runRoot, "images", `${path.parse(image.relativePath).name}.post-composite.png`);
+    const outputPath = path.join(runRoot, "images", `${path.parse(image.relativePath).name}.post-composite${compositeKind === "brand_ip" ? "-ip" : ""}.png`);
     const composite = await postCompositeConfirmedLogo({
       scenePath,
       logoPath,
@@ -1014,6 +1018,8 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
       schemaVersion: "1.0",
       status: "completed",
       validationStage: "post_composite",
+      compositeKind,
+      sourceAssetName: logoAsset.originalName,
       logoIntegrity: "source_recorded_pending_visual_review",
       qualityAcceptance: "pending_human_review",
       projectId: input.projectId,

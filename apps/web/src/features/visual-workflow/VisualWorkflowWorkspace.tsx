@@ -58,6 +58,7 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
   const [directionRefresh,setDirectionRefresh]=useState(0);
   const [logoPlacement, setLogoPlacement] = useState({x:50,y:30,width:12});
   const [removeLogoBackground,setRemoveLogoBackground] = useState(false);
+  const [compositeTarget, setCompositeTarget] = useState<'logo' | 'ip'>('logo');
   const [name, setName] = useState('');
   const [industry, setIndustry] = useState('');
   const [description, setDescription] = useState('');
@@ -161,6 +162,7 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
     });
   }
   const available = options[family];
+  const ipAsset = project?.assets.find(asset => asset.id === project?.ipAssetId);
   const selectedPreset = presets.find(item => item.id === presetId) || null;
   function applyPreset(nextId: string) {
     setPresetId(nextId); setPreflight(null);
@@ -178,11 +180,16 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
   const logo=project?.assets.find(asset=>asset.role==='logo');
   async function compositeLogo() {
     const target=run?.images[0];
-    if (!project || !run || !target || !logo) return;
-    await action('正在合成原始 Logo',async()=>{
-      const source=await workflowCall<{width:number;height:number}>('logo-source',project.id,logo.id);
-      const result=await workflowCall<{dataUrl:string}>('post-composite-logo',{projectId:project.id,runId:run.runId,imageId:target.imageId,logoAssetId:logo.id,confirmedByUser:true,sourceCrop:{left:0,top:0,width:source.width,height:source.height},placement:{x:logoPlacement.x/100,y:logoPlacement.y/100,width:logoPlacement.width/100},removeBackground:{enabled:removeLogoBackground}});
-      setImage(result.dataUrl);setResultLabel('原始 Logo 后期合成完成');
+    const asset = compositeTarget === 'ip' ? ipAsset : logo;
+    if (!project || !run || !target || !asset) return;
+    await action(compositeTarget === 'ip' ? '正在合成 IP 资产' : '正在合成原始 Logo',async()=>{
+      const source=await workflowCall<{width:number;height:number}>('logo-source',project.id,asset.id);
+      const placement={x:logoPlacement.x/100,y:logoPlacement.y/100,width:logoPlacement.width/100};
+      const sourceCrop={left:0,top:0,width:source.width,height:source.height};
+      const result = compositeTarget === 'ip'
+        ? await workflowCall<{dataUrl:string}>('post-composite-ip',{projectId:project.id,runId:run.runId,imageId:target.imageId,ipAssetId:asset.id,confirmedByUser:true,sourceCrop,placement,removeBackground:{enabled:removeLogoBackground}})
+        : await workflowCall<{dataUrl:string}>('post-composite-logo',{projectId:project.id,runId:run.runId,imageId:target.imageId,logoAssetId:asset.id,confirmedByUser:true,sourceCrop,placement,removeBackground:{enabled:removeLogoBackground}});
+      setImage(result.dataUrl);setResultLabel(compositeTarget === 'ip' ? 'IP 资产后期合成完成' : '原始 Logo 后期合成完成');
     });
   }
   const metadataUnsaved = Boolean(project && (name!==project.projectName || industry!==project.industry || factsSignature(factsPayload(facts))!==factsSignature(project.facts)));
@@ -233,7 +240,8 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
           {!project && <label>项目说明<textarea value={description} onChange={event => setDescription(event.target.value)} /></label>}
         </div>{project && <><button type="button" disabled={Boolean(busy) || project.status==='running' || !metadataUnsaved || !name.trim() || !industry.trim()} onClick={()=>void action('正在保存项目资料',async()=>{const saved=await workflowCall<WorkflowProject>('update-project',project.id,{projectName:name,industry,facts:factsPayload(facts),expectedUpdatedAt:project.updatedAt});setProject(saved);setName(saved.projectName);setIndustry(saved.industry);setDirectionRefresh(value=>value+1);})}>保存项目资料</button><p>{metadataUnsaved?'有未保存的项目资料。修改名称或行业后，历史报告保留，需重新分析后才能生图，并重新核对设计方向。':'项目资料已保存。'}</p></>}
         <div className="visual-workflow__upload"><label>选择图片、PDF 或 ZIP<input type="file" multiple accept=".png,.jpg,.jpeg,.webp,.pdf,.zip" disabled={Boolean(busy) || metadataUnsaved} onChange={event => void upload(event.target.files)} /></label><label>导入文件夹<input type="file" multiple {...{webkitdirectory: ''}} disabled={Boolean(busy) || metadataUnsaved} onChange={event => void upload(event.target.files)} /></label></div>
-          {project && <><p>已导入 {project.assetCount} 个素材。原始 Logo 会保持锁定。</p><label>原始 Logo<select value={project.assets.find(a => a.role === 'logo')?.id || ''} disabled={Boolean(busy)} onChange={event => void action('正在设置原始 Logo', async () => { setProject(await workflowCall<WorkflowProject>('select-logo', project.id, event.target.value)); })}><option value="">选择已导入的 Logo 图片</option>{project.assets.filter(a => a.mimeType.startsWith('image/')).map(asset => <option key={asset.id} value={asset.id}>{asset.originalName}</option>)}</select></label><ul className="visual-workflow__asset-list">{project.assets.map(asset => <li key={asset.id}>{asset.originalName}{asset.role === 'logo' ? ' · 原始 Logo' : ''}</li>)}</ul><button disabled={Boolean(busy) || !project.assetCount || metadataUnsaved || !settings?.analysisProfileId} onClick={() => void analyze()}>开始视觉分析</button></>}
+          {project && <><p>已导入 {project.assetCount} 个素材。原始 Logo 会保持锁定。</p><label>原始 Logo<select value={project.assets.find(a => a.role === 'logo')?.id || ''} disabled={Boolean(busy)} onChange={event => void action('正在设置原始 Logo', async () => { setProject(await workflowCall<WorkflowProject>('select-logo', project.id, event.target.value)); })}><option value="">选择已导入的 Logo 图片</option>{project.assets.filter(a => a.mimeType.startsWith('image/')).map(asset => <option key={asset.id} value={asset.id}>{asset.originalName}</option>)}</select></label>
+<label>IP / 吉祥物资产<select value={project.ipAssetId || ''} disabled={Boolean(busy)} onChange={event => void action('正在设置 IP 资产', async () => { setProject(await workflowCall<WorkflowProject>('select-ip', project.id, event.target.value)); })}><option value="">未指定</option>{project.assets.filter(asset => asset.mimeType.startsWith('image/')).map(asset => <option key={asset.id} value={asset.id}>{asset.originalName}</option>)}</select></label><ul className="visual-workflow__asset-list">{project.assets.map(asset => <li key={asset.id}>{asset.originalName}{asset.role === 'logo' ? ' · 原始 Logo' : ''}</li>)}</ul><button disabled={Boolean(busy) || !project.assetCount || metadataUnsaved || !settings?.analysisProfileId} onClick={() => void analyze()}>开始视觉分析</button></>}
         </section>}
         {step === 1 && <section><p>{progress || '使用本项目的素材分析品牌视觉与设计方向。'}</p>{project?.lastError && <p role="alert">{project.lastError}</p>}<button disabled={Boolean(busy) || metadataUnsaved || !settings?.analysisProfileId} onClick={() => void analyze()}>重新分析</button>{busy && project && <button onClick={() => void workflowCall('cancel-analysis', project.id)}>取消分析</button>}</section>}
         {step === 2 && <section><button disabled={Boolean(busy) || !canGenerate} onClick={() => setStep(3)}>进入智能生图 →</button><article className="visual-workflow__report" dangerouslySetInnerHTML={{__html: html}} /></section>}
@@ -261,7 +269,7 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
           <p>Logo：{project?.assets.some(a => a.role === 'logo') ? '预留区域，原始 Logo 后期合成' : '预留干净区域'}</p>
           <button disabled={Boolean(busy) || !canGenerate || !settings?.imageProfileId || family==='space' && (directionUnsaved || !designDirection || !['missing','confirmed'].includes(designDirection.status))}>智能生成</button>
           {busy && run?.status === 'running' && <button type="button" onClick={() => void workflowCall('cancel-generation', run.runId)}>取消生成</button>}
-        </form><div className="visual-workflow__preview">{image ? <><img src={image} alt="当前项目生成结果" /><p>{resultLabel}</p><a href={image} download={`${project?.projectName || '视觉结果'}.png`}>下载图片</a>{logo && run?.images[0] && <details><summary>原始 Logo 后期合成</summary><p>设置 Logo 在图片中的位置，宽度按原比例缩放。</p><div className="visual-workflow__fields">{(['x','y','width'] as const).map(field=><label key={field}>{{x:'水平位置（%）',y:'垂直位置（%）',width:'宽度（%）'}[field]}<input type="number" min={field==='width'?1:0} max={100} value={logoPlacement[field]} onChange={event=>setLogoPlacement({...logoPlacement,[field]:Number(event.target.value)})}/></label>)}</div><label><input type="checkbox" checked={removeLogoBackground} onChange={event=>setRemoveLogoBackground(event.target.checked)}/>移除 Logo 纯色背景</label><button type="button" disabled={Boolean(busy)} onClick={()=>void compositeLogo()}>确认并合成原始 Logo</button></details>}</> : <p>{busy || '生成的图片将在这里展示'}</p>}</div></section>}
+        </form><div className="visual-workflow__preview">{image ? <><img src={image} alt="当前项目生成结果" /><p>{resultLabel}</p><a href={image} download={`${project?.projectName || '视觉结果'}.png`}>下载图片</a>{(logo || ipAsset) && run?.images[0] && <details><summary>原始 Logo / IP 后期合成</summary><p>设置合对象在图片中的位置，宽度按原比例缩放；IP 资产使用你的原始插画文件，不经过模型。</p><label>合成对象<select value={compositeTarget} onChange={event => setCompositeTarget(event.target.value === 'ip' ? 'ip' : 'logo')}><option value="logo" disabled={!logo}>原始 Logo</option><option value="ip" disabled={!ipAsset}>IP 资产{ipAsset ? `（${ipAsset.originalName}）` : '（未指定）'}</option></select></label><div className="visual-workflow__fields">{(['x','y','width'] as const).map(field=><label key={field}>{{x:'水平位置（%）',y:'垂直位置（%）',width:'宽度（%）'}[field]}<input type="number" min={field==='width'?1:0} max={100} value={logoPlacement[field]} onChange={event=>setLogoPlacement({...logoPlacement,[field]:Number(event.target.value)})}/></label>)}</div><label><input type="checkbox" checked={removeLogoBackground} onChange={event=>setRemoveLogoBackground(event.target.checked)}/>移除 Logo 纯色背景</label><button type="button" disabled={Boolean(busy) || (compositeTarget === 'ip' ? !ipAsset : !logo)} onClick={()=>void compositeLogo()}>确认并合成</button></details>}</> : <p>{busy || '生成的图片将在这里展示'}</p>}</div></section>}
       </main>
     </div>
   </div>;
