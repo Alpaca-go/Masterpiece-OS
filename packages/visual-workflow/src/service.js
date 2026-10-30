@@ -15,6 +15,7 @@ import { assertArtDirectionModel } from './art-direction-contract.js';
 import { createProjectDesignDirectionStore } from './project-design-direction.js';
 import { createGenerationBaselineGuard } from './generation-baseline-lock.js';
 import { listStylePresets, stylePreflight } from './knowledge/style-presets.js';
+import { buildTaskBrief } from './runtime/task-brief.js';
 
 // This is the only production composition root for this bounded workflow.
 // Other product domains receive neither its services nor its storage paths.
@@ -281,6 +282,14 @@ export function createVisualWorkflow(options) {
       presets: listStylePresets()
     }),
     'visual-workflow:style-preflight': (_context, input) => stylePreflight(input),
+    // One-click brief from the finished analysis. Read-only: it never writes the
+    // packet or the task, it just gives the form a non-placeholder instruction.
+    'visual-workflow:task-brief': async (_context, id, options) => {
+      const paths = await projects.paths(id);
+      const packet = await readJson(path.join(paths.root, 'project-context/visual-decision-packet.json'), null);
+      if (!packet) throw new Error('尚未完成分析，无法从分析结果生成任务书');
+      return { instruction: buildTaskBrief(packet, { logoUsageMode: options?.logoUsageMode }) };
+    },
     'visual-workflow:list-projects': async () => Promise.all((await projects.list()).map(pipeline.reconcileOrphanedProject)),
     'visual-workflow:create-project': (_context, input) => projects.create(input),
     'visual-workflow:update-project': (_context, id, input) => {

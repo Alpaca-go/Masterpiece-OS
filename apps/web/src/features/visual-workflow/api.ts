@@ -54,11 +54,12 @@ export function createStandardGenerationInput(input: {
   projectId:string; family:string; subtype:string; shot:string; shotExplicit:boolean; ratio:string;
   instruction:string; include:string; avoid:string; hasLogo:boolean; directionRecordSha256:string | null;
   styleControls?: StyleControls; stylePresetId?: string;
+  logoUsageMode?: 'post_composite' | 'in_image';
 }) {
   return {projectId:input.projectId,designDirectionExpectedRecordSha256:input.directionRecordSha256,
     task:{deliverableFamily:input.family,subtype:input.subtype,shot:input.shot,shotSource:input.shotExplicit?'user_explicit':undefined,
       aspectRatio:input.ratio,count:1,currentInstruction:input.instruction,generationBasis:'standard',referenceAssetIds:[],
-      mustInclude:input.include.split('\n').filter(Boolean),mustAvoid:input.avoid.split('\n').filter(Boolean),logoUsageMode:input.hasLogo?'post_composite':'blank_area',
+      mustInclude:input.include.split('\n').filter(Boolean),mustAvoid:input.avoid.split('\n').filter(Boolean),logoUsageMode:input.hasLogo?(input.logoUsageMode==='in_image'?'in_image':'post_composite'):'blank_area',
       ...input.styleControls ? {styleControls: input.styleControls} : {},
       ...input.stylePresetId ? {stylePresetId: input.stylePresetId} : {}}};
 }

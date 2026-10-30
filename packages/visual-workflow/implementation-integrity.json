@@ -501,7 +501,7 @@
     },
     {
       "path": "src/service.js",
-      "sha256": "7f0cbdf13d7b62a77ad7a743870ecb1fb2adcbdf920ba94e5b3ce5f9e5f0e6e6"
+      "sha256": "c0ef9b6584b6e531a1e805439c7aac4b5e18c322cf0a934ad2e086d25fb845e5"
     },
     {
       "path": "src/support/creative-production-runtime/src/packaging-translation.js",
@@ -554,16 +554,20 @@
     {
       "path": "src/analysis-decisions/repair-response-normalizer.js",
       "sha256": "010c11db3717d362b0593010fb3641624f67b009b53d6cf70246a85dc21411e0"
+    },
+    {
+      "path": "src/runtime/task-brief.js",
+      "sha256": "804c12102ad2de8a34c6f33373b831dfab19e35770c151973e3ff2398248dce1"
     }
   ],
   "frontendFiles": [
     {
       "path": "apps/web/src/features/visual-workflow/VisualWorkflowWorkspace.tsx",
-      "sha256": "47993b3a69a3da7d0459c2a744378a707f7604bb70fe661357a106d100a3c268"
+      "sha256": "be31a35cc7392b291c671d2b60636607fc1179b95e6bfea4f9766f225ee61b94"
     },
     {
       "path": "apps/web/src/features/visual-workflow/api.ts",
-      "sha256": "ad69bde82db25e9955547bdcc416698bb23d8e86a099748543fc398cba141cdd"
+      "sha256": "5a1d771b7a1db9afc52dfaaf5bdc99a6539978b2f03bb4cde67d8eea58f8c0a2"
     },
     {
       "path": "apps/web/src/features/visual-workflow/visual-workflow.css",

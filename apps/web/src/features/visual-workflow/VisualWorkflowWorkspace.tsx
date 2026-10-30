@@ -59,6 +59,7 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
   const [logoPlacement, setLogoPlacement] = useState({x:50,y:30,width:12});
   const [removeLogoBackground,setRemoveLogoBackground] = useState(false);
   const [compositeTarget, setCompositeTarget] = useState<'logo' | 'ip'>('logo');
+  const [logoMode, setLogoMode] = useState<'post_composite' | 'in_image'>('post_composite');
   const [name, setName] = useState('');
   const [industry, setIndustry] = useState('');
   const [description, setDescription] = useState('');
@@ -152,7 +153,7 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
       const currentDirection=await workflowCall<ProjectDesignDirection>('report',project.id,'project_design_direction');
       if (family==='space' && (directionUnsaved || !designDirection || currentDirection.recordSha256!==designDirection.recordSha256 || !['missing','confirmed'].includes(currentDirection.status))) throw new Error('项目设计方向已变化或尚未确认，请核对并确认后再生图。');
       setImage(''); setRun(null); setResultLabel('');
-      const compiled = await workflowCall<{taskContract: {taskId: string}}>('compile', createStandardGenerationInput({projectId:project.id,family,subtype,shot,shotExplicit,ratio,instruction,include,avoid,hasLogo:project.assets.some(a=>a.role==='logo'),directionRecordSha256:currentDirection.recordSha256,styleControls,stylePresetId:presetId||undefined}));
+      const compiled = await workflowCall<{taskContract: {taskId: string}}>('compile', createStandardGenerationInput({projectId:project.id,family,subtype,shot,shotExplicit,ratio,instruction,include,avoid,hasLogo:project.assets.some(a=>a.role==='logo'),directionRecordSha256:currentDirection.recordSha256,styleControls,stylePresetId:presetId||undefined,logoUsageMode:logoMode}));
       const result = await workflowCall<{initialRun: WorkflowRun; correctionRun?: WorkflowRun; firstImage?: {runId: string; imageId: string}; terminalStatus: string; automaticRetryCount: number}>('generate', { projectId: project.id, taskId: compiled.taskContract.taskId });
       const selected = result.correctionRun?.status === 'succeeded' ? result.correctionRun : result.initialRun;
       setRun(selected); setResultLabel(`${result.terminalStatus === 'passed' ? '校验通过' : result.terminalStatus === 'failed' ? '未通过校验，请检查结果' : '生成完成，请确认结果'}${result.automaticRetryCount ? ' · 已执行一次纠偏' : ''}`);
@@ -173,11 +174,20 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
     if (!project || !presetId) return;
     await action('正在按气质预检', async () => {
       const currentDirection = await workflowCall<ProjectDesignDirection>('report', project.id, 'project_design_direction');
-      const compiled = await workflowCall<{ taskContract: { taskId: string }; compiledPrompt?: { finalPrompt?: string } }>('compile', createStandardGenerationInput({projectId:project.id,family,subtype,shot,shotExplicit,ratio,instruction,include,avoid,hasLogo:project.assets.some(a=>a.role==='logo'),directionRecordSha256:currentDirection.recordSha256,styleControls,stylePresetId:presetId||undefined}));
+      const compiled = await workflowCall<{ taskContract: { taskId: string }; compiledPrompt?: { finalPrompt?: string } }>('compile', createStandardGenerationInput({projectId:project.id,family,subtype,shot,shotExplicit,ratio,instruction,include,avoid,hasLogo:project.assets.some(a=>a.role==='logo'),directionRecordSha256:currentDirection.recordSha256,styleControls,stylePresetId:presetId||undefined,logoUsageMode:logoMode}));
       setPreflight(await stylePreflight(presetId, compiled.compiledPrompt?.finalPrompt || ''));
     });
   }
   const logo=project?.assets.find(asset=>asset.role==='logo');
+  async function useAnalysisBrief() {
+    if (!project) return;
+    await action('正在生成任务书', async () => {
+      const brief = await workflowCall<{ instruction: string }>('task-brief', project.id, { logoUsageMode: logoMode });
+      setInstruction(brief.instruction);
+      setStep(3);
+    });
+  }
+
   async function compositeLogo() {
     const target=run?.images[0];
     const asset = compositeTarget === 'ip' ? ipAsset : logo;
@@ -248,6 +258,9 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
         {step === 3 && <section className="visual-workflow__generation"><form onSubmit={event => {event.preventDefault(); void generate();}}>
           <label>成果类型<select value={family} onChange={event => { const next = event.target.value; const defaults = DEFAULTS[next]; setFamily(next); setSubtype(defaults?.[0] || ''); setShot(defaults?.[1] || ''); setShotExplicit(false); }}>{Object.entries(FAMILY_LABELS).map(([id, label]) => <option key={id} value={id}>{label}</option>)}</select></label>
           <label>本轮要求<textarea required value={instruction} onChange={event => setInstruction(event.target.value)} /></label>
+          <p><small>默认文案是占位符，建议先<button type="button" disabled={Boolean(busy) || !project} onClick={() => void useAnalysisBrief()}>套用分析任务书</button>，再按需改写。</small></p>
+          <label>品牌文字<select value={logoMode} onChange={event => setLogoMode(event.target.value === 'in_image' ? 'in_image' : 'post_composite')} disabled={!project?.assets.some(a => a.role === 'logo')}><option value="post_composite">后期合成（模型不画字标，生成后合成）</option><option value="in_image">图内出字（模型直接画品牌字，校验会检查）</option></select></label>
+          {!project?.assets.some(a => a.role === 'logo') && <p><small>项目还没有指定原始 Logo；指定后才能选择品牌文字模式。</small></p>}
           <label>画面比例<select value={ratio} onChange={event => setRatio(event.target.value)}>{['1:1','4:3','3:4','16:9','9:16'].map(item => <option key={item}>{item}</option>)}</select></label>
           <label>子类型<select value={subtype} onChange={event => setSubtype(event.target.value)}>{available?.subtypes.map(item => <option key={item} value={item}>{LABELS[item] || item}</option>)}</select></label>
           <label>镜头 / 构图<select value={shot} onChange={event => {setShot(event.target.value); setShotExplicit(true);}}>{available?.shots.map(item => <option key={item} value={item}>{LABELS[item] || item}</option>)}</select></label>
@@ -269,7 +282,8 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
           <p>Logo：{project?.assets.some(a => a.role === 'logo') ? '预留区域，原始 Logo 后期合成' : '预留干净区域'}</p>
           <button disabled={Boolean(busy) || !canGenerate || !settings?.imageProfileId || family==='space' && (directionUnsaved || !designDirection || !['missing','confirmed'].includes(designDirection.status))}>智能生成</button>
           {busy && run?.status === 'running' && <button type="button" onClick={() => void workflowCall('cancel-generation', run.runId)}>取消生成</button>}
-        </form><div className="visual-workflow__preview">{image ? <><img src={image} alt="当前项目生成结果" /><p>{resultLabel}</p><a href={image} download={`${project?.projectName || '视觉结果'}.png`}>下载图片</a>{(logo || ipAsset) && run?.images[0] && <details><summary>原始 Logo / IP 后期合成</summary><p>设置合对象在图片中的位置，宽度按原比例缩放；IP 资产使用你的原始插画文件，不经过模型。</p><label>合成对象<select value={compositeTarget} onChange={event => setCompositeTarget(event.target.value === 'ip' ? 'ip' : 'logo')}><option value="logo" disabled={!logo}>原始 Logo</option><option value="ip" disabled={!ipAsset}>IP 资产{ipAsset ? `（${ipAsset.originalName}）` : '（未指定）'}</option></select></label><div className="visual-workflow__fields">{(['x','y','width'] as const).map(field=><label key={field}>{{x:'水平位置（%）',y:'垂直位置（%）',width:'宽度（%）'}[field]}<input type="number" min={field==='width'?1:0} max={100} value={logoPlacement[field]} onChange={event=>setLogoPlacement({...logoPlacement,[field]:Number(event.target.value)})}/></label>)}</div><label><input type="checkbox" checked={removeLogoBackground} onChange={event=>setRemoveLogoBackground(event.target.checked)}/>移除 Logo 纯色背景</label><button type="button" disabled={Boolean(busy) || (compositeTarget === 'ip' ? !ipAsset : !logo)} onClick={()=>void compositeLogo()}>确认并合成</button></details>}</> : <p>{busy || '生成的图片将在这里展示'}</p>}</div></section>}
+        </form><div className="visual-workflow__preview">{image ? <><img src={image} alt="当前项目生成结果" /><p>{resultLabel}</p>
+            {project?.ipAssetId && run?.images[0] && <p role="status"><small>项目已指定 IP 资产（{project.ipAssetName || '已指定'}）：生成图不会自动带上它，请在下方「原始 Logo / IP 后期合成」里把「合成对象」选成 IP 资产再合成。</small></p>}<a href={image} download={`${project?.projectName || '视觉结果'}.png`}>下载图片</a>{(logo || ipAsset) && run?.images[0] && <details><summary>原始 Logo / IP 后期合成</summary><p>设置合对象在图片中的位置，宽度按原比例缩放；IP 资产使用你的原始插画文件，不经过模型。</p><label>合成对象<select value={compositeTarget} onChange={event => setCompositeTarget(event.target.value === 'ip' ? 'ip' : 'logo')}><option value="logo" disabled={!logo}>原始 Logo</option><option value="ip" disabled={!ipAsset}>IP 资产{ipAsset ? `（${ipAsset.originalName}）` : '（未指定）'}</option></select></label><div className="visual-workflow__fields">{(['x','y','width'] as const).map(field=><label key={field}>{{x:'水平位置（%）',y:'垂直位置（%）',width:'宽度（%）'}[field]}<input type="number" min={field==='width'?1:0} max={100} value={logoPlacement[field]} onChange={event=>setLogoPlacement({...logoPlacement,[field]:Number(event.target.value)})}/></label>)}</div><label><input type="checkbox" checked={removeLogoBackground} onChange={event=>setRemoveLogoBackground(event.target.checked)}/>移除 Logo 纯色背景</label><button type="button" disabled={Boolean(busy) || (compositeTarget === 'ip' ? !ipAsset : !logo)} onClick={()=>void compositeLogo()}>确认并合成</button></details>}</> : <p>{busy || '生成的图片将在这里展示'}</p>}</div></section>}
       </main>
     </div>
   </div>;
