@@ -37,7 +37,7 @@
     },
     {
       "path": "src/analysis-decisions/contracts.js",
-      "sha256": "9263c7c0bd182b5eb8ed6f646c3eca65c09ed87202c41b46950020aa58ebe592"
+      "sha256": "2327f97aa0038f30f547c931dc43a5747eef096d43bf97f64352762eb80e1963"
     },
     {
       "path": "src/analysis-decisions/core/visual-analysis-core.js",
@@ -97,7 +97,7 @@
     },
     {
       "path": "src/analysis-decisions/structured-repair-runner.js",
-      "sha256": "e9e4c4cb3abb9e5692da6ae3760c6805effddfe9769a03c7c389400f65dbb687"
+      "sha256": "ce79f8b7b76aa40ce23b07a8b7b98994a88e0ba559ee4929eb2910b9d417e195"
     },
     {
       "path": "src/assets/architecture-anchors/registry.json",
@@ -550,6 +550,10 @@
     {
       "path": "src/runtime/project-facts-override.js",
       "sha256": "eec1b3fc19868034f5f902405e7b8c7dba6f837d1000283fa140d2f8691d9cca"
+    },
+    {
+      "path": "src/analysis-decisions/repair-response-normalizer.js",
+      "sha256": "010c11db3717d362b0593010fb3641624f67b009b53d6cf70246a85dc21411e0"
     }
   ],
   "frontendFiles": [

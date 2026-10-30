@@ -3,6 +3,7 @@ import {
   isMeaningfulValue
 } from "./path-utils.js";
 import { buildRepairPrompt } from "./repair-prompt-builder.js";
+import { normalizeRepairResponse } from "./repair-response-normalizer.js";
 function parseResponse(value) {
   if (typeof value !== "string") return value;
   const normalized = value.trim().replace(/^```(?:json)?\s*/iu, "").replace(/\s*```$/u, "");
@@ -204,7 +205,10 @@ ${input.previousFailure}` : ""}`;
     targetFields: [...input.batch.fieldPaths],
     responseSchema: schema
   });
-  const parsed = parseResponse(raw);
+  const parsed = normalizeRepairResponse(parseResponse(raw), {
+    fieldPaths: input.batch.fieldPaths,
+    evidenceRefs: input.batch.evidenceRefs
+  });
   if (!isRecord(parsed) || !Array.isArray(parsed.repairs)) {
     invalid("Repair response must contain a repairs array.");
   }
