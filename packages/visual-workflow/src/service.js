@@ -338,6 +338,9 @@ export function createVisualWorkflow(options) {
     'visual-workflow:image': (_context, runId, imageId) => images.imageData(runId, imageId),
     'visual-workflow:cancel-generation': (_context, id) => images.cancel(id),
     'visual-workflow:logo-source': (_context, id, assetId) => images.logoSource(id,assetId),
+    // Any project image: the IP composite needs its dimensions even when the
+    // project has no confirmed Logo.
+    'visual-workflow:asset-source': (_context, id, assetId) => images.assetSource(id,assetId),
     // Brand IP after-composite: the mascot is the user's own artwork, so the
     // only correct way to keep the likeness is to place that exact file.
     'visual-workflow:post-composite-ip': async (_context, input) => {

@@ -40,7 +40,7 @@ test('the brief restates the analysis decisions in a usable order', () => {
   assert.ok(!brief.includes('生成符合项目气质的空间效果图'), 'must not be the placeholder');
 });
 
-test('post-composite mode drops brand-text must-see items and says so', () => {
+test('post-composite mode drops brand-text must-see items silently', () => {
   const source = packet();
   source.mediaTranslations.spatial.mustBeVisible = ['入口门头：高亮度发光招牌及品牌名称标识', '点餐区上方菜单展示屏'];
   source.mediaTranslations.spatial.structureLanguage = '入口门头：横向招牌+品牌标志发光字；空间骨架：中性色为主框架；视觉焦点：入口形象墙';
@@ -49,10 +49,10 @@ test('post-composite mode drops brand-text must-see items and says so', () => {
   assert.match(brief, /必见：点餐区上方菜单展示屏/u);
   assert.ok(!brief.includes('品牌标志发光字'), 'signage lettering must be filtered from the structure line too');
   assert.match(brief, /结构：空间骨架：中性色为主框架；视觉焦点：入口形象墙/u);
-  assert.match(brief, /品牌文字与 Logo 不画在图内/u);
+  assert.ok(!brief.includes('不画在图内'), 'the brief must not carry mode-dependent wording that can go stale');
   const inImage = buildTaskBrief(source, { logoUsageMode: 'in_image' });
   assert.match(inImage, /品牌名称标识/u);
-  assert.ok(!inImage.includes('品牌文字与 Logo 不画在图内'));
+  assert.ok(!inImage.includes('不画在图内'));
 });
 
 test('a packet without a spatial proposal is rejected instead of returning filler', () => {

@@ -130,6 +130,14 @@ export function createImageService(root, projects, configuration, emit, fetchImp
     for (const entry of entries) if (entry.isDirectory()) { const run = await getRun(entry.name); if (run?.projectId === projectId) runs.push(run); }
     return runs.sort((a,b) => b.createdAt.localeCompare(a.createdAt));
   }
+  async function assetSource(projectId, assetId) {
+    const project=await projects.get(projectId);
+    const asset=project.assets.find(item => item.id===assetId && item.mimeType.startsWith('image/'));
+    if (!asset) throw new Error('请选择项目内的图片资产');
+    const bytes=await fs.readFile(inside((await projects.paths(projectId)).input,asset.relativePath));
+    const metadata=await sharp(bytes).metadata();
+    return {assetId, width:metadata.width,height:metadata.height,dataUrl:`data:${asset.mimeType};base64,${bytes.toString('base64')}`};
+  }
   async function logoSource(projectId, assetId) {
     const project=await projects.get(projectId);
     const asset=project.assets.find(item => item.id===assetId && item.role==='logo' && item.mimeType.startsWith('image/'));
@@ -138,5 +146,5 @@ export function createImageService(root, projects, configuration, emit, fetchImp
     const metadata=await sharp(bytes).metadata();
     return {assetId, width:metadata.width,height:metadata.height,dataUrl:`data:${asset.mimeType};base64,${bytes.toString('base64')}`};
   }
-  return { startCompiledCreativeTask, getRun, runRoot, imageData, logoSource, listRuns, cancel: runId => { const controller = controllers.get(runId); controller?.abort(); return Boolean(controller); } };
+  return { startCompiledCreativeTask, getRun, runRoot, imageData, logoSource, assetSource, listRuns, cancel: runId => { const controller = controllers.get(runId); controller?.abort(); return Boolean(controller); } };
 }

@@ -60,6 +60,7 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
   const [removeLogoBackground,setRemoveLogoBackground] = useState(false);
   const [compositeTarget, setCompositeTarget] = useState<'logo' | 'ip'>('logo');
   const [logoMode, setLogoMode] = useState<'post_composite' | 'in_image'>('post_composite');
+  const [briefText, setBriefText] = useState('');
   const [name, setName] = useState('');
   const [industry, setIndustry] = useState('');
   const [description, setDescription] = useState('');
@@ -179,13 +180,28 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
     });
   }
   const logo=project?.assets.find(asset=>asset.role==='logo');
+  async function fetchBrief(mode: 'post_composite' | 'in_image') {
+    if (!project) return '';
+    const brief = await workflowCall<{ instruction: string }>('task-brief', project.id, { logoUsageMode: mode });
+    setBriefText(brief.instruction);
+    return brief.instruction;
+  }
   async function useAnalysisBrief() {
     if (!project) return;
     await action('正在生成任务书', async () => {
-      const brief = await workflowCall<{ instruction: string }>('task-brief', project.id, { logoUsageMode: logoMode });
-      setInstruction(brief.instruction);
+      setInstruction(await fetchBrief(logoMode));
       setStep(3);
     });
+  }
+  async function changeLogoMode(next: 'post_composite' | 'in_image') {
+    setLogoMode(next);
+    // The brief must never disagree with the brand-text mode. Regenerate it when
+    // the user has not edited it; otherwise leave their words alone.
+    if (project && instruction === briefText) {
+      await action('正在按新的品牌文字模式更新任务书', async () => {
+        setInstruction(await fetchBrief(next));
+      });
+    }
   }
 
   async function compositeLogo() {
@@ -193,7 +209,7 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
     const asset = compositeTarget === 'ip' ? ipAsset : logo;
     if (!project || !run || !target || !asset) return;
     await action(compositeTarget === 'ip' ? '正在合成 IP 资产' : '正在合成原始 Logo',async()=>{
-      const source=await workflowCall<{width:number;height:number}>('logo-source',project.id,asset.id);
+      const source=await workflowCall<{width:number;height:number}>(compositeTarget === 'ip' ? 'asset-source' : 'logo-source',project.id,asset.id);
       const placement={x:logoPlacement.x/100,y:logoPlacement.y/100,width:logoPlacement.width/100};
       const sourceCrop={left:0,top:0,width:source.width,height:source.height};
       const result = compositeTarget === 'ip'
@@ -259,7 +275,8 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
           <label>成果类型<select value={family} onChange={event => { const next = event.target.value; const defaults = DEFAULTS[next]; setFamily(next); setSubtype(defaults?.[0] || ''); setShot(defaults?.[1] || ''); setShotExplicit(false); }}>{Object.entries(FAMILY_LABELS).map(([id, label]) => <option key={id} value={id}>{label}</option>)}</select></label>
           <label>本轮要求<textarea required value={instruction} onChange={event => setInstruction(event.target.value)} /></label>
           <p><small>默认文案是占位符，建议先<button type="button" disabled={Boolean(busy) || !project} onClick={() => void useAnalysisBrief()}>套用分析任务书</button>，再按需改写。</small></p>
-          <label>品牌文字<select value={logoMode} onChange={event => setLogoMode(event.target.value === 'in_image' ? 'in_image' : 'post_composite')} disabled={!project?.assets.some(a => a.role === 'logo')}><option value="post_composite">后期合成（模型不画字标，生成后合成）</option><option value="in_image">图内出字（模型直接画品牌字，校验会检查）</option></select></label>
+          <label>品牌文字<select value={logoMode} onChange={event => void changeLogoMode(event.target.value === 'in_image' ? 'in_image' : 'post_composite')} disabled={!project?.assets.some(a => a.role === 'logo')}><option value="post_composite">后期合成（模型不画字标，生成后合成）</option><option value="in_image">图内出字（模型直接画品牌字，校验会检查）</option></select></label>
+          <p role="note"><small>{logoMode === 'in_image' ? '当前模式：图内出字。任务书里不要再写“不画文字/不画 Logo”，否则会和系统指令冲突。' : '当前模式：后期合成。任务书里的字标类要求会被自动略去，生成后请到下方合成 Logo。'}</small></p>
           {!project?.assets.some(a => a.role === 'logo') && <p><small>项目还没有指定原始 Logo；指定后才能选择品牌文字模式。</small></p>}
           <label>画面比例<select value={ratio} onChange={event => setRatio(event.target.value)}>{['1:1','4:3','3:4','16:9','9:16'].map(item => <option key={item}>{item}</option>)}</select></label>
           <label>子类型<select value={subtype} onChange={event => setSubtype(event.target.value)}>{available?.subtypes.map(item => <option key={item} value={item}>{LABELS[item] || item}</option>)}</select></label>

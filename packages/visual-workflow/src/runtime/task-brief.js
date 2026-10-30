@@ -39,9 +39,6 @@ export function buildTaskBrief(packet, options = {}) {
     .map((item) => item.trim());
   const keptMust = postComposite ? mustItems.filter((item) => !BRAND_TEXT.test(item)) : mustItems;
   if (keptMust.length) lines.push(`必见：${keptMust.join('；')}`);
-  if (postComposite && keptMust.length !== mustItems.length) {
-    lines.push('品牌文字与 Logo 不画在图内：生成后由后期合成放置（当前品牌文字模式为后期合成）。');
-  }
 
   const materials = (Array.isArray(spatial.materialLanguage) ? spatial.materialLanguage : [])
     .slice(0, 3)
