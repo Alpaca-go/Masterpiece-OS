@@ -3,6 +3,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { readJson, writeJson, assertId, inside } from './configuration.js';
 import { parseZip } from './cli/parsers.js';
+import { normalizeProjectFacts } from "./runtime/project-facts.js";
 
 const MIME = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.pdf': 'application/pdf' };
 const timestamp = () => new Date().toISOString();
@@ -51,10 +52,14 @@ export function createProjectStore(dataRoot) {
     const projectName = typeof input.projectName === 'string' ? input.projectName.trim() : '';
     const industry = typeof input.industry === 'string' ? input.industry.trim() : '';
     if (!projectName || projectName.length > 200 || !industry || industry.length > 200) throw new Error('项目名称和所属行业不能为空，且各不超过 200 字');
-    if (projectName === project.projectName && industry === project.industry) return project;
+    // Facts are analysis inputs too: storing a different set invalidates the
+    // existing analysis the same way a name/industry change does.
+    const facts = normalizeProjectFacts(input.facts);
+    const factsChanged = JSON.stringify(facts) !== JSON.stringify(project.facts || {});
+    if (projectName === project.projectName && industry === project.industry && !factsChanged) return project;
     // Identity is an analysis input. Retain historical outputs, but never reuse
     // their context for generation under new project facts.
-    return update(id, {projectName,brandName:projectName,industry,projectNameSource:'user_input',projectNameConfidence:1,
+    return update(id, {projectName,brandName:projectName,industry,facts,projectNameSource:'user_input',projectNameConfidence:1,
       factConfidence:{...project.factConfidence,brandName:1,industry:1},
       status:project.assets.length ? 'ready' : 'draft',visualContextStatus:'missing',visualContextVNextStatus:'missing'});
   }
@@ -62,7 +67,7 @@ export function createProjectStore(dataRoot) {
     const id = crypto.randomUUID();
     const name = String(input.projectName || '未命名视觉项目').trim();
     const now = timestamp();
-    const record = { id, workflowOwner: 'visual-workflow', projectName: name, brandName: String(input.brandName || name), detectedProjectName: name, detectedBrandName: String(input.brandName || name), industry: String(input.industry || '待确认'), detectedIndustry: String(input.industry || '待确认'), description: String(input.description || ''), projectNameSource: 'user_input', projectNameConfidence: 1, factConfidence: {brandName: 1, industry: input.industry ? 1 : 0}, logoLocked: true, logoFiles: [], briefFiles: [], lockedFacts: [], assets: [], assetCount: 0, imageCount: 0, status: 'draft', outputLanguage: 'zh-CN', analysisProfile: 'fusion-enhanced', apiProfileId: input.apiProfileId || null, lastReportFilename: null, visualContextStatus: 'missing', visualContextVNextStatus: 'missing', createdAt: now, updatedAt: now };
+    const record = { id, workflowOwner: 'visual-workflow', projectName: name, brandName: String(input.brandName || name), detectedProjectName: name, detectedBrandName: String(input.brandName || name), industry: String(input.industry || '待确认'), detectedIndustry: String(input.industry || '待确认'), description: String(input.description || ''), facts: normalizeProjectFacts(input.facts), projectNameSource: 'user_input', projectNameConfidence: 1, factConfidence: {brandName: 1, industry: input.industry ? 1 : 0}, logoLocked: true, logoFiles: [], briefFiles: [], lockedFacts: [], assets: [], assetCount: 0, imageCount: 0, status: 'draft', outputLanguage: 'zh-CN', analysisProfile: 'fusion-enhanced', apiProfileId: input.apiProfileId || null, lastReportFilename: null, visualContextStatus: 'missing', visualContextVNextStatus: 'missing', createdAt: now, updatedAt: now };
     for (const directory of ['input/assets', 'prepared', 'outputs', 'runtime', 'project-context']) await fs.mkdir(path.join(projectRoot(id), directory), { recursive: true });
     await writeJson(path.join(projectRoot(id), 'project.json'), record);
     return record;

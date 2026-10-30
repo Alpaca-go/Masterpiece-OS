@@ -35,6 +35,7 @@ import {
 } from "./visual-decision-packet.js";
 import { compileVisualDecisionReport } from "./visual-decision-report-compiler.js";
 import { createAnalysisRepairStore } from "./analysis-repair-store.js";
+import { projectFactsConstraints } from "./project-facts.js";
 import { isAnalysisSourceAsset } from "./project-assets.js";
 import {
   throwForValidationIssues
@@ -174,7 +175,10 @@ function createPipelineService(projects, readCredentials, readSettings, emitProg
           detectedBrandName: project.detectedBrandName,
           detectedIndustry: project.detectedIndustry,
           factConfidence: project.factConfidence,
-          factualConstraints: analysisFactualConstraints(project.industry, project.lockedFacts, project.factConfidence.industry),
+          factualConstraints: [
+            ...analysisFactualConstraints(project.industry, project.lockedFacts, project.factConfidence.industry),
+            ...projectFactsConstraints(project.facts)
+          ],
           logoAssets: project.logoFiles
         },
         benchmarkContext: { category: [], creativeExcellence: [] },

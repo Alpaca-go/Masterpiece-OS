@@ -429,7 +429,7 @@
     },
     {
       "path": "src/project-store.js",
-      "sha256": "da493e7a958ebf356e519c855a89b8d96965597a9ad07cb9b14f3b476da4c376"
+      "sha256": "5f9d818f1e2596766e5828a91474f756ce05467835756b3c51aadb6c4a62bef5"
     },
     {
       "path": "src/runtime/analysis-contract.js",
@@ -461,7 +461,7 @@
     },
     {
       "path": "src/runtime/pipeline-service.js",
-      "sha256": "f8a4fe7344a6c08ce2567277856203cbb88849a264fa5c277051bc6177fb8147"
+      "sha256": "8b5f19020a0d877bdc997d7d996e5e0c9d1207bca52f8beb853d63485f20976a"
     },
     {
       "path": "src/runtime/project-assets.js",
@@ -542,16 +542,20 @@
     {
       "path": "src/generation-runtime/generation/style-axes.js",
       "sha256": "713432519366eee3256299c86f2e516afcede82cc394e5a6d2953207d1e18c9b"
+    },
+    {
+      "path": "src/runtime/project-facts.js",
+      "sha256": "2e3a9e5571187e10f56a174cb67a8e37a7791c5d4799ea4fdfc59811d2031716"
     }
   ],
   "frontendFiles": [
     {
       "path": "apps/web/src/features/visual-workflow/VisualWorkflowWorkspace.tsx",
-      "sha256": "006cda58c323f236118859d2e824da647dd46daecdfa1da4ddb43784aa2a5919"
+      "sha256": "49a25ed17cfdab32ef46189f2c4afa97c9669c6891226cb056c76af3036a0b83"
     },
     {
       "path": "apps/web/src/features/visual-workflow/api.ts",
-      "sha256": "9f423be19f2f86bc37f48a8ad2de19847edd0e456c2fa2f7540c07d1ecd77b4e"
+      "sha256": "c71c4706c2f54e345cb2d19b45504cb29a8ec7ed74bba5a7c5290fbc59df743e"
     },
     {
       "path": "apps/web/src/features/visual-workflow/visual-workflow.css",
